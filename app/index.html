@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>smartcheckout</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width">
+	<link rel="stylesheet" href="/bower_components/bootstrap/docs/assets/css/bootstrap.css">
+	<link rel="stylesheet" href="/css/main.css">
+
+	<script src="http://localhost:35729/livereload.js"></script>
+</head>
+<body>
+
+	<div class="span6">
+		<div class="step accordion-group shipping-data adress-book" data-bind="css: {active: active, filled: visitedAndNotActive}">
+			<div class="accordion-heading">
+				<span class="accordion-toggle collapsed" data-bind="css: {'accordion-toggle-active': active}">
+					<i class="icon-home"></i>
+					Endereço de entrega
+				</span>
+			</div>
+			<div class="accordion-body collapse in">
+				<div class="accordion-inner">
+
+					<div class="box-step" data-bind="visible: active">
+
+						<form method="POST" action="javascript:void(0)" class="form-box-step2 form-step box-new">						
+							<h3>Cadastrar Novo endereço</h3>
+							<p data-bind="fadeVisible: showBackToAddressList">
+								<a href="javascript:void(0);" data-bind="click: cancelEditAddress">cancelar</a>
+							</p>
+							<div class="address-form"></div>
+							<p class="submit btn-submit-wrapper" data-bind="fadeVisible: showContinueButton">
+								<button type="submit" class="submit btn btn-large btn-success"
+								data-bind="attr: { 'disabled': disableContinueButton }" tabindex="350">Cadastrar</button>
+							</p>
+						</form>
+
+						<!-- DETALHE DE ENDEREÇOS EXISTENTES -->
+						<form method="POST" action="javascript:void(0)" class="form-box-step2 form-step box-new">						
+							<div class="delivery-address-options clearfix hide" data-bind="fadeVisible: showAddressList">
+								<h3 class="hide">Escolha o endereço de entrega</h3>
+								<div class="form-step box-edit address-list" data-bind="fadeVisible: showAddressList, css: { 'show-selected-address': !showAddressList() }">
+									<fieldset data-bind="foreach: addressArray">
+										<div class="address-item" data-bind="css: { active : isSelected }, click: select">
+											<p class="input">
+												<input type="radio" data-bind="attr: {id: 'edit-delivery' + addressId() },
+												value: addressId, checked: $parent.currentAddressId, disable: checkout.disableInputs()" name="edit-deliveryAddress">
+												<label data-bind="attr: {'for': 'edit-delivery' + addressId(), htmlFor: 'edit-delivery' + addressId()}" class="input">
+													<span class="firstpart" data-bind="html: firstPart"></span>
+													<br>
+													<span class="secondpart" data-bind="html: secondPart"></span>
+													<!-- ko ifnot: checkout.isNotUsingPostalCode -->
+													- <span class="postalcode" data-bind="html: maskedPostalCode"></span>
+													<!-- /ko -->
+												</label>
+											</p>
+											<!-- ko if: checkout.canEditData -->
+											<a class="link-delete btn btn-mini hide"
+											href="javascript:void(0);"
+											title="Apagar"                                           
+											data-bind="visible: $parent.addressArray().length > 1,
+											click: $parent.deleteAddress,
+											clickBubble: false">
+											<i class="icon-remove"></i>
+											<span class="text hide">Excluir</span>
+										</a>
+										<!-- /ko -->
+										<!-- ko ifnot: isSelected -->
+										<a class="hide link-box-select" href="javascript:void(0);" data-bind="click: select, clickBubble: false">Selecionar</a>
+										<!-- /ko -->
+										<span class="link-box-select selected">
+											<!-- ko if: isSelected -->
+											<i class="icon-ok-circle"></i>
+											<span class="hide">Selecionado</span>
+											<!-- /ko -->
+											<!-- ko ifnot: isSelected -->
+											<i class="icon-circle-blank"></i>
+											<!-- /ko -->
+										</span>
+									</div>
+								</fieldset>
+							</div>
+							<p class="link edit address-edit" data-bind="visible: currentAddress() && !currentAddress().isGift()">
+								<a href="javascript:void(0);" data-bind="click: startEditAddress">
+									<i class="icon-edit"></i> <span>Modificar endereço selecionado</span>
+								</a>
+							</p>
+							<p class="link create address-create">
+								<a href="javascript:void(0);" data-bind="click: createAddress"><i class="icon-plus"></i> <span>Entregar em outro endereço</span></a>
+							</p>
+						</div>
+					</form>
+					<!-- FIM DETALHE DE ENDEREÇOS EXISTENTES -->					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+		<!--[if lt IE 9]>
+		<script src="/bower_components/es5-shim/es5-shim.js"></script>
+		<script src="/bower_components/es5-shim/es5-sham.js"></script>
+		<![endif]-->
+		<script src="/bower_components/jquery/jquery.js"></script>
+		<script src="/bower_components/requirejs/require.js" data-main="js/main.js"></script>
+		<script src="/bower_components/dustjs/dist/dust-core-0.3.0.min.js"></script>
+		<script src="/js/templates/addressForm.js"></script>
+
+	</body>
+	</html>

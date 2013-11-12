@@ -1,0 +1,15 @@
+{
+  "name": "smartcheckout",
+  "version": "0.0.0",
+  "dependencies": {
+    "flight": "~1.1.0",
+    "requirejs": "~2.1.5",
+    "flight-storage": "~0.1.0",
+    "bootstrap": "2.3.2",
+    "dustjs": "~0.3.0"
+  },
+  "devDependencies": {
+    "jasmine-flight": "*",
+    "jasmine-jquery": "*"
+  }
+}
