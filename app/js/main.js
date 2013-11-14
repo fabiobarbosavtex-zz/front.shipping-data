@@ -6,8 +6,7 @@ requirejs.config({
     'flight': 'bower_components/flight',
     'component': 'js/component',
     'page': 'js/page',
-    'flight-storage': 'bower_components/flight-storage',
-    'templates': 'js/templates'
+    'flight-storage': 'bower_components/flight-storage'
   }
 });
 

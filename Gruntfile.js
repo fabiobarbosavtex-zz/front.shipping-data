@@ -8,7 +8,14 @@ module.exports = function(grunt) {
 			main: {
 				options: {
 					port: 9001,
-					base: 'app/'
+					base: 'app/',
+					middleware: function (connect, options) {
+						return [
+							connect.compress(),
+							connect.static(options.base),
+							connect.directory(options.base)
+						];
+					}
 				}
 			}
 		},
@@ -17,8 +24,17 @@ module.exports = function(grunt) {
 				livereload: true
 			},
 			main: {
-				files: ['app/**/*.html', 'app/**/*.js', 'app/**/*.css']
+				files: ['app/**/*.html',
+								'app/js/component/*.js',
+								'app/js/page/*.js',
+								'app/js/main.js',
+								'app/**/*.css',
+								'app/**/*.dust'],
+				tasks: ['dust']
 			}
+		},
+		remote: {
+			main: {}
 		},
 		dust: {
 			files: {
@@ -42,5 +58,5 @@ module.exports = function(grunt) {
 		}
 	}
 
-	grunt.registerTask('default', ['dust', 'connect', 'watch:main']);
+	grunt.registerTask('default', ['dust', 'connect', 'remote', 'watch:main']);
 };

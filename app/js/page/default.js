@@ -19,7 +19,7 @@ define(function (require) {
    */
 
   function initialize() {
-    addressBook.attachTo('.adress-book');
+    addressBook.attachTo('.address-book');
   }
 
 });

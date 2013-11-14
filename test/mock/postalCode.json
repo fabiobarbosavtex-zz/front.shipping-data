@@ -1,0 +1,45 @@
+{
+  "properties": [
+    {
+      "name": "addressData",
+      "value": {
+        "address": {
+          "city": "SAO PAULO",
+          "complement": "",
+          "country": {
+            "id": "BRA",
+            "name": "Brazil",
+            "specificData": {
+              "BigUserStreetExistenceIndicator": "S",
+              "DataType": "full",
+              "NationalAddressDirectoryLocality": "SAO PAULO",
+              "NationalAddressDirectoryLocalityKey": "00009668",
+              "NationalAddressDirectoryNeighborhoodEnd": "",
+              "NationalAddressDirectoryNeighborhoodEndKey": "00000000",
+              "NationalAddressDirectoryNeighborhoodStartKey": "00025243",
+              "NationalAddressDirectoryStreetKey": "00509157",
+              "NationalAddressDirectoryStreetRangeSection": "00031249",
+              "OfficialStreetName": "PAULISTA",
+              "OfficialStreetPatent": "",
+              "Preposition": "",
+              "StreetRangeNumberEnd": "2132",
+              "StreetRangeNumberStart": "1512",
+              "StreetRangeParity": "P",
+              "StreetRangeParityName": "Par"
+            }
+          },
+          "isActive": true,
+          "neighborhood": "BELA VISTA",
+          "number": "",
+          "postalCode": "01310200",
+          "state": "SAO PAULO",
+          "stateAcronym": "SP",
+          "street": "AVENIDA  PAULISTA",
+          "streetAbbreviation": "AV PAULISTA",
+          "streetType": "AVENIDA"
+        },
+        "id": "BRA_01310200"
+      }
+    }
+  ]
+}

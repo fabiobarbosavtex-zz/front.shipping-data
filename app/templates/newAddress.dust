@@ -1,0 +1,111 @@
+<form method="POST" action="javascript:void(0)" class="form-box-step2 form-step box-new" novalidate data-validate="parsley">
+  <fieldset class="address-data" data-bind="with: currentAddress">
+    <p class="ship-country input">
+      <input type="hidden" name="country" value="{country}"/>
+    </p>
+    <p class="ship-postal-code required input text mask">
+      <label for="ship-postal-code">CEP <span class="item-required">*</span></label>
+
+      {?throttledLoading}
+      <input type="tel" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-cep input-small loading-postal-code" disabled="disabled" value="{postalCode}" name="postalCode">
+
+      <i class="loading-inline icon-spinner icon-spin">
+        <span>Carregando</span>
+      </i>
+      {:else}
+      <input type="tel" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-cep input-small" value="{postalCode}" name="postalCode" data->
+      <small><a href="{postalCodeForgottenURL" id="dont-know-postal-code" target="_blank">Não sei meu CEP</a></small>
+      {/throttledLoading}
+      {?showPostalCode}
+      {/showPostalCode}
+    </p>
+
+    {?showAddressForm}
+    {#address}
+    <div class="box-delivery">
+      {?labelShippingFields}
+      <p class="ship-filled-data">
+        <span class="ship-street-text">
+          <span>{street}</span> - <a class="link-edit" href="javascript:void(0);" id="force-shipping-fields">Alterar</a>
+        </span>
+        <br>
+        <span class="ship-info-text">
+          <span>{neighborhood}</span> - <span>{city}</span> - <span>{state}</span>
+        </span>
+      </p>
+      {/labelShippingFields}
+
+      {?labelShippingFields}
+      <p class="ship-street required input text hide">
+      {:else}
+      <p class="ship-street required input text">
+      {/labelShippingFields}
+        <label for="ship-street"><span>Rua</span> <span class="item-required">*</span></label>
+        <input type="text" tabindex="222" id="ship-street" class="input-xlarge required" data-regexp="{alphaNumericPunctuation}" value="{street}" name="street">
+      </p>
+
+      <p class="ship-number required input text">
+        <label for="ship-number"><span>Número</span> <span class="item-required">*</span></label>
+        <input type="text" tabindex="223" id="ship-number" class="input-mini required" data-type="alphanum" value="{number}" name="number">
+      </p>
+
+      <p class="ship-more-info input text">
+        <label for="ship-more-info"><span>Complemento</span></label>
+        <input type="text" tabindex="224" id="ship-more-info" class="input-medium" data-regexp="{alphaNumericPunctuation}" placeholder="(opcional)" value="{complement}" name="complement">
+      </p>
+
+      <p class="ship-reference input text hide">
+        <label for="ship-reference"><span>Ponto de referência</span></label>
+        <input type="text" tabindex="225" id="ship-reference" class="input-xlarge" data-regexp="{alphaNumericPunctuation}" value="{reference}" name="reference">
+      </p>
+
+      {?labelShippingFields}
+      <p class="ship-neighborhood required input text hide">
+      {:else}
+      <p class="ship-neighborhood required input text">
+      {/labelShippingFields}
+        <label for="ship-neighborhood"><span>Bairro</span> <span class="item-required">*</span></label>
+        <input type="text" tabindex="226" id="ship-neighborhood" class="input-large required" data-regexp="{alphaNumericPunctuation}" value="{neighborhood}" name="neighborhood">
+      </p>
+
+      {?labelShippingFields}
+      <p class="ship-city required input text hide">
+      {:else}
+      <p class="ship-city required input text">
+      {/labelShippingFields}
+        <label for="ship-city"><span>Cidade</span> <span class="item-required">*</span></label>
+        <input type="text" tabindex="227" id="ship-city" class="input-large required" data-regexp="{alphaNumericPunctuation}" value="{city}" name="city">
+      </p>
+      {?labelShippingFields}
+      <p class="ship-state required input text hide">
+      {:else}
+      <p class="ship-state required input text">
+      {/labelShippingFields}
+        <label for="ship-state"><span>Estado</span> <span class="item-required">*</span></label>
+        <select id="ship-state" tabindex="228" class="input-mini required" name="state">
+          {#statesObj}
+            <option value="{value}" {?selected}selected="selected"{/selected}>{value}</option>
+          {/statesObj}
+        </select>
+      </p>
+      
+      <p class="ship-commercial input checkbox">
+        <label for="ship-commercial">
+          <input type="checkbox" id="ship-commercial" data-bind="checked: addressTypeCommercial" name="addressTypeCommercial" value="true"/>
+          <span>Endereço comercial</span>
+        </label>
+      </p>
+
+      <p class="ship-name required input text separate">
+        <label for="ship-name"><span>Quem receberá</span></label>
+        <input type="text" tabindex="229" id="ship-name" class="input-xlarge required" data-regexp="{alphaNumericPunctuation}" name="receiverName">
+      </p>
+    </div>
+    <p class="submit btn-submit-wrapper" data-bind="fadeVisible: showContinueButton">
+      <button type="submit" class="submit btn btn-large btn-success"
+      data-bind="attr: { 'disabled': disableContinueButton }" tabindex="350">Cadastrar</button>
+    </p>
+    {/address}
+    {/showAddressForm}
+  </fieldset>
+</form>

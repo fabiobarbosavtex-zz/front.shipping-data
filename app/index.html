@@ -14,9 +14,9 @@
 <body>
 
 	<div class="span6">
-		<div class="step accordion-group shipping-data adress-book" data-bind="css: {active: active, filled: visitedAndNotActive}">
+		<div class="step accordion-group shipping-data address-book active">
 			<div class="accordion-heading">
-				<span class="accordion-toggle collapsed" data-bind="css: {'accordion-toggle-active': active}">
+				<span class="accordion-toggle collapsed accordion-toggle-active">
 					<i class="icon-home"></i>
 					Endereço de entrega
 				</span>
@@ -26,17 +26,13 @@
 
 					<div class="box-step" data-bind="visible: active">
 
-						<form method="POST" action="javascript:void(0)" class="form-box-step2 form-step box-new">						
-							<h3>Cadastrar Novo endereço</h3>
-							<p data-bind="fadeVisible: showBackToAddressList">
-								<a href="javascript:void(0);" data-bind="click: cancelEditAddress">cancelar</a>
-							</p>
-							<div class="address-form"></div>
-							<p class="submit btn-submit-wrapper" data-bind="fadeVisible: showContinueButton">
-								<button type="submit" class="submit btn btn-large btn-success"
-								data-bind="attr: { 'disabled': disableContinueButton }" tabindex="350">Cadastrar</button>
-							</p>
-						</form>
+												
+						<h3>Cadastrar Novo endereço</h3>
+						<p data-bind="fadeVisible: showBackToAddressList">
+							<a href="javascript:void(0);" data-bind="click: cancelEditAddress">cancelar</a>
+						</p>
+						<!-- ko if: isEditingAddress -->
+						<div class="new-address"></div>
 
 						<!-- DETALHE DE ENDEREÇOS EXISTENTES -->
 						<form method="POST" action="javascript:void(0)" class="form-box-step2 form-step box-new">						
@@ -105,9 +101,13 @@
 		<script src="/bower_components/es5-shim/es5-sham.js"></script>
 		<![endif]-->
 		<script src="/bower_components/jquery/jquery.js"></script>
+		<script src="/bower_components/jquery.inputmask/dist/jquery.inputmask.bundle.min.js"></script>
+		<script src="/bower_components/underscore/underscore-min.js"></script>
 		<script src="/bower_components/requirejs/require.js" data-main="js/main.js"></script>
-		<script src="/bower_components/dustjs/dist/dust-core-0.3.0.min.js"></script>
-		<script src="/js/templates/addressForm.js"></script>
+		<script src="/bower_components/dustjs-linkedin/dist/dust-core-2.2.0.js"></script>
+		<script src="/bower_components/parsleyjs/i18n/messages.pt_br.js"></script>
+		<script src="/bower_components/parsleyjs/dist/parsley.min.js"></script>
+		<script src="/js/templates/newAddress.js"></script>
 
 	</body>
 	</html>
