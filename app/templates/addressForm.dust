@@ -1,74 +1,122 @@
-<fieldset class="address-data" data-bind="with: currentAddress, fadeVisible: isEditingAddress">
-  <p class="ship-postal-code required input text mask">
-    <label for="ship-postal-code">CEP <span class="item-required">*</span></label>
-    <input type="tel" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-cep input-small"
-    data-bind="value: postalCode, valueUpdate:'keyup', required: true,
-    disable: throttledLoading() || checkout.disableInputs(), mask: {mask: vtex.validation.masks.cep}, validate: 'cep', css: { 'loading-postal-code': throttledLoading }">
-    <i class="loading-inline icon-spinner icon-spin" data-bind="fadeInlineVisible: throttledLoading">
-      <span>Carregando</span>
-    </i>
-    <small data-bind="fadeVisible: !showPostalCode()"><a data-bind="attr: { 'href': checkout.postalCodeForgottenURL }" id="dont-know-postal-code" target="_blank">Não sei meu CEP</a></small>
-  </p>
+<div class="address-form">
+	<h3>Cadastrar Novo endereço</h3>	
+	{@if cond="{availableAddresses}.length > 0"}
+	<p class="cancel-address-form"><a href="javascript:void(0);">cancelar</a></p>	
+	{/if}
+	<form method="POST" action="javascript:void(0)" class="form-box-step2 form-step box-new" novalidate data-validate="parsley">
+		{#address}
+		<fieldset class="address-data">
+			<input type="hidden" name="addressId" value="{address.addressId}"/>
 
-  <div class="box-delivery" data-bind="fadeVisible: showPostalCode">
-    <p class="ship-filled-data" data-bind="if: labelShippingFields">
-      <span class="ship-street-text">
-        <span data-bind="text: street"></span> - <a class="link-edit" href="javascript:void(0);" id="force-shipping-fields" data-bind="click: forceShippingFields">Alterar</a>
-      </span>
-      <br>
-      <span class="ship-info-text">
-        <span data-bind="text: neighborhood"></span> - <span data-bind="text: city"></span> - <span data-bind="text: state"></span>
-      </span>
-    </p>
+			<p class="ship-country input">
+				<input type="hidden" name="country" value="{country}"/>
+			</p>
+			<p class="ship-postal-code required input text mask">
+				<label for="ship-postal-code">CEP <span class="item-required">*</span></label>
 
-    <p class="ship-street required input text" data-bind="css: { hide: labelShippingFields }">
-      <label for="ship-street"><span>Rua</span> <span class="item-required">*</span></label>
-      <input type="text" tabindex="222" id="ship-street" class="input-xlarge" data-bind="value: street, validate: 'alphaNumericPunctuation', valueUpdate:'afterkeydown', required: true, disable: checkout.disableInputs()">
-    </p>
+				{?throttledLoading}
+				<input type="tel" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-cep input-small loading-postal-code" disabled="disabled" value="{postalCode}" name="postalCode">
 
-    <p class="ship-number required input text">
-      <label for="ship-number"><span>Número</span> <span class="item-required">*</span></label>
-      <input type="text" tabindex="223" id="ship-number" class="input-mini" data-bind="value: number, validate: 'alphaNumeric', valueUpdate:'afterkeydown', required: true, disable: checkout.disableInputs()">
-    </p>
+				<i class="loading-inline icon-spinner icon-spin">
+					<span>Carregando</span>
+				</i>
+				{:else}
+				<input type="tel" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-cep input-small" value="{postalCode}" name="postalCode">
+				{?showDontKnowPostalCode}
+				<small><a href="{postalCodeForgottenURL}" id="dont-know-postal-code" target="_blank">Não sei meu CEP</a></small>
+				{/showDontKnowPostalCode}
+				{/throttledLoading}
+				{?showPostalCode}
+				{/showPostalCode}
+			</p>
 
-    <p class="ship-more-info input text">
-      <label for="ship-more-info"><span>Complemento</span></label>
-      <input type="text" tabindex="224" id="ship-more-info" class="input-medium" data-bind="value: complement, validate: 'alphaNumericPunctuation', valueUpdate:'afterkeydown', disable: checkout.disableInputs()" placeholder="(opcional)">
-    </p>
+			{?showAddressForm}
+			<div class="box-delivery">
+				{?labelShippingFields}
+				<p class="ship-filled-data">
+					<span class="ship-street-text">
+						<span>{street}</span> - <a class="link-edit" href="javascript:void(0);" id="force-shipping-fields">Alterar</a>
+					</span>
+					<br>
+					<span class="ship-info-text">
+						<span>{neighborhood}</span> - <span>{city}</span> - <span>{state}</span>
+					</span>
+				</p>
+				{/labelShippingFields}
 
-    <p class="ship-reference input text hide">
-      <label for="ship-reference"><span>Ponto de referência</span></label>
-      <input type="text" tabindex="225" id="ship-reference" class="input-xlarge" data-bind="value: reference, validate: 'alphaNumericPunctuation', valueUpdate:'afterkeydown', disable: checkout.disableInputs()">
-    </p>
+				{?labelShippingFields}
+				<p class="ship-street required input text hide">
+				{:else}
+				<p class="ship-street required input text">
+				{/labelShippingFields}
+					<label for="ship-street"><span>Rua</span> <span class="item-required">*</span></label>
+					<input type="text" tabindex="222" id="ship-street" class="input-xlarge required" data-regexp="{alphaNumericPunctuation}" value="{street}" name="street">
+				</p>
 
-    <p class="ship-neighborhood required input text" data-bind="css: { hide: labelShippingFields }">
-      <label for="ship-neighborhood"><span>Bairro</span> <span class="item-required">*</span></label>
-      <input type="text" tabindex="226" id="ship-neighborhood" class="input-large" data-bind="value: neighborhood, validate: 'alphaNumericPunctuation', valueUpdate:'afterkeydown', required: true, disable: checkout.disableInputs()">
-    </p>
+				<p class="ship-number required input text">
+					<label for="ship-number"><span>Número</span> <span class="item-required">*</span></label>
+					<input type="text" tabindex="223" id="ship-number" class="input-mini required" data-type="alphanum" value="{number}" name="number">
+				</p>
 
-    <p class="ship-city required input text" data-bind="css: { hide: labelShippingFields }">
-      <label for="ship-city"><span>Cidade</span> <span class="item-required">*</span></label>
-      <input type="text" tabindex="227" id="ship-city" class="input-large" data-bind="value: city, validate: 'alphaNumericPunctuation', valueUpdate:'afterkeydown', required:true, disable: checkout.disableInputs()">
-    </p>
+				<p class="ship-more-info input text">
+					<label for="ship-more-info"><span>Complemento</span></label>
+					<input type="text" tabindex="224" id="ship-more-info" class="input-medium" data-regexp="{alphaNumericPunctuation}" placeholder="(opcional)" value="{complement}" name="complement">
+				</p>
 
-    <p class="ship-state required input text" data-bind="css: { hide: labelShippingFields }">
-      <label for="ship-state"><span>Estado</span> <span class="item-required">*</span></label>
-      <select id="ship-state" tabindex="228" class="input-mini" data-bind="options: checkout.getStates('BRA'), optionsCaption: '', value: state, required: true, disable: checkout.disableInputs()"></select>
-    </p>
+				<p class="ship-reference input text hide">
+					<label for="ship-reference"><span>Ponto de referência</span></label>
+					<input type="text" tabindex="225" id="ship-reference" class="input-xlarge" data-regexp="{alphaNumericPunctuation}" value="{reference}" name="reference">
+				</p>
 
-    <!-- ko if: !hasOwnProperty('isBillingAddress') -->
-    <p class="ship-commercial input checkbox">
-      <label for="ship-commercial">
-        <input type="checkbox" id="ship-commercial" data-bind="checked: addressTypeCommercial, disable: checkout.disableInputs()"/>
-        <span>Endereço comercial</span>
-      </label>
-    </p>
+				{?labelShippingFields}
+				<p class="ship-neighborhood required input text hide">
+				{:else}
+				<p class="ship-neighborhood required input text">
+				{/labelShippingFields}
+					<label for="ship-neighborhood"><span>Bairro</span> <span class="item-required">*</span></label>
+					<input type="text" tabindex="226" id="ship-neighborhood" class="input-large required" data-regexp="{alphaNumericPunctuation}" value="{neighborhood}" name="neighborhood">
+				</p>
 
-    <p class="ship-name required input text separate">
-      <label for="ship-name"><span>Quem receberá</span></label>
-      <input type="text" tabindex="229" id="ship-name" class="input-xlarge" data-bind="value: receiverName, validate: 'alphaNumericPunctuation', valueUpdate:'afterkeydown', required: true, disable: checkout.disableInputs()">
-    </p>
-    <!-- /ko -->
-  </div>
-  <!-- /ko -->
-</fieldset>
+				{?labelShippingFields}
+				<p class="ship-city required input text hide">
+				{:else}
+				<p class="ship-city required input text">
+				{/labelShippingFields}
+					<label for="ship-city"><span>Cidade</span> <span class="item-required">*</span></label>
+					<input type="text" tabindex="227" id="ship-city" class="input-large required" data-regexp="{alphaNumericPunctuation}" value="{city}" name="city">
+				</p>
+				{?labelShippingFields}
+				<p class="ship-state required input text hide">
+				{:else}
+				<p class="ship-state required input text">
+				{/labelShippingFields}
+					<label for="ship-state"><span>Estado</span> <span class="item-required">*</span></label>
+					<select id="ship-state" tabindex="228" class="input-mini required" name="state">
+						{#states}
+							<option value="{.}" {@eq key=. value=state}selected="true"{/eq}>{.}</option>
+						{/states}
+					</select>
+				</p>
+				
+				<p class="ship-commercial input checkbox">
+					<label for="ship-commercial">
+						<input type="checkbox" id="ship-commercial" data-bind="checked: addressTypeCommercial" name="addressTypeCommercial" value="true"/>
+						<span>Endereço comercial</span>
+					</label>
+				</p>
+
+				<p class="ship-name required input text separate">
+					<label for="ship-name"><span>Quem receberá</span></label>
+					<input type="text" tabindex="229" id="ship-name" class="input-xlarge required" data-regexp="{alphaNumericPunctuation}" name="receiverName" value="{receiverName}">
+				</p>
+			</div>
+			<p class="cancel-address-form"><a href="javascript:void(0);">cancelar</a></p>
+			<p class="submit btn-submit-wrapper" data-bind="fadeVisible: showContinueButton">
+				<button type="submit" class="submit btn btn-large btn-success"
+				data-bind="attr: { 'disabled': disableContinueButton }" tabindex="350">Cadastrar</button>
+			</p>			
+			{/showAddressForm}
+		</fieldset>
+		{/address}
+	</form>
+</div>

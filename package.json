@@ -11,12 +11,13 @@
     "karma-firefox-launcher": "~0.1.0",
     "karma-phantomjs-launcher": "~0.1.0",
     "karma-safari-launcher": "~0.1.1",
-    "remote": "~0.2.6",    
+    "remote": "~0.2.6",
     "grunt": "~0.4.1",
     "grunt-contrib-watch": "~0.5.1",
     "grunt-contrib-connect": "~0.3.0",
     "grunt-dust": "~0.6.4",
-    "grunt-remote": "~0.1.1"
+    "grunt-remote": "~0.1.1",
+    "dustjs-helpers": "~1.1.1"
   },
   "scripts": {
     "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"

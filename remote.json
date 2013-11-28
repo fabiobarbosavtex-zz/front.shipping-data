@@ -22,7 +22,7 @@
 		"/bower_components/.*",
 		"/templates/.*"
 	],
-	"mapping": true,
+	"mapping": false,
 	"mappings": {
 		"/api/postal/pub/address/BRA/": "test/mock/postalCode.json"
 	}

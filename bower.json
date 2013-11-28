@@ -3,13 +3,16 @@
   "version": "0.0.0",
   "dependencies": {
     "flight": "~1.1.0",
-    "requirejs": "~2.1.5",
+    "curl": "~0.8.4",
     "flight-storage": "~0.1.0",
+    "jquery": "1.8.3",
     "bootstrap": "2.3.2",
     "dustjs-linkedin": "~2.2.0",
     "jquery.inputmask": "~2.4.0",
     "underscore": "~1.5.2",
-    "parsleyjs": "brenoc/Parsley.js#1.1.19"
+    "parsleyjs": "brenoc/Parsley.js#1.1.19",
+    "dustjs-linkedin-helpers": "~1.1.1",
+    "font-awesome": "3.2.1"
   },
   "devDependencies": {
     "jasmine-flight": "*",

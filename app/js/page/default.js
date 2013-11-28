@@ -18,8 +18,8 @@ define(function (require) {
    * Module function
    */
 
-  function initialize() {
-    addressBook.attachTo('.address-book');
+  function initialize() {    
+    addressBook.attachTo('.placeholder-component-address-book');
   }
 
 });

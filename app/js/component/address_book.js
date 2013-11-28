@@ -24,29 +24,44 @@ define(function (require) {
 	function addressBook() {
 		this.defaultAttrs({
 			dataForm: {
-				showPostalCode: true,
-				showAddressForm: false,
 				address: {},
+				availableAddresses: [],
+				selectedAddressId: '',
 				country: 'BRA',
 				states: ['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RO','RS','RR','SC','SE','SP','TO'],
-				alphaNumericPunctuationRegex: '^[A-Za-zÀ-ú0-9\/\\\-\.\,\s\(\)\']*$'
+				alphaNumericPunctuationRegex: '^[A-Za-zÀ-ú0-9\/\\\-\.\,\s\(\)\']*$',
+				isEditingAddress: false,
+				showAddressList: false,
+				showPostalCode: true,
+				showAddressForm: false
 			},
 			
-			newAddressSelector: '.new-address',
-			newAddressFormSelector: '.new-address form',
-			submitNewAddressSelector: '.btn-success',
+			baseSelector: '.placeholder-component-address-book',
+			addressFormSelector: '.address-form form',
+			submitAddressSelector: '.btn-success',
 			postalCodeSelector: '#ship-postal-code',
 			forceShippingFieldsSelector: '#force-shipping-fields',
-			stateSelector: '#ship-state'
+			stateSelector: '#ship-state',
+			createAddressSelector: '.address-create',
+			editAddressSelector: '.address-edit',
+			cancelAddressFormSelector: '.cancel-address-form a',
+			addressItemSelector: '.address-list .address-item'
 		});
 
 		this.render = function(ev, data) {
 			var attr = this.attr;
-			dust.render('newAddress', data,
+			dust.render('base', data,
 				function (err, output) {
-					$(attr.newAddressSelector).html(output);
-					$(attr.newAddressFormSelector).parsley();
-					$(attr.postalCodeSelector, attr.newAddressSelector).inputmask({'mask': '99999-999'});
+					$(attr.baseSelector).html(output);
+					$(attr.addressFormSelector).parsley({
+						errorClass: 'error',
+						successClass: 'success',
+						errors: {
+							errorsWrapper: '<div class="help error-list"></div>',
+							errorElem: '<span class="help error"></span>'
+						}
+					});
+					$(attr.postalCodeSelector, attr.addressFormSelector).inputmask({'mask': '99999-999'});
 				}
 			);
 		};
@@ -62,40 +77,20 @@ define(function (require) {
 			}
 		};
 
-		this.deselectAllStates = function() {
-			this.attr.dataForm.statesObj = _.map(this.attr.dataForm.states, function(s){
-				return {'selected': false, 'value': s};
-			});
-		};
-
-		this.selectState = function(ev, data) {
-			$(this.$node).trigger('deselectAllStates');
-			var selectedState = data;
-			if (ev.type === 'change') {
-				selectedState = data.el.value;
-			}
-			var states = this.attr.dataForm.statesObj;
-			for (var state in states) {
-				if (states[state].value === selectedState) {
-					states[state].selected = true;
-					break;
-				}
-			}
-			this.attr.dataForm.state = selectedState;
-		};
-
 		this.getPostalCode = function (ev, data) {
 			var self = this;
 			this.attr.dataForm.showAddressForm = true;
+			var country = this.attr.dataForm.country;
+			var postalCode = data.replace(/-/g, '');
 			$.ajax({
-				url: 'postalcode.vtexfrete.com.br/api/postal/pub/address/BRA/'+data,
-				dataType: 'json'
+				url: 'http://postalcode.vtexfrete.com.br/api/postal/pub/address/'+country+'/'+postalCode,
+				crossDomain: true
 			}).done(function(data){
 				if (data.properties) {
 					var address = data.properties[0].value.address;
 					var dataForm = self.attr.dataForm;
+					dataForm.showDontKnowPostalCode = false;
 					dataForm.address.city = address.city;
-					$(self.$node).trigger('selectState', address.stateAcronym);
 					dataForm.address.state = address.stateAcronym;
 					dataForm.address.street = address.street;
 					dataForm.address.neighborhood = address.neighborhood;
@@ -107,6 +102,11 @@ define(function (require) {
 				}
 			}).fail(function(){
 				console.log('CEP não encontrado!');
+				var dataForm = self.attr.dataForm;
+				dataForm.throttledLoading = false;
+				dataForm.showAddressForm = true;
+				dataForm.labelShippingFields = false;
+				$(self.$node).trigger('addressFormRender', dataForm);
 			});
 		};
 
@@ -131,31 +131,115 @@ define(function (require) {
 			return o;
 		};
 
-		this.submitNewAddres = function(ev, data) {
+		this.submitAddress = function(ev, data) {
 			var addressObj = this.serializeObject($(data.el));
 			$(this.$node).trigger('newAddress', addressObj);
 		};
 
+		this.createAddress = function() {
+			this.attr.dataForm.address = {};
+			this.attr.dataForm.address.addressId = (new Date().getTime() * -1).toString();
+			this.attr.dataForm.showDontKnowPostalCode = true;
+			$(this.$node).trigger('showAddressForm');
+		};
+
+		this.editAddress = function() {
+			this.attr.dataForm.showDontKnowPostalCode = false;
+			$(this.$node).trigger('showAddressForm');
+		};
+
+		this.cancelAddressForm = function() {
+			this.attr.dataForm.isEditingAddress = false;
+			this.attr.dataForm.showAddressList = true;
+			$(this.$node).trigger('addressFormRender', this.attr.dataForm);
+		};
+
+		this.showAddressList = function() {
+			this.attr.dataForm.isEditingAddress = false;
+			this.attr.dataForm.showAddressList = true;
+			for (var i = this.attr.dataForm.availableAddresses.length - 1; i >= 0; i--) {
+				var a = this.attr.dataForm.availableAddresses[i];
+
+				a.firstPart = '' + a.street;
+				a.firstPart += ', ' + a.number;
+				if (a.complement) {
+					a.firstPart += ', ' + a.complement;
+				}
+				if (a.reference) {
+					a.firstPart += ', ' + a.reference;
+				}
+				
+				a.secondPart = '' + a.city;
+				a.secondPart += ' - ' + a.state;
+				a.secondPart += ' - ' + a.country;
+
+				a.summary = '' + a.street;
+				if (a.postalCode) {
+					a.summary += ' - ' + a.postalCode;
+				}
+				
+				this.attr.dataForm.availableAddresses[i] = a;
+			}
+			$(this.$node).trigger('addressFormRender', this.attr.dataForm);
+		};
+
+		this.showAddressForm = function(){
+			this.attr.dataForm.isEditingAddress = true;
+			this.attr.dataForm.showAddressList = false;
+			this.attr.dataForm.showAddressForm = true;
+			$(this.$node).trigger('addressFormRender', this.attr.dataForm);
+		};
+
+		this.updateAddresses = function(ev, data) {
+			this.attr.dataForm.address = data.address;
+			if (data.avaliableAddresses) {
+				this.attr.dataForm.availableAddresses = data.avaliableAddresses;
+			} else {
+				this.attr.dataForm.availableAddresses = data.availableAddresses;
+			}
+			this.attr.dataForm.selectedAddressId = data.address.addressId;
+		};
+
+		this.selectAddress = function(ev, data) {
+			var selectedAddressId;
+			if (ev.type === 'click') {
+				selectedAddressId = $('input', data.el).attr('value');
+			} else {
+				selectedAddressId = data;
+			}
+			var wantedAddress = _.find(this.attr.dataForm.availableAddresses, function(a) {
+				return a.addressId === selectedAddressId;
+			});
+			this.attr.dataForm.address = wantedAddress;
+			this.attr.dataForm.selectedAddressId = selectedAddressId;
+			$(this.$node).trigger('addressSelected', this.attr.dataForm.address);
+			$(this.$node).trigger('showAddressList');
+			ev.preventDefault();
+		};
+
 		this.after('initialize', function () {
-			this.on('deselectAllStates', this.deselectAllStates);
-			this.on('selectState', this.selectState);
 			this.on('addressFormRender', this.render);
+			this.on('updateAddresses', this.updateAddresses);
+			this.on('showAddressList', this.showAddressList);
+			this.on('showAddressForm', this.showAddressForm);
+			this.on('submitPostalCode', this.getPostalCode);
+			this.on('selectAddress', this.selectAddress);
+
 			this.on('click', {
-				'forceShippingFieldsSelector': this.forceShippingFields
+				'forceShippingFieldsSelector': this.forceShippingFields,
+				'createAddressSelector': this.createAddress,
+				'cancelAddressFormSelector': this.cancelAddressForm,
+				'addressItemSelector': this.selectAddress,
+				'editAddressSelector': this.editAddress
 			});
+
 			this.on('submit', {
-				'newAddressFormSelector': this.submitNewAddres
+				'addressFormSelector': this.submitAddress
 			});
+
 			this.on('keyup', {
 				'postalCodeSelector': this.validatePostalCode
 			});
-			this.on('change', {
-				'stateSelector': this.selectState
-			});
-			this.on('submitPostalCode', this.getPostalCode);
-
-			this.trigger('deselectAllStates');
-			this.trigger('addressFormRender', this.attr.dataForm);
 		});
 	}
 

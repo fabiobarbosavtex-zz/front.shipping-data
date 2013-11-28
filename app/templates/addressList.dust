@@ -1,0 +1,60 @@
+<div class="address-list">
+	<form method="POST" action="javascript:void(0)" class="form-box-step2 form-step box-new">
+		<div class="delivery-address-options clearfix">
+			<h3>Escolha o endereço de entrega</h3>
+			<div class="form-step box-edit address-list">
+				<fieldset>				
+				{#availableAddresses}					
+					{@if cond="'{addressId}' == '{selectedAddressId}'"}
+						<div class="address-item active">
+							<p class="input">
+								<input type="radio" id="edit-delivery{addressId}" value="{addressId}" checked="checked" name="edit-deliveryAddress">
+								<label for="edit-delivery{addressId}" class="input">
+									<span class="firstpart">{firstPart}</span>
+									<br>
+									<span class="secondpart">{secondPart}</span>
+									<!-- ko ifnot: checkout.isNotUsingPostalCode -->
+									&nbsp; - <span class="postalcode">{postalCode}</span>
+									<!-- /ko -->
+								</label>
+							</p>
+							<span class="link-box-select selected">
+								<i class="icon-ok-circle"></i>
+								<span class="hide">Selecionado</span>
+							</span>
+						</div>
+					{:else}
+						<div class="address-item">
+							<p class="input">
+								<input type="radio" id="edit-delivery{addressId}" value="{addressId}" name="edit-deliveryAddress">
+								<label for="edit-delivery{addressId}" class="input">
+									<span class="firstpart">{firstPart}</span>
+									<br>
+									<span class="secondpart">{secondPart}</span>
+									<!-- ko ifnot: checkout.isNotUsingPostalCode -->
+									&nbsp; - <span class="postalcode">{postalCode}</span>
+									<!-- /ko -->
+								</label>
+							</p>
+							<a class="link-box-select" href="javascript:void(0);">Selecionar</a>
+							<span class="link-box-select selected">
+								<i class="icon-circle-blank"></i>
+							</span>
+						</div>
+					{/if}
+				{/availableAddresses}
+				</fieldset>
+			</div>
+			<p class="link edit address-edit">
+				<a href="javascript:void(0);">
+					<i class="icon-edit"></i> <span>Modificar endereço selecionado</span>
+				</a>
+			</p>
+			<p class="link create address-create">
+				<a href="javascript:void(0);">
+					<i class="icon-plus"></i> <span>Entregar em outro endereço</span>
+				</a>
+			</p>
+		</div>
+	</form>
+</div>

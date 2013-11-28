@@ -1,1 +1,271 @@
 
+.address-book h3 { font-size: 16px; }
+
+span.error {
+	color: #dd4b39;
+	display: block;
+	line-height: 1.2em;
+	margin-top: 5px;
+	padding: 0;	
+}
+
+span.error .input-nano+& {
+	width: 70px;
+}
+
+span.error .input-mini+& {
+	width: 80px;
+}
+
+span.error .input-small+& {
+	width: 135px;
+}
+
+input.error {
+	border-color: #dd4b39;
+}
+
+input.error:focus {
+	border-color: #ccc;
+}
+
+
+/* general.less */
+
+.icon-ok-circle,
+.icon-circle-blank {
+  display: block;
+  font-size: 20px;
+  -webkit-text-stroke: 0.1px;
+  position: absolute;
+  right: 10px;
+  top: 4px;
+}
+.label-vertical-group:hover .icon-circle-blank,
+.icon-ok-circle {
+  color: #46A546;
+}
+.icon-circle-blank {
+  color: #999999;
+}
+
+.loading-inline {
+  margin: 7px 0 0 -25px;
+  position: absolute;
+  z-index: 8;
+}
+.loading-inline span {
+  display: none;
+}
+
+/* form.less */
+p.ship-number,
+p.ship-city { margin-right: 10px }
+p.ship-number,
+p.ship-city,
+p.ship-state { float: left }
+p.ship-name,
+p.ship-reference,
+p.ship-commercial,
+p.ship-neighborhood { clear: both }
+
+
+.btn-group-vertical input[type=radio],
+.address-item input[type=radio] {
+  left: -999em;
+  position: absolute;
+}
+
+input.postal-code {
+  width: 72px;
+  -webkit-transition: width 0.4s ease-in-out;
+  -moz-transition: width 0.4s ease-in-out;
+  -o-transition: width 0.4s ease-in-out;
+  transition: width 0.4s ease-in-out;
+}
+input.postal-code.loading-postal-code {
+  width: 85px;
+  -webkit-transition: all width ease-in-out;
+  -moz-transition: all width ease-in-out;
+  -o-transition: all width ease-in-out;
+  transition: all width ease-in-out;
+}
+input.postal-code:disabled {
+  background-image: none;
+}
+
+
+
+/* shipping-data.less */
+.shipping-data .address {
+  margin-bottom: 10px;
+}
+.datepicker {
+  width: 200px;
+}
+.one-delivery-country {
+  display: none;
+}
+.address-create a,
+.address-edit a,
+.link-change-shipping {
+  display: block;
+}
+.address-create a:hover,
+.address-edit a:hover,
+.link-change-shipping:hover {
+  text-decoration: none;
+}
+.address-item,
+.shipping-data .create a,
+.shipping-data .address-edit a,
+.link-change-shipping {
+  border: 1px solid #f4f4f4;
+  cursor: pointer;
+  margin-bottom: 5px;
+  overflow: hidden;
+  padding: 5px 8px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+.address-item:hover,
+.shipping-data .create a:hover,
+.shipping-data .address-edit a:hover,
+.link-change-shipping:hover {
+  border-color: #005580;
+  color: #005580;
+}
+.address-item:hover ul,
+.shipping-data .create a:hover ul,
+.shipping-data .address-edit a:hover ul,
+.link-change-shipping:hover ul {
+  display: block;
+}
+.address-item.active,
+.shipping-data .create a.active,
+.shipping-data .address-edit a.active,
+.link-change-shipping.active {
+  background-color: #ecf2f6;
+  border-color: #bed0df;
+}
+.shipping-data .create a,
+.shipping-data .address-edit a,
+.link-change-shipping {
+  border: 1px dashed #bed0df;
+  text-align: center;
+  padding: 3px 8px;
+  font-size: 12px;
+  margin-top: 2px;
+}
+.address-edit {
+  border-bottom: 2px solid #f4f4f4;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+}
+.address-edit a.disabled,
+.address-edit a.disabled:hover,
+.address-edit a.disabled:active {
+  cursor: default;
+  color: #ccc;
+  border-color: #ddd;
+}
+.link-change-shipping {
+  margin-top: 5px;
+}
+.address-item {
+  color: #999999;
+  position: relative;
+  padding-right: 30px;
+}
+.address-item p,
+.address-item ul,
+.address-item label {
+  margin: 0;
+}
+.address-item label {
+  float: left;
+  margin: 0;
+  font-size: 12px;
+  line-height: 15px;
+}
+.address-item a {
+  display: none;
+  right: 35px;
+  position: absolute;
+  top: 8px;
+  padding: 2px 10px;
+  font-size: 12px;
+  line-height: 15px;
+}
+.address-item:hover .link-box-edit {
+  display: block;
+}
+.address-item.active {
+  color: #005580;
+  box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.17);
+}
+.address-item .selected {
+  position: absolute;
+  right: 0;
+}
+.address-item .gift-list-label {
+  margin-left: 32px;
+  display: block;
+}
+.address-item .gift-list-label .icon-gift {
+  opacity: .15;
+  color: #000;
+  font-size: 48px;
+  position: absolute;
+  left: -5px;
+  bottom: -9px;
+}
+.address-item .gift-list-name {
+  display: block;
+}
+.shipping-options.just-one .product-list {
+  display: none;
+}
+.shipping-options p {
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+  font-weight: bold;
+  color: #aaa;
+}
+.shipping-options .product-list {
+  color: #aaa;
+  width: 100%;
+}
+.shipping-options .product-list li {
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+.shipping-options .product-list li i {
+  width: auto;
+}
+.shipping-options table.product-list tr {
+  border-top: 1px solid #eee;
+}
+.shipping-options table.product-list td {
+  padding-top: 2px;
+  padding-bottom: 4px;
+  font-size: 12px;
+  color: #888;
+}
+.shipping-option-item.focus {
+  box-shadow: 0px 0px 5px #999999;
+  -webkit-box-shadow: 0px 0px 5px #999999;
+  -moz-box-shadow: 0px 0px 5px #999999;
+}
+.shipping-option-item {
+  white-space: normal;
+}
+.shipping-option-item-text-wrapper {
+  display: inline-block;
+  white-space: normal;
+  width: 92%;
+}
+.delivery-shipping-options h4 .seller-name {
+  display: none;
+}
