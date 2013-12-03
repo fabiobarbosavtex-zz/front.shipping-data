@@ -108,6 +108,13 @@ module.exports = (grunt) ->
 					version:
 						"/": "**"
 
+				transform:
+					replace:
+						"/shipui/": "//io.vtex.com.br/shipui/{{version}}/"
+						VERSION_NUMBER: "{{version}}"
+
+					files: ["index.html", "index.debug.html"]
+
 	grunt.loadNpmTasks name for name of pkg.devDependencies when name[0..5] is 'grunt-'
 
 	grunt.registerTask 'default', ['clean', 'copy:main', 'copy:libs', 'dust', 'coffee', 'copy:build', 'server', 'watch']
