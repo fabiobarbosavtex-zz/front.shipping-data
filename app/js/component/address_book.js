@@ -189,12 +189,6 @@ define(function (require) {
 			$(this.$node).trigger('addressFormRender', this.attr.dataForm);
 		};
 
-		this.formatPostalCode = function(address){
-			if (this.attr.dataForm.country === 'BRA') {
-				console.log('pc', address.postalCode);
-			}
-		};
-
 		this.updateAddresses = function(ev, data) {
 			this.attr.dataForm.address = data.address;
 			if (data.avaliableAddresses) {
@@ -203,11 +197,6 @@ define(function (require) {
 				this.attr.dataForm.availableAddresses = data.availableAddresses;
 			}
 			this.attr.dataForm.selectedAddressId = data.address.addressId;
-
-			this.formatPostalCode(this.attr.dataForm);
-			for (var i = this.attr.dataForm.availableAddresses.length - 1; i >= 0; i--) {
-				this.formatPostalCode(this.attr.dataForm.availableAddresses[i]);
-			}
 		};
 
 		this.selectAddress = function(ev, data) {
