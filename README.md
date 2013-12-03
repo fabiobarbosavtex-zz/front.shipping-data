@@ -1,4 +1,4 @@
-# Lean Checkout UI
+# front.shipping-data
 ---------------------
 
-A component based SmartCheckout.
+Componente de endereços
