@@ -15,12 +15,12 @@
 		"X-VTEX-Environment": "beta"
 	},
 	"bounces": [
-		"^/$",
-		"/css/.*",
-		"/img/.*",
-		"/js/.*",
-		"/bower_components/.*",
-		"/templates/.*"
+		"^/shipui/$",
+		"/shipui/css/.*",
+		"/shipui/img/.*",
+		"/shipui/js/.*",
+		"/shipui/bower_components/.*",
+		"/shipui/templates/.*"
 	],
 	"mapping": false,
 	"mappings": {

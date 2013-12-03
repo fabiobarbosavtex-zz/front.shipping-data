@@ -18,7 +18,7 @@ define(function (require) {
    * Module function
    */
 
-  function initialize() {    
+  function initialize() {
     addressBook.attachTo('.placeholder-component-address-book');
   }
 

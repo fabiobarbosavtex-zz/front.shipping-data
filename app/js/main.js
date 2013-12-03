@@ -3,30 +3,21 @@
 curl.config({
 	baseUrl: '',
 	paths: {
-		'flight': 'bower_components/flight',
+		'flight': 'libs/flight',
 		'component': 'js/component',
-		'page': 'js/page',
-		'flight-storage': 'bower_components/flight-storage'
+		'page': 'js/page'
 	},
 	apiName: 'require'
 });
 
 curl(
 	[
-		'bower_components/flight/lib/compose',
-		'bower_components/flight/lib/registry',
-		'bower_components/flight/lib/advice',
-		'bower_components/flight/lib/logger',
-		'bower_components/flight/lib/debug'
+		'libs/flight/lib/compose',
+		'libs/flight/lib/registry',
+		'libs/flight/lib/advice',
 	],
 
-	function(compose, registry, advice, withLogging, debug) {
-		debug.enable(false);
-		debug.events.logNone();
-
-		compose.mixin(registry, [advice.withAdvice, withLogging]);
-
-
+	function(compose, registry, advice) {
 
 		require(['page/default'], function(initializeDefault) {
 			initializeDefault();
