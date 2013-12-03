@@ -26,10 +26,13 @@ module.exports = (grunt) ->
 				src: '**/*.*'
 				dest: 'build/'
 			libs:
-				files:
-					'app/libs/flight/lib/compose.js': 'bower_components/flight/lib/compose.js'
-					'app/libs/flight/lib/registry.js': 'bower_components/flight/lib/registry.js'
-					'app/libs/flight/lib/advice.js': 'bower_components/flight/lib/advice.js'
+				files: [
+					{
+						expand: true
+						cwd: 'bower_components'
+						src: 'flight/lib/**.js'
+						dest: 'app/libs/'
+					},
 					'app/libs/jquery.inputmask/dist/jquery.inputmask.bundle.min.js': 'bower_components/jquery.inputmask/dist/jquery.inputmask.bundle.min.js'
 					'app/libs/underscore/underscore-min.js': 'bower_components/underscore/underscore-min.js'
 					'app/libs/dustjs-linkedin/dist/dust-core-2.2.0.js': 'bower_components/dustjs-linkedin/dist/dust-core-2.2.0.js'
@@ -39,7 +42,7 @@ module.exports = (grunt) ->
 					'app/libs/curl/dist/curl/curl.js': 'bower_components/curl/dist/curl/curl.js'
 					'app/libs/es5-shim/es5-shim.js': 'bower_components/es5-shim/es5-shim.js'
 					'app/libs/es5-shim/es5-sham.js': 'bower_components/es5-shim/es5-sham.js'
-
+				]
 		coffee:
 			main:
 				files: [

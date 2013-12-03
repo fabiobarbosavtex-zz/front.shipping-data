@@ -19,7 +19,7 @@
 		"/shipui/css/.*",
 		"/shipui/img/.*",
 		"/shipui/js/.*",
-		"/shipui/bower_components/.*",
+		"/shipui/libs/.*",
 		"/shipui/templates/.*"
 	],
 	"mapping": false,
