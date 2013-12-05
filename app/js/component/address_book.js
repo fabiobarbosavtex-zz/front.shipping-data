@@ -29,6 +29,7 @@ define(function (require) {
 				country: 'BRA',
 				states: ['AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RO','RS','RR','SC','SE','SP','TO'],
 				alphaNumericPunctuationRegex: '^[A-Za-zÀ-ú0-9\/\\\-\.\,\s\(\)\']*$',
+				hasOtherAddresses: true,
 				isEditingAddress: false,
 				showAddressList: false,
 				showPostalCode: true,
@@ -197,6 +198,7 @@ define(function (require) {
 				this.attr.dataForm.availableAddresses = data.availableAddresses;
 			}
 			if (_.isEmpty(this.attr.dataForm.address)) {
+				this.attr.dataForm.hasOtherAddresses = false;
 				$(this.$node).trigger('showAddressForm');
 			} else {
 				this.attr.dataForm.selectedAddressId = data.address.addressId;
