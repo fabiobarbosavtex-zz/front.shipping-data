@@ -98,6 +98,10 @@ module.exports = (grunt) ->
 				runtime: false
 				wrapper: false
 
+		release:
+			options:
+				commitMessage: 'Bump <%= version %>'
+
 		vtex_deploy:
 			main:
 				cwd: "build/<%= relativePath %>/"
