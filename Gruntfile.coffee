@@ -4,6 +4,7 @@ module.exports = (grunt) ->
 	# Project configuration.
 	grunt.initConfig
 		relativePath: 'shipui'
+		appName: pkg.name
 
 	# Tasks
 		clean:
@@ -110,7 +111,7 @@ module.exports = (grunt) ->
 
 				transform:
 					replace:
-						"/shipui/": "//io.vtex.com.br/shipui/{{version}}/"
+						"/shipui/": "//io.vtex.com.br/<%= appName %>/{{version}}/"
 						VERSION_NUMBER: "{{version}}"
 
 					files: ["index.html", "index.debug.html"]
