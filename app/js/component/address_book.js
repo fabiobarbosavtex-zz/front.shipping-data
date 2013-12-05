@@ -196,7 +196,12 @@ define(function (require) {
 			} else {
 				this.attr.dataForm.availableAddresses = data.availableAddresses;
 			}
-			this.attr.dataForm.selectedAddressId = data.address.addressId;
+			if (_.isEmpty(this.attr.dataForm.address)) {
+				$(this.$node).trigger('showAddressForm');
+			} else {
+				this.attr.dataForm.selectedAddressId = data.address.addressId;
+				$(this.$node).trigger('showAddressList');
+			}
 		};
 
 		this.selectAddress = function(ev, data) {

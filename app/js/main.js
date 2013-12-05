@@ -28,7 +28,6 @@ curl(
 			$.ajax('/no-cache/giftlistv2/address/get/'+giftList).done(function(_data){
 				data = _data.shippingData;
 				$(componentSelector).trigger('updateAddresses', data);
-				$(componentSelector).trigger('showAddressList');
 			}).fail(function(){
 				console.error('Não autenticado!');
 			});
@@ -44,8 +43,8 @@ curl(
 					data.availableAddresses.push(addressObj);
 					data.address = addressObj;
 					$(componentSelector).trigger('updateAddresses', data);
-					$(componentSelector).trigger('selectAddress', addressObj.addressId);
-					$(componentSelector).trigger('showAddressList');
+				}).fail(function(){
+					// Tratar em caso de erro
 				});
 			});
 
