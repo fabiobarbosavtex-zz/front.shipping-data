@@ -6,11 +6,11 @@
     "curl": "~0.8.4",
     "jquery": "1.8.3",
     "bootstrap": "2.3.2",
-    "dustjs-linkedin": "~2.2.0",
+    "dustjs-linkedin": "~2.2.2",
+    "dustjs-linkedin-helpers": "~1.1.1",
     "jquery.inputmask": "~2.4.0",
     "underscore": "~1.5.2",
     "parsleyjs": "brenoc/Parsley.js#1.1.19",
-    "dustjs-linkedin-helpers": "~1.1.1",
     "font-awesome": "3.2.1"
   },
   "devDependencies": {
