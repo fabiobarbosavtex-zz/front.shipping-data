@@ -35,12 +35,8 @@ module.exports = (grunt) ->
 						dest: 'app/libs/'
 					},
 					'app/libs/jquery.inputmask/dist/jquery.inputmask.bundle.min.js': 'bower_components/jquery.inputmask/dist/jquery.inputmask.bundle.min.js'
-					'app/libs/underscore/underscore-min.js': 'bower_components/underscore/underscore-min.js'
-					'app/libs/dustjs-linkedin/dist/dust-core-2.2.0.js': 'bower_components/dustjs-linkedin/dist/dust-core-2.2.0.js'
-					'app/libs/dustjs-linkedin-helpers/dist/dust-helpers-1.1.0.js': 'bower_components/dustjs-linkedin-helpers/dist/dust-helpers-1.1.0.js'
 					'app/libs/parsleyjs/i18n/messages.pt_br.js': 'bower_components/parsleyjs/i18n/messages.pt_br.js'
 					'app/libs/parsleyjs/dist/parsley.min.js': 'bower_components/parsleyjs/dist/parsley.min.js'
-					'app/libs/curl/dist/curl/curl.js': 'bower_components/curl/dist/curl/curl.js'
 					'app/libs/es5-shim/es5-shim.js': 'bower_components/es5-shim/es5-shim.js'
 					'app/libs/es5-shim/es5-sham.js': 'bower_components/es5-shim/es5-sham.js'
 				]
