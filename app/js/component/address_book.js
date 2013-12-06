@@ -137,7 +137,8 @@ define(function (require) {
 		this.submitAddress = function(ev, data) {
 			var valid = $(this.attr.addressFormSelector).parsley('validate');
 			if (valid) {
-				var addressObj = this.serializeObject($(data.el));
+				var wrapInForm = $('<form>'+$(this.attr.addressFormSelector).html()+'</form>');
+				var addressObj = this.serializeObject(wrapInForm);
 				$(this.$node).trigger('newAddress', addressObj);
 			}
 			ev.preventDefault();
