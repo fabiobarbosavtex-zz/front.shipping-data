@@ -135,8 +135,12 @@ define(function (require) {
 		};
 
 		this.submitAddress = function(ev, data) {
-			var addressObj = this.serializeObject($(data.el));
-			$(this.$node).trigger('newAddress', addressObj);
+			var valid = $(this.attr.addressFormSelector).parsley('validate');
+			if (valid) {
+				var addressObj = this.serializeObject($(data.el));
+				$(this.$node).trigger('newAddress', addressObj);
+			}
+			ev.preventDefault();
 		};
 
 		this.createAddress = function() {
