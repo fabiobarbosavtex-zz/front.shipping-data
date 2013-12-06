@@ -1,5 +1,5 @@
 <div class="address-list">
-	<form method="POST" action="javascript:void(0)" class="form-box-step2 form-step box-new">
+	<div class="form-box-step2 form-step box-new">
 		<div class="delivery-address-options clearfix">
 			<h3>Escolha o endereço de entrega</h3>
 			<div class="form-step box-edit address-list">
@@ -8,14 +8,13 @@
 					{@if cond="'{addressId}' == '{selectedAddressId}'"}
 						<div class="address-item active">
 							<p class="input">
-								<input type="radio" id="edit-delivery{addressId}" value="{addressId}" checked="checked" name="edit-deliveryAddress">
+								<input type="radio" id="edit-delivery{addressId}" value="{addressId}" checked="checked" name="selected-deliveryAddress">
 								<label for="edit-delivery{addressId}" class="input">
 									<span class="firstpart">{firstPart}</span>
 									<br>
 									<span class="secondpart">{secondPart}</span>
-									<!-- ko ifnot: checkout.isNotUsingPostalCode -->
+									<!-- ifnot: checkout.isNotUsingPostalCode -->
 									&nbsp; - <span class="postalcode">{postalCode}</span>
-									<!-- /ko -->
 								</label>
 							</p>
 							<span class="link-box-select selected">
@@ -26,14 +25,13 @@
 					{:else}
 						<div class="address-item">
 							<p class="input">
-								<input type="radio" id="edit-delivery{addressId}" value="{addressId}" name="edit-deliveryAddress">
+								<input type="radio" id="edit-delivery{addressId}" value="{addressId}" name="selected-deliveryAddress">
 								<label for="edit-delivery{addressId}" class="input">
 									<span class="firstpart">{firstPart}</span>
 									<br>
 									<span class="secondpart">{secondPart}</span>
-									<!-- ko ifnot: checkout.isNotUsingPostalCode -->
+									<!-- ifnot: checkout.isNotUsingPostalCode -->
 									&nbsp; - <span class="postalcode">{postalCode}</span>
-									<!-- /ko -->
 								</label>
 							</p>
 							<a class="link-box-select" href="javascript:void(0);">Selecionar</a>
@@ -56,5 +54,5 @@
 				</a>
 			</p>
 		</div>
-	</form>
+	</div>
 </div>

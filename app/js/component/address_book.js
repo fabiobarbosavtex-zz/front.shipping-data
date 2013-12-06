@@ -243,11 +243,8 @@ define(function (require) {
 				'createAddressSelector': this.createAddress,
 				'cancelAddressFormSelector': this.cancelAddressForm,
 				'addressItemSelector': this.selectAddress,
-				'editAddressSelector': this.editAddress
-			});
-
-			this.on('submit', {
-				'addressFormSelector': this.submitAddress
+				'editAddressSelector': this.editAddress,
+				'submitButtonSelector': this.submitAddress
 			});
 
 			this.on('keyup', {
