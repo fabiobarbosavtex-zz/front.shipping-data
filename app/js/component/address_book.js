@@ -37,7 +37,7 @@ define(function (require) {
 			},
 			
 			baseSelector: '.placeholder-component-address-book',
-			addressFormSelector: '.address-form form',
+			addressFormSelector: '.address-form .form-step',
 			submitAddressSelector: '.btn-success',
 			postalCodeSelector: '#ship-postal-code',
 			forceShippingFieldsSelector: '#force-shipping-fields',
@@ -45,7 +45,8 @@ define(function (require) {
 			createAddressSelector: '.address-create',
 			editAddressSelector: '.address-edit',
 			cancelAddressFormSelector: '.cancel-address-form a',
-			addressItemSelector: '.address-list .address-item'
+			addressItemSelector: '.address-list .address-item',
+			submitButtonSelector: '.submit .btn-success'
 		});
 
 		this.render = function(ev, data) {
@@ -53,15 +54,17 @@ define(function (require) {
 			dust.render('base', data,
 				function (err, output) {
 					$(attr.baseSelector).html(output);
-					$(attr.addressFormSelector).parsley({
-						errorClass: 'error',
-						successClass: 'success',
-						errors: {
-							errorsWrapper: '<div class="help error-list"></div>',
-							errorElem: '<span class="help error"></span>'
-						}
-					});
-					$(attr.postalCodeSelector, attr.addressFormSelector).inputmask({'mask': '99999-999'});
+					if ($(attr.addressFormSelector)[0]) {
+						$(attr.addressFormSelector).parsley({
+							errorClass: 'error',
+							successClass: 'success',
+							errors: {
+								errorsWrapper: '<div class="help error-list"></div>',
+								errorElem: '<span class="help error"></span>'
+							}
+						});
+						$(attr.postalCodeSelector, attr.addressFormSelector).inputmask({'mask': '99999-999'});
+					}
 				}
 			);
 		};
