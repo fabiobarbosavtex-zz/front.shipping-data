@@ -97,6 +97,11 @@ define(function (require) {
 					} else {
 						dataForm.labelShippingFields = false;
 					}
+					if (address.stateAcronym !== '' && address.city) {
+						dataForm.disableCityAndState = true;
+					} else {
+						dataForm.disableCityAndState = false;
+					}
 					dataForm.showDontKnowPostalCode = false;
 					dataForm.address.city = address.city;
 					dataForm.address.state = address.stateAcronym;
