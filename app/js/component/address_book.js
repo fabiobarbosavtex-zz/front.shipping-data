@@ -37,7 +37,7 @@ define(function (require) {
 			},
 			
 			baseSelector: '.placeholder-component-address-book',
-			addressFormSelector: '.address-form .form-step',
+			addressFormSelector: '.address-form-new',
 			submitAddressSelector: '.btn-success',
 			postalCodeSelector: '#ship-postal-code',
 			forceShippingFieldsSelector: '#force-shipping-fields',

@@ -1,5 +1,5 @@
 <div class="address-form">
-	<h3>Cadastrar Novo endereço</h3>	
+	<h4>Cadastrar Novo endereço</h4>
 	{@if cond="{availableAddresses}.length > 0"}
 	<p class="cancel-address-form"><a href="javascript:void(0);">cancelar</a></p>	
 	{/if}
