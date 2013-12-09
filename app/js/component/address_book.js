@@ -138,7 +138,6 @@ define(function (require) {
 				} else {
 					addressObj.addressType = 'residental';
 				}
-				console.log('a', addressObj);
 				$(this.$node).trigger('newAddress', addressObj);
 			}
 			ev.preventDefault();
