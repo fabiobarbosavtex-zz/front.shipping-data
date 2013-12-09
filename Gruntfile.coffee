@@ -105,6 +105,7 @@ module.exports = (grunt) ->
 		vtex_deploy:
 			main:
 				cwd: "build/<%= relativePath %>/"
+				publish: true
 				upload:
 					version:
 						"/": "**"

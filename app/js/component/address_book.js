@@ -130,7 +130,9 @@ define(function (require) {
 		this.submitAddress = function(ev, data) {
 			var valid = $(this.attr.addressFormSelector).parsley('validate');
 			if (valid) {
+				var disabled = $(this.attr.addressFormSelector).find(':input:disabled').removeAttr('disabled');
 				var serializedForm = $(this.attr.addressFormSelector).find('select,textarea,input').serializeArray();
+				disabled.attr('disabled','disabled');
 				var addressObj = {};
 				$.each(serializedForm, function() { addressObj[this.name] = this.value; });
 				if (addressObj.addressTypeCommercial) {
