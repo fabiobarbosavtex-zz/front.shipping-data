@@ -145,6 +145,9 @@ define(function (require) {
 
 		this.createAddress = function() {
 			this.attr.dataForm.address = {};
+			this.attr.dataForm.postalCode = '';
+			this.attr.dataForm.labelShippingFields = false;
+			this.attr.dataForm.disableCityAndState = false;
 			this.attr.dataForm.address.addressId = (new Date().getTime() * -1).toString();
 			this.attr.dataForm.showDontKnowPostalCode = true;
 			$(this.$node).trigger('showAddressForm');
