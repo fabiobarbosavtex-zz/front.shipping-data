@@ -1,6 +1,6 @@
 {
   "name": "front.shipping-data",
-  "version": "0.1.11",
+  "version": "0.1.12-beta",
   "devDependencies": {
     "generator-flight": "~0.6.0",
     "karma": "~0.10.0",
