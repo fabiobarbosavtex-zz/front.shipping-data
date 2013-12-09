@@ -159,7 +159,7 @@ define(function (require) {
 		this.cancelAddressForm = function() {
 			this.attr.dataForm.isEditingAddress = false;
 			this.attr.dataForm.showAddressList = true;
-			$(this.$node).trigger('addressFormRender', this.attr.dataForm);
+			$(this.$node).trigger('selectAddress', this.attr.dataForm.selectedAddressId);
 		};
 
 		this.showAddressList = function() {
