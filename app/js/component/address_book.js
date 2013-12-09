@@ -92,6 +92,11 @@ define(function (require) {
 				if (data.properties) {
 					var address = data.properties[0].value.address;
 					var dataForm = self.attr.dataForm;
+					if (address.neighborhood !== '' && address.street !== '' && address.stateAcronym !== '' && address.city !== '') {
+						dataForm.labelShippingFields = true;
+					} else {
+						dataForm.labelShippingFields = false;
+					}
 					dataForm.showDontKnowPostalCode = false;
 					dataForm.address.city = address.city;
 					dataForm.address.state = address.stateAcronym;
@@ -100,7 +105,6 @@ define(function (require) {
 					dataForm.address.country = dataForm.country;
 					dataForm.throttledLoading = false;
 					dataForm.showAddressForm = true;
-					dataForm.labelShippingFields = true;
 					$(self.$node).trigger('addressFormRender', dataForm);
 				}
 			}).fail(function(){
