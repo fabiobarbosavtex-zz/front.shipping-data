@@ -84,7 +84,7 @@ module.exports = (grunt) ->
 								'app/js/main.js',
 								'app/**/*.css',
 								'app/**/*.dust']
-				tasks: ['clean', 'copy:main', 'dust', 'coffee', 'copy:build']
+				tasks: ['clean', 'dust', 'copy:main', 'coffee', 'copy:build']
 
 		dust:
 			files:
@@ -118,9 +118,9 @@ module.exports = (grunt) ->
 
 	grunt.loadNpmTasks name for name of pkg.devDependencies when name[0..5] is 'grunt-'
 
-	grunt.registerTask 'default', ['clean', 'copy:main', 'copy:libs', 'dust', 'coffee', 'copy:build', 'server', 'watch']
+	grunt.registerTask 'default', ['clean', 'dust', 'copy:main', 'copy:libs', 'coffee', 'copy:build', 'server', 'watch']
 	grunt.registerTask 'min', ['useminPrepare', 'concat', 'uglify', 'usemin'] # minifies files
-	grunt.registerTask 'devmin', ['clean', 'copy:main', 'copy:libs', 'dust', 'coffee', 'min', 'copy:build', 'server', 'watch'] # Dev - minifies files
-	grunt.registerTask 'dist', ['clean', 'copy:main', 'copy:libs', 'dust', 'coffee', 'min', 'copy:build'] # Dist - minifies files
+	grunt.registerTask 'devmin', ['clean', 'dust', 'copy:main', 'copy:libs', 'coffee', 'min', 'copy:build', 'server', 'watch'] # Dev - minifies files
+	grunt.registerTask 'dist', ['clean', 'dust', 'copy:main', 'copy:libs', 'coffee', 'min', 'copy:build'] # Dist - minifies files
 	grunt.registerTask 'test', []
 	grunt.registerTask 'server', ['connect', 'remote']
