@@ -101,13 +101,13 @@
 				
 				<p class="ship-commercial input checkbox">
 					<label for="ship-commercial">
-						<input type="checkbox" id="ship-commercial" data-bind="checked: addressTypeCommercial" name="addressTypeCommercial" value="true"/>
+						<input type="checkbox" id="ship-commercial" name="addressTypeCommercial" value="true">
 						<span>Endereço comercial</span>
 					</label>
 				</p>
 
 				<p class="ship-name required input text separate">
-					<label for="ship-name"><span>Quem receberá</span></label>
+					<label for="ship-name"><span>Quem receberá</span>  <span class="item-required">*</span></label>
 					<input type="text" tabindex="229" id="ship-name" class="input-xlarge required" data-regexp="{alphaNumericPunctuation}" name="receiverName" value="{receiverName}">
 				</p>
 			</div>

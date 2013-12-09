@@ -127,27 +127,18 @@ define(function (require) {
 			$(this.$node).trigger('addressFormRender', this.attr.dataForm);
 		};
 
-		this.serializeObject = function(el) {
-			var o = {};
-			var a = el.serializeArray();
-			$.each(a, function() {
-				if (o[this.name] !== undefined) {
-					if (!o[this.name].push) {
-						o[this.name] = [o[this.name]];
-					}
-					o[this.name].push(this.value || '');
-				} else {
-					o[this.name] = this.value || '';
-				}
-			});
-			return o;
-		};
-
 		this.submitAddress = function(ev, data) {
 			var valid = $(this.attr.addressFormSelector).parsley('validate');
 			if (valid) {
-				var wrapInForm = $('<form>'+$(this.attr.addressFormSelector).html()+'</form>');
-				var addressObj = this.serializeObject(wrapInForm);
+				var serializedForm = $(this.attr.addressFormSelector).find('select,textarea,input').serializeArray();
+				var addressObj = {};
+				$.each(serializedForm, function() { addressObj[this.name] = this.value; });
+				if (addressObj.addressTypeCommercial) {
+					addressObj.addressType = 'commercial';
+				} else {
+					addressObj.addressType = 'residental';
+				}
+				console.log('a', addressObj);
 				$(this.$node).trigger('newAddress', addressObj);
 			}
 			ev.preventDefault();
