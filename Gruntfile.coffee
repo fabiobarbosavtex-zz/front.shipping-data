@@ -28,12 +28,6 @@ module.exports = (grunt) ->
 				dest: 'build/'
 			libs:
 				files: [
-					{
-						expand: true
-						cwd: 'bower_components'
-						src: 'flight/lib/**.js'
-						dest: 'app/libs/'
-					},
 					'app/libs/jquery.inputmask/dist/jquery.inputmask.bundle.min.js': 'bower_components/jquery.inputmask/dist/jquery.inputmask.bundle.min.js'
 					'app/libs/parsleyjs/i18n/messages.pt_br.js': 'bower_components/parsleyjs/i18n/messages.pt_br.js'
 					'app/libs/parsleyjs/dist/parsley.min.js': 'bower_components/parsleyjs/dist/parsley.min.js'
