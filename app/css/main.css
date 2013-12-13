@@ -209,6 +209,8 @@ input.postal-code:disabled {
   position: absolute;
   right: 0;
 }
+.address-item .text-box-selected { display: none; }
+
 .address-item .gift-list-label {
   margin-left: 32px;
   display: block;
