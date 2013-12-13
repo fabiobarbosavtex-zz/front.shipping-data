@@ -6,7 +6,7 @@ define(function (require) {
    * Module dependencies
    */
 
-  var addressBook = require('component/address_book');
+  var addressBook = require('component/AddressBook');
 
   /**
    * Module exports

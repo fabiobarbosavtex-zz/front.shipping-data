@@ -14,13 +14,13 @@ define(function (require) {
 	 * Module exports
 	 */
 
-	return defineComponent(addressBook);
+	return defineComponent(AddressBook);
 
 	/**
 	 * Module function
 	 */
 
-	function addressBook() {
+	function AddressBook() {
 		this.defaultAttrs({
 			dataForm: {
 				address: {},
