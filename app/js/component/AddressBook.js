@@ -243,5 +243,6 @@
 	(_base = window.vtex).front || (_base.front = {});
 	(_base1 = window.vtex.front).shippingData || (_base1.shippingData = {});
 	window.vtex.front.shippingData.AddressBook = AddressBook;
+	window.AddressBook = AddressBook;
 
 }).call(this);
