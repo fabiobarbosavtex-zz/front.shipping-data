@@ -1,6 +1,6 @@
 'use strict';
 
-var addressBook = new AddressBook('.placeholder-component-address-book');
+var addressBook = new vtex.front.shippingData.AddressBook('.placeholder-component-address-book');
 
 var data;
 var giftList = window.giftList ? window.giftList : '';
@@ -20,6 +20,7 @@ $(componentSelector).on('newAddress', function(ev, addressObj){
 		dataType: 'json',
 		data: JSON.stringify(addressObj)
 	}).done(function(data){
+		data = data.shippingData;
 		data.availableAddresses.push(addressObj);
 		data.address = addressObj;
 		$(componentSelector).trigger('updateAddresses', data);
