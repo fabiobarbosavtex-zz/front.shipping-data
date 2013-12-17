@@ -37,11 +37,17 @@ module.exports = (grunt) ->
 		coffee:
 			main:
 				files: [
-					expand: true
-					cwd: 'app/coffee'
-					src: ['**/*.coffee']
-					dest: 'build-raw/<%= relativePath %>/js/'
-					ext: '.js'
+						expand: true
+						cwd: 'app/coffee'
+						src: ['**/*.coffee']
+						dest: 'build-raw/<%= relativePath %>/js/'
+						ext: '.js'
+					,
+						expand: true
+						cwd: 'test/spec/coffee'
+						src: ['**/*.coffee']
+						dest: 'test/spec/'
+						ext: '.spec.js'
 				]
 
 		uglify:
@@ -81,13 +87,13 @@ module.exports = (grunt) ->
 					livereload: true
 				files: ['app/**/*.html',
 								'app/coffee/**/*.coffee',
-								'spec/**/*.coffee',
+								'test/spec/**/*.coffee',
 								'app/js/component/*.js',
 								'app/js/page/*.js',
 								'app/js/main.js',
 								'app/**/*.css',
 								'app/**/*.dust']
-				tasks: ['clean', 'dust', 'copy:main', 'coffee', 'copy:build']
+				tasks: ['clean', 'dust', 'copy:main', 'coffee', 'copy:build', 'test']
 
 		dust:
 			files:
@@ -122,7 +128,7 @@ module.exports = (grunt) ->
 
 	grunt.loadNpmTasks name for name of pkg.devDependencies when name[0..5] is 'grunt-'
 
-	grunt.registerTask 'default', ['clean', 'dust', 'copy:libs', 'copy:main', 'coffee', 'copy:build', 'server', 'watch']
+	grunt.registerTask 'default', ['clean', 'dust', 'copy:libs', 'copy:main', 'coffee', 'copy:build', 'test', 'server', 'watch']
 	grunt.registerTask 'min', ['useminPrepare', 'concat', 'uglify', 'usemin'] # minifies files
 	grunt.registerTask 'devmin', ['clean', 'dust', 'copy:libs', 'copy:main',  'coffee', 'min', 'copy:build', 'server', 'watch'] # Dev - minifies files
 	grunt.registerTask 'dist', ['clean', 'dust', 'copy:libs', 'copy:main', 'coffee', 'min', 'copy:build'] # Dist - minifies files
