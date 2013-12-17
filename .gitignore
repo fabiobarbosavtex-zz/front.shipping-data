@@ -4,3 +4,5 @@ build
 build-raw
 .tmp
 app/js/templates/
+test/spec/*
+!test/spec/coffee/
