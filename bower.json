@@ -2,7 +2,8 @@
   "name": "front.shipping-data",
   "version": "0.1.1",
   "dependencies": {
-    "flight": "~1.1.0",
+    "flight": "~1.0.9",
+    "flight-standalone": "~1.0.9",
     "curl": "~0.8.4",
     "jquery": "1.8.3",
     "bootstrap": "2.3.2",
@@ -14,7 +15,7 @@
     "font-awesome": "3.2.1"
   },
   "devDependencies": {
-    "jasmine-flight": "*",
+    "jasmine-flight-standalone": "*",
     "jasmine-jquery": "*"
   }
 }

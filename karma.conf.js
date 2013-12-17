@@ -17,19 +17,20 @@ module.exports = function (config) {
     // list of files / patterns to load in the browser
     files: [
       // loaded without require
-      'app/bower_components/es5-shim/es5-shim.js',
-      'app/bower_components/es5-shim/es5-sham.js',
-      'app/bower_components/jquery/jquery.js',
-      'app/bower_components/jasmine-jquery/lib/jasmine-jquery.js',
-      'app/bower_components/jasmine-flight/lib/jasmine-flight.js',
+      'bower_components/es5-shim/es5-shim.js',
+      'bower_components/es5-shim/es5-sham.js',
+      'bower_components/jquery/jquery.js',
+      'bower_components/flight-standalone/flight.min.js',
+      'bower_components/jasmine-jquery/lib/jasmine-jquery.js',
+      'bower_components/jasmine-flight-standalone/lib/jasmine-flight.js',
 
       // hack to load RequireJS after the shim libs
       'node_modules/karma-requirejs/lib/require.js',
       'node_modules/karma-requirejs/lib/adapter.js',
 
       // loaded with require
-      {pattern: 'app/bower_components/flight/**/*.js', included: false},
-      {pattern: 'app/js/**/*.js', included: false},
+      {pattern: 'bower_components/flight/**/*.js', included: false},
+      {pattern: 'build/shipui/js/**/*.js', included: false},
       {pattern: 'test/spec/**/*.spec.js', included: false},
 
       'test/test-main.js'

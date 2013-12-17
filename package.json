@@ -20,6 +20,7 @@
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-uglify": "~0.2.2",
     "grunt-contrib-cssmin": "~0.6.1",
+    "grunt-karma": "~0.6.1",
     "grunt-usemin": "2.0.0",
     "grunt-dust": "~0.6.4",
     "dustjs-helpers": "~1.1.1",

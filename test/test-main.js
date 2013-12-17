@@ -9,9 +9,7 @@ requirejs.config({
   baseUrl: '/base',
 
   paths: {
-    'flight': 'app/bower_components/flight',
-    'component': 'app/js/component',
-    'page': 'app/js/page'
+    'component': 'build/shipui/js/component'
   },
 
   // ask Require.js to load these files (all our tests)
@@ -20,3 +18,6 @@ requirejs.config({
   // start test run, once Require.js is done
   callback: window.__karma__.start
 });
+
+var AddressForm = require(['component/AddressForm']);
+var AddressList = require(['component/AddressList']);
