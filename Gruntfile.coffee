@@ -3,12 +3,12 @@ module.exports = (grunt) ->
 
 	# Project configuration.
 	grunt.initConfig
-		relativePath: 'shipui'
+		relativePath: 'shipping-ui'
 		appName: pkg.name
 
 	# Tasks
 		clean:
-			main: ['build', 'build-raw', 'tmp-deploy']
+			main: ['build', 'tmp-deploy']
 
 		copy:
 			main:
@@ -16,16 +16,8 @@ module.exports = (grunt) ->
 					expand: true
 					cwd: 'app/'
 					src: ['**', '!coffee/**', '!**/*.less', '!**/*.dust']
-					dest: 'build-raw/<%= relativePath %>'
-				,
-					src: ['app/index.html']
-					dest: 'build-raw/<%= relativePath %>/index.debug.html'
+					dest: 'build/<%= relativePath %>'
 				]
-			build:
-				expand: true
-				cwd: 'build-raw/'
-				src: '**/*.*'
-				dest: 'build/'
 			libs:
 				files: [
 					'app/libs/jquery.inputmask/dist/jquery.inputmask.bundle.min.js': 'bower_components/jquery.inputmask/dist/jquery.inputmask.bundle.min.js'
@@ -40,7 +32,7 @@ module.exports = (grunt) ->
 					expand: true
 					cwd: 'app/coffee'
 					src: ['**/*.coffee']
-					dest: 'build-raw/<%= relativePath %>/js/'
+					dest: 'build/<%= relativePath %>/js/'
 					ext: '.js'
 				]
 
@@ -49,13 +41,13 @@ module.exports = (grunt) ->
 				mangle: false
 
 		useminPrepare:
-			html: 'build-raw/<%= relativePath %>/index.html'
+			html: 'build/<%= relativePath %>/index.html'
 			options:
-				dest: 'build-raw/'
-				root: 'build-raw/'
+				dest: 'build/'
+				root: 'build/'
 
 		usemin:
-			html: 'build-raw/<%= relativePath %>/index.html'
+			html: 'build/<%= relativePath %>/index.html'
 
 		connect:
 			main:
@@ -78,7 +70,7 @@ module.exports = (grunt) ->
 								'app/js/main.js',
 								'app/**/*.css',
 								'app/**/*.dust']
-				tasks: ['clean', 'dust', 'copy:main', 'coffee', 'copy:build']
+				tasks: ['clean', 'dust', 'copy:main', 'coffee']
 
 		dust:
 			files:
@@ -86,7 +78,7 @@ module.exports = (grunt) ->
 				cwd: 'app/templates'
 				src: ['**/*.dust']
 				dest: 'app/js/templates/'
-				ext: '.js'			
+				ext: '.js'
 			options:
 				relative: true
 				runtime: false
@@ -101,21 +93,20 @@ module.exports = (grunt) ->
 				cwd: "build/<%= relativePath %>/"
 				publish: true
 				upload:
-					version:
-						"/": "**"
+					"/{{version}}/": "**"
 
 				transform:
 					replace:
-						"/shipui/": "//io.vtex.com.br/<%= appName %>/{{version}}/"
+						"/shipping-ui/": "//io.vtex.com.br/<%= appName %>/{{version}}/"
 						VERSION_NUMBER: "{{version}}"
 
-					files: ["index.html", "index.debug.html"]
+					files: ["index.html"]
 
 	grunt.loadNpmTasks name for name of pkg.devDependencies when name[0..5] is 'grunt-'
 
-	grunt.registerTask 'default', ['clean', 'dust', 'copy:main', 'copy:libs', 'coffee', 'copy:build', 'server', 'watch']
+	grunt.registerTask 'default', ['clean', 'dust', 'copy:main', 'copy:libs', 'coffee', 'server', 'watch']
 	grunt.registerTask 'min', ['useminPrepare', 'concat', 'uglify', 'usemin'] # minifies files
-	grunt.registerTask 'devmin', ['clean', 'dust', 'copy:main', 'copy:libs', 'coffee', 'min', 'copy:build', 'server', 'watch'] # Dev - minifies files
-	grunt.registerTask 'dist', ['clean', 'dust', 'copy:main', 'copy:libs', 'coffee', 'min', 'copy:build'] # Dist - minifies files
+	grunt.registerTask 'devmin', ['clean', 'dust', 'copy:main', 'copy:libs', 'coffee', 'min', 'server', 'watch'] # Dev - minifies files
+	grunt.registerTask 'dist', ['clean', 'dust', 'copy:main', 'copy:libs', 'coffee', 'min'] # Dist - minifies files
 	grunt.registerTask 'test', []
 	grunt.registerTask 'server', ['connect', 'remote']

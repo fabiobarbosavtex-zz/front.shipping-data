@@ -12,15 +12,15 @@
 		"port": 9001
 	},
 	"headers": {
-		"X-VTEX-Environment": "beta"
+		"X-VTEX-Router-Backend-EnvironmentType": "beta"
 	},
 	"bounces": [
-		"^/shipui/$",
-		"/shipui/css/.*",
-		"/shipui/img/.*",
-		"/shipui/js/.*",
-		"/shipui/libs/.*",
-		"/shipui/templates/.*"
+		"^/shipping-ui/$",
+		"/shipping-ui/css/.*",
+		"/shipping-ui/img/.*",
+		"/shipping-ui/js/.*",
+		"/shipping-ui/libs/.*",
+		"/shipping-ui/templates/.*"
 	],
 	"mapping": false,
 	"mappings": {
