@@ -17,6 +17,9 @@ module.exports = (grunt) ->
 					cwd: 'app/'
 					src: ['**', '!coffee/**', '!**/*.less', '!**/*.dust']
 					dest: 'build/<%= relativePath %>'
+        ,
+          src: ['package.json']
+          dest: 'build/<%= relativePath %>/package.json'
 				]
 			libs:
 				files: [
