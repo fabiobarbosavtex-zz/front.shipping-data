@@ -50,13 +50,20 @@ module.exports = (grunt) ->
 			html: 'build/<%= relativePath %>/index.html'
 
 		connect:
-			main:
+			server:
 				options:
 					hostname: "*"
-					port: 9001
-					base: 'build/'
-
-		remote: main: {}
+					port: 80
+					middleware: (connect, options) ->
+						proxy = require("grunt-connect-proxy/lib/utils").proxyRequest
+						[proxy, connect.static('./build/')]
+				proxies: [
+					context: ['/', '!/<%= relativePath %>']
+					host: 'portal.vtexcommerce.com.br'
+					headers: {
+						"X-VTEX-Router-Backend-EnvironmentType": "beta"
+					}
+				]
 
 		watch:
 			dev:
@@ -84,10 +91,6 @@ module.exports = (grunt) ->
 				runtime: false
 				wrapper: false
 
-		release:
-			options:
-				commitMessage: 'Bump <%= version %>'
-
 		vtex_deploy:
 			main:
 				cwd: "build/<%= relativePath %>/"
@@ -109,4 +112,4 @@ module.exports = (grunt) ->
 	grunt.registerTask 'devmin', ['clean', 'dust', 'copy:main', 'copy:libs', 'coffee', 'min', 'server', 'watch'] # Dev - minifies files
 	grunt.registerTask 'dist', ['clean', 'dust', 'copy:main', 'copy:libs', 'coffee', 'min'] # Dist - minifies files
 	grunt.registerTask 'test', []
-	grunt.registerTask 'server', ['connect', 'remote']
+	grunt.registerTask 'server', ['configureProxies:server', 'connect']

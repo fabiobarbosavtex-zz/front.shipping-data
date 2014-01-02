@@ -2,7 +2,6 @@
   "name": "shipping-ui",
   "version": "1.0.1-beta",
   "devDependencies": {
-    "generator-flight": "~0.6.0",
     "karma": "~0.10.0",
     "karma-jasmine": "~0.1.0",
     "karma-requirejs": "~0.1.0",
@@ -23,7 +22,7 @@
     "grunt-usemin": "2.0.0",
     "grunt-dust": "~0.6.4",
     "dustjs-helpers": "~1.1.1",
-    "grunt-remote": "~0.1.1",
+    "grunt-connect-proxy": "~0.1.7",
     "grunt-vtex-deploy": "~0.20.3"
   },
   "scripts": {
