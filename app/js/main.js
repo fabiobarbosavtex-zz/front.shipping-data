@@ -1,6 +1,6 @@
 'use strict';
 
-curl.config({
+vtex.curl.config({
 	baseUrl: '',
 	paths: {
 		'component': 'js/component'
@@ -8,7 +8,7 @@ curl.config({
 	apiName: 'require'
 });
 
-require(['component/AddressForm', 'component/AddressList'], function(AddressForm, AddressList) {
+vtex.require(['component/AddressForm', 'component/AddressList'], function(AddressForm, AddressList) {
 	var addressBookComponent = '.address-book';
 	var addressListComponent = '.address-list-placeholder';
 	var addressFormComponent = '.address-form-placeholder';
