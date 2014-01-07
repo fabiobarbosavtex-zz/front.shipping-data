@@ -3,8 +3,7 @@
 curl.config({
 	baseUrl: '',
 	paths: {
-		'component': 'js/component',
-		'page': 'js/page'
+		'component': 'js/component'
 	},
 	apiName: 'require'
 });

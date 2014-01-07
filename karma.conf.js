@@ -21,8 +21,15 @@ module.exports = function (config) {
       'bower_components/es5-shim/es5-sham.js',
       'bower_components/jquery/jquery.js',
       'bower_components/flight-standalone/flight.min.js',
+      'bower_components/underscore/underscore.js',
+      'bower_components/dustjs-linkedin/dist/dust-core-2.2.2.js',
+      'bower_components/dustjs-linkedin-helpers/dist/dust-helpers-1.1.1.js',
+      'bower_components/jquery.inputmask/dist/jquery.inputmask.bundle.min.js',
+      'bower_components/parsleyjs/i18n/messages.pt_br.js',
+      'bower_components/parsleyjs/dist/parsley.min.js',
       'bower_components/jasmine-jquery/lib/jasmine-jquery.js',
       'bower_components/jasmine-flight-standalone/lib/jasmine-flight.js',
+      'build/shipui/js/templates/*.js',
 
       // hack to load RequireJS after the shim libs
       'node_modules/karma-requirejs/lib/require.js',
@@ -31,7 +38,7 @@ module.exports = function (config) {
       // loaded with require
       {pattern: 'bower_components/flight/**/*.js', included: false},
       {pattern: 'build/shipui/js/**/*.js', included: false},
-      {pattern: 'test/spec/**/*.spec.js', included: false},
+      {pattern: 'test/spec/**/*.spec.coffee', included: false},
 
       'test/test-main.js'
     ],
@@ -57,8 +64,8 @@ module.exports = function (config) {
     // - PhantomJS
     // - IE (only Windows)
     browsers: [
-      'Chrome',
-      'Firefox'
+      'PhantomJS',
+      'Chrome'
     ],
 
     // If browser does not capture in given timeout [ms], kill it
@@ -70,6 +77,10 @@ module.exports = function (config) {
 
     // Karma will report all the tests that are slower than given time limit (in
     // ms).
-    reportSlowerThan: 500
+    reportSlowerThan: 500,
+
+    preprocessors: {
+      'test/spec/coffee/**/*.coffee': 'coffee'
+    }
   });
 };

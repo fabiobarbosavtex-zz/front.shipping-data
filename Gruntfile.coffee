@@ -42,12 +42,6 @@ module.exports = (grunt) ->
 						src: ['**/*.coffee']
 						dest: 'build-raw/<%= relativePath %>/js/'
 						ext: '.js'
-					,
-						expand: true
-						cwd: 'test/spec/coffee'
-						src: ['**/*.coffee']
-						dest: 'test/spec/'
-						ext: '.spec.js'
 				]
 
 		uglify:
