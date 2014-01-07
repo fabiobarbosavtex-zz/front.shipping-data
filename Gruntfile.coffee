@@ -57,15 +57,6 @@ module.exports = (grunt) ->
 		usemin:
 			html: 'build-raw/<%= relativePath %>/index.html'
 
-		connect:
-			main:
-				options:
-					hostname: "*"
-					port: 9001
-					base: 'build/'
-
-		remote: main: {}
-
 		karma:
 			options:
 				configFile: 'karma.conf.js'
@@ -76,18 +67,20 @@ module.exports = (grunt) ->
 				singleRun: true
 
 		watch:
-			dev:
-				options:
-					livereload: true
-				files: ['app/**/*.html',
-								'app/coffee/**/*.coffee',
-								'test/spec/**/*.coffee',
-								'app/js/component/*.js',
-								'app/js/page/*.js',
-								'app/js/main.js',
-								'app/**/*.css',
-								'app/**/*.dust']
-				tasks: ['clean', 'dust', 'copy:main', 'coffee', 'copy:build', 'test']
+			options:
+				livereload: true
+			coffee:
+				files: ['app/coffee/**/*.coffee']
+				tasks: ['coffee']
+			main:
+				files: ['app/js/main.js', 'app/**/*.css', 'app/index.html']
+				tasks: ['copy']
+			dust:
+				files: ['app/**/*.dust']
+				tasks: ['dust']
+			test:
+				files: ['app/coffee/**/*.coffee', 'test/spec/**/*.coffee']
+				tasks: ['karma:unit:run']
 
 		dust:
 			files:
@@ -101,9 +94,22 @@ module.exports = (grunt) ->
 				runtime: false
 				wrapper: false
 
-		release:
-			options:
-				commitMessage: 'Bump <%= version %>'
+		connect:
+			server:
+				options:
+					livereload: true
+					hostname: "*"
+					port: 80
+					middleware: (connect, options) ->
+						proxy = require("grunt-connect-proxy/lib/utils").proxyRequest
+						[proxy, connect.static('./build/')]
+				proxies: [
+					context: ['/', '!/<%= relativePath %>']
+					host: 'portal.vtexcommerce.com.br'
+					headers: {
+						"X-VTEX-Router-Backend-EnvironmentType": "beta"
+					}
+				]
 
 		vtex_deploy:
 			main:
@@ -122,9 +128,9 @@ module.exports = (grunt) ->
 
 	grunt.loadNpmTasks name for name of pkg.devDependencies when name[0..5] is 'grunt-'
 
-	grunt.registerTask 'default', ['clean', 'dust', 'copy:libs', 'copy:main', 'coffee', 'copy:build', 'test', 'server', 'watch']
+	grunt.registerTask 'default', ['clean', 'dust', 'copy:libs', 'copy:main', 'coffee', 'copy:build', 'karma:unit', 'server', 'watch']
 	grunt.registerTask 'min', ['useminPrepare', 'concat', 'uglify', 'usemin'] # minifies files
 	grunt.registerTask 'devmin', ['clean', 'dust', 'copy:libs', 'copy:main',  'coffee', 'min', 'copy:build', 'server', 'watch'] # Dev - minifies files
 	grunt.registerTask 'dist', ['clean', 'dust', 'copy:libs', 'copy:main', 'coffee', 'min', 'copy:build'] # Dist - minifies files
 	grunt.registerTask 'test', ['karma:single']
-	grunt.registerTask 'server', ['connect', 'remote']
+	grunt.registerTask 'server', ['configureProxies:server', 'connect']
