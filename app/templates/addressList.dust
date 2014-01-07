@@ -1,8 +1,8 @@
 <div class="address-list">
   <h4>Escolha o endereço de entrega</h4>
   <div class="address-list-items">
-    <fieldset>        
-    {#availableAddresses}         
+    <fieldset>
+    {#availableAddresses}
       {@if cond="'{addressId}' == '{selectedAddressId}'"}
         <div class="address-item active">
           <p class="input">

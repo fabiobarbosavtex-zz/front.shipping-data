@@ -8,7 +8,7 @@ define ->
         country: 'BRA'
         states: ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RO', 'RS', 'RR', 'SC', 'SE', 'SP', 'TO']
         alphaNumericPunctuationRegex: '^[A-Za-zÀ-ú0-9/\\-.,s()\']*$'
-        showPostalCode: false     
+        showPostalCode: false
         showAddressForm: false
         postalCode: ''
         disableCityAndState: false
@@ -22,7 +22,7 @@ define ->
       cancelAddressFormSelector: '.cancel-address-form a'
       submitButtonSelector: '.submit .btn-success'
 
-    @render = (ev, data) ->   
+    @render = (ev, data) ->
       data = @attr.data if not data
       if not data.showAddressForm
         @$node.html('')
@@ -46,7 +46,7 @@ define ->
         @$node.trigger 'addressFormRender', data
         @getPostalCode postalCode
 
-    @showAddressForm = (ev, data) ->    
+    @showAddressForm = (ev, data) ->
       $.extend(@attr.data, data) if data
       @attr.data.isEditingAddress = true
       @attr.data.showAddressForm = true

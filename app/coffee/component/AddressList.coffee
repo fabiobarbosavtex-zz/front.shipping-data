@@ -40,7 +40,7 @@ define ->
       @attr.data.showAddressList = false
       @render(@attr.data)
 
-      @attr.data.showDontKnowPostalCode = false     
+      @attr.data.showDontKnowPostalCode = false
       @$node.trigger 'showAddressForm', @attr.data
 
     @updateAddresses = (ev, data) ->
