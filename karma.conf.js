@@ -29,7 +29,6 @@ module.exports = function (config) {
       'bower_components/parsleyjs/dist/parsley.min.js',
       'bower_components/jasmine-jquery/lib/jasmine-jquery.js',
       'bower_components/jasmine-flight-standalone/lib/jasmine-flight.js',
-      'build/shipui/js/templates/*.js',
 
       // hack to load RequireJS after the shim libs
       'node_modules/karma-requirejs/lib/require.js',

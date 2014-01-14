@@ -12,7 +12,8 @@
     "jquery.inputmask": "~2.4.0",
     "underscore": "~1.5.2",
     "parsleyjs": "brenoc/Parsley.js#1.1.19",
-    "font-awesome": "3.2.1"
+    "font-awesome": "3.2.1",
+    "i18next": "~1.7.1"
   },
   "devDependencies": {
     "jasmine-flight-standalone": "*",

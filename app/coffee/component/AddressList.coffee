@@ -7,9 +7,10 @@ define ->
         address: {}
         availableAddresses: []
         selectedAddressId: ''
-        country: 'BRA'
         hasOtherAddresses: false
         showAddressList: true
+
+      templates: {}
 
       createAddressSelector: '.address-create'
       editAddressSelector: '.address-edit'
@@ -21,8 +22,10 @@ define ->
       if not data.showAddressList
         @$node.html('')
       else
-        dust.render 'addressList', data, (err, output) =>
-          $(@$node).html(output)
+        @attr.templates.addressListTemplate.then =>
+          dust.render 'addressList', data, (err, output) =>
+            output = $(output).i18n()
+            $(@$node).html(output)
 
     @createAddress = ->
       @attr.data.showAddressList = false
@@ -98,3 +101,6 @@ define ->
 
       @on 'keyup',
         postalCodeSelector: @validatePostalCode
+
+      @attr.templates['addressListTemplate'] = vtex.
+        require('template/addressList')

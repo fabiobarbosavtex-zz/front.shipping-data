@@ -6,7 +6,10 @@ define ->
       data:
         address: {}
         country: 'BRA'
-        states: ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RO', 'RS', 'RR', 'SC', 'SE', 'SP', 'TO']
+        states: ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES',
+                 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR',
+                 'PE', 'PI', 'RJ', 'RN', 'RO', 'RS', 'RR', 'SC',
+                 'SE', 'SP', 'TO']
         alphaNumericPunctuationRegex: '^[A-Za-zÀ-ú0-9/\\-.,s()\']*$'
         showPostalCode: false
         showAddressForm: false
@@ -14,6 +17,8 @@ define ->
         disableCityAndState: false
         labelShippingFields: false
         showDontKnowPostalCode: true
+
+      templates: {}
 
       addressFormSelector: '.address-form-new'
       postalCodeSelector: '#ship-postal-code'
@@ -27,10 +32,12 @@ define ->
       if not data.showAddressForm
         @$node.html('')
       else
-        dust.render 'addressForm', data, (err, output) =>
-          @$node.html(output)
-          $(@attr.postalCodeSelector, @$node).inputmask mask: '99999-999'
-          $(@attr.addressFormSelector).parsley
+        @attr.templates.addressFormTemplate.then =>
+          dust.render 'addressForm', data, (err, output) =>
+            output = $(output).i18n()
+            @$node.html(output)
+            $(@attr.postalCodeSelector, @$node).inputmask mask: '99999-999'
+            $(@attr.addressFormSelector).parsley
               errorClass: 'error'
               successClass: 'success'
               errors:
@@ -56,13 +63,15 @@ define ->
       country = @attr.data.country
       postalCode = data.replace(/-/g, '')
       $.ajax(
-        url: 'http://postalcode.vtexfrete.com.br/api/postal/pub/address/' + country + '/' + postalCode
+        url: 'http://postalcode.vtexfrete.com.br/api/postal/pub/address/' \
+          + country + '/' + postalCode
         crossDomain: true
       ).done((data) =>
         if data.properties
           address = data.properties[0].value.address
           data = @attr.data
-          if address.neighborhood isnt '' and address.street isnt '' and address.stateAcronym isnt '' and address.city isnt ''
+          if address.neighborhood isnt '' and address.street isnt '' \
+          and address.stateAcronym isnt '' and address.city isnt ''
             data.labelShippingFields = true
           else
             data.labelShippingFields = false
@@ -95,8 +104,12 @@ define ->
       valid = $(@attr.addressFormSelector).parsley('validate')
 
       if valid
-        disabled = $(@attr.addressFormSelector).find(':input:disabled').removeAttr('disabled')
-        serializedForm = $(@attr.addressFormSelector).find('select,textarea,input').serializeArray()
+        disabled = $(@attr.addressFormSelector)
+          .find(':input:disabled').removeAttr('disabled')
+
+        serializedForm = $(@attr.addressFormSelector)
+          .find('select,textarea,input').serializeArray()
+
         disabled.attr 'disabled', 'disabled'
         addressObj = {}
         $.each serializedForm, ->
@@ -126,3 +139,6 @@ define ->
 
       @on 'keyup',
         postalCodeSelector: @validatePostalCode
+
+      @attr.templates['addressFormTemplate'] = vtex
+        .require('template/addressForm')
