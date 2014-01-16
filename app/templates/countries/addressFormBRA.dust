@@ -99,7 +99,7 @@
 
         <p class="ship-commercial input checkbox hide">
           <label for="ship-commercial">
-            <input type="checkbox" id="ship-commercial" name="addressTypeCommercial" value="true">
+            <input type="checkbox" tabindex="228" id="ship-commercial" name="addressTypeCommercial" value="true">
             <span data-i18n="addressForm.commercial"></span>
           </label>
         </p>

@@ -58,14 +58,14 @@
 
         <p class="ship-commercial input checkbox hide">
           <label for="ship-commercial">
-            <input type="checkbox" id="ship-commercial" name="addressTypeCommercial" value="true">
+            <input type="checkbox" tabindex="229" id="ship-commercial" name="addressTypeCommercial" value="true">
             <span data-i18n="addressForm.commercial"></span>
           </label>
         </p>
 
         <p class="ship-name required input text separate">
           <label for="ship-name"><span data-i18n="addressForm.receiver"></span>  <span class="item-required">*</span></label>
-          <input type="text" tabindex="229" id="ship-name" class="input-xlarge required" parsley-alphanumponc="true" name="receiverName" value="{receiverName}">
+          <input type="text" tabindex="230" id="ship-name" class="input-xlarge required" parsley-alphanumponc="true" name="receiverName" value="{receiverName}">
         </p>
       </div>      
       <p class="submit btn-submit-wrapper pull-left" data-bind="fadeVisible: showContinueButton">
