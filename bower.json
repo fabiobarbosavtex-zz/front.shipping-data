@@ -2,6 +2,13 @@
   "name": "front.shipping-data",
   "version": "0.1.1",
   "dependencies": {
+    "es5-shim": "2.3.0",
+    "jquery.inputmask": "~2.4.0",
+    "i18next": "~1.6.3",
+    "parsleyjs": "~1.2.2",
+    "front-i18n": "vtex/front.i18n#0.4.1"
+  },
+  "devDependencies": {
     "flight": "~1.0.9",
     "flight-standalone": "~1.0.9",
     "curl": "~0.8.4",
@@ -11,12 +18,6 @@
     "dustjs-linkedin-helpers": "~1.1.1",
     "underscore": "~1.5.2",
     "font-awesome": "3.2.1",
-    "jquery.inputmask": "~2.4.0",
-    "i18next": "~1.6.3",
-    "parsleyjs": "~1.2.2",
-    "front-i18n": "vtex/front.i18n#0.4.1"
-  },
-  "devDependencies": {
     "jasmine-flight-standalone": "*",
     "jasmine-jquery": "*"
   }

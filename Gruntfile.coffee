@@ -29,10 +29,9 @@ module.exports = (grunt) ->
       libs:
         files: [
           'app/libs/jquery.inputmask/dist/jquery.inputmask.bundle.min.js': 'bower_components/jquery.inputmask/dist/jquery.inputmask.bundle.min.js'
-          'app/libs/parsleyjs/i18n/messages.pt_br.js': 'bower_components/parsleyjs/i18n/messages.pt_br.js'
           'app/libs/parsleyjs/dist/parsley.min.js': 'bower_components/parsleyjs/dist/parsley.min.js'
-          'app/libs/es5-shim/es5-shim.js': 'bower_components/es5-shim/es5-shim.js'
-          'app/libs/es5-shim/es5-sham.js': 'bower_components/es5-shim/es5-sham.js'
+          'app/libs/es5-shim/es5-shim.min.js': 'bower_components/es5-shim/es5-shim.min.js'
+          'app/libs/es5-shim/es5-sham.min.js': 'bower_components/es5-shim/es5-sham.min.js'
           'app/libs/i18next/release/i18next-1.6.3.min.js': 'bower_components/i18next/release/i18next-1.6.3.min.js'
         ]
       templates:
