@@ -202,7 +202,7 @@ define ->
       @attr.templates.form.name = @attr.templates.form.baseName \
         + country
       if not @attr.data.countryRules[country]
-        vtex.require('countries/Country'+country).then (C) =>
+        vtex.require('rules/Country'+country).then (C) =>
           @attr.data.countryRules[country] = new C()
           @attr.templates.form['template'] = vtex
             .require('template/'+@attr.templates.form.name)

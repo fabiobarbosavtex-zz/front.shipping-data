@@ -27,3 +27,7 @@ define ->
 
       @masks =
         postalCode: '99999'
+
+      @requiredFields = ['addressType', 'addressId', 'receiverName',
+                         'postalCode', 'street', 'city', 'state',
+                         'country']

@@ -60,7 +60,7 @@ input.error:focus {
 
 /* form.less */
 p.ship-number,
-p.ship-city { margin-right: 10px }
+p.ship-state { margin-right: 10px }
 p.ship-number,
 p.ship-city,
 p.ship-state { float: left }

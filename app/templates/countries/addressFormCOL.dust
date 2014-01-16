@@ -36,9 +36,9 @@
           <input type="text" tabindex="225" id="ship-reference" class="input-xlarge" parsley-alphanumponc="true" value="{reference}" name="reference">
         </p>
 
-        <p class="ship-neighborhood required input text">
-          <label for="ship-neighborhood"><span data-i18n="addressForm.district"></span> <span class="item-required">*</span></label>
-          <input type="text" tabindex="226" id="ship-neighborhood" class="input-xlarge required" parsley-alphanumponc="true" value="{neighborhood}" name="neighborhood">
+        <p class="ship-neighborhood input text">
+          <label for="ship-neighborhood"><span data-i18n="addressForm.district"></span></label>
+          <input type="text" tabindex="226" id="ship-neighborhood" class="input-medium" parsley-alphanumponc="true" value="{neighborhood}" name="neighborhood">
         </p>
 
         <p class="ship-state required input text">

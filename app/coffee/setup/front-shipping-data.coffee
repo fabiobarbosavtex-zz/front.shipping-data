@@ -2,7 +2,7 @@ vtex.curl.config
   baseUrl: '/shipui/'
   paths:
     'component': 'js/component'
-    'countries': 'js/component/countries'
+    'rules': 'js/rules'
     'template': 'js/templates'
     'translation': 'js/translation'
   apiName: 'require'

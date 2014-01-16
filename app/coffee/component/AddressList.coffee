@@ -74,7 +74,7 @@ define ->
         @attr.data.showAddressList = true
 
       countriesUsedRequire = _.map countriesUsed, (c) ->
-        return 'countries/Country'+c
+        return 'rules/Country'+c
 
       vtex.require(countriesUsedRequire).then =>
         for country, i in arguments

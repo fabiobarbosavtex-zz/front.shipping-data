@@ -22,7 +22,7 @@
           <input type="text" tabindex="222" id="ship-street" class="input-xlarge required" parsley-alphanumponc="true" value="{street}" name="street">
         </p>
 
-        <p class="ship-number required input text hide">
+        <p class="ship-number input text hide">
           <label for="ship-number"><span data-i18n="addressForm.number"></span></label>
           <input type="text" tabindex="223" id="ship-number" class="input-mini" parsley-alphanumponc="true" value="{number}" name="number">
         </p>

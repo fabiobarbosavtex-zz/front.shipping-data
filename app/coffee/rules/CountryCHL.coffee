@@ -36,6 +36,9 @@ define ->
       @masks =
         postalCode: '999999'
 
+      @requiredFields = ['addressType', 'addressId', 'receiverName',
+                         'postalCode', 'street', 'state', 'country', 'number']
+
       for state of @map
         @states.push(state)
         @cities[state] = _.map(@map[state], (k, v) -> return v )

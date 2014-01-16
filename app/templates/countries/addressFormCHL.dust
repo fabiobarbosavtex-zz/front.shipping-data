@@ -22,8 +22,8 @@
         </p>
 
         <p class="ship-number required input text">
-          <label for="ship-number"><span data-i18n="addressForm.number"></span></label>
-          <input type="text" tabindex="223" id="ship-number" class="input-mini" parsley-alphanumponc="true" value="{number}" name="number">
+          <label for="ship-number"><span data-i18n="addressForm.number"></span> <span class="item-required">*</span></label>
+          <input type="text" tabindex="223" id="ship-number" class="input-mini required" parsley-alphanumponc="true" value="{number}" name="number">
         </p>
 
         <p class="ship-more-info input text">
@@ -45,8 +45,8 @@
           </select>
         </p>
 
-        <p class="ship-city required input text">
-          <label for="ship-city"><span data-i18n="addressForm.municipality"></span> <span class="item-required">*</span></label>
+        <p class="ship-city input text hide">
+          <label for="ship-city"><span data-i18n="addressForm.municipality"></span></label>
           <input type="text" tabindex="227" id="ship-city" class="input-xlarge" parsley-alphanumponc="true" value="{city}" name="city">
         </p>
 
