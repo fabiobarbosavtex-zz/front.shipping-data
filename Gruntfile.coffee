@@ -33,12 +33,13 @@ module.exports = (grunt) ->
           'app/libs/parsleyjs/dist/parsley.min.js': 'bower_components/parsleyjs/dist/parsley.min.js'
           'app/libs/es5-shim/es5-shim.js': 'bower_components/es5-shim/es5-shim.js'
           'app/libs/es5-shim/es5-sham.js': 'bower_components/es5-shim/es5-sham.js'
-          'app/libs/i18next/release/i18next-1.7.1.min.js': 'bower_components/i18next/release/i18next-1.7.1.min.js'
+          'app/libs/i18next/release/i18next-1.6.3.min.js': 'bower_components/i18next/release/i18next-1.6.3.min.js'
+          'app/libs/i18next/release/i18next-1.6.3.js': 'bower_components/i18next/release/i18next-1.6.3.js'
         ]
       templates:
         expand: true
         cwd: 'app/'
-        src: ['js/templates/**.*']
+        src: ['js/templates/**/*.*']
         dest: 'app/'
         options:
           process: (content) ->
@@ -88,7 +89,7 @@ module.exports = (grunt) ->
       main:
         files: ['app/js/main.js', 'app/js/front-shipping-data.js',
                 'app/**/*.css', 'app/index.html']
-        tasks: ['copy']
+        tasks: ['copy:main', 'copy:build']
       dust:
         files: ['app/**/*.dust']
         tasks: ['dust', 'copy:templates', 'copy:main', 'copy:build']
@@ -99,7 +100,7 @@ module.exports = (grunt) ->
     dust:
       files:
         expand: true
-        cwd: 'app/templates'
+        cwd: 'app/templates/'
         src: ['**/*.dust']
         dest: 'app/js/templates/'
         ext: '.js'

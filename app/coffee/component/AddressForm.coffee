@@ -5,60 +5,114 @@ define ->
     @defaultAttrs
       data:
         address: {}
-        country: 'BRA'
-        states: ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES',
-                 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR',
-                 'PE', 'PI', 'RJ', 'RN', 'RO', 'RS', 'RR', 'SC',
-                 'SE', 'SP', 'TO']
-        alphaNumericPunctuationRegex: '^[A-Za-zÀ-ú0-9/\\-.,s()\']*$'
-        showPostalCode: false
-        showAddressForm: false
         postalCode: ''
+        deliveryCountries: ['BRA']
+        deliveryCountryNames: []
+        
         disableCityAndState: false
         labelShippingFields: false
+        
+        showPostalCode: false
+        showAddressForm: false
         showDontKnowPostalCode: true
+        showSelectCountry: false
 
-      templates: {}
+        countryRules: {}
+
+      templates:
+        form:
+          baseName: 'countries/addressForm'
+        selectCountry:
+          name: 'selectCountry'
 
       addressFormSelector: '.address-form-new'
       postalCodeSelector: '#ship-postal-code'
       forceShippingFieldsSelector: '#force-shipping-fields'
       stateSelector: '#ship-state'
+      citySelector: '#ship-city'
+      deliveryCountrySelector: '#ship-country'
       cancelAddressFormSelector: '.cancel-address-form a'
-      submitButtonSelector: '.submit .btn-success'
+      submitButtonSelector: '.submit .btn-success.address-save'
 
+    # Render this component according to the data object
     @render = (ev, data) ->
       data = @attr.data if not data
-      if not data.showAddressForm
-        @$node.html('')
-      else
-        @attr.templates.addressFormTemplate.then =>
-          dust.render 'addressForm', data, (err, output) =>
+      if data.showSelectCountry
+        @attr.templates.selectCountry.template.then =>
+          dust.render @attr.templates.selectCountry.name, data, (err, output) =>
             output = $(output).i18n()
             @$node.html(output)
-            $(@attr.postalCodeSelector, @$node).inputmask mask: '99999-999'
-            $(@attr.addressFormSelector).parsley
+      else if data.showAddressForm
+        @attr.templates.form.template.then =>
+          rules = @getCurrentRule()
+          data.states = rules.states
+          data.regexes = rules.regexes
+          dust.render @attr.templates.form.name, data, (err, output) =>
+            output = $(output).i18n()
+            @$node.html(output)
+
+            if data.loading
+              $('input, select, .btn', @$node).attr('disabled', 'disabled')
+
+            if rules.citiesBasedOnStateChange
+              @changeCities()
+              if data.address.city
+                $(@attr.citySelector, @$node).val(data.address.city)
+
+            if rules.usePostalCode
+              $(@attr.postalCodeSelector, @$node).inputmask
+                mask: rules.masks.postalCode
+
+            $(@attr.addressFormSelector, @$node).parsley
               errorClass: 'error'
               successClass: 'success'
               errors:
                 errorsWrapper: '<div class="help error-list"></div>'
                 errorElem: '<span class="help error"></span>'
 
+            # Focus on the first empty field
+            inputs = 'input[type=email], input[type=tel], input[type=text]'
+            $(@$node).find(inputs)
+              .filter ->
+                if($(this).val() == "")
+                  return true
+            .first().focus()
+      else
+        @$node.html('')
+
+    # Helper function to get the current country's rules
+    @getCurrentRule = ->
+      @attr.data.countryRules[@attr.data.country]
+
+    # Validate the postal code input
+    # If successful, this will call the postal code API
     @validatePostalCode = (ev, data) ->
       postalCode = data.el.value
-      data = @attr.data
-      if /^([\d]{5})\-?([\d]{3})$/.test(postalCode)
-        data.throttledLoading = true
-        data.postalCode = postalCode
-        @$node.trigger 'addressFormRender', data
-        @getPostalCode postalCode
+      rules = @getCurrentRule()
+      if rules.regexes.postalCode.test(postalCode)
+        @attr.data.throttledLoading = true
+        @attr.data.postalCode = postalCode
+        @attr.data.loading = true if rules.queryPostalCode
+        @$node.trigger 'addressFormRender', @attr.data
+        if rules.queryPostalCode
+          @getPostalCode postalCode
 
+    # Handle the initial view of this component
     @showAddressForm = (ev, data) ->
       $.extend(@attr.data, data) if data
+
+      if data.address.addressType
+        @selectCountry(data.address.country)
+      else if @attr.data.deliveryCountries.length is 1
+        country = @attr.data.deliveryCountries[0]
+        @selectCountry(country)
+      else
+        @attr.data.showSelectCountry = true
+
       @attr.data.isEditingAddress = true
-      @attr.data.showAddressForm = true
       @render(@attr.data)
 
+    # Call the postal code API
     @getPostalCode = (data) ->
       country = @attr.data.country
       postalCode = data.replace(/-/g, '')
@@ -87,58 +141,164 @@ define ->
           data.address.country = data.country
           data.throttledLoading = false
           data.showAddressForm = true
+          data.loading = false
           @render(data)
+          @$node.trigger('postalCode', @getCurrentAddress())
       ).fail =>
-        console.log 'CEP não encontrado!'
         data = @attr.data
         data.throttledLoading = false
         data.showAddressForm = true
         data.labelShippingFields = false
+        data.loading = false
         @render(data)
+        @$node.trigger('postalCode', @getCurrentAddress())
 
+    # Able the user to edit the suggested fields
+    # filled by the postal code service
     @forceShippingFields = ->
       @attr.data.labelShippingFields = false
       @render(@attr.data)
 
+    # Get the current address typed in the form
+    @getCurrentAddress = ->
+      disabled = $(@attr.addressFormSelector)
+        .find(':input:disabled').removeAttr('disabled')
+
+      serializedForm = $(@attr.addressFormSelector)
+        .find('select,textarea,input').serializeArray()
+
+      disabled.attr 'disabled', 'disabled'
+      addressObj = {}
+      $.each serializedForm, ->
+        addressObj[@name] = @value
+
+      if addressObj.addressTypeCommercial
+        addressObj.addressType = 'commercial'
+      else
+        addressObj.addressType = 'residental'
+
+      return addressObj
+
+    # Submit address to the server
     @submitAddress = (ev, data) ->
       valid = $(@attr.addressFormSelector).parsley('validate')
 
       if valid
-        disabled = $(@attr.addressFormSelector)
-          .find(':input:disabled').removeAttr('disabled')
+        addressObj = @getCurrentAddress()
+        @attr.data.address = addressObj
 
-        serializedForm = $(@attr.addressFormSelector)
-          .find('select,textarea,input').serializeArray()
-
-        disabled.attr 'disabled', 'disabled'
-        addressObj = {}
-        $.each serializedForm, ->
-          addressObj[@name] = @value
-
-        if addressObj.addressTypeCommercial
-          addressObj.addressType = 'commercial'
-        else
-          addressObj.addressType = 'residental'
-
+        @$node.trigger 'loading', true
+        @attr.showAddressForm = false
         @$node.trigger 'newAddress', addressObj
 
       ev.preventDefault()
 
+    # Select a delivery country
+    # This will load the country's form and rules
+    @selectCountry = (country) ->
+      @attr.data.country = country
+      @attr.data.showAddressForm = true
+      @attr.data.showSelectCountry = false
+      @attr.templates.form.name = @attr.templates.form.baseName \
+        + country
+      if not @attr.data.countryRules[country]
+        vtex.require('countries/Country'+country).then (C) =>
+          @attr.data.countryRules[country] = new C()
+          @attr.templates.form['template'] = vtex
+            .require('template/'+@attr.templates.form.name)
+          @render(@attr.data)
+      else
+        @attr.templates.form['template'] = vtex
+          .require('template/'+@attr.templates.form.name)
+        @render(@attr.data)
+
+    # Handle the selection event
+    @selectedCountry = (ev, data) ->
+      @attr.data.address = {}
+      @attr.data.postalCode = ''
+      country = $(@attr.deliveryCountrySelector, @$node).val()
+      @selectCountry country if country
+
+    # Close the form
     @cancelAddressForm = ->
       @attr.data.showAddressForm = false
+      @attr.data.showSelectCountry = false
+      @attr.data.loading = false
       @render(@attr.data)
       @$node.trigger 'selectAddress', @attr.data.selectedAddressId
 
+    # Change the city select options when a state is selected
+    # citiesBasedOnStateChange should be true in the country's rule
+    @changeCities = (ev, data) ->
+      rules = @getCurrentRule()
+      return if not rules.citiesBasedOnStateChange
+
+      state = $(@attr.stateSelector, @$node).val()
+      $(@attr.citySelector, @$node).find('option').remove().end()
+
+      for city of rules.map[state]
+        elem = '<option value="'+city+'">'+city+'</option>'
+        $(@attr.citySelector, @$node).append(elem)
+
+    # Change postal code according to the state selected
+    # postalCodeByState should be true in the country's rule
+    @changePostalCodeByState = (ev, data) ->
+      rules = @getCurrentRule()
+      return if not rules.postalCodeByState
+      
+      state = $(@attr.stateSelector, @$node).val()
+      for city, postalCode of rules.map[state]
+        break
+
+      $(@attr.postalCodeSelector, @$node).val(postalCode)
+      @$node.trigger('postalCode', postalCode)
+    
+    # Change postal code according to the city selected
+    # postalCodeByCity should be true in the country's rule
+    @changePostalCodeByCity = (ev, data) ->
+      rules = @getCurrentRule()
+      return if not rules.postalCodeByCity
+
+      state = $(@attr.stateSelector, @$node).val()
+      city = $(@attr.citySelector, @$node).val()
+      postalCode = rules.map[state][city]
+
+      $(@attr.postalCodeSelector, @$node).val(postalCode)
+      @$node.trigger('postalCode', @getCurrentAddress())
+
+    # Set to a loading state
+    # This will disable all fields
+    @loading = (ev, data) ->
+      @attr.data.loading = true
+      @render(@attr.data)
+
+    # Store new country rules in the data object
+    @addCountryRule = (ev, data) ->
+      _.extend(@attr.data.countryRules, data)
+
+    # Call two functions for the same event
+    @onChangeState = (ev, data) ->
+      @changeCities(ev, data)
+      @changePostalCodeByState(ev, data)
+
+    # Bind events
     @after 'initialize', ->
+      @on 'loading', @loading
+      @on document, 'newCountryRule', @addCountryRule
       @on document, 'addressFormRender', @render
       @on document, 'showAddressForm', @showAddressForm
+      @on document, 'cancelAddressForm', @cancelAddressForm
       @on document, 'click',
         'forceShippingFieldsSelector': @forceShippingFields
         'cancelAddressFormSelector': @cancelAddressForm
         'submitButtonSelector': @submitAddress
+      @on 'change',
+        'deliveryCountrySelector': @selectedCountry
+        'stateSelector': @onChangeState
+        'citySelector': @changePostalCodeByCity
 
       @on 'keyup',
         postalCodeSelector: @validatePostalCode
 
-      @attr.templates['addressFormTemplate'] = vtex
-        .require('template/addressForm')
+      @attr.templates.selectCountry['template'] = vtex
+        .require('template/'+@attr.templates.selectCountry.name)

@@ -9,24 +9,31 @@ define ->
         selectedAddressId: ''
         hasOtherAddresses: false
         showAddressList: true
+        deliveryCountries: ['ARG', 'BRA', 'CHL', 'COL', 'ECU', 'URY','USA']
+        countryRules: {}
 
-      templates: {}
+      templates:
+        list:
+          name: 'addressList'
 
       createAddressSelector: '.address-create'
       editAddressSelector: '.address-edit'
       addressItemSelector: '.address-list .address-item'
       submitButtonSelector: '.submit .btn-success'
 
+    # Render this component according to the data object
     @render = (data) ->
       data = @attr.data if not data
       if not data.showAddressList
         @$node.html('')
       else
-        @attr.templates.addressListTemplate.then =>
-          dust.render 'addressList', data, (err, output) =>
+        @attr.templates.list.template.then =>
+          dust.render @attr.templates.list.name, data, (err, output) =>
             output = $(output).i18n()
             $(@$node).html(output)
 
+    # Create a new address
+    # Trigger an event to AddressForm component
     @createAddress = ->
       @attr.data.showAddressList = false
       @render(@attr.data)
@@ -39,6 +46,8 @@ define ->
       @attr.data.showDontKnowPostalCode = true
       @$node.trigger 'showAddressForm', @attr.data
 
+    # Edit an existing address
+    # Trigger an event to AddressForm component
     @editAddress = ->
       @attr.data.showAddressList = false
       @render(@attr.data)
@@ -46,20 +55,15 @@ define ->
       @attr.data.showDontKnowPostalCode = false
       @$node.trigger 'showAddressForm', @attr.data
 
+    # Update address list
     @updateAddresses = (ev, data) ->
+      @$node.trigger 'cancelAddressForm', true
       @attr.data.address = data.address
       @attr.data.availableAddresses = data.availableAddresses
 
+      countriesUsed = []
       for aa in @attr.data.availableAddresses
-        aa.firstPart = '' + aa.street
-        aa.firstPart += ', ' + aa.number
-        aa.firstPart += ', ' + aa.complement if aa.complement
-        aa.firstPart += ', ' + aa.reference if aa.reference
-        aa.secondPart = '' + aa.city
-        aa.secondPart += ' - ' + aa.state
-        aa.secondPart += ' - ' + aa.country
-        aa.summary = '' + aa.street
-        aa.summary += ' - ' + aa.postalCode if aa.postalCode
+        countriesUsed.push(aa.country)
 
       if _.isEmpty(@attr.data.address)
         @attr.data.hasOtherAddresses = false
@@ -68,8 +72,30 @@ define ->
         @attr.data.selectedAddressId = data.address.addressId
         @attr.data.hasOtherAddresses = true
         @attr.data.showAddressList = true
+
+      countriesUsedRequire = _.map countriesUsed, (c) ->
+        return 'countries/Country'+c
+
+      vtex.require(countriesUsedRequire).then =>
+        for country, i in arguments
+          prop = {}
+          prop[countriesUsed[i]] = new arguments[i]()
+          @trigger document, 'newCountryRule', prop
+
+        for aa in @attr.data.availableAddresses
+          aa.firstPart = '' + aa.street
+          aa.firstPart += ', ' + aa.complement if aa.complement
+          aa.firstPart += ', ' + aa.number if aa.number
+          aa.firstPart += ', ' + aa.neighborhood if aa.neighborhood
+          aa.firstPart += ', ' + aa.reference if aa.reference
+          aa.secondPart = '' + aa.city
+          aa.secondPart += ' - ' + aa.state
+          if @attr.data.countryRules[aa.country].usePostalCode
+            aa.secondPart += ' - ' + aa.postalCode
+          aa.secondPart += ' - ' + i18n.t("countries."+aa.country)
         @render()
 
+    # Handle selection of an address in the list
     @selectAddress = (ev, data) ->
       selectedAddressId = undefined
 
@@ -90,7 +116,13 @@ define ->
 
       ev.preventDefault()
 
+    # Store new country rules in the data object
+    @addCountryRule = (ev, data) ->
+      _.extend(@attr.data.countryRules, data)
+
+    # Bind events
     @after 'initialize', ->
+      @on document, 'newCountryRule', @addCountryRule
       @on document, 'updateAddresses', @updateAddresses
       @on document, 'selectAddress', @selectAddress
       @on document, 'click',
@@ -102,5 +134,5 @@ define ->
       @on 'keyup',
         postalCodeSelector: @validatePostalCode
 
-      @attr.templates['addressListTemplate'] = vtex.
-        require('template/addressList')
+      @attr.templates.list['template'] = vtex.
+        require('template/'+@attr.templates.list.name)

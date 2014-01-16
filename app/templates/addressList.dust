@@ -9,10 +9,8 @@
             <input type="radio" id="edit-delivery{addressId}" value="{addressId}" checked="checked" name="selected-deliveryAddress">
             <label for="edit-delivery{addressId}" class="input">
               <span class="firstpart">{firstPart}</span>
-              <br>
-              <span class="secondpart">{secondPart}</span>
-              <!-- ifnot: checkout.isNotUsingPostalCode -->
-              &nbsp; - <span class="postalcode">{postalCode}</span>
+              <br>              
+              <span class="secondpart">{secondPart}</span>              
             </label>
           </p>
           <span class="text-box-selected" data-i18n="addressList.selected"></span>&nbsp;
@@ -27,9 +25,7 @@
             <label for="edit-delivery{addressId}" class="input">
               <span class="firstpart">{firstPart}</span>
               <br>
-              <span class="secondpart">{secondPart}</span>
-              <!-- ifnot: checkout.isNotUsingPostalCode -->
-              &nbsp; - <span class="postalcode">{postalCode}</span>
+              <span class="secondpart">{secondPart}</span>              
             </label>
           </p>
           <a class="link-box-select" href="javascript:void(0);" data-i18n="addressList.select"></a>&nbsp;

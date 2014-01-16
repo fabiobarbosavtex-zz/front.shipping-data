@@ -6,7 +6,7 @@ vtex.require(['component/AddressForm', 'component/AddressList'],
     var addressListComponent = '.address-list-placeholder';
     var addressFormComponent = '.address-form-placeholder';
     var addressList = new AddressList(addressListComponent);
-    var addressForm = new AddressForm(addressFormComponent);
+    window.addressForm = new AddressForm(addressFormComponent);
 
     if (false) {
       var data;
@@ -74,16 +74,16 @@ vtex.require(['component/AddressForm', 'component/AddressList'],
             {
               "addressId": "-1385141491002",
               "addressType": "residential",
-              "city": "Rio De Janeiro",
-              "complement": "",
-              "country": "BRA",
-              "neighborhood": "Botafogo",
-              "number": "2",
+              "city": "Tame",
+              "complement": "#69b-53",
+              "country": "COL",
+              "neighborhood": "Andarillo",
+              "number": "",
               "postalCode": "22251-030",
               "receiverName": "Breno Calazans",
               "reference": null,
-              "state": "RJ",
-              "street": "Rua  Assuncao"
+              "state": "Arauca",
+              "street": "Av. El Dorado"
             }
           ]
         }
@@ -94,17 +94,35 @@ vtex.require(['component/AddressForm', 'component/AddressList'],
 
       // When a new addresses is saved
       $(addressBookComponent).on('newAddress', function(ev, addressObj){
+        console.log(addressObj);
         // Do an AJAX to save in your API
         // When you're done, update with the new data
-        data.availableAddresses.push(addressObj);
-        data.address = addressObj;
-        $(addressBookComponent).trigger('updateAddresses', data);
+        var updated = false;
+        for (var i = data.shippingData.availableAddresses.length - 1; i >= 0; i--) {
+          var address = data.shippingData.availableAddresses[i];
+          if (address.addressId === addressObj.addressId) {
+            address = _.extend(address, addressObj);
+            updated = true;
+            break;
+          }
+        }
+        if (!updated) {
+          data.shippingData.availableAddresses.push(addressObj);
+        }
+        data.shippingData.address = addressObj;
+        setTimeout(function() {
+          $(addressBookComponent).trigger('updateAddresses', data.shippingData);
+        }, 400);
       });
 
       // When a new address is selected on the list, do something
       $(addressBookComponent).on('addressSelected', function(ev, addressObj){
         console.log('Address selected:', addressObj.addressId);
       });
+
+      $(addressBookComponent).on('postalCode', function(ev, postalCode) {
+        console.log('New postal code:', postalCode);
+      })
     }
   }
 );
