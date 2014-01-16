@@ -11,7 +11,7 @@
       </p>
       <p class="ship-postal-code required input text mask">
         <label for="ship-postal-code"><span data-i18n="addressForm.postalCode"></span> <span class="item-required">*</span></label>
-        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small" value="{postalCode}" name="postalCode">
+        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small required" value="{postalCode}" name="postalCode">
       </p>
 
       {?showAddressForm}

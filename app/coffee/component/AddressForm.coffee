@@ -70,8 +70,10 @@ define ->
                 errorsWrapper: '<div class="help error-list"></div>'
                 errorElem: '<span class="help error"></span>'
 
-            # Focus on the first empty field
-            inputs = 'input[type=email], input[type=tel], input[type=text]'
+            # Focus on the first empty rqeuired field
+            inputs = 'input[type=email].required,' + \
+                     'input[type=tel].required,' + \
+                     'input[type=text].required'
             $(@$node).find(inputs)
               .filter ->
                 if($(this).val() == "")
