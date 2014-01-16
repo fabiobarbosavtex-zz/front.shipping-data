@@ -9,11 +9,12 @@
     "bootstrap": "2.3.2",
     "dustjs-linkedin": "~2.2.2",
     "dustjs-linkedin-helpers": "~1.1.1",
-    "jquery.inputmask": "~2.4.0",
     "underscore": "~1.5.2",
-    "parsleyjs": "~1.2.2",
     "font-awesome": "3.2.1",
-    "i18next": "~1.6.3"
+    "jquery.inputmask": "~2.4.0",
+    "i18next": "~1.6.3",
+    "parsleyjs": "~1.2.2",
+    "front-i18n": "vtex/front.i18n#0.4.1"
   },
   "devDependencies": {
     "jasmine-flight-standalone": "*",

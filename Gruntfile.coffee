@@ -34,7 +34,6 @@ module.exports = (grunt) ->
           'app/libs/es5-shim/es5-shim.js': 'bower_components/es5-shim/es5-shim.js'
           'app/libs/es5-shim/es5-sham.js': 'bower_components/es5-shim/es5-sham.js'
           'app/libs/i18next/release/i18next-1.6.3.min.js': 'bower_components/i18next/release/i18next-1.6.3.min.js'
-          'app/libs/i18next/release/i18next-1.6.3.js': 'bower_components/i18next/release/i18next-1.6.3.js'
         ]
       templates:
         expand: true
@@ -54,6 +53,22 @@ module.exports = (grunt) ->
             expand: true
             cwd: 'app/coffee'
             src: ['**/*.coffee']
+            dest: 'build-raw/<%= relativePath %>/js/'
+            ext: '.js'
+        ]
+      lean:
+        files: [
+            expand: true
+            cwd: 'app/coffee'
+            src: ['**/*.coffee', '!rules/**']
+            dest: 'build-raw/<%= relativePath %>/js/'
+            ext: '.js'
+        ]
+      rules:
+        files: [
+            expand: true
+            cwd: 'app/coffee'
+            src: ['rules/**/*.coffee']
             dest: 'build-raw/<%= relativePath %>/js/'
             ext: '.js'
         ]
@@ -84,8 +99,11 @@ module.exports = (grunt) ->
       options:
         livereload: true
       coffee:
-        files: ['app/coffee/**/*.coffee']
-        tasks: ['coffee', 'copy:build']
+        files: ['app/coffee/**/*.coffee', '!app/coffee/rules/**']
+        tasks: ['coffee:lean', 'copy:build']
+      coffeeRules:
+        files: ['app/coffee/rules/**/*.coffee']
+        tasks: ['coffee:rules', 'copy:build']
       main:
         files: ['app/js/main.js', 'app/js/front-shipping-data.js',
                 'app/**/*.css', 'app/index.html']
@@ -154,7 +172,7 @@ module.exports = (grunt) ->
                                     'watch']###
 
   grunt.registerTask 'default', ['clean', 'dust', 'copy:templates', 'copy:libs',
-                                 'copy:main', 'coffee', 'copy:build',
+                                 'copy:main', 'coffee:main', 'copy:build',
                                  'server', 'watch']
   # minifies files
   grunt.registerTask 'min', ['useminPrepare', 'concat', 'uglify', 'usemin']
