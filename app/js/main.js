@@ -13,12 +13,12 @@ vtex.curl(['component/AddressForm', 'component/AddressList'],
       var giftList = window.giftList ? window.giftList : '';
       $.ajax('/no-cache/giftlistv2/address/get/'+giftList).done(function(_data){
         $('.address-component-layover').stop(true, true).slideUp('fast');
-        $(componentSelector).trigger('updateAddresses', data.shippingData);
+        $(addressBookComponent).trigger('updateAddresses', data.shippingData);
       }).fail(function(){
         console.error('Não autenticado!');
       });
 
-      $(addressListComponent).on('newAddress', function(ev, addressObj){
+      $(addressBookComponent).on('newAddress', function(ev, addressObj){
         $('.submit.btn-success').attr("disabled", "disabled");
         $('.address-component-layover').stop(true, true).slideDown('fast');
         $.ajax({
@@ -30,14 +30,14 @@ vtex.curl(['component/AddressForm', 'component/AddressList'],
         }).done(function(data){
           $('.address-component-layover').stop(true, true).slideUp('fast');
           $('.submit.btn-success').removeAttr("disabled", "");
-          $(componentSelector).trigger('updateAddresses', data.shippingData);
+          $(addressBookComponent).trigger('updateAddresses', data.shippingData);
         }).fail(function(){
           $('.address-component-layover').stop(true, true).slideUp('fast');
           $('.submit.btn-success').removeAttr("disabled", "");
           console.error('Erro!');
         });
       });
-    } else {
+    } else if (false) {
       // Do an AJAX to load the addreses
       var data = {
         "shippingData": {
@@ -124,6 +124,25 @@ vtex.curl(['component/AddressForm', 'component/AddressList'],
       $(addressBookComponent).on('postalCode', function(ev, postalCode) {
         console.log('New postal code:', postalCode);
       })
+    } else {
+
+      var checkout = { API: new vtex.checkout.API() };
+
+      checkout.API.getOrderForm(['shippingData']).done(function(data){
+        $(addressBookComponent).trigger('updateAddresses', data.shippingData);
+      }).fail(function(){
+        // Tratamento de erro
+      });
+
+      $(addressBookComponent).on('newAddress addressSelected', function(ev, addressObj){
+        var shippingData = { address: addressObj };
+        var serializedAttachment = JSON.stringify(shippingData);
+        checkout.API.sendAttachment('shippingData', serializedAttachment).done(function(data){
+          $(addressBookComponent).trigger('updateAddresses', data.shippingData);
+        }).fail(function(){
+          // Tratamento de erro
+        });;
+      });
     }
   }
 );
