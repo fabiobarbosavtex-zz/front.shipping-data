@@ -43,6 +43,10 @@ describe '', ->
         # Act
         $(document).trigger 'showAddressForm', data
 
+        waitsFor (->
+          return $('.address-form', this.component.$node)[0]
+        ).bind(this)
+
       it 'should show form', ->
         # Assert
         form = $('.address-form', this.component.$node)[0]

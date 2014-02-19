@@ -37,13 +37,14 @@ module.exports = (grunt) ->
       templates:
         expand: true
         cwd: 'app/'
-        src: ['js/templates/**/*.*']
+        src: ['js/template/**/*.*']
         dest: 'app/'
         options:
           process: (content) ->
-            prepend = 'window.vtex || (window.vtex = {});\nwindow.vtex.'
-            content = content + ''
-            content = prepend + content
+            prepend = '(function() {\n' \
+              + 'var define = window.vtex.define || window.define;\n'
+            content = '' + prepend + content
+            content = content + '\n}).call(this);'
             return content
 
     coffee:
@@ -59,7 +60,7 @@ module.exports = (grunt) ->
         files: [
             expand: true
             cwd: 'app/coffee'
-            src: ['**/*.coffee', '!rules/**']
+            src: ['**/*.coffee', '!rule/**']
             dest: 'build-raw/<%= relativePath %>/js/'
             ext: '.js'
         ]
@@ -67,7 +68,7 @@ module.exports = (grunt) ->
         files: [
             expand: true
             cwd: 'app/coffee'
-            src: ['rules/**/*.coffee']
+            src: ['rule/**/*.coffee']
             dest: 'build-raw/<%= relativePath %>/js/'
             ext: '.js'
         ]
@@ -88,7 +89,7 @@ module.exports = (grunt) ->
     karma:
       options:
         configFile: 'karma.conf.js'
-        browsers: ['PhantomJS']
+        browsers: ['Chrome']
       unit:
         background: true
       single:
@@ -98,10 +99,10 @@ module.exports = (grunt) ->
       options:
         livereload: true
       coffee:
-        files: ['app/coffee/**/*.coffee', '!app/coffee/rules/**']
+        files: ['app/coffee/**/*.coffee', '!app/coffee/rule/**']
         tasks: ['coffee:lean', 'copy:build']
       coffeeRules:
-        files: ['app/coffee/rules/**/*.coffee']
+        files: ['app/coffee/rule/**/*.coffee']
         tasks: ['coffee:rules', 'copy:build']
       main:
         files: ['app/js/main.js', 'app/js/front-shipping-data.js',
@@ -112,14 +113,14 @@ module.exports = (grunt) ->
         tasks: ['dust', 'copy:templates', 'copy:main', 'copy:build']
       test:
         files: ['app/coffee/**/*.coffee', 'test/spec/**/*.coffee']
-        tasks: []
+        tasks: ['karma:unit:run']
 
     dust:
       files:
         expand: true
-        cwd: 'app/templates/'
+        cwd: 'app/template/'
         src: ['**/*.dust']
-        dest: 'app/js/templates/'
+        dest: 'app/js/template/'
         ext: '.js'
       options:
         relative: true
@@ -165,22 +166,22 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks name for name of pkg.devDependencies \
     when name[0..5] is 'grunt-'
 
-  ###grunt.registerTask 'default', ['clean', 'dust', 'copy:templates',
-                                    'copy:libs', 'copy:main', 'coffee',
-                                    'copy:build', 'karma:unit', 'server',
-                                    'watch']###
+  grunt.registerTask 'default', ['clean', 'dust', 'copy:templates',
+                                 'copy:libs', 'copy:main', 'coffee:main',
+                                 'copy:build', 'karma:unit:start', 'server',
+                                 'watch']
 
-  grunt.registerTask 'default', ['clean', 'dust', 'copy:templates', 'copy:libs',
-                                 'copy:main', 'coffee:main', 'copy:build',
-                                 'server', 'watch']
   # minifies files
   grunt.registerTask 'min', ['useminPrepare', 'concat', 'uglify', 'usemin']
+
   # Dev - minifies files
   grunt.registerTask 'devmin', ['clean', 'dust', 'copy:templates', 'copy:libs',
-                                'copy:main', 'coffee', 'min', 'copy:build',
-                                'server', 'watch']
+                                'copy:main', 'coffee:main',
+                                'min', 'copy:build', 'server', 'watch']
   # Dist - minifies files
   grunt.registerTask 'dist', ['clean', 'dust', 'copy:templates', 'copy:libs',
-                              'copy:main', 'coffee', 'min', 'copy:build']
+                              'copy:main', 'coffee:main', 'string-replace:dist',
+                              'min', 'copy:build']
+
   grunt.registerTask 'test', ['karma:single']
   grunt.registerTask 'server', ['configureProxies:server', 'connect']

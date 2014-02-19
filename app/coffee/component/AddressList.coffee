@@ -1,6 +1,7 @@
-define = window.define or window.vtex.define
+define = vtex.define || window.define
+require = vtex.curl || window.require
 
-define ->
+define (require) ->
   AddressList = flight.component ->
     @defaultAttrs
       data:
@@ -9,12 +10,14 @@ define ->
         selectedAddressId: ''
         hasOtherAddresses: false
         showAddressList: true
-        deliveryCountries: ['ARG', 'BRA', 'CHL', 'COL', 'ECU', 'URY','USA']
+        deliveryCountries: ['BRA']
         countryRules: {}
 
       templates:
         list:
           name: 'addressList'
+          template: 'template/addressList'
+          loaded: false
 
       createAddressSelector: '.address-create'
       editAddressSelector: '.address-edit'
@@ -27,7 +30,8 @@ define ->
       if not data.showAddressList
         @$node.html('')
       else
-        @attr.templates.list.template.then =>
+        require [@attr.templates.list.template], =>
+          @attr.templates.list.loaded = true
           dust.render @attr.templates.list.name, data, (err, output) =>
             output = $(output).i18n()
             $(@$node).html(output)
@@ -60,6 +64,7 @@ define ->
       @$node.trigger 'cancelAddressForm', true
       @attr.data.address = data.address
       @attr.data.availableAddresses = data.availableAddresses
+      @attr.data.deliveryCountries = data.deliveryCountries
 
       countriesUsed = []
       for aa in @attr.data.availableAddresses
@@ -74,9 +79,9 @@ define ->
         @attr.data.showAddressList = true
 
       countriesUsedRequire = _.map countriesUsed, (c) ->
-        return 'rules/Country'+c
+        return 'rule/Country'+c
 
-      vtex.require(countriesUsedRequire).then =>
+      require countriesUsedRequire, =>
         for country, i in arguments
           prop = {}
           prop[countriesUsed[i]] = new arguments[i]()
@@ -133,6 +138,3 @@ define ->
 
       @on 'keyup',
         postalCodeSelector: @validatePostalCode
-
-      @attr.templates.list['template'] = vtex.
-        require('template/'+@attr.templates.list.name)

@@ -92,22 +92,22 @@ describe '', ->
         # Act
         $(document).trigger('updateAddresses', shippingData)
 
-      it 'should know there is other addresses', ->
+      xit 'should know there is other addresses', ->
         # Assert
         expect(this.component.attr.data.hasOtherAddresses).toBe(true)
 
-      it 'should list addresses', ->
+      xit 'should list addresses', ->
         # Assert
         listItems = $('.address-item', this.component.$node)
         expect(listItems.length).toBe(2)
 
-      it 'should have one address selected', ->
+      xit 'should have one address selected', ->
         # Assert
         data = this.component.attr.data
         expect(data.selectedAddressId).not.toBeNull()
         expect(data.address.addressId).toEqual(data.selectedAddressId)
 
-      it 'should select a new address when clicked', ->
+      xit 'should select a new address when clicked', ->
         # Arrange
         data = this.component.attr.data
         address = $('.address-item')

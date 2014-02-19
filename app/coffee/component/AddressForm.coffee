@@ -1,13 +1,13 @@
-define = window.define or window.vtex.define
+define = vtex.define || window.define
+require = vtex.curl || window.require
 
-define ->
+define (require) ->
   AddressForm = flight.component ->
     @defaultAttrs
       data:
         address: {}
         postalCode: ''
         deliveryCountries: ['BRA']
-        deliveryCountryNames: []
         
         disableCityAndState: false
         labelShippingFields: false
@@ -24,6 +24,7 @@ define ->
           baseName: 'countries/addressForm'
         selectCountry:
           name: 'selectCountry'
+          template: 'template/selectCountry'
 
       addressFormSelector: '.address-form-new'
       postalCodeSelector: '#ship-postal-code'
@@ -38,47 +39,46 @@ define ->
     @render = (ev, data) ->
       data = @attr.data if not data
       if data.showSelectCountry
-        @attr.templates.selectCountry.template.then =>
+        require [@attr.templates.selectCountry.template], =>
           dust.render @attr.templates.selectCountry.name, data, (err, output) =>
             output = $(output).i18n()
             @$node.html(output)
       else if data.showAddressForm
-        @attr.templates.form.template.then =>
-          rules = @getCurrentRule()
-          data.states = rules.states
-          data.regexes = rules.regexes
-          dust.render @attr.templates.form.name, data, (err, output) =>
-            output = $(output).i18n()
-            @$node.html(output)
+        rules = @getCurrentRule()
+        data.states = rules.states
+        data.regexes = rules.regexes
+        dust.render @attr.templates.form.name, data, (err, output) =>
+          output = $(output).i18n()
+          @$node.html(output)
 
-            if data.loading
-              $('input, select, .btn', @$node).attr('disabled', 'disabled')
+          if data.loading
+            $('input, select, .btn', @$node).attr('disabled', 'disabled')
 
-            if rules.citiesBasedOnStateChange
-              @changeCities()
-              if data.address.city
-                $(@attr.citySelector, @$node).val(data.address.city)
+          if rules.citiesBasedOnStateChange
+            @changeCities()
+            if data.address.city
+              $(@attr.citySelector, @$node).val(data.address.city)
 
-            if rules.usePostalCode
-              $(@attr.postalCodeSelector, @$node).inputmask
-                mask: rules.masks.postalCode
+          if rules.usePostalCode
+            $(@attr.postalCodeSelector, @$node).inputmask
+              mask: rules.masks.postalCode
 
-            $(@attr.addressFormSelector, @$node).parsley
-              errorClass: 'error'
-              successClass: 'success'
-              errors:
-                errorsWrapper: '<div class="help error-list"></div>'
-                errorElem: '<span class="help error"></span>'
+          $(@attr.addressFormSelector, @$node).parsley
+            errorClass: 'error'
+            successClass: 'success'
+            errors:
+              errorsWrapper: '<div class="help error-list"></div>'
+              errorElem: '<span class="help error"></span>'
 
-            # Focus on the first empty rqeuired field
-            inputs = 'input[type=email].required,' + \
-                     'input[type=tel].required,' + \
-                     'input[type=text].required'
-            $(@$node).find(inputs)
-              .filter ->
-                if($(this).val() == "")
-                  return true
-            .first().focus()
+          # Focus on the first empty rqeuired field
+          inputs = 'input[type=email].required,' + \
+                   'input[type=tel].required,' + \
+                   'input[type=text].required'
+          $(@$node).find(inputs)
+            .filter ->
+              if($(this).val() == "")
+                return true
+          .first().focus()
       else
         @$node.html('')
 
@@ -103,6 +103,8 @@ define ->
     @showAddressForm = (ev, data) ->
       $.extend(@attr.data, data) if data
 
+      @attr.data.isEditingAddress = true
+
       if data.address.addressType
         @selectCountry(data.address.country)
       else if @attr.data.deliveryCountries.length is 1
@@ -110,9 +112,7 @@ define ->
         @selectCountry(country)
       else
         @attr.data.showSelectCountry = true
-
-      @attr.data.isEditingAddress = true
-      @render(@attr.data)
+        @trigger('addressFormRender', @attr.data)
 
     # Call the postal code API
     @getPostalCode = (data) ->
@@ -144,7 +144,7 @@ define ->
           data.throttledLoading = false
           data.showAddressForm = true
           data.loading = false
-          @render(data)
+          @trigger('addressFormRender', data)
           @$node.trigger('postalCode', @getCurrentAddress())
       ).fail =>
         data = @attr.data
@@ -152,14 +152,14 @@ define ->
         data.showAddressForm = true
         data.labelShippingFields = false
         data.loading = false
-        @render(data)
+        @trigger('addressFormRender', data)
         @$node.trigger('postalCode', @getCurrentAddress())
 
     # Able the user to edit the suggested fields
     # filled by the postal code service
     @forceShippingFields = ->
       @attr.data.labelShippingFields = false
-      @render(@attr.data)
+      @trigger('addressFormRender', @attr.data)
 
     # Get the current address typed in the form
     @getCurrentAddress = ->
@@ -201,18 +201,22 @@ define ->
       @attr.data.country = country
       @attr.data.showAddressForm = true
       @attr.data.showSelectCountry = false
-      @attr.templates.form.name = @attr.templates.form.baseName \
-        + country
+
+      @attr.templates.form.name =
+        @attr.templates.form.baseName + country
+      @attr.templates.form['template'] =
+            'template/' + @attr.templates.form.name
+
+      deps = [@attr.templates.form.template,
+              @attr.templates.selectCountry.template]
       if not @attr.data.countryRules[country]
-        vtex.require('rules/Country'+country).then (C) =>
+        deps.push('rule/Country'+country)
+        require deps, (ft, sct, C) =>
           @attr.data.countryRules[country] = new C()
-          @attr.templates.form['template'] = vtex
-            .require('template/'+@attr.templates.form.name)
-          @render(@attr.data)
+          @trigger('addressFormRender', @attr.data)
       else
-        @attr.templates.form['template'] = vtex
-          .require('template/'+@attr.templates.form.name)
-        @render(@attr.data)
+        require deps, =>
+          @trigger('addressFormRender', @attr.data)
 
     # Handle the selection event
     @selectedCountry = (ev, data) ->
@@ -226,7 +230,7 @@ define ->
       @attr.data.showAddressForm = false
       @attr.data.showSelectCountry = false
       @attr.data.loading = false
-      @render(@attr.data)
+      @trigger('addressFormRender', @attr.data)
       @$node.trigger 'selectAddress', @attr.data.selectedAddressId
 
     # Change the city select options when a state is selected
@@ -272,7 +276,7 @@ define ->
     # This will disable all fields
     @loading = (ev, data) ->
       @attr.data.loading = true
-      @render(@attr.data)
+      @trigger('addressFormRender', @attr.data)
 
     # Store new country rules in the data object
     @addCountryRule = (ev, data) ->
@@ -301,6 +305,3 @@ define ->
 
       @on 'keyup',
         postalCodeSelector: @validatePostalCode
-
-      @attr.templates.selectCountry['template'] = vtex
-        .require('template/'+@attr.templates.selectCountry.name)

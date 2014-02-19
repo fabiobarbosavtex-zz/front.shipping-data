@@ -27,7 +27,8 @@
     "grunt-dust": "~0.6.4",
     "dustjs-helpers": "~1.1.1",
     "grunt-remote": "~0.1.1",
-    "grunt-vtex-deploy": "0.17"
+    "grunt-vtex-deploy": "0.17",
+    "grunt-string-replace": "~0.2.7"
   },
   "scripts": {
     "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"

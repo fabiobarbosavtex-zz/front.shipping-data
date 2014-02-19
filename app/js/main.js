@@ -1,12 +1,12 @@
 'use strict';
 
-vtex.require(['component/AddressForm', 'component/AddressList'],
+vtex.curl(['component/AddressForm', 'component/AddressList'],
   function(AddressForm, AddressList) {
     var addressBookComponent = '.address-book';
     var addressListComponent = '.address-list-placeholder';
     var addressFormComponent = '.address-form-placeholder';
     var addressList = new AddressList(addressListComponent);
-    window.addressForm = new AddressForm(addressFormComponent);
+    var addressForm = new AddressForm(addressFormComponent);
 
     if (false) {
       var data;
@@ -85,7 +85,8 @@ vtex.require(['component/AddressForm', 'component/AddressList'],
               "state": "Arauca",
               "street": "Av. El Dorado"
             }
-          ]
+          ],
+          deliveryCountries: ["BRA", "COL"]
         }
       };
 

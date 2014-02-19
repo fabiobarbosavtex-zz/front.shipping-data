@@ -1,4 +1,5 @@
-define = window.define or window.vtex.define
+define = vtex.define || window.define
+require = vtex.curl || window.require
 
 define ->
   pt_BR =
