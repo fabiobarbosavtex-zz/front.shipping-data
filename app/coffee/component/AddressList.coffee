@@ -61,7 +61,6 @@ define (require) ->
 
     # Update address list
     @updateAddresses = (ev, data) ->
-      @$node.trigger 'cancelAddressForm', true
       @attr.data.address = data.address
       @attr.data.availableAddresses = data.availableAddresses
       @attr.data.deliveryCountries = data.deliveryCountries
@@ -125,10 +124,16 @@ define (require) ->
     @addCountryRule = (ev, data) ->
       _.extend(@attr.data.countryRules, data)
 
+    @showAddressList = (ev, data) ->
+      return if @attr.data.showAddressList
+      @attr.data.showAddressList = true
+      @render(@attr.data)
+
     # Bind events
     @after 'initialize', ->
       @on document, 'newCountryRule', @addCountryRule
       @on document, 'updateAddresses', @updateAddresses
+      @on document, 'addressFormCanceled', @showAddressList
       @on document, 'selectAddress', @selectAddress
       @on document, 'click',
         'forceShippingFieldsSelector': @forceShippingFields

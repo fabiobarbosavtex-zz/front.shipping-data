@@ -94,6 +94,7 @@ define (require) ->
       if rules.regexes.postalCode.test(postalCode)
         @attr.data.throttledLoading = true
         @attr.data.postalCode = postalCode
+        @attr.data.address.postalCode = postalCode
         @attr.data.loading = true if rules.queryPostalCode
         @$node.trigger 'addressFormRender', @attr.data
         if rules.queryPostalCode
@@ -151,6 +152,7 @@ define (require) ->
         data.throttledLoading = false
         data.showAddressForm = true
         data.labelShippingFields = false
+        data.disableCityAndState = false
         data.loading = false
         @trigger('addressFormRender', data)
         @$node.trigger('postalCode', @getCurrentAddress())
@@ -231,7 +233,7 @@ define (require) ->
       @attr.data.showSelectCountry = false
       @attr.data.loading = false
       @trigger('addressFormRender', @attr.data)
-      @$node.trigger 'selectAddress', @attr.data.selectedAddressId
+      @trigger('addressFormCanceled')
 
     # Change the city select options when a state is selected
     # citiesBasedOnStateChange should be true in the country's rule
@@ -293,6 +295,7 @@ define (require) ->
       @on document, 'newCountryRule', @addCountryRule
       @on document, 'addressFormRender', @render
       @on document, 'showAddressForm', @showAddressForm
+      @on document, 'updateAddresses', @cancelAddressForm
       @on document, 'cancelAddressForm', @cancelAddressForm
       @on document, 'click',
         'forceShippingFieldsSelector': @forceShippingFields
