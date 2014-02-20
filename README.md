@@ -1,7 +1,6 @@
 # front.shipping-data
----------------------
 
-Componente de endereços
+Componente de endereços construído em [Flight](http://flightjs.github.io/).
 
 ## Requerimentos
 
