@@ -113,7 +113,7 @@ module.exports = (grunt) ->
         tasks: ['dust', 'copy:templates', 'copy:main', 'copy:build']
       test:
         files: ['app/coffee/**/*.coffee', 'test/spec/**/*.coffee']
-        tasks: ['karma:unit:run']
+        tasks: ['']
 
     dust:
       files:
@@ -168,8 +168,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'default', ['clean', 'dust', 'copy:templates',
                                  'copy:libs', 'copy:main', 'coffee:main',
-                                 'copy:build', 'karma:unit:start', 'server',
-                                 'watch']
+                                 'copy:build', 'server', 'watch']
 
   # minifies files
   grunt.registerTask 'min', ['useminPrepare', 'concat', 'uglify', 'usemin']
