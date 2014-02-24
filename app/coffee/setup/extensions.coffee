@@ -44,6 +44,6 @@ define ->
       validators:
         alphanumponc: ->
           validate: (val) ->
-            regex = new RegExp(/^[A-Za-zÀ-ú0-9\/\\\-\.\,\s\(\)\'\#]*$/)
+            regex = new RegExp(/^[A-Za-zÀ-ž0-9\/\\\-\.\,\s\(\)\'\#ªº]*$/)
             return regex.test(val)
           priority: 32
