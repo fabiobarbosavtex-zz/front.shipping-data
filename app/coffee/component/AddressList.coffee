@@ -17,7 +17,6 @@ define (require) ->
         list:
           name: 'addressList'
           template: 'template/addressList'
-          loaded: false
 
       createAddressSelector: '.address-create'
       editAddressSelector: '.address-edit'
@@ -31,7 +30,6 @@ define (require) ->
         @$node.html('')
       else
         require [@attr.templates.list.template], =>
-          @attr.templates.list.loaded = true
           dust.render @attr.templates.list.name, data, (err, output) =>
             output = $(output).i18n()
             $(@$node).html(output)
@@ -136,7 +134,6 @@ define (require) ->
       @on document, 'addressFormCanceled', @showAddressList
       @on document, 'selectAddress', @selectAddress
       @on document, 'click',
-        'forceShippingFieldsSelector': @forceShippingFields
         'createAddressSelector': @createAddress
         'addressItemSelector': @selectAddress
         'editAddressSelector': @editAddress
