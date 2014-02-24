@@ -179,7 +179,7 @@ define (require) ->
       if addressObj.addressTypeCommercial
         addressObj.addressType = 'commercial'
       else
-        addressObj.addressType = 'residental'
+        addressObj.addressType = 'residential'
 
       return addressObj
 
