@@ -60,12 +60,12 @@ define (require) ->
     # Update address list
     @updateAddresses = (ev, data) ->
       # First, check which countries the store deliveries
-      if data.deliveryCountries?.length > 0
+      if data?.deliveryCountries?.length > 0
         @attr.data.deliveryCountries = data.deliveryCountries
 
       # Remove all the addresses located in countries the store is not
       # delivering
-      @attr.data.availableAddresses = _.filter data.availableAddresses, (a) =>
+      @attr.data.availableAddresses = _.filter data?.availableAddresses, (a) =>
         return a.country in @attr.data.deliveryCountries
 
       if @attr.data.availableAddresses.length is 0
