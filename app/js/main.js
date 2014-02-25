@@ -131,12 +131,14 @@ vtex.curl(['component/AddressForm', 'component/AddressList'],
       checkout.API.getOrderForm().done(function(data){
         var shippingData = data.shippingData;
 
-        shippingData.deliveryCountries = _.reduceRight(
-          shippingData.logisticsInfo,
-          function(memo, l) {
-            return memo.concat(l.shipsTo);
-          }, []
-        );
+        if (shippingData) {
+          shippingData.deliveryCountries = _.reduceRight(
+            shippingData.logisticsInfo,
+            function(memo, l) {
+              return memo.concat(l.shipsTo);
+            }, []
+          );
+        }
 
         $(addressBookComponent).trigger('updateAddresses', shippingData);
       }).fail(function(){
