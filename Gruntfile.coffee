@@ -113,7 +113,7 @@ module.exports = (grunt) ->
         tasks: ['dust', 'copy:templates', 'copy:main', 'copy:build']
       test:
         files: ['app/coffee/**/*.coffee', 'test/spec/**/*.coffee']
-        tasks: ['']
+        tasks: []
 
     dust:
       files:
