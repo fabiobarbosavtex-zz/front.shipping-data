@@ -64,6 +64,7 @@ define ->
       rangecheck:   'Você deve selecionar entre %s e %s opções.'
       equalto:      'Este campo deve ser o mesmo.'
 
+      postalcode:   'Informe um CEP válido.'
       alphanumponc: 'Digite apenas números, hífens, pontos e barras'
       minwords:     'Este campo deve possuir no mínimo %s palavras.'
       maxwords:     'Este campo deve possuir no máximo %s palavras.'

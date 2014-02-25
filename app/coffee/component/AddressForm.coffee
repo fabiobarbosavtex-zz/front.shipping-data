@@ -62,6 +62,8 @@ define (require) ->
           if rules.usePostalCode
             $(@attr.postalCodeSelector, @$node).inputmask
               mask: rules.masks.postalCode
+            if data.labelShippingFields
+              $(@attr.postalCodeSelector).addClass('success')
 
           $(@attr.addressFormSelector, @$node).parsley
             errorClass: 'error'
@@ -69,6 +71,12 @@ define (require) ->
             errors:
               errorsWrapper: '<div class="help error-list"></div>'
               errorElem: '<span class="help error"></span>'
+            validators:
+              postalcode: =>
+                validate: (val) =>
+                  rules = @attr.data.countryRules[@attr.data.country]
+                  return rules.regexes.postalCode.test(val)
+                priority: 32
 
           # Focus on the first empty rqeuired field
           inputs = 'input[type=email].required,' + \

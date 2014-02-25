@@ -15,13 +15,13 @@
         <label for="ship-postal-code"><span data-i18n="addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
 
         {?throttledLoading}
-        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small loading-postal-code" disabled="disabled" value="{postalCode}" name="postalCode">
+        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small loading-postal-code" disabled="disabled" value="{postalCode}" name="postalCode" >
 
         <i class="loading-inline icon-spinner icon-spin">
           <span data-i18n="global.loading"></span>
         </i>
         {:else}
-        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small" value="{postalCode}" name="postalCode">
+        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small required" value="{postalCode}" parsley-postalode="true"  name="postalCode">
         {?showDontKnowPostalCode}
         <small><a href="{postalCodeForgottenURL}" id="dont-know-postal-code" target="_blank" data-i18n="addressForm.dontKnowPostalCode"></a></small>
         {/showDontKnowPostalCode}

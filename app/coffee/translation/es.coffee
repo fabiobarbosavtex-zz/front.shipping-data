@@ -64,6 +64,7 @@ define ->
       rangecheck:   'Debe seleccionar entre %s y %s opciones.'
       equalto:      'Este valor debe ser idéntico.'
 
+      postalcode:   'Introduzca un código postal válido, por favor.'
       alphanumponc: 'Introduzca sólo números, guiones, puntos y barras, por favor.'
       minwords:     'Este valor debe tener al menos %s palabras.'
       maxwords:     'Este valor no debe exceder las %s palabras.'

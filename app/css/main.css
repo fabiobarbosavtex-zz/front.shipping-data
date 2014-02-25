@@ -69,6 +69,11 @@ p.ship-reference,
 p.ship-commercial,
 p.ship-neighborhood { clear: both }
 
+input.success {
+  background-image: url('../img/ico-ready.png');
+  background-position: right top;
+  background-repeat: no-repeat;
+}
 
 .btn-group-vertical input[type=radio],
 .address-item input[type=radio] {
