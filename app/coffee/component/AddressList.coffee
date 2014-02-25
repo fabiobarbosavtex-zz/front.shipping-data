@@ -59,43 +59,48 @@ define (require) ->
 
     # Update address list
     @updateAddresses = (ev, data) ->
-      @attr.data.address = data.address
-      @attr.data.availableAddresses = data.availableAddresses
-      @attr.data.deliveryCountries = data.deliveryCountries
+      # First, check which countries the store deliveries
+      if data.deliveryCountries?.length > 0
+        @attr.data.deliveryCountries = data.deliveryCountries
 
-      countriesUsed = []
-      for aa in @attr.data.availableAddresses
-        countriesUsed.push(aa.country)
+      # Remove all the addresses located in countries the store is not
+      # delivering
+      @attr.data.availableAddresses = _.filter data.availableAddresses, (a) =>
+        return a.country in @attr.data.deliveryCountries
 
-      if _.isEmpty(@attr.data.address)
+      if @attr.data.availableAddresses.length is 0
+        # The user has no addresses yet
         @attr.data.hasOtherAddresses = false
-        @createAddress()
       else
+        @attr.data.address = data.address
         @attr.data.selectedAddressId = data.address.addressId
         @attr.data.hasOtherAddresses = true
         @attr.data.showAddressList = true
 
-      countriesUsedRequire = _.map countriesUsed, (c) ->
+      countriesUsedRequire = _.map @attr.data.deliveryCountries, (c) ->
         return 'rule/Country'+c
 
       require countriesUsedRequire, =>
         for country, i in arguments
           prop = {}
-          prop[countriesUsed[i]] = new arguments[i]()
+          prop[@attr.data.deliveryCountries[i]] = new arguments[i]()
           @trigger document, 'newCountryRule', prop
 
-        for aa in @attr.data.availableAddresses
-          aa.firstPart = '' + aa.street
-          aa.firstPart += ', ' + aa.complement if aa.complement
-          aa.firstPart += ', ' + aa.number if aa.number
-          aa.firstPart += ', ' + aa.neighborhood if aa.neighborhood
-          aa.firstPart += ', ' + aa.reference if aa.reference
-          aa.secondPart = '' + aa.city
-          aa.secondPart += ' - ' + aa.state
-          if @attr.data.countryRules[aa.country].usePostalCode
-            aa.secondPart += ' - ' + aa.postalCode
-          aa.secondPart += ' - ' + i18n.t("countries."+aa.country)
-        @render()
+        if @attr.data.hasOtherAddresses
+          for aa in @attr.data.availableAddresses
+            aa.firstPart = '' + aa.street
+            aa.firstPart += ', ' + aa.complement if aa.complement
+            aa.firstPart += ', ' + aa.number if aa.number
+            aa.firstPart += ', ' + aa.neighborhood if aa.neighborhood
+            aa.firstPart += ', ' + aa.reference if aa.reference
+            aa.secondPart = '' + aa.city
+            aa.secondPart += ' - ' + aa.state
+            if @attr.data.countryRules[aa.country].usePostalCode
+              aa.secondPart += ' - ' + aa.postalCode
+            aa.secondPart += ' - ' + i18n.t('countries.'+aa.country)
+          @render()
+        else
+          @createAddress()
 
     # Handle selection of an address in the list
     @selectAddress = (ev, data) ->
