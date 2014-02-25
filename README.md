@@ -7,25 +7,25 @@ Componente de endereços construído em [Flight](http://flightjs.github.io/).
 ```html
 <!-- index.html -->
 
-	<!--[if lt IE 9]>	
-	<script src="/shipui/libs/es5-shim/es5-shim.min.js"></script>
-	<script src="/shipui/libs/es5-shim/es5-sham.min.js"></script>
-	<![endif]-->
-	<script src="//io.vtex.com.br/front-libs/jquery/1.8.3/jquery-1.8.3.min.js"></script>
-	<script src="//io.vtex.com.br/front-libs/underscore/1.5.2-gentle/underscore-min.js"></script> 
-	<script src="//io.vtex.com.br/front-libs/dustjs-linkedin/2.2.2/dust-core-2.2.2.min.js"></script>
-	<script src="//io.vtex.com.br/front-libs/dustjs-linkedin-helpers/1.1.1/dust-helpers-1.1.1.js"></script>
-	<script src="//io.vtex.com.br/front-libs/flight/1.0.9/flight.min.js"></script>
-	
-	<script src="//io.vtex.com.br/front-libs/curl/0.8.7-vtex/curl.js"></script>
-	
-	<!-- Insira a versão que deseja usar aqui -->
-	<script src="//io.vtex.com.br/front.shipping-data/1.1.0/js/libs.min.js"></script>
-	
-	<script src="//io.vtex.com.br/front-libs/front-i18n/0.4.1/vtex-i18n.js"></script>
-	
-	<!-- Insira a versão que deseja usar aqui -->
-	<script src="//io.vtex.com.br/front.shipping-data/1.1.0/js/setup/front-shipping-data.min.js"></script>
+<!--[if lt IE 9]>
+<script src="/shipui/libs/es5-shim/es5-shim.min.js"></script>
+<script src="/shipui/libs/es5-shim/es5-sham.min.js"></script>
+<![endif]-->
+<script src="//io.vtex.com.br/front-libs/jquery/1.8.3/jquery-1.8.3.min.js"></script>
+<script src="//io.vtex.com.br/front-libs/underscore/1.5.2-gentle/underscore-min.js"></script>
+<script src="//io.vtex.com.br/front-libs/dustjs-linkedin/2.2.2/dust-core-2.2.2.min.js"></script>
+<script src="//io.vtex.com.br/front-libs/dustjs-linkedin-helpers/1.1.1/dust-helpers-1.1.1.js"></script>
+<script src="//io.vtex.com.br/front-libs/flight/1.0.9/flight.min.js"></script>
+
+<script src="//io.vtex.com.br/front-libs/curl/0.8.7-vtex/curl.js"></script>
+
+<!-- Insira a versão que deseja usar aqui -->
+<script src="//io.vtex.com.br/front.shipping-data/1.1.0/js/libs.min.js"></script>
+
+<script src="//io.vtex.com.br/front-libs/front-i18n/0.4.1/vtex-i18n.js"></script>
+
+<!-- Insira a versão que deseja usar aqui -->
+<script src="//io.vtex.com.br/front.shipping-data/1.1.0/js/setup/front-shipping-data.min.js"></script>
 ```
 
 ## Exemplo de uso
@@ -53,8 +53,19 @@ vtex.curl(['component/AddressForm', 'component/AddressList'],
 
     // Alimenta componente com endereços da API
     checkout.API.getOrderForm(['shippingData']).done(function(data){
+      var shippingData = data.shippingData;
+
+      if (shippingData) {
+        shippingData.deliveryCountries = _.reduceRight(
+          shippingData.logisticsInfo,
+          function(memo, l) {
+            return memo.concat(l.shipsTo);
+          }, []
+        );
+      }
+
       // Dispara evento (componente é visível a partir deste momento)
-      $(addressBookComponent).trigger('updateAddresses', data.shippingData);
+      $(addressBookComponent).trigger('updateAddresses', shippingData);
     }).fail(function(){
       // Tratamento de erro
     });
