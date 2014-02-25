@@ -10,7 +10,7 @@ define (require) ->
         selectedAddressId: ''
         hasOtherAddresses: false
         showAddressList: true
-        deliveryCountries: ['BRA']
+        deliveryCountries: [vtex.i18n.getCountryCode()]
         countryRules: {}
 
       templates:
