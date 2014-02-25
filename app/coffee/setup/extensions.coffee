@@ -47,3 +47,4 @@ define ->
             regex = new RegExp(/^[A-Za-zÀ-ž0-9\/\\\-\.\,\s\(\)\'\#ªº]*$/)
             return regex.test(val)
           priority: 32
+      animate: false
