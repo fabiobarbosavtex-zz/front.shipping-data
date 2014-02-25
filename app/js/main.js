@@ -124,12 +124,21 @@ vtex.curl(['component/AddressForm', 'component/AddressList'],
       $(addressBookComponent).on('postalCode', function(ev, postalCode) {
         console.log('New postal code:', postalCode);
       })
-    } else {
+    } else if (true) {
 
       var checkout = { API: new vtex.checkout.API() };
 
-      checkout.API.getOrderForm(['shippingData']).done(function(data){
-        $(addressBookComponent).trigger('updateAddresses', data.shippingData);
+      checkout.API.getOrderForm().done(function(data){
+        var shippingData = data.shippingData;
+
+        shippingData.deliveryCountries = _.reduceRight(
+          shippingData.logisticsInfo,
+          function(memo, l) {
+            return memo.concat(l.shipsTo);
+          }, []
+        );
+
+        $(addressBookComponent).trigger('updateAddresses', shippingData);
       }).fail(function(){
         // Tratamento de erro
       });
