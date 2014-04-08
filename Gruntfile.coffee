@@ -153,7 +153,7 @@ module.exports = (grunt) ->
             VERSION_NUMBER: "{{version}}"
 
           files: ["index.html", "index.debug.html",
-                  "/js/front-shipping-data.js"]
+                  "/shipping/setup/front-shipping-data.js"]
 
   grunt.loadNpmTasks name for name of pkg.devDependencies \
     when name[0..5] is 'grunt-'
