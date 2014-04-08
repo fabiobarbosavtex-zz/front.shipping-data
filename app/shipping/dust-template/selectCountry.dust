@@ -1,0 +1,22 @@
+<div class="select-country">
+	{^showAddressForm}
+	<h4 data-i18n="shipping.addressForm.header"></h4>
+	{/showAddressForm}
+	<p class="ship-country required input text">
+		<label for="ship-country"><span data-i18n="shipping.addressForm.deliveryCountry"></span></label>
+		<select id="ship-country" tabindex="1" class="input-medium required" name="country">
+			{^showAddressForm}
+				<option value=""></option>
+			{/showAddressForm}
+			{#deliveryCountries}
+				<option value="{.}" {@eq key=. value=country}selected="true"{/eq}>{@i18n prefix="countries." text=. /}</option>
+			{/deliveryCountries}
+		</select>
+	</p>
+	
+	{?hasOtherAddresses}
+	{^showAddressForm}
+	<p class="cancel-address-form pull-left"><a href="javascript:void(0);" class="cancel-new-address" data-i18n="global.cancel"></a></p>
+	{/showAddressForm}
+	{/hasOtherAddresses}
+</div>

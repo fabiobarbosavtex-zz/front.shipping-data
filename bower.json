@@ -4,8 +4,8 @@
   "dependencies": {
     "es5-shim": "2.3.0",
     "jquery.inputmask": "~2.4.0",
-    "i18next": "~1.6.3",
-    "parsleyjs": "~1.2.2",
+    "i18next": "~1.7.2",
+    "parsleyjs": "~1.2.4",
     "front-i18n": "vtex/front.i18n#0.4.1"
   },
   "devDependencies": {

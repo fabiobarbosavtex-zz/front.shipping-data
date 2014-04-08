@@ -15,7 +15,7 @@ module.exports = (grunt) ->
         files: [
           expand: true
           cwd: 'app/'
-          src: ['**', '!coffee/**', '!**/*.less', '!**/*.dust']
+          src: ['**', '!**/*.coffee', '!**/*.less', '!**/*.dust']
           dest: 'build-raw/<%= relativePath %>'
         ,
           src: ['app/index.html']
@@ -25,20 +25,12 @@ module.exports = (grunt) ->
         expand: true
         cwd: 'build-raw/'
         src: '**/*.*'
-        dest: 'build/'
-      libs:
-        files: [
-          'app/libs/jquery.inputmask/dist/jquery.inputmask.bundle.min.js': 'bower_components/jquery.inputmask/dist/jquery.inputmask.bundle.min.js'
-          'app/libs/parsleyjs/dist/parsley.min.js': 'bower_components/parsleyjs/dist/parsley.min.js'
-          'app/libs/es5-shim/es5-shim.min.js': 'bower_components/es5-shim/es5-shim.min.js'
-          'app/libs/es5-shim/es5-sham.min.js': 'bower_components/es5-shim/es5-sham.min.js'
-          'app/libs/i18next/release/i18next-1.6.3.min.js': 'bower_components/i18next/release/i18next-1.6.3.min.js'
-        ]
+        dest: 'build/'      
       templates:
         expand: true
-        cwd: 'app/'
-        src: ['js/template/**/*.*']
-        dest: 'app/'
+        cwd: 'app/shipping/'
+        src: ['template/**/*.*']
+        dest: 'app/shipping/'
         options:
           process: (content) ->
             prepend = '(function() {\n' \
@@ -51,25 +43,25 @@ module.exports = (grunt) ->
       main:
         files: [
             expand: true
-            cwd: 'app/coffee'
+            cwd: 'app/shipping'
             src: ['**/*.coffee']
-            dest: 'build-raw/<%= relativePath %>/js/'
+            dest: 'build-raw/<%= relativePath %>/shipping/'
             ext: '.js'
         ]
       lean:
         files: [
             expand: true
-            cwd: 'app/coffee'
+            cwd: 'app/shipping'
             src: ['**/*.coffee', '!rule/**']
-            dest: 'build-raw/<%= relativePath %>/js/'
+            dest: 'build-raw/<%= relativePath %>/shipping/'
             ext: '.js'
         ]
       rules:
         files: [
             expand: true
-            cwd: 'app/coffee'
+            cwd: 'app/shipping'
             src: ['rule/**/*.coffee']
-            dest: 'build-raw/<%= relativePath %>/js/'
+            dest: 'build-raw/<%= relativePath %>/shipping/'
             ext: '.js'
         ]
 
@@ -99,28 +91,28 @@ module.exports = (grunt) ->
       options:
         livereload: true
       coffee:
-        files: ['app/coffee/**/*.coffee', '!app/coffee/rule/**']
+        files: ['app/shipping/**/*.coffee', '!app/shipping/rule/**']
         tasks: ['coffee:lean', 'copy:build']
       coffeeRules:
-        files: ['app/coffee/rule/**/*.coffee']
+        files: ['app/shipping/rule/**/*.coffee']
         tasks: ['coffee:rules', 'copy:build']
       main:
-        files: ['app/js/main.js', 'app/js/front-shipping-data.js',
+        files: ['app/js/main.js', 'app/shipping/js/front-shipping-data.js',
                 'app/**/*.css', 'app/index.html']
         tasks: ['copy:main', 'copy:build']
       dust:
         files: ['app/**/*.dust']
         tasks: ['dust', 'copy:templates', 'copy:main', 'copy:build']
       test:
-        files: ['app/coffee/**/*.coffee', 'test/spec/**/*.coffee']
+        files: ['app/shipping/**/*.coffee', 'test/spec/**/*.coffee']
         tasks: []
 
     dust:
       files:
         expand: true
-        cwd: 'app/template/'
+        cwd: 'app/shipping/dust-template'
         src: ['**/*.dust']
-        dest: 'app/js/template/'
+        dest: 'app/shipping/template/'
         ext: '.js'
       options:
         relative: true
@@ -167,19 +159,19 @@ module.exports = (grunt) ->
     when name[0..5] is 'grunt-'
 
   grunt.registerTask 'default', ['clean', 'dust', 'copy:templates',
-                                 'copy:libs', 'copy:main', 'coffee:main',
-                                 'copy:build', 'server', 'watch']
+                                 'copy:main', 'coffee:main', 'copy:build',
+                                 'server', 'watch']
 
   # minifies files
   grunt.registerTask 'min', ['useminPrepare', 'concat', 'uglify', 'usemin']
 
   # Dev - minifies files
-  grunt.registerTask 'devmin', ['clean', 'dust', 'copy:templates', 'copy:libs',
-                                'copy:main', 'coffee:main',
-                                'min', 'copy:build', 'server', 'watch']
+  grunt.registerTask 'devmin', ['clean', 'dust', 'copy:templates',
+                                'copy:main', 'coffee:main', 'min',
+                                'copy:build', 'server', 'watch']
   # Dist - minifies files
-  grunt.registerTask 'dist', ['clean', 'dust', 'copy:templates', 'copy:libs',
-                              'copy:main', 'coffee:main', 'min', 'copy:build']
+  grunt.registerTask 'dist', ['clean', 'dust', 'copy:templates', 'copy:main',
+                              'coffee:main', 'min', 'copy:build']
 
   grunt.registerTask 'test', ['karma:single']
   grunt.registerTask 'server', ['configureProxies:server', 'connect']
