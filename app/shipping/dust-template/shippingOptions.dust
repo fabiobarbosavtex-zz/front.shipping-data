@@ -1,0 +1,143 @@
+<div class="delivery-shipping-options">
+    <h3 class="hide" data-i18n="shipping.shippingOptions.shippingOptions"></h3>
+    <!-- ko with: currentAddress -->
+        <div class="loading-slas" data-bind="fadeVisible: loadingSlasForSeller">
+            <div class="loading loading-bg">
+                <div class="loading-img">
+                    <i class="icon-spinner icon-spin">
+                        <span data-i18n="global.loading"></span>
+                    </i>
+                </div>
+            </div>
+            {#sellers}
+            <fieldset class="shipping-options just-one">
+                <h4 class="pull-left">
+                    <span class="pull-left choose-shipping-option-container">
+                        <span class="choose-shipping-option" data-i18n="shipping.shippingOptions.chooseShippingOption"></span>
+                    </span>
+
+                    {@if cond="'{sellers}'.length > 1"}
+                    <span class="pull-right">
+                        <span class="following" data-bind="fadeVisible: $parent.multipleSellers()" data-i18n="shipping.shippingOptions.followingProducts">Produtos de </span>
+                    </span>
+                    {/if}
+                </h4>
+
+                <div class="sla-items-list">
+                    <!-- ko if: $parent.multipleSellers() -->
+                    <div class="span btn-group btn-group-vertical">
+                        <select class="span12" tabindex="329">
+                            <option data-i18n="global.loading"></option>
+                        </select>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko ifnot: $parent.multipleSellers() -->
+                    <div class="span btn-group btn-group-vertical">
+                        <label class="shipping-option-item label-vertical-group input btn active" for="seller-1-sla-Econômica" htmlfor="seller-1-sla-Econômica">
+                            <input type="radio" disabled name="seller-1" id="seller-1-sla-Econômica" tabindex="330" value="Econômica">
+                            <span data-i18n="shipping.shippingOptions.shippingOption"></span> - <span data-i18n="global.value"></span> -
+                            <span class="delivery-estimate" data-i18n="shipping.shippingOptions.shippingEstimate"></span>
+                            <i class="icon-ok-circle"></i>
+                        </label>
+                        <label class="shipping-option-item label-vertical-group input btn" for="seller-1-sla-Econômica" htmlfor="seller-1-sla-Econômica">
+                            <input type="radio" disabled name="seller-1" id="seller-1-sla-Econômica" tabindex="330" value="Econômica">
+                            <span data-i18n="shipping.shippingOptions.shippingOption"></span> - <span data-i18n="global.value"></span> -
+                            <span class="delivery-estimate" data-i18n="shipping.shippingOptions.shippingEstimate"></span>
+                            <i class="icon-circle-blank"></i>
+                        </label>
+                    </div>
+                    <!-- /ko -->
+                </div>
+            </fieldset>
+            {/sellers}
+        </div>
+        <fieldset class="shipping-options" data-bind="css: { 'just-one': !multipleSellers() }, fadeVisible: showSlasForSeller, foreach: slasForSellerViewModelArray">
+            <h4 class="pull-left">
+                <span class="pull-left choose-shipping-option-container">
+                    <span class="choose-shipping-option" data-i18n="shipping.shippingOptions.chooseShippingOption"></span>
+                    <span class="seller-of hide" data-i18n="shipping.shippingOptions.ofSeller"></span>
+                </span>
+
+                <span class="pull-right">
+                    <span class="following" data-bind="fadeVisible: $parent.multipleSellers()" data-i18n="shipping.shippingOptions.followingProducts">Produtos de </span>
+                    <strong class="seller-name" data-bind="text: sellerName"></strong>
+                </span>
+            </h4>
+
+            <table class="product-list unstyled">
+                <tbody data-bind="foreach: logisticsInfoArray">
+                    <tr>
+                        <td class="img hide"><img data-bind="attr: {src: item.imageUrl()}"/></td>
+                        <td class="data">
+                            <i class="icon-caret-right"></i> <span class="product-name" data-bind="text: item.name()"></span>
+                        </td>
+                        <td class="product-brand-data hide">
+                            <span class="product-brand pull-right" data-bind="text: item.brand()">marca</span>
+                        </td>
+                        <td class="sla hide">
+                            <span data-bind="text: estimateLabel"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="sla-items-list">
+
+            <!-- ko if: $parent.multipleSellers() -->
+                <div class="span btn-group btn-group-vertical">
+                <select id="change-sla-items-list" data-bind="attr: {'class':'span12','tabindex': '329'},
+                                   options: slas,
+                                   optionsText: 'maxEstimateOptionText',
+                                   optionsValue: 'name',
+                                   value: selectedSlaName,
+                                   disable: checkout.disableInputs()"></select>
+                </div>
+            <!-- /ko -->
+
+            <!-- ko if: !$parent.multipleSellers() -->
+                <div data-bind="foreach: slas" class="span btn-group btn-group-vertical">
+                    <label class="shipping-option-item label-vertical-group input btn" data-bind="attr: {'for': idAttr, htmlFor: idAttr},
+                        css: {active: $parent.selectedSlaName() == name, 'focus': hasFocus }">
+                        <input type="radio" data-bind="attr: {'id': idAttr, 'name': nameAttr, 'tabindex': '33' + $index()},
+                        value: name, checked: $parent.selectedSlaName, hasfocus: hasFocus, disable: checkout.disableInputs()">
+                        <span class="shipping-option-item-text-wrapper" data-bind="attr: { 'title': maxEstimateLabel }">
+                            <span class="shipping-option-item-name" data-bind="text: label"></span>
+                            <span class="shipping-option-item-sep" data-bind="visible: !isScheduled"> - </span>
+                            <span class="shipping-option-item-time delivery-estimate" data-bind="text: maxEstimateLabel, visible: !isScheduled"></span>
+                        </span>
+                        <i class="icon-ok-circle" data-bind="visible: $parent.selectedSlaName() == name"></i>
+                        <i class="icon-circle-blank" data-bind="visible: $parent.selectedSlaName() != name"></i>
+                    </label>
+                </div>
+            <!-- /ko -->
+
+
+                <!-- ko if: scheduledSla -->
+                <div class="scheduled-sla" data-bind="fadeVisible: selectedSlaName() == scheduledSla.name">
+                    <!-- ko with: scheduledSla -->
+                    <p><span data-i18n="shipping.shippingOptions.deliveryDate"></span>:</p>
+                    <input class="datepicker" type="text"
+                           data-bind="pickadate: $data, validationTargetBind: 'pickadate', validate: validateSlaFunction, disable: checkout.disableInputs()"
+                           data-i18n="[placeholder]shipping.shippingOptions.chooseScheduledDate" style="cursor: pointer;">
+                    <p class="scheduled-sla-time" data-bind="fadeVisible: selectedDeliveryDate() != undefined">
+                        <span data-i18n="shipping.shippingOptions.deliveryHour"></span>:
+                        <br/>
+                        <!-- ko foreach: deliveryWindowsForDate -->
+                        <label class="radio">
+                            <input type="radio" data-bind="
+                                value: index,
+                                attr: {'id': 'delivery-window-'+index,
+                                name: 'delivery-window-'+$parent.nameAttr},
+                                checked: $parent.deliveryWindowIndex,
+                                disable: checkout.disableInputs()">
+                            <span data-bind="text: label"></span>
+                        </label>
+                        <!-- /ko -->
+                    </p>
+                    <!-- /ko -->
+                </div>
+                <!-- /ko -->
+            </div>
+        </fieldset>
+    <!-- /ko -->
+</div>

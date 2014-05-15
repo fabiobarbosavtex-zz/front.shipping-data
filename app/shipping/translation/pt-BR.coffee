@@ -38,6 +38,17 @@ define ->
         type: 'Tipo do endereço'
         receiver: 'Destinatário'
         deliveryCountry: 'País de entrega'
+
+      shippingOptions:
+        shippingOptions: 'Escolha as opções de entrega'
+        chooseShippingOption: 'Escolha o tipo da entrega'
+        followingProducts: 'Produtos de'
+        shippingOption: 'Tipo de Entrega'
+        shippingEstimate: 'Estimativa'
+        ofSeller: 'fornecedor '
+        deliveryDate: 'Data da Entrega'
+        chooseScheduledDate: 'Escolha sua data de entrega'
+        deliveryHour: 'Hora da entrega'
     
     validation:
       defaultMessage: 'Este campo parece estar inválido.'

@@ -1,12 +1,12 @@
 'use strict';
 
-vtex.curl(vtex.curl.configuration, ['shipping/component/AddressForm', 'shipping/component/AddressList'],
-  function(AddressForm, AddressList) {
-    var addressBookComponent = '.address-book';
-    var addressListComponent = '.address-list-placeholder';
-    var addressFormComponent = '.address-form-placeholder';
-    var addressList = AddressList.attachTo(addressListComponent);
-    var addressForm = AddressForm.attachTo(addressFormComponent);
+vtex.curl(vtex.curl.configuration, 
+  ['shipping/component/AddressForm', 'shipping/component/AddressList', 'shipping/component/ShippingOptions'],
+  function(AddressForm, AddressList, ShippingOptions) {
+    var addressBookComponent = '.address-book';    
+    var addressList = AddressList.attachTo('.address-list-placeholder');
+    var addressForm = AddressForm.attachTo('.address-form-placeholder');
+    var shippingOptions = ShippingOptions.attachTo('.address-shipping-options');
 
     if (false) {
       var data;
@@ -152,8 +152,10 @@ vtex.curl(vtex.curl.configuration, ['shipping/component/AddressForm', 'shipping/
           $(addressBookComponent).trigger('updateAddresses', data.shippingData);
         }).fail(function(){
           // Tratamento de erro
-        });;
+        });
       });
+
+      $(addressBookComponent).trigger('shippingOptionsRender', true);
     }
   }
 );
