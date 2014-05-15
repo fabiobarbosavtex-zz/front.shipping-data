@@ -158,9 +158,11 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks name for name of pkg.devDependencies \
     when name[0..5] is 'grunt-'
 
-  grunt.registerTask 'default', ['clean', 'dust', 'copy:templates',
-                                 'copy:main', 'coffee:main', 'copy:build',
-                                 'server', 'watch']
+  grunt.registerTask 'base', ['clean', 'dust', 'copy:templates',
+                              'copy:main', 'coffee:main', 'copy:build',
+                              'server']
+
+  grunt.registerTask 'default', ['base', 'watch']
 
   # minifies files
   grunt.registerTask 'min', ['useminPrepare', 'concat', 'uglify', 'usemin']
@@ -173,5 +175,5 @@ module.exports = (grunt) ->
   grunt.registerTask 'dist', ['clean', 'dust', 'copy:templates', 'copy:main',
                               'coffee:main', 'min', 'copy:build']
 
-  grunt.registerTask 'test', ['karma:single']
+  grunt.registerTask 'test', ['base', 'karma:single']
   grunt.registerTask 'server', ['configureProxies:server', 'connect']

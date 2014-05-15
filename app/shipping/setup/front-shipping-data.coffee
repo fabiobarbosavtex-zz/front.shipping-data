@@ -1,12 +1,8 @@
 
-vtex.preload = [] if not vtex.preload
-vtex.preload.push('/shipui/shipping/setup/extensions')
-
 configuration =
   paths:
     'shipping': '/shipui/shipping/'
-  preloads:
-    vtex.preload
+    'flight': '//walmartv5.vtexlocal.com.br/shipui/libs/flight/'
 
 if vtex.curl.configuration
 	_.extend(vtex.curl.configuration, configuration)

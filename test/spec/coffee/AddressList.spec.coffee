@@ -1,32 +1,12 @@
 
-describe '', ->
-
-  AddressList = null
-  componentPath = 'component/AddressList'
-
-  # We need to do this bootstrap to require the component
-  beforeEach ->
-
-    requireCallback = ((Component) ->
-      flight.registry.reset()
-      this.Component = Component
-    ).bind(this)
-
-    require([componentPath], requireCallback)
-
-    waitsFor (->
-      return this.Component isnt null
-    ).bind(this)
-  # end of bootstraping
-
-  describeComponent componentPath, AddressList, ->
+describeComponent 'shipping/component/AddressList', ->
 
     # Initialize the component and attach it to the DOM
     beforeEach ->
       setupComponent()
 
     it 'should be defined', ->
-      expect(this.component).toBeDefined()
+      expect(this.Component).toBeDefined()
 
     describe 'with no addresses', ->
 
@@ -103,7 +83,7 @@ describe '', ->
 
       xit 'should have one address selected', ->
         # Assert
-        data = this.component.attr.data
+        data = this.component.attr.shippingData
         expect(data.selectedAddressId).not.toBeNull()
         expect(data.address.addressId).toEqual(data.selectedAddressId)
 
