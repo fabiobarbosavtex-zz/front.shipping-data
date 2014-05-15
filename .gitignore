@@ -3,6 +3,8 @@ bower_components
 build
 build-raw
 .tmp
-app/js/templates/
+app/js/template/
+app/shipping/template/
 test/spec/*
 !test/spec/coffee/
+npm-debug.log

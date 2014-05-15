@@ -1,8 +1,0 @@
-(function() {
-var define = window.vtex.define || window.define;
-define(function () {
-	// selectCountry.dust
-	(function(){dust.register("selectCountry",body_0);function body_0(chk,ctx){return chk.write("<div class=\"select-country\">").notexists(ctx.get("showAddressForm"),ctx,{"block":body_1},null).write("<p class=\"ship-country required input text\"><label for=\"ship-country\"><span data-i18n=\"addressForm.deliveryCountry\"></span></label><select id=\"ship-country\" tabindex=\"1\" class=\"input-medium required\" name=\"country\">").notexists(ctx.get("showAddressForm"),ctx,{"block":body_2},null).section(ctx.get("deliveryCountries"),ctx,{"block":body_3},null).write("</select></p>").exists(ctx.get("hasOtherAddresses"),ctx,{"block":body_5},null).write("</div>");}function body_1(chk,ctx){return chk.write("<h4 data-i18n=\"addressForm.header\"></h4>");}function body_2(chk,ctx){return chk.write("<option value=\"\"></option>");}function body_3(chk,ctx){return chk.write("<option value=\"").reference(ctx.getPath(true,[]),ctx,"h").write("\" ").helper("eq",ctx,{"block":body_4},{"key":ctx.getPath(true,[]),"value":ctx.get("country")}).write(">").helper("i18n",ctx,{},{"prefix":"countries.","text":ctx.getPath(true,[])}).write("</option>");}function body_4(chk,ctx){return chk.write("selected=\"true\"");}function body_5(chk,ctx){return chk.notexists(ctx.get("showAddressForm"),ctx,{"block":body_6},null);}function body_6(chk,ctx){return chk.write("<p class=\"cancel-address-form pull-left\"><a href=\"javascript:void(0);\" class=\"cancel-new-address\" data-i18n=\"global.cancel\"></a></p>");}return body_0;})();
-	return "selectCountry";
-});
-}).call(this);

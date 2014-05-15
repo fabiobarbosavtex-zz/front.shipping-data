@@ -1,12 +1,12 @@
 'use strict';
 
-vtex.curl(['component/AddressForm', 'component/AddressList'],
+vtex.curl(vtex.curl.configuration, ['shipping/component/AddressForm', 'shipping/component/AddressList'],
   function(AddressForm, AddressList) {
     var addressBookComponent = '.address-book';
     var addressListComponent = '.address-list-placeholder';
     var addressFormComponent = '.address-form-placeholder';
-    var addressList = new AddressList(addressListComponent);
-    var addressForm = new AddressForm(addressFormComponent);
+    var addressList = AddressList.attachTo(addressListComponent);
+    var addressForm = AddressForm.attachTo(addressFormComponent);
 
     if (false) {
       var data;

@@ -1,25 +1,5 @@
 
-describe '', ->
-
-  AddressForm = null
-  componentPath = 'component/AddressForm'
-
-  # We need to do this bootstrap to require the component
-  beforeEach ->
-
-    requireCallback = ((Component) ->
-      flight.registry.reset()
-      this.Component = Component
-    ).bind(this)
-
-    require([componentPath], requireCallback)
-
-    waitsFor (->
-      return this.Component isnt null
-    ).bind(this)
-  # end of bootstraping
-
-  describeComponent componentPath, AddressForm, ->
+describeComponent 'shipping/component/AddressForm', ->
 
     # Initialize the component and attach it to the DOM
     beforeEach ->
