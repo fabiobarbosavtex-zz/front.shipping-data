@@ -3,7 +3,7 @@ require = vtex.curl || window.require
 
 define ['flight/lib/component', 'shipping/setup/extensions'],
   (defineComponent, extensions) ->
-    AddressForm = () ->
+    AddressForm = ->
       @defaultAttrs
         data:
           address: {}
