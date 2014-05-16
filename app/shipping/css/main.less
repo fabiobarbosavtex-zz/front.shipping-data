@@ -276,3 +276,43 @@ input.postal-code:disabled {
 .delivery-shipping-options h4 .seller-name {
   display: none;
 }
+
+
+
+
+
+
+.delivery-shipping-options { 
+  position: relative;
+  .shipping-options {
+    width: 100%;
+  }
+  .sla-items-list {
+    float: left;
+    width: 100%;
+    padding-bottom: 16px;
+  }
+  h4 {
+    margin-bottom: 8px;
+    margin-top: 15px;
+    width: 100%;
+    line-height: 13px;
+    .pull-left {
+      font-size: 11px;
+      font-weight: bold;
+      width: 50%;
+    }
+    .pull-right {
+      color: #bbb;
+      font-size: 11px;
+      width: 49%;
+      text-align: right;
+    }
+  }
+}
+
+.loading-slas { 
+  .loading { 
+    background: rgba(1000,1000,1000,0.5) url('../img/loader-inline.gif') center center no-repeat;
+  }
+}

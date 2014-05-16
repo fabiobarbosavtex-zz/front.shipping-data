@@ -65,6 +65,11 @@ module.exports = (grunt) ->
             ext: '.js'
         ]
 
+    less:
+      main:
+        files:
+          'build-raw/<%= relativePath %>/shipping/css/main.css': 'app/shipping/css/main.less'
+
     uglify:
       options:
         mangle: false
@@ -98,8 +103,11 @@ module.exports = (grunt) ->
         tasks: ['coffee:rules', 'copy:build']
       main:
         files: ['app/js/main.js', 'app/shipping/js/front-shipping-data.js',
-                'app/**/*.css', 'app/index.html']
+                'app/index.html']
         tasks: ['copy:main', 'copy:build']
+      less:
+        files: ['app/shipping/css/**/*.less']
+        tasks: ['less', 'copy:build']
       dust:
         files: ['app/**/*.dust']
         tasks: ['dust', 'copy:templates', 'copy:main', 'copy:build']
@@ -159,7 +167,7 @@ module.exports = (grunt) ->
     when name[0..5] is 'grunt-'
 
   grunt.registerTask 'base', ['clean', 'dust', 'copy:templates',
-                              'copy:main', 'coffee:main', 'copy:build',
+                              'copy:main', 'coffee:main', 'less', 'copy:build',
                               'server']
 
   grunt.registerTask 'default', ['base', 'watch']
