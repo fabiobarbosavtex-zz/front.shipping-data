@@ -1,7 +1,9 @@
 <div class="delivery-shipping-options">
     <h3 class="hide" data-i18n="shipping.shippingOptions.shippingOptions"></h3>
     <!-- ko with: currentAddress -->
-        <div class="loading-slas" data-bind="fadeVisible: loadingSlasForSeller">
+        {#loadingShippingOptions}
+        <div class="loading-slas">
+            {#loading}
             <div class="loading loading-bg">
                 <div class="loading-img">
                     <i class="icon-spinner icon-spin">
@@ -9,29 +11,29 @@
                     </i>
                 </div>
             </div>
-            {#sellers}
+            {/loading}
             <fieldset class="shipping-options just-one">
                 <h4 class="pull-left">
                     <span class="pull-left choose-shipping-option-container">
                         <span class="choose-shipping-option" data-i18n="shipping.shippingOptions.chooseShippingOption"></span>
                     </span>
 
-                    {@if cond="'{sellers}'.length > 1"}
+                    {#multipleSellers}
                     <span class="pull-right">
                         <span class="following" data-bind="fadeVisible: $parent.multipleSellers()" data-i18n="shipping.shippingOptions.followingProducts">Produtos de </span>
                     </span>
-                    {/if}
+                    {/multipleSellers}
                 </h4>
 
                 <div class="sla-items-list">
-                    <!-- ko if: $parent.multipleSellers() -->
+                    {#multipleSellers}
                     <div class="span btn-group btn-group-vertical">
                         <select class="span12" tabindex="329">
                             <option data-i18n="global.loading"></option>
                         </select>
                     </div>
-                    <!-- /ko -->
-                    <!-- ko ifnot: $parent.multipleSellers() -->
+                    {/multipleSellers}
+                    {^multipleSellers}
                     <div class="span btn-group btn-group-vertical">
                         <label class="shipping-option-item label-vertical-group input btn active" for="seller-1-sla-Econômica" htmlfor="seller-1-sla-Econômica">
                             <input type="radio" disabled name="seller-1" id="seller-1-sla-Econômica" tabindex="330" value="Econômica">
@@ -46,75 +48,93 @@
                             <i class="icon-circle-blank"></i>
                         </label>
                     </div>
-                    <!-- /ko -->
+                    {/multipleSellers}
                 </div>
             </fieldset>
-            {/sellers}
         </div>
-        <fieldset class="shipping-options" data-bind="css: { 'just-one': !multipleSellers() }, fadeVisible: showSlasForSeller, foreach: slasForSellerViewModelArray">
+        {/loadingShippingOptions}
+
+        {#multipleSellers}
+        <fieldset class="shipping-options" data-bind="fadeVisible: showSlasForSeller, foreach: slasForSellerViewModelArray">
+        {:else}
+        <fieldset class="shipping-options just-one" data-bind="fadeVisible: showSlasForSeller, foreach: slasForSellerViewModelArray">
+        {/multipleSellers}
+        {#shippingOptions}
             <h4 class="pull-left">
                 <span class="pull-left choose-shipping-option-container">
                     <span class="choose-shipping-option" data-i18n="shipping.shippingOptions.chooseShippingOption"></span>
                     <span class="seller-of hide" data-i18n="shipping.shippingOptions.ofSeller"></span>
                 </span>
 
+                {#multipleSellers}
                 <span class="pull-right">
-                    <span class="following" data-bind="fadeVisible: $parent.multipleSellers()" data-i18n="shipping.shippingOptions.followingProducts">Produtos de </span>
-                    <strong class="seller-name" data-bind="text: sellerName"></strong>
+                    <span class="following" data-i18n="shipping.shippingOptions.followingProducts">Produtos de </span>
+                    <strong class="seller-name">{seller.name}</strong>
                 </span>
+                {/multipleSellers}
             </h4>
 
             <table class="product-list unstyled">
                 <tbody data-bind="foreach: logisticsInfoArray">
+                    {#items}
                     <tr>
-                        <td class="img hide"><img data-bind="attr: {src: item.imageUrl()}"/></td>
+                        <td class="img hide"><img src="{imageUrl}"/></td>
                         <td class="data">
-                            <i class="icon-caret-right"></i> <span class="product-name" data-bind="text: item.name()"></span>
+                            <i class="icon-caret-right"></i> <span class="product-name">{name}</span>
                         </td>
                         <td class="product-brand-data hide">
-                            <span class="product-brand pull-right" data-bind="text: item.brand()">marca</span>
+                            <span class="product-brand pull-right">{additionalInfo.brandName}</span>
                         </td>
                         <td class="sla hide">
                             <span data-bind="text: estimateLabel"></span>
                         </td>
                     </tr>
+                    {/items}
                 </tbody>
             </table>
 
             <div class="sla-items-list">
 
-            <!-- ko if: $parent.multipleSellers() -->
+                {#multipleSellers}
                 <div class="span btn-group btn-group-vertical">
-                <select id="change-sla-items-list" data-bind="attr: {'class':'span12','tabindex': '329'},
+                <select id="change-sla-items-list" class="span12" tabindex="329" data-bind="
                                    options: slas,
                                    optionsText: 'maxEstimateOptionText',
                                    optionsValue: 'name',
                                    value: selectedSlaName,
-                                   disable: checkout.disableInputs()"></select>
+                                   disable: checkout.disableInputs()">
+                    {#slas}
+                    <option value="{name}" {#isSelected}selected="selected"{/isSelected}>{estimateLabel}</option>
+                    {/slas}
+                </select>
                 </div>
-            <!-- /ko -->
-
-            <!-- ko if: !$parent.multipleSellers() -->
+                {:else}
                 <div data-bind="foreach: slas" class="span btn-group btn-group-vertical">
-                    <label class="shipping-option-item label-vertical-group input btn" data-bind="attr: {'for': idAttr, htmlFor: idAttr},
-                        css: {active: $parent.selectedSlaName() == name, 'focus': hasFocus }">
-                        <input type="radio" data-bind="attr: {'id': idAttr, 'name': nameAttr, 'tabindex': '33' + $index()},
-                        value: name, checked: $parent.selectedSlaName, hasfocus: hasFocus, disable: checkout.disableInputs()">
-                        <span class="shipping-option-item-text-wrapper" data-bind="attr: { 'title': maxEstimateLabel }">
-                            <span class="shipping-option-item-name" data-bind="text: label"></span>
-                            <span class="shipping-option-item-sep" data-bind="visible: !isScheduled"> - </span>
-                            <span class="shipping-option-item-time delivery-estimate" data-bind="text: maxEstimateLabel, visible: !isScheduled"></span>
+                    {#slas}
+                    <label class="shipping-option-item label-vertical-group input btn {#isSelected}active{/isSelected}" data-bind="attr: {'for': idAttr, htmlFor: idAttr}, 'focus': hasFocus }">
+                        <input type="radio" tabindex="33{@idx}.{/idx}" data-bind="attr: {'id': idAttr, 'name': nameAttr}, hasfocus: hasFocus, disable: checkout.disableInputs()" value="{name}" {#isSelected}checked="checked"{/isSelected}>
+                        <span class="shipping-option-item-text-wrapper" data-bind="attr: { 'title': estimateLabel }">
+                            <span class="shipping-option-item-name">{name}</span>
+                            <span class="shipping-option-item-sep"> - </span>
+                            <span class="shipping-option-item-value">{valueLabel}</span>
+                            {^isScheduled}
+                            <span class="shipping-option-item-sep"> - </span>
+                            <span class="shipping-option-item-time delivery-estimate">{deliveryEstimateLabel}</span>
+                            {/isScheduled}
                         </span>
-                        <i class="icon-ok-circle" data-bind="visible: $parent.selectedSlaName() == name"></i>
-                        <i class="icon-circle-blank" data-bind="visible: $parent.selectedSlaName() != name"></i>
+                        {#isSelected}
+                        <i class="icon-ok-circle"></i>
+                        {:else}
+                        <i class="icon-circle-blank"></i>
+                        {/isSelected}
                     </label>
+                    {/slas}
                 </div>
-            <!-- /ko -->
+                {/multipleSellers}
 
 
-                <!-- ko if: scheduledSla -->
+                {#scheduledSla}
                 <div class="scheduled-sla" data-bind="fadeVisible: selectedSlaName() == scheduledSla.name">
-                    <!-- ko with: scheduledSla -->
                     <p><span data-i18n="shipping.shippingOptions.deliveryDate"></span>:</p>
                     <input class="datepicker" type="text"
                            data-bind="pickadate: $data, validationTargetBind: 'pickadate', validate: validateSlaFunction, disable: checkout.disableInputs()"
@@ -134,10 +154,10 @@
                         </label>
                         <!-- /ko -->
                     </p>
-                    <!-- /ko -->
                 </div>
-                <!-- /ko -->
+                {/scheduledSla}
             </div>
+        {/shippingOptions}
         </fieldset>
     <!-- /ko -->
 </div>

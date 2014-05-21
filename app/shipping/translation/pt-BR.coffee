@@ -49,6 +49,10 @@ define ->
         deliveryDate: 'Data da Entrega'
         chooseScheduledDate: 'Escolha sua data de entrega'
         deliveryHour: 'Hora da entrega'
+        workingDay: 'Até __count__ dia útil'
+        workingDay_plural: 'Até __count__ dias úteis'
+        day: 'Até __count__ dia'
+        day_plural: 'Até __count__ dias'
     
     validation:
       defaultMessage: 'Este campo parece estar inválido.'

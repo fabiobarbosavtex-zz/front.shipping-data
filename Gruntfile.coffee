@@ -48,6 +48,14 @@ module.exports = (grunt) ->
             dest: 'build-raw/<%= relativePath %>/shipping/'
             ext: '.js'
         ]
+      example:
+        files: [
+          expand: true
+          cwd: 'app/coffee'
+          src: ['**/*.coffee']
+          dest: 'build-raw/<%= relativePath %>/js/'
+          ext: '.js'
+        ]
       lean:
         files: [
             expand: true
@@ -101,6 +109,9 @@ module.exports = (grunt) ->
       coffeeRules:
         files: ['app/shipping/rule/**/*.coffee']
         tasks: ['coffee:rules', 'copy:build']
+      coffeeExample:
+        files: ['app/coffee/**/*.coffee']
+        tasks: ['coffee:example', 'copy:build']
       main:
         files: ['app/js/main.js', 'app/shipping/js/front-shipping-data.js',
                 'app/index.html']
@@ -167,8 +178,8 @@ module.exports = (grunt) ->
     when name[0..5] is 'grunt-'
 
   grunt.registerTask 'base', ['clean', 'dust', 'copy:templates',
-                              'copy:main', 'coffee:main', 'less', 'copy:build',
-                              'server']
+                              'copy:main', 'coffee:main', 'coffee:example',
+                              'less', 'copy:build', 'server']
 
   grunt.registerTask 'default', ['base', 'watch']
 
