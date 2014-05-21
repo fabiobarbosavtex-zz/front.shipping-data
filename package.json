@@ -1,6 +1,6 @@
 {
   "name": "shipping-ui",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "devDependencies": {
     "karma": "~0.10.0",
     "karma-jasmine": "~0.1.0",
