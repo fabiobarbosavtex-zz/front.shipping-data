@@ -187,7 +187,8 @@
 			if (data.avaliableAddresses) {
 				this.attr.dataForm.availableAddresses = data.avaliableAddresses;
 			} else {
-				this.attr.dataForm.availableAddresses = data.availableAddresses;
+				this.attr.dataForm.availableAddresses = [];
+				this.attr.dataForm.hasOtherAddresses = false;
 			}
 			if (_.isEmpty(this.attr.dataForm.address)) {
 				this.attr.dataForm.hasOtherAddresses = false;
