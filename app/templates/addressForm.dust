@@ -3,7 +3,7 @@
 	{@if cond="'{availableAddresses}'.length > 0"}
 	<p class="cancel-address-form"><a href="javascript:void(0);">cancelar</a></p>	
 	{/if}
-	<div class="address-form-new box-new" data-validate="parsley" data-bind="true">
+	<div class="address-form-new box-new" data-parsley-validate="true" parsley-bind="true">
 		{#address}
 		<fieldset class="address-data">
 			<input type="hidden" name="addressId" value="{address.addressId}"/>
