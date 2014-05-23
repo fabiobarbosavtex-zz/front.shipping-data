@@ -15,13 +15,13 @@
 				<label for="ship-postal-code">CEP <span class="item-required">*</span></label>
 
 				{?throttledLoading}
-				<input type="tel" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-cep input-small loading-postal-code" disabled="disabled" value="{postalCode}" name="postalCode">
+				<input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-cep input-small loading-postal-code" disabled="disabled" value="{postalCode}" name="postalCode">
 
 				<i class="loading-inline icon-spinner icon-spin">
 					<span>Carregando</span>
 				</i>
 				{:else}
-				<input type="tel" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-cep input-small" value="{postalCode}" name="postalCode">
+				<input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-cep input-small" value="{postalCode}" name="postalCode">
 				{?showDontKnowPostalCode}
 				<small><a href="{postalCodeForgottenURL}" id="dont-know-postal-code" target="_blank">Não sei meu CEP</a></small>
 				{/showDontKnowPostalCode}
