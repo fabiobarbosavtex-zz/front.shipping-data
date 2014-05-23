@@ -115,7 +115,7 @@
 			<p class="cancel-address-form"><a href="javascript:void(0);">cancelar</a></p>
 			{/hasOtherAddresses}
 			<p class="submit btn-submit-wrapper" data-bind="fadeVisible: showContinueButton">
-				<button type="submit" class="submit btn btn-large btn-success" data-bind="attr: { 'disabled': disableContinueButton }" tabindex="350">Cadastrar</button>
+				<button type="submit" class="submit btn btn-large btn-success save-address" data-bind="attr: { 'disabled': disableContinueButton }" tabindex="350">Cadastrar</button>
 			</p>			
 			{/showAddressForm}
 		</fieldset>

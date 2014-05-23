@@ -26,7 +26,7 @@
 			editAddressSelector: '.address-edit',
 			cancelAddressFormSelector: '.cancel-address-form a',
 			addressItemSelector: '.address-list .address-item',
-			submitButtonSelector: '.submit .btn-success'
+			submitButtonSelector: '.save-address.btn-success'
 		});
 
 		this.render = function(ev, data) {
