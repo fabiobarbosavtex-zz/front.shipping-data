@@ -6,7 +6,7 @@ var data;
 var giftList = window.giftList ? window.giftList : '';
 var componentSelector = '.placeholder-component-address-book';
 $.ajax('/no-cache/giftlistv2/address/get/'+giftList).done(function(_data){
-	data = {availableAddresses: {}, address: {}}
+	data = _data.shippingData;
 	$(componentSelector).trigger('updateAddresses', data);
 }).fail(function(){
 	console.error('Não autenticado!');

@@ -184,8 +184,11 @@
 
 		this.updateAddresses = function(ev, data) {
 			this.attr.dataForm.address = data.address;
+			// Typo here, keep it :(
 			if (data.avaliableAddresses) {
 				this.attr.dataForm.availableAddresses = data.avaliableAddresses;
+			} else if (data.availableAddresses && data.availableAddresses.length > 0) {
+				this.attr.dataForm.availableAddresses = data.availableAddresses;
 			} else {
 				this.attr.dataForm.availableAddresses = [];
 				this.attr.dataForm.hasOtherAddresses = false;
