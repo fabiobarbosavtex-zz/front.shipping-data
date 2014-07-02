@@ -1,0 +1,2 @@
+// base.dust
+(function(){dust.register("base",body_0);function body_0(chk,ctx){return chk.write("<div class=\"shipping-data address-book\"><h3 class=\"address-book-title\">Endereço de entrega</h3><div class=\"address-book-body\">").exists(ctx.get("isEditingAddress"),ctx,{"block":body_1},null).exists(ctx.get("showAddressList"),ctx,{"block":body_2},null).write("</div></div>");}function body_1(chk,ctx){return chk.partial("addressForm",ctx,null);}function body_2(chk,ctx){return chk.partial("addressList",ctx,null);}return body_0;})();
