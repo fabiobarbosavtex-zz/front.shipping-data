@@ -8,3 +8,4 @@ app/shipping/template/
 test/spec/*
 !test/spec/coffee/
 npm-debug.log
+.idea/
