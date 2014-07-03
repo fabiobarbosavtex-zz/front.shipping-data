@@ -12,6 +12,14 @@
         <input type="hidden" name="country" value="{country}"/>
       </p>
 
+			<div class="well well-small">
+				<p>
+					 <label for="address-search"><span>Buscar por endereço</span></label>
+					 <input type="text" id="address-search" tabindex="221" class="input-xlarge" value="{addressSearch}" name="address-search" >
+					 <div class="btn address-search-bt">Buscar</div>
+				</p>
+      </div>
+
       <p class="ship-postal-code required input text mask">
         <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
 

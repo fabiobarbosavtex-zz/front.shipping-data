@@ -35,6 +35,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         deliveryCountrySelector: '#ship-country'
         cancelAddressFormSelector: '.cancel-address-form a'
         submitButtonSelector: '.submit .btn-success.address-save'
+        addressSearchBt: '.address-search-bt'
 
       # Render this component according to the data object
       @render = (ev, data) ->
@@ -233,32 +234,51 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         addressComponents = address.address_components
         _.each(addressComponents, (component)=>
           _.each(component.types, (type) =>
-            console.log "CEP é #{component.long_name}" if (type is "postal_code")
-            console.log "Número é #{component.long_name}" if (type is "street_number")
+            @attr.data.postalCode = component.long_name if (type is "postal_code")
+            @attr.data.number = component.long_name if (type is "street_number")
             @attr.data.street = component.long_name if (type is "route")
-            console.log "Bairro é #{component.long_name}" if (type is "neighborhood")
-            console.log "Estado é #{component.long_name}" if (type is "administrative_area_level_1")
-            console.log "Cidade é #{component.long_name}" if (type is "administrative_area_level_2")
-            console.log "País é #{component.long_name}" if (type is "country")
+            @attr.data.neighborhood = component.long_name if (type is "neighborhood")
+            @attr.data.state = component.short_name if (type is "administrative_area_level_1")
+            @attr.data.city = component.long_name if (type is "administrative_area_level_2")
           )
         )
         @trigger('addressFormRender', @attr.data)
 
+      @clearAddressData = ->
+        @attr.data.postalCode = ""
+        @attr.data.number = ""
+        @attr.data.street = ""
+        @attr.data.neighborhood = ""
+        @attr.data.state = ""
+        @attr.data.city = ""
+
       @createMap = ->
-        console.log "create map"
-        mapOptions =
-          zoom: 8
-          center: new google.maps.LatLng(-34.397, 150.644)
+#        console.log "create map"
+#        mapOptions =
+#          zoom: 8
+#          center: new google.maps.LatLng(-34.397, 150.644)
+#        geocoder = new google.maps.Geocoder()
+#        geocoder.geocode( address: "Hotel Montese, Resende, RJ",
+#          (response) =>
+#            console.log response
+#            @addressMapper(response[0])
+#        )
+#        window.setTimeout( ->
+#          map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
+#          $('#map-canvas').css({ 'display': 'block'})
+#        ,100)
+
+      @searchAddress = (ev, data) ->
+        addressToSearch = $("#address-search")[0].value;
         geocoder = new google.maps.Geocoder()
-        geocoder.geocode( address: "Praia de botafogo, 518, rio de janeiro",
-          (response) =>
-            console.log response
-            @addressMapper(response[0])
+        geocoder.geocode( address: addressToSearch,
+          (response, status) =>
+            if (status is google.maps.GeocoderStatus.OK)
+              console.log response
+              @clearAddressData()
+              @addressMapper(response[0])
+              @trigger('addressFormRender', @attr.data)
         )
-        window.setTimeout( ->
-          map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
-          $('#map-canvas').css({ 'display': 'block'})
-        ,100)
 
       # Handle the selection event
       @selectedCountry = (ev, data) ->
@@ -345,6 +365,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           'forceShippingFieldsSelector': @forceShippingFields
           'cancelAddressFormSelector': @cancelAddressForm
           'submitButtonSelector': @submitAddress
+          'addressSearchBt': @searchAddress
         @on 'change',
           'deliveryCountrySelector': @selectedCountry
           'stateSelector': @onChangeState
