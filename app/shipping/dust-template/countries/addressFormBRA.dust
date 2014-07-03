@@ -11,6 +11,7 @@
       <p class="ship-country input">
         <input type="hidden" name="country" value="{country}"/>
       </p>
+
       <p class="ship-postal-code required input text mask">
         <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
 

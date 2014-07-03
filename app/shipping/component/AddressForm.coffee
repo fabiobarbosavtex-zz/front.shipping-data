@@ -229,12 +229,23 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           require deps, =>
             @trigger('addressFormRender', @attr.data)
 
+      @createMap = ->
+        console.log "create map"
+        mapOptions =
+          zoom: 8
+          center: new google.maps.LatLng(-34.397, 150.644)
+        geocoder = new google.maps.Geocoder()
+        window.setTimeout( ->
+          map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
+        ,100)
+
       # Handle the selection event
       @selectedCountry = (ev, data) ->
         @attr.data.address = {}
         @attr.data.postalCode = ''
         country = $(@attr.deliveryCountrySelector, @$node).val()
         @selectCountry country if country
+        @createMap()
 
       # Close the form
       @cancelAddressForm = ->
@@ -288,6 +299,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
       @loading = (ev, data) ->
         @attr.data.loading = true
         @trigger('addressFormRender', @attr.data)
+        console.log "loaded"
 
       # Store new country rules in the data object
       @addCountryRule = (ev, data) ->
@@ -300,6 +312,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
 
       # Bind events
       @after 'initialize', ->
+        console.log "módulo de form inicializado"
         @on 'loading', @loading
         @on document, 'newCountryRule', @addCountryRule
         @on document, 'addressFormRender', @render

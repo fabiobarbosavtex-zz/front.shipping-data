@@ -18,6 +18,9 @@ vtex.curl(vtex.curl.configuration,
     var addressForm = AddressForm.attachTo('.address-form-placeholder');
     window.shippingOptions = ShippingOptions.attachTo('.address-shipping-options');
 
+		// GEOLOCATION
+		window.shippingUsingGeolocation = true;
+
     if (true) {
       checkout = new CheckoutMock(addressBookComponent);
       checkout.orchestrate();      
