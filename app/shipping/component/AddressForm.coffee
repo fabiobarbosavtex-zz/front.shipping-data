@@ -216,7 +216,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         @attr.templates.form.name =
           @attr.templates.form.baseName + country
         @attr.templates.form['template'] =
-              'shipping/template/' + @attr.templates.form.name
+          'shipping/template/' + @attr.templates.form.name
 
         deps = [@attr.templates.form.template,
                 @attr.templates.selectCountry.template]
@@ -229,23 +229,45 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           require deps, =>
             @trigger('addressFormRender', @attr.data)
 
+      @addressMapper = (address) ->
+        addressComponents = address.address_components
+        _.each(addressComponents, (component)=>
+          _.each(component.types, (type) =>
+            console.log "CEP é #{component.long_name}" if (type is "postal_code")
+            console.log "Número é #{component.long_name}" if (type is "street_number")
+            @attr.data.street = component.long_name if (type is "route")
+            console.log "Bairro é #{component.long_name}" if (type is "neighborhood")
+            console.log "Estado é #{component.long_name}" if (type is "administrative_area_level_1")
+            console.log "Cidade é #{component.long_name}" if (type is "administrative_area_level_2")
+            console.log "País é #{component.long_name}" if (type is "country")
+          )
+        )
+        @trigger('addressFormRender', @attr.data)
+
       @createMap = ->
         console.log "create map"
         mapOptions =
           zoom: 8
           center: new google.maps.LatLng(-34.397, 150.644)
         geocoder = new google.maps.Geocoder()
+        geocoder.geocode( address: "Praia de botafogo, 518, rio de janeiro",
+          (response) =>
+            console.log response
+            @addressMapper(response[0])
+        )
         window.setTimeout( ->
           map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
+          $('#map-canvas').css({ 'display': 'block'})
         ,100)
 
       # Handle the selection event
       @selectedCountry = (ev, data) ->
         @attr.data.address = {}
         @attr.data.postalCode = ''
+#        @attr.data.street = 'mamamananana'
         country = $(@attr.deliveryCountrySelector, @$node).val()
         @selectCountry country if country
-        @createMap()
+        @createMap() if window.shippingUsingGeolocation and country is "BRA"
 
       # Close the form
       @cancelAddressForm = ->
