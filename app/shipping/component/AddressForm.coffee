@@ -253,6 +253,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         @attr.data.city = ""
 
       @createMap = ->
+#        return true
 #        console.log "create map"
 #        mapOptions =
 #          zoom: 8
@@ -263,22 +264,40 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
 #            console.log response
 #            @addressMapper(response[0])
 #        )
-#        window.setTimeout( ->
-#          map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
-#          $('#map-canvas').css({ 'display': 'block'})
-#        ,100)
+        window.setTimeout( =>
+          #map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
+          #$('#map-canvas').css({ 'display': 'block'})
+          $('#address-search').typeahead({ source: (query, process) ->
+            geocoder = new google.maps.Geocoder()
+            geocoder.geocode( address: query, (status, response) ->
+              process response[0].address_components[0].long_name
+            )
+          })
+        ,100)
 
-      @searchAddress = (ev, data) ->
-        addressToSearch = $("#address-search")[0].value;
-        geocoder = new google.maps.Geocoder()
-        geocoder.geocode( address: addressToSearch,
-          (response, status) =>
-            if (status is google.maps.GeocoderStatus.OK)
-              console.log response
-              @clearAddressData()
-              @addressMapper(response[0])
-              @trigger('addressFormRender', @attr.data)
-        )
+#      @searchAdd = (query, processor) ->
+#        addressToSearch = $("#address-search")[0].value;
+#        geocoder = new google.maps.Geocoder()
+#        geocoder.geocode( address: addressToSearch,
+#          (response, status) =>
+#          if (status is google.maps.GeocoderStatus.OK)
+#            processor(response)
+#        )
+
+#      @searchAddress = (ev, data) ->
+#        addressToSearch = $("#address-search")[0].value;
+#        geocoder = new google.maps.Geocoder()
+#        geocoder.geocode( address: addressToSearch,
+#          @searchAddressCallback()
+#        )
+
+#      @searchAddressCallback = (response, status) ->
+#        (response, status) =>
+#          if (status is google.maps.GeocoderStatus.OK)
+#            console.log response
+#            @clearAddressData()
+#            @addressMapper(response[0])
+#            @trigger('addressFormRender', @attr.data)
 
       # Handle the selection event
       @selectedCountry = (ev, data) ->
