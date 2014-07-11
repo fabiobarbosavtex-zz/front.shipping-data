@@ -432,11 +432,11 @@ define ->
             # Update addresses
             if (@orderForm.shippingData)
               addressData = @orderForm.shippingData
-              addressData.deliveryCountries = _.reduceRight(
+              addressData.deliveryCountries = _.uniq(_.reduceRight(
                 addressData.logisticsInfo, (memo, l) ->
                   return memo.concat(l.shipsTo)
                 , []
-              )
+              ))
               $(@addressBookComponent).trigger 'updateAddresses', addressData
 
             # Update shipping options

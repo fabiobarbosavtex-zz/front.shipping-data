@@ -21,27 +21,17 @@ vtex.curl(vtex.curl.configuration,
 		// GEOLOCATION
 		window.shippingUsingGeolocation = true;
 
-    if (true) {
+		// MOCK
+		window.mockShippingData = true;
+
+    if (window.mockShippingData) {
       checkout = new CheckoutMock(addressBookComponent);
-			var shippingData = checkout.shippingData;
-
-			if (shippingData) {
-				shippingData.deliveryCountries = _.reduceRight(
-					shippingData.logisticsInfo,
-					function (memo, l) {
-						return memo.concat(l.shipsTo);
-					}, []
-				);
-			}
-
       checkout.orchestrate();      
-    } else if (false) {
+    } else {
 
       var checkout = { API: new vtex.checkout.API() };
-
       checkout.API.getOrderForm().done(function(data){
         var shippingData = data.shippingData;
-
         if (shippingData) {
           shippingData.deliveryCountries = _.reduceRight(
             shippingData.logisticsInfo,
