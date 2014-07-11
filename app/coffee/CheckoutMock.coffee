@@ -445,7 +445,7 @@ define ->
               $(@addressBookComponent).trigger 'updateShippingOptions', shippingOptionsData
 
             # When a new addresses is saved
-            $(@addressBookComponent).on 'newAddress', (ev, addressObj) ->
+            $(@addressBookComponent).on 'newAddress', (ev, addressObj) =>
               # Do an AJAX to save in your API
               # When you're done, update with the new data
               updated = false
@@ -459,7 +459,7 @@ define ->
                 @orderForm.shippingData.availableAddresses.push(addressObj)
 
               @orderForm.shippingData.address = addressObj
-              setTimeout( ->
+              setTimeout( =>
                 $(@addressBookComponent).trigger('updateAddresses', @orderForm.shippingData)
               , 400)
 

@@ -33,12 +33,12 @@ vtex.curl(vtex.curl.configuration,
       checkout.API.getOrderForm().done(function(data){
         var shippingData = data.shippingData;
         if (shippingData) {
-          shippingData.deliveryCountries = _.reduceRight(
+          shippingData.deliveryCountries = _.uniq(_.reduceRight(
             shippingData.logisticsInfo,
             function(memo, l) {
               return memo.concat(l.shipsTo);
             }, []
-          );
+          ));
           $(addressBookComponent).trigger('updateAddresses', shippingData);
         }
 
