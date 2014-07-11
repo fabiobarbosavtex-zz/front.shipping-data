@@ -8,7 +8,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         data:
           address: {}
           postalCode: ''
-          deliveryCountries: ['BRA']
+          deliveryCountries: ['BRA', 'ARG', 'CHL']
           
           disableCityAndState: false
           labelShippingFields: false

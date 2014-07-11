@@ -214,7 +214,8 @@ define ->
                   ],
                   "shipsTo": [
                     "BRA",
-                    "COL"
+                    "COL",
+                    "PER"
                   ],
                   "itemId": "30433"
                 },
@@ -267,7 +268,8 @@ define ->
                   ],
                   "shipsTo": [
                     "BRA",
-                    "COL"
+                    "COL",
+                    "PER"
                   ],
                   "itemId": "30433"
                 },
@@ -320,7 +322,8 @@ define ->
                   ],
                   "shipsTo": [
                     "BRA",
-                    "COL"
+                    "COL",
+                    "PER"
                   ],
                   "itemId": "12345"
                 }

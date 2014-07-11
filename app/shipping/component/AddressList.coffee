@@ -11,7 +11,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           selectedAddressId: ''
           hasOtherAddresses: false
           showAddressList: true
-          deliveryCountries: [vtex.i18n.getCountryCode()]
+          deliveryCountries: ['BRA', 'ARG', 'CHL']
           countryRules: {}
 
         templates:

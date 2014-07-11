@@ -23,6 +23,17 @@ vtex.curl(vtex.curl.configuration,
 
     if (true) {
       checkout = new CheckoutMock(addressBookComponent);
+			var shippingData = checkout.shippingData;
+
+			if (shippingData) {
+				shippingData.deliveryCountries = _.reduceRight(
+					shippingData.logisticsInfo,
+					function (memo, l) {
+						return memo.concat(l.shipsTo);
+					}, []
+				);
+			}
+
       checkout.orchestrate();      
     } else if (false) {
 
