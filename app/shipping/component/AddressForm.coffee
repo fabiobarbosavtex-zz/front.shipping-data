@@ -253,6 +253,9 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         @attr.data.city = ""
 
       @createMap = ->
+
+
+
 #        return true
 #        console.log "create map"
 #        mapOptions =
@@ -267,12 +270,21 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         window.setTimeout( =>
           #map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
           #$('#map-canvas').css({ 'display': 'block'})
-          $('#address-search').typeahead({ source: (query, process) ->
-            geocoder = new google.maps.Geocoder()
-            geocoder.geocode( address: query, (status, response) ->
-              process response[0].address_components[0].long_name
-            )
-          })
+          $('#address-search').typeahead({
+            minLength: 3,
+            source: (query, process) ->
+              geocoder = new google.maps.Geocoder()
+              geocoder.geocode( address: query, (response, status) =>
+                if status is "OK" and response.length > 0
+                  itemsToDisplay = []
+                  _.each(response, (item) ->
+                    itemsToDisplay.push item.formatted_address
+                  )
+                  process itemsToDisplay
+              )
+          }).on("typeahead:selected", (obj, datum, name) ->
+            console.log "selected"
+          )
         ,100)
 
 #      @searchAdd = (query, processor) ->
