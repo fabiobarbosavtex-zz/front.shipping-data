@@ -270,21 +270,23 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         window.setTimeout( =>
           #map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
           #$('#map-canvas').css({ 'display': 'block'})
+          addressListResponse = []
           $('#address-search').typeahead({
             minLength: 3,
             source: (query, process) ->
               geocoder = new google.maps.Geocoder()
               geocoder.geocode( address: query, (response, status) =>
                 if status is "OK" and response.length > 0
+                  addressListResponse = response
                   itemsToDisplay = []
                   _.each(response, (item) ->
                     itemsToDisplay.push item.formatted_address
                   )
                   process itemsToDisplay
               )
-          }).on("typeahead:selected", (obj, datum, name) ->
-            console.log "selected"
-          )
+            updater: (address)=>
+              @addressMapper _.find(addressListResponse, (item)-> item.formatted_address is address)
+          })
         ,100)
 
 #      @searchAdd = (query, processor) ->
