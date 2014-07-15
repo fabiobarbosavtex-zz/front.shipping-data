@@ -37,6 +37,10 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         submitButtonSelector: '.submit .btn-success.address-save'
         addressSearchBt: '.address-search-bt'
 
+      # variables
+      @map = null
+      @marker = null
+
       # Render this component according to the data object
       @render = (ev, data) ->
         data = @attr.data if not data
@@ -89,6 +93,8 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
                 if($(this).val() == "")
                   return true
             .first().focus()
+
+            @startGoogleAddressSearch()
         else
           @$node.html('')
 
@@ -252,27 +258,29 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         @attr.data.state = ""
         @attr.data.city = ""
 
-      @createMap = ->
+      @createMap = (lat, lng) ->
+        center = new google.maps.LatLng(lng, lat)
+        mapOptions =
+          zoom: 14
+          center: center
+        @map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions) if not @map?
+        @map.panTo(center);
+        @map.setZoom(14);
+        if @marker?
+          @marker.setMap(null)
+          @marker = null
+        @marker = new google.maps.Marker({
+          position: center
+        });
+        @marker.setMap(@map);
+        $('#map-canvas').fadeIn(500)
 
-
-
-#        return true
-#        console.log "create map"
-#        mapOptions =
-#          zoom: 8
-#          center: new google.maps.LatLng(-34.397, 150.644)
-#        geocoder = new google.maps.Geocoder()
-#        geocoder.geocode( address: "Hotel Montese, Resende, RJ",
-#          (response) =>
-#            console.log response
-#            @addressMapper(response[0])
-#        )
+      @startGoogleAddressSearch = ->
         window.setTimeout( =>
-          #map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
-          #$('#map-canvas').css({ 'display': 'block'})
           addressListResponse = []
           $('#address-search').typeahead({
             minLength: 3,
+            matcher: -> true
             source: (query, process) ->
               geocoder = new google.maps.Geocoder()
               geocoder.geocode( address: query, (response, status) =>
@@ -285,7 +293,10 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
                   process itemsToDisplay
               )
             updater: (address)=>
-              @addressMapper _.find(addressListResponse, (item)-> item.formatted_address is address)
+              addressObject = _.find(addressListResponse, (item)-> item.formatted_address is address)
+              @addressMapper addressObject
+              console.log addressObject
+              @createMap(addressObject.geometry.location.lng(), addressObject.geometry.location.lat())
           })
         ,100)
 
@@ -320,7 +331,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
 #        @attr.data.street = 'mamamananana'
         country = $(@attr.deliveryCountrySelector, @$node).val()
         @selectCountry country if country
-        @createMap() if window.shippingUsingGeolocation and country is "BRA"
+        @startGoogleAddressSearch() if window.shippingUsingGeolocation and country is "BRA"
 
       # Close the form
       @cancelAddressForm = ->

@@ -13,8 +13,6 @@
 			{/deliveryCountries}
 		</select>
 	</p>
-
-	<div id="map-canvas"></div>
 	
 	{?hasOtherAddresses}
 	{^showAddressForm}
