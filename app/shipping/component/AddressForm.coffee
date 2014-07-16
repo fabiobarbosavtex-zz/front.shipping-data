@@ -37,7 +37,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         submitButtonSelector: '.submit .btn-success.address-save'
         addressSearchBt: '.address-search-bt'
 
-      # variables
+      # Google maps variables
       @map = null
       @marker = null
 
@@ -237,7 +237,12 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
             @trigger('addressFormRender', @attr.data)
 
       @addressMapper = (address) ->
+        rules = @getCurrentRule()
+        # console.log rules.googleDataMap
         addressComponents = address.address_components
+        _.each(rules.googleDataMap, (rule) ->
+          console.log rule
+        )
         _.each(addressComponents, (component)=>
           _.each(component.types, (type) =>
             @attr.data.postalCode = component.long_name if (type is "postal_code")

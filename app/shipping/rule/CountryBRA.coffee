@@ -24,3 +24,30 @@ define ->
       @requiredFields = ['addressType', 'addressId', 'receiverName',
                          'postalCode', 'street', 'city', 'state',
                          'country', 'number', 'neighborhood']
+
+      @googleDataMap = [
+        postalCode =
+          value: "postalCode"
+          length: "long_name"
+          types: ["postal_code"]
+        number =
+          value: "number"
+          length: "long_name"
+          types: ["street_number"]
+        street =
+          value: "street"
+          length: "long_name"
+          types: ["route"]
+        neighborhood =
+          value: "neighborhood"
+          length: "long_name"
+          types: ["neighborhood"]
+        state =
+          value: "state"
+          length: "short_name"
+          types: ["administrative_area_level_1"]
+        city =
+          value: "city"
+          length: "long_name"
+          types: ["administrative_area_level_2"]
+      ]
