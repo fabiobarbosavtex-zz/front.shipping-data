@@ -27,29 +27,9 @@
       {?showAddressForm}
       <div class="box-delivery">
 
-        <p class="ship-street required input text">
-          <label for="ship-street"><span data-i18n="shipping.addressForm.direction"></span> <span class="item-required">*</span></label>
-          <input type="text" tabindex="222" id="ship-street" class="input-xlarge required" parsley-alphanumponc="true" value="{street}" name="street">
-        </p>
-
         <p class="ship-number required input text hide">
           <label for="ship-number"><span data-i18n="shipping.addressForm.number"></span></label>
           <input type="text" tabindex="223" id="ship-number" class="input-mini" parsley-alphanumponc="true" value="{number}" name="number">
-        </p>
-
-        <p class="ship-more-info input text">
-          <label for="ship-more-info"><span data-i18n="shipping.addressForm.complement"></span></label>
-          <input type="text" tabindex="224" id="ship-more-info" class="input-medium" parsley-alphanumponc="true" value="{complement}" name="complement">
-        </p>
-
-        <p class="ship-reference input text hide">
-          <label for="ship-reference"><span data-i18n="shipping.addressForm.reference"></span></label>
-          <input type="text" tabindex="225" id="ship-reference" class="input-xlarge" parsley-alphanumponc="true" value="{reference}" name="reference">
-        </p>
-
-        <p class="ship-neighborhood input text">
-          <label for="ship-neighborhood"><span data-i18n="shipping.addressForm.district"></span></label>
-          <input type="text" tabindex="226" id="ship-neighborhood" class="input-medium" parsley-alphanumponc="true" value="{neighborhood}" name="neighborhood">
         </p>
 
         <p class="ship-state required input text">
@@ -62,13 +42,19 @@
         </p>
 
         <p class="ship-city required input text">
-          <label for="ship-city"><span data-i18n="shipping.addressForm.municipality"></span> <span class="item-required">*</span></label>
-          <select id="ship-city" tabindex="228" class="input-large required" name="city">
-            {#cities}
-              <option value="{.}" {@eq key=. value=state}selected="true"{/eq}>{.}</option>
-            {/cities}
-          </select>
+          <label for="ship-city"><span data-i18n="shipping.addressForm.province"></span> <span class="item-required">*</span></label>
+          <input type="text" id="ship-city" tabindex="228" class="input-large required" name="city" value="{city}">
         </p>
+
+				<p class="ship-neighborhood input text">
+					<label for="ship-neighborhood"><span data-i18n="shipping.addressForm.district"></span></label>
+					<input type="text" tabindex="226" id="ship-neighborhood" class="input-medium" parsley-alphanumponc="true" value="{neighborhood}" name="neighborhood">
+				</p>
+
+				<p class="ship-street required input text">
+					<label for="ship-street"><span data-i18n="shipping.addressForm.direction"></span> <span class="item-required">*</span></label>
+					<input type="text" tabindex="222" id="ship-street" class="input-xlarge required" parsley-alphanumponc="true" value="{street}" name="street">
+				</p>
 
         <p class="ship-commercial input checkbox hide">
           <label for="ship-commercial">
@@ -76,6 +62,16 @@
             <span data-i18n="shipping.addressForm.commercial"></span>
           </label>
         </p>
+
+				<p class="ship-more-info input text">
+					<label for="ship-more-info"><span data-i18n="shipping.addressForm.complement"></span></label>
+					<input type="text" tabindex="224" id="ship-more-info" class="input-medium" parsley-alphanumponc="true" value="{complement}" name="complement">
+				</p>
+
+				<p class="ship-reference input text hide">
+					<label for="ship-reference"><span data-i18n="shipping.addressForm.reference"></span></label>
+					<input type="text" tabindex="225" id="ship-reference" class="input-xlarge" parsley-alphanumponc="true" value="{reference}" name="reference">
+				</p>
 
         <p class="ship-name required input text separate">
           <label for="ship-name"><span data-i18n="shipping.addressForm.receiver"></span>  <span class="item-required">*</span></label>

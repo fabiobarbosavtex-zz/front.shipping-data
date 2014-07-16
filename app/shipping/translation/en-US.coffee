@@ -35,6 +35,7 @@ define ->
         direction: 'Direction'
         department: 'Departament'
         municipality: 'Municipality'
+        province: "Province"
         type: 'Address type'
         receiver: 'Receiver'
         deliveryCountry: 'Delivery country'

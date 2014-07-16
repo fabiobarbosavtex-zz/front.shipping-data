@@ -5,29 +5,38 @@ define ->
   class CountryPER
     constructor: () ->
       @country = 'PER'
-      @states = []
       @cities = {}
-      
-      @map =
-        "AMAZONAS":
-          "BAGUA": {}
-          "BONGARA": {}
-          "CHACHAPOYAS": {}
-        "ANCASH":
-          "AIJA": {}
-          "ANTONIO RAYMONDI": {}
-          "ASUNCION": {}
-          "BOLOGNESI": {}
-        "Lima":
-          "Lima": {}
-
-      for state of @map
-        @states.push(state)
-        @cities[state] = _.map(@map[state], (k, v) -> return v )
+      @states = [
+        "Amazonas"
+        "Ancash"
+        "Apurímac"
+        "Arequipa"
+        "Ayacucho"
+        "Cajamarca"
+        "Callao"
+        "Cusco"
+        "Huancavelica"
+        "Huánuco"
+        "Ica"
+        "Junín"
+        "La Libertad"
+        "Lambayeque"
+        "Lima"
+        "Loreto"
+        "Madre de Dios"
+        "Moquegua"
+        "Pasco"
+        "Piura"
+        "Puno"
+        "San Martín"
+        "Tacna"
+        "Tumbes"
+        "Ucayali"
+      ]
 
       @usePostalCode = false
       @queryPostalCode = false
-      @citiesBasedOnStateChange = true
+      @citiesBasedOnStateChange = false
       @postalCodeByState = false
       @postalCodeByCity = false
 
@@ -39,7 +48,7 @@ define ->
 
       @requiredFields = ['addressType', 'addressId', 'receiverName',
                          'street', 'city', 'state',
-                         'country', 'number', 'neighborhood']
+                         'country', 'neighborhood']
 
       @googleDataMap = [
         postalCode =

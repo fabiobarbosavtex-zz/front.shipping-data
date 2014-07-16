@@ -24,7 +24,7 @@ define ->
         number: 'Número'
         complement: 'Piso o Departamento (ej: 2A)'
         reference: 'Punto o calle acerca'
-        district: 'Barrio'
+        district: 'Distrito'
         neighborhood: 'Barrio'
         commercial: 'Dirección de Trabajo'
         city: 'Ciudad'
@@ -35,6 +35,7 @@ define ->
         direction: 'Dirección'
         department: 'Departamento'
         municipality: 'Municipio'
+        province: "Provincia"
         type: 'Tipo de dirección'
         receiver: 'Nombre de la persona que va a recibir'
         deliveryCountry: 'Elija el país de entrega'

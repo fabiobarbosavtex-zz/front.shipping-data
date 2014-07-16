@@ -24,7 +24,7 @@ define ->
         number: 'Número'
         complement: 'Complemento e referência'
         reference: 'Ponto de referência (ex: Próximo ao parque Itú)'
-        district: 'Bairro'
+        district: 'Distrito'
         neighborhood: 'Bairro'
         commercial: 'Endereço comercial'
         city: 'Cidade'
@@ -35,6 +35,7 @@ define ->
         direction: 'Direção'
         department: 'Departamento'
         municipality: 'Municipalidade'
+        province: "Província"
         type: 'Tipo do endereço'
         receiver: 'Destinatário'
         deliveryCountry: 'País de entrega'
