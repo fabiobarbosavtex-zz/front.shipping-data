@@ -11,6 +11,15 @@
       <p class="ship-country input">
         <input type="hidden" name="country" value="{country}"/>
       </p>
+
+      <div class="well well-small">
+				<p>
+					 <label for="address-search"><span>Buscar por endereço</span></label>
+					 <input type="text" id="address-search" tabindex="221" class="input-xlarge" value="{addressSearch}" name="address-search" >
+					 <div class="btn address-search-bt">Buscar</div>
+				</p>
+			</div>
+
       <p class="ship-postal-code required input text mask">
         <input type="hidden" autocomplete="off" id="ship-postal-code" class="ship-postal-code postal-code postal-code-{country} input-small" disabled="disabled" value="{postalCode}" name="postalCode">
       </p>

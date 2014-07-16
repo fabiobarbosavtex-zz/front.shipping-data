@@ -237,20 +237,12 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
             @trigger('addressFormRender', @attr.data)
 
       @addressMapper = (address) ->
-        rules = @getCurrentRule()
-        # console.log rules.googleDataMap
-        addressComponents = address.address_components
-        _.each(rules.googleDataMap, (rule) ->
-          console.log rule
-        )
-        _.each(addressComponents, (component)=>
-          _.each(component.types, (type) =>
-            @attr.data.postalCode = component.long_name if (type is "postal_code")
-            @attr.data.number = component.long_name if (type is "street_number")
-            @attr.data.street = component.long_name if (type is "route")
-            @attr.data.neighborhood = component.long_name if (type is "neighborhood")
-            @attr.data.state = component.short_name if (type is "administrative_area_level_1")
-            @attr.data.city = component.long_name if (type is "administrative_area_level_2")
+        console.log address
+        console.log @getCurrentRule()
+        _.each(@getCurrentRule().googleDataMap, (rule) =>
+          _.each(address.address_components, (component)=>
+            if _.intersection(component.types, rule.types).length > 0
+              @attr.data[rule.value] = component[rule.length]
           )
         )
         @trigger('addressFormRender', @attr.data)
@@ -263,19 +255,18 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         @attr.data.state = ""
         @attr.data.city = ""
 
-      @createMap = (lat, lng) ->
-        center = new google.maps.LatLng(lng, lat)
+      @createMap = (location) ->
         mapOptions =
           zoom: 14
-          center: center
+          center: location
         @map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions) if not @map?
-        @map.panTo(center);
+        @map.panTo(location);
         @map.setZoom(14);
         if @marker?
           @marker.setMap(null)
           @marker = null
         @marker = new google.maps.Marker({
-          position: center
+          position: location
         });
         @marker.setMap(@map);
         $('#map-canvas').fadeIn(500)
@@ -299,35 +290,11 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
               )
             updater: (address)=>
               addressObject = _.find(addressListResponse, (item)-> item.formatted_address is address)
+              @clearAddressData()
               @addressMapper addressObject
-              console.log addressObject
-              @createMap(addressObject.geometry.location.lng(), addressObject.geometry.location.lat())
+              @createMap(addressObject.geometry.location)
           })
         ,100)
-
-#      @searchAdd = (query, processor) ->
-#        addressToSearch = $("#address-search")[0].value;
-#        geocoder = new google.maps.Geocoder()
-#        geocoder.geocode( address: addressToSearch,
-#          (response, status) =>
-#          if (status is google.maps.GeocoderStatus.OK)
-#            processor(response)
-#        )
-
-#      @searchAddress = (ev, data) ->
-#        addressToSearch = $("#address-search")[0].value;
-#        geocoder = new google.maps.Geocoder()
-#        geocoder.geocode( address: addressToSearch,
-#          @searchAddressCallback()
-#        )
-
-#      @searchAddressCallback = (response, status) ->
-#        (response, status) =>
-#          if (status is google.maps.GeocoderStatus.OK)
-#            console.log response
-#            @clearAddressData()
-#            @addressMapper(response[0])
-#            @trigger('addressFormRender', @attr.data)
 
       # Handle the selection event
       @selectedCountry = (ev, data) ->
@@ -336,7 +303,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
 #        @attr.data.street = 'mamamananana'
         country = $(@attr.deliveryCountrySelector, @$node).val()
         @selectCountry country if country
-        @startGoogleAddressSearch() if window.shippingUsingGeolocation and country is "BRA"
+        @startGoogleAddressSearch() if window.shippingUsingGeolocation and country is "PER"
 
       # Close the form
       @cancelAddressForm = ->

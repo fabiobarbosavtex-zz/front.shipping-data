@@ -49,5 +49,5 @@ define ->
         city =
           value: "city"
           length: "long_name"
-          types: ["administrative_area_level_2"]
+          types: ["administrative_area_level_2", "locality"]
       ]
