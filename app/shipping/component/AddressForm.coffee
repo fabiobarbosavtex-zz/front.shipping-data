@@ -157,6 +157,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
             data.address.state = address.stateAcronym
             data.address.street = address.street
             data.address.neighborhood = address.neighborhood
+            data.address.geoCoordinates = address.geoCoordinates
             data.address.country = data.country
             data.throttledLoading = false
             data.showAddressForm = true
@@ -254,6 +255,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         @attr.data.neighborhood = ""
         @attr.data.state = ""
         @attr.data.city = ""
+        @attr.data.geoCoordinates = []
 
       @createMap = (location) ->
         mapOptions =
