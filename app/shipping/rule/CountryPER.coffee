@@ -39,6 +39,7 @@ define ->
       @citiesBasedOnStateChange = false
       @postalCodeByState = false
       @postalCodeByCity = false
+      @useGeolocation = true
 
       @regexes =
         postalCode: new RegExp(/^([\d]{5})$/)
@@ -76,3 +77,6 @@ define ->
           length: "long_name"
           types: ["administrative_area_level_2"]
       ]
+
+      # Address components documentation
+      # -> https://developers.google.com/maps/documentation/geocoding/?hl=nl#Types
