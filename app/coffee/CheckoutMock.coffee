@@ -464,8 +464,9 @@ define ->
               , 400)
 
             # When a new address is selected on the list, do something
-            $(@addressBookComponent).on 'addressSelected', (ev, addressObj) ->
-              console.log('Address selected:', addressObj.addressId)
+            $(@addressBookComponent).on 'addressSelected', (ev, addressObj) =>
+              console.log('Address selected:', addressObj)
+              console.log @orderForm.shippingData.availableAddresses
 
             $(@addressBookComponent).on 'postalCode', (ev, postalCode) ->
               console.log('New postal code:', postalCode)

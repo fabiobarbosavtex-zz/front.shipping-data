@@ -198,6 +198,8 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         else
           addressObj.addressType = 'residential'
 
+        addressObj.geoCoordinates = @attr.data.geoCoordinates
+
         return addressObj
 
       # Submit address to the server
@@ -246,6 +248,11 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
               @attr.data[rule.value] = component[rule.length]
           )
         )
+        @attr.data.geoCoordinates = [
+          address.geometry.location.lng()
+          address.geometry.location.lat()
+        ]
+        console.log(@attr.data)
         @trigger('addressFormRender', @attr.data)
 
       @clearAddressData = ->
