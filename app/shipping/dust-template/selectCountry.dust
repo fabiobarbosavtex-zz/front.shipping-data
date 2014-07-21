@@ -1,7 +1,9 @@
 <div class="select-country">
-	{^showAddressForm}
-	<h4 data-i18n="shipping.addressForm.header"></h4>
-	{/showAddressForm}
+
+	<p style="display: block;" class="cancel-address-form">
+		<a href="javascript:void(0);" class="cancel-new-address">Cancelar alterações e voltar para a lista de endereços</a>
+	</p>
+
 	<p class="ship-country required input text">
 		<label for="ship-country"><span data-i18n="shipping.addressForm.deliveryCountry"></span></label>
 		<select id="ship-country" tabindex="1" class="input-medium required" name="country">
@@ -16,7 +18,6 @@
 	
 	{?hasOtherAddresses}
 	{^showAddressForm}
-	<p class="cancel-address-form pull-left"><a href="javascript:void(0);" class="cancel-new-address" data-i18n="global.cancel"></a></p>
 	{/showAddressForm}
 	{/hasOtherAddresses}
 </div>
