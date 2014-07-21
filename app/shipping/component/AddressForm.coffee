@@ -117,14 +117,15 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
             @getPostalCode postalCode
 
       # Handle the initial view of this component
-      @showAddressForm = (ev, data) ->
-        console.log data
-        $.extend(@attr.data, data) if data
+      @showAddressForm = (ev, address) ->
+        console.log address
+        console.log @attr.data
+        $.extend(@attr.data.address, address) if address
 
         @attr.data.isEditingAddress = true
 
-        if data.address.addressType
-          @selectCountry(data.address.country)
+        if address.addressType
+          @selectCountry(address.country)
         else if @attr.data.deliveryCountries.length is 1
           country = @attr.data.deliveryCountries[0]
           @selectCountry(country)

@@ -56,7 +56,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         @render(@attr.data)
 
         @attr.data.showDontKnowPostalCode = false
-        @$node.trigger 'showAddressForm', @attr.data
+        @$node.trigger 'showAddressForm', @attr.data.address
 
       # Update address list
       @updateAddresses = (ev, data) ->
