@@ -1,5 +1,4 @@
 <div class="address-form">
-  <h4 data-i18n="shipping.addressForm.header"></h4>
   {@if cond="{deliveryCountries.length} > 1"}
   {>selectCountry /}
   {/if}
