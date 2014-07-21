@@ -6,18 +6,15 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
     AddressForm = ->
       @defaultAttrs
         data:
-          address: {}
+          address: new AddressModel({})
           postalCode: ''
-          deliveryCountries: ['BRA', 'ARG', 'CHL']
-          
+          deliveryCountries: ['BRA', 'ARG', 'CHL', 'COL', 'PER', 'ECU', 'PRY', 'URY', 'USA']
           disableCityAndState: false
           labelShippingFields: false
-          
           showPostalCode: false
           showAddressForm: false
           showDontKnowPostalCode: true
           showSelectCountry: false
-
           countryRules: {}
 
         templates:
@@ -117,13 +114,9 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
             @getPostalCode postalCode
 
       # Handle the initial view of this component
-      @showAddressForm = (ev, address) ->
-        console.log address
-        console.log @attr.data
+      @showAddressForm = (evt, address) ->
         $.extend(@attr.data.address, address) if address
-
         @attr.data.isEditingAddress = true
-
         if address.addressType
           @selectCountry(address.country)
         else if @attr.data.deliveryCountries.length is 1
@@ -234,11 +227,11 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
                 @attr.templates.selectCountry.template]
         if not @attr.data.countryRules[country]
           deps.push('shipping/rule/Country'+country)
-          require deps, (ft, sct, C) =>
-            @attr.data.countryRules[country] = new C()
+          require deps, (formTemplate, selectedCountryTemplate, countryRule) =>
+            @attr.data.countryRules[country] = new countryRule()
             @trigger('addressFormRender', @attr.data)
         else
-          require deps, =>
+          require deps, (formTemplate, selectedCountryTemplate) =>
             @trigger('addressFormRender', @attr.data)
 
       @addressMapper = (address) ->
@@ -386,7 +379,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
 
       # Bind events
       @after 'initialize', ->
-        console.log "módulo de form inicializado"
         @on 'loading', @loading
         @on document, 'newCountryRule', @addCountryRule
         @on document, 'addressFormRender', @render
@@ -406,4 +398,5 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         @on 'keyup',
           'postalCodeSelector': @validatePostalCode
         return
+
     return defineComponent(AddressForm)

@@ -50,7 +50,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
               sla.fullEstimateLabel = sla.name + ' - ' + sla.valueLabel + ' - ' + sla.deliveryEstimateLabel
 
         @attr.data.shippingOptions = data
-        console.log data
+        # console.log data
         @$node.trigger 'shippingOptionsRender'
 
       # Bind events
