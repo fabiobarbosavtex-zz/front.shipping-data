@@ -55,6 +55,7 @@
 			if (/^([\d]{5})\-?([\d]{3})$/.test(postalCode)) {
 				dataForm.throttledLoading = true;
 				dataForm.postalCode = postalCode;
+				dataForm.address.postalCode = postalCode;
 				$(this.$node).trigger('addressFormRender', dataForm);
 				$(this.$node).trigger('submitPostalCode', postalCode);
 			}
