@@ -83,6 +83,8 @@ define ->
       CHL: 'Chile'
       COL: 'Colombia'
       ECU: 'Equator'
+      PER: 'Peru'
+      PRY: 'Paraguay'
       URY: 'Uruguay'
       USA: 'USA'
 

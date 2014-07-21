@@ -98,6 +98,7 @@ define ->
       COL: 'Colômbia'
       ECU: 'Equador'
       PER: 'Peru'
+      PRY: 'Paraguai'
       URY: 'Uruguai'
       USA: 'EUA'
 
