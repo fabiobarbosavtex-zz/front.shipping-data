@@ -1,8 +1,8 @@
 define = vtex.define || window.define
 require = vtex.curl || window.require
 
-define ['flight/lib/component', 'shipping/setup/extensions'],
-  (defineComponent, extensions) ->
+define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Address'],
+  (defineComponent, extensions, AddressModel) ->
     AddressForm = ->
       @defaultAttrs
         data:
@@ -118,6 +118,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
 
       # Handle the initial view of this component
       @showAddressForm = (ev, data) ->
+        console.log data
         $.extend(@attr.data, data) if data
 
         @attr.data.isEditingAddress = true
@@ -256,12 +257,17 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         @trigger('addressFormRender', @attr.data)
 
       @clearAddressData = ->
+        @attr.data.addressId = null
+        @attr.data.addressType = null
         @attr.data.postalCode = ""
         @attr.data.number = ""
         @attr.data.street = ""
         @attr.data.neighborhood = ""
         @attr.data.state = ""
         @attr.data.city = ""
+        @attr.data.complement = ""
+        @attr.data.receiverName = ""
+        @attr.data.reference = ""
         @attr.data.geoCoordinates = []
 
       @createMap = (location) ->
