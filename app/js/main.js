@@ -10,10 +10,11 @@ vtex.curl(vtex.curl.configuration,
   ['shipping/component/AddressForm',
    'shipping/component/AddressList',
    'shipping/component/ShippingOptions',
+	 'shipping/Orchestrator',
    'example/CheckoutMock',
    'link!shipping/css/main'],
-  function(AddressForm, AddressList, ShippingOptions, CheckoutMock) {
-    var addressBookComponent = '.address-book';    
+  function(AddressForm, AddressList, ShippingOptions, Orchestrator,  CheckoutMock) {
+		var addressBookComponent = '.address-book';
     var addressList = AddressList.attachTo('.address-list-placeholder');
     var addressForm = AddressForm.attachTo('.address-form-placeholder');
     window.shippingOptions = ShippingOptions.attachTo('.address-shipping-options');
@@ -25,8 +26,8 @@ vtex.curl(vtex.curl.configuration,
 		window.mockShippingData = true;
 
     if (window.mockShippingData) {
-      checkout = new CheckoutMock(addressBookComponent);
-      checkout.orchestrate();      
+//      checkout = new CheckoutMock(addressBookComponent);
+//      checkout.orchestrate();
     } else {
 
       var checkout = { API: new vtex.checkout.API() };

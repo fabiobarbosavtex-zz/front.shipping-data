@@ -3,8 +3,8 @@ require = vtex.require || require
 
 define ->
     class CheckoutMock
-        constructor: (addressBookComponent) ->
-          @addressBookComponent = addressBookComponent
+        constructor: () ->
+          @addressBookComponent = window
           @orderForm = {
             "orderFormId": "39e56efa527e4811a1e0322f34176c56",
             "salesChannel": "1",
