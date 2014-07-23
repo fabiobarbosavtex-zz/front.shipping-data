@@ -1,21 +1,19 @@
-define = vtex.define || window.define
-require = vtex.curl || window.require
+define = vtex.define || define
+require = vtex.require || require
 
-define ['flight/lib/component'
-        'example/CheckoutMock'],
-  (defineComponent, CheckoutMock) ->
-    Orchestrator = ->
-      @orchestrate = () =>
-        console.log "orchestrate"
-        checkout = new CheckoutMock();
-        checkout.orchestrate();
+define ->
+    class Orchestrator
+      constructor: (CheckoutMock, addressBookComponent) ->
 
-      # Bind events
-      @startEventListeners = ->
-        @on document, 'checkout.openShippingData', @addCountryRule
-        @on document, 'checkout.closeShippingData', @render
+        @addressBookComponent = addressBookComponent
 
-      @startEventListeners()
-      @orchestrate()
+        @startModule = (addressBookComponent) ->
+          console.log("startModule")
+          checkout = new CheckoutMock(addressBookComponent);
+          checkout.orchestrate();
+          @startEventListeners()
 
-    return defineComponent(Orchestrator)
+        @orchestrate = () ->
+          console.log "orchestrate"
+
+        @startEventListeners = ->

@@ -19,6 +19,9 @@ vtex.curl(vtex.curl.configuration,
     var addressForm = AddressForm.attachTo('.address-form-placeholder');
     window.shippingOptions = ShippingOptions.attachTo('.address-shipping-options');
 
+		console.log(Orchestrator);
+		console.log(CheckoutMock);
+
 		// GEOLOCATION
 		window.shippingUsingGeolocation = true;
 
@@ -26,8 +29,8 @@ vtex.curl(vtex.curl.configuration,
 		window.mockShippingData = true;
 
     if (window.mockShippingData) {
-//      checkout = new CheckoutMock(addressBookComponent);
-//      checkout.orchestrate();
+			var orchestrator = new Orchestrator(CheckoutMock, addressBookComponent);
+			orchestrator.startModule();
     } else {
 
       var checkout = { API: new vtex.checkout.API() };

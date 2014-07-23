@@ -3,8 +3,8 @@ require = vtex.require || require
 
 define ->
     class CheckoutMock
-        constructor: () ->
-          @addressBookComponent = window
+        constructor: (addressBookComponent) ->
+          @addressBookComponent = addressBookComponent
           @orderForm = {
             "orderFormId": "39e56efa527e4811a1e0322f34176c56",
             "salesChannel": "1",
@@ -429,47 +429,48 @@ define ->
           }
 
         orchestrate: () =>
-            # Update addresses
-            if (@orderForm.shippingData)
-              addressData = @orderForm.shippingData
-              addressData.deliveryCountries = _.uniq(_.reduceRight(
-                addressData.logisticsInfo, (memo, l) ->
-                  return memo.concat(l.shipsTo)
-                , []
-              ))
-              $(@addressBookComponent).trigger 'updateAddresses', addressData
+          console.log "orchestrate"
+          # Update addresses
+          if (@orderForm.shippingData)
+            addressData = @orderForm.shippingData
+            addressData.deliveryCountries = _.uniq(_.reduceRight(
+              addressData.logisticsInfo, (memo, l) ->
+                return memo.concat(l.shipsTo)
+              , []
+            ))
+            $(@addressBookComponent).trigger 'updateAddresses', addressData
 
-            # Update shipping options
-            if @orderForm.shippingData and @orderForm.sellers
-              window.shippingOptionsData = @getShippingOptionsData()              
-              $(@addressBookComponent).trigger 'updateShippingOptions', shippingOptionsData
+          # Update shipping options
+          if @orderForm.shippingData and @orderForm.sellers
+            window.shippingOptionsData = @getShippingOptionsData()
+            $(@addressBookComponent).trigger 'updateShippingOptions', shippingOptionsData
 
-            # When a new addresses is saved
-            $(@addressBookComponent).on 'newAddress', (ev, addressObj) =>
-              # Do an AJAX to save in your API
-              # When you're done, update with the new data
-              updated = false
-              for address in @orderForm.shippingData.availableAddresses
-                if address.addressId is addressObj.addressId
-                  address = _.extend(address, addressObj)
-                  updated = true
-                  break;
+          # When a new addresses is saved
+          $(@addressBookComponent).on 'newAddress', (ev, addressObj) =>
+            # Do an AJAX to save in your API
+            # When you're done, update with the new data
+            updated = false
+            for address in @orderForm.shippingData.availableAddresses
+              if address.addressId is addressObj.addressId
+                address = _.extend(address, addressObj)
+                updated = true
+                break;
 
-              if not updated
-                @orderForm.shippingData.availableAddresses.push(addressObj)
+            if not updated
+              @orderForm.shippingData.availableAddresses.push(addressObj)
 
-              @orderForm.shippingData.address = addressObj
-              setTimeout( =>
-                $(@addressBookComponent).trigger('updateAddresses', @orderForm.shippingData)
-              , 400)
+            @orderForm.shippingData.address = addressObj
+            setTimeout( =>
+              $(@addressBookComponent).trigger('updateAddresses', @orderForm.shippingData)
+            , 400)
 
-            # When a new address is selected on the list, do something
-            $(@addressBookComponent).on 'addressSelected', (ev, addressObj) =>
-              console.log('Address selected:', addressObj)
-              console.log @orderForm.shippingData.availableAddresses
+          # When a new address is selected on the list, do something
+          $(@addressBookComponent).on 'addressSelected', (ev, addressObj) =>
+            console.log('Address selected:', addressObj)
+            console.log @orderForm.shippingData.availableAddresses
 
-            $(@addressBookComponent).on 'postalCode', (ev, postalCode) ->
-              console.log('New postal code:', postalCode)
+          $(@addressBookComponent).on 'postalCode', (ev, postalCode) ->
+            console.log('New postal code:', postalCode)
 
 
         ###
