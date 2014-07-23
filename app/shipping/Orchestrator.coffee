@@ -3,17 +3,18 @@ require = vtex.require || require
 
 define ->
     class Orchestrator
-      constructor: (CheckoutMock, addressBookComponent) ->
+      constructor: (CheckoutMock) ->
 
-        @addressBookComponent = addressBookComponent
+        @addressBookComponent = '.address-book'
+        @checkout = null
 
-        @startModule = (addressBookComponent) ->
+        @startModule = () ->
           console.log("startModule")
-          checkout = new CheckoutMock(addressBookComponent);
-          checkout.orchestrate();
+          @checkout = new CheckoutMock(@addressBookComponent);
+          @checkout.orchestrate()
+          @orchestrate();
           @startEventListeners()
 
         @orchestrate = () ->
-          console.log "orchestrate"
 
         @startEventListeners = ->
