@@ -28,33 +28,6 @@ define ->
             window.shippingOptionsData = @getShippingOptionsData()
             $(@addressBookComponent).trigger 'updateShippingOptions', shippingOptionsData
 
-          # When a new addresses is saved
-          $(@addressBookComponent).on 'newAddress', (ev, addressObj) =>
-            # Do an AJAX to save in your API
-            # When you're done, update with the new data
-            updated = false
-            for address in @orderForm.shippingData.availableAddresses
-              if address.addressId is addressObj.addressId
-                address = _.extend(address, addressObj)
-                updated = true
-                break;
-
-            if not updated
-              @orderForm.shippingData.availableAddresses.push(addressObj)
-
-            @orderForm.shippingData.address = addressObj
-            setTimeout( =>
-              $(@addressBookComponent).trigger('updateAddresses', @orderForm.shippingData)
-            , 400)
-
-          # When a new address is selected on the list, do something
-          $(@addressBookComponent).on 'addressSelected', (ev, addressObj) =>
-            console.log('Address selected:', addressObj)
-            console.log @orderForm.shippingData.availableAddresses
-
-          $(@addressBookComponent).on 'postalCode', (ev, postalCode) ->
-            console.log('New postal code:', postalCode)
-
         @getDeliveryCountries = (logisticsInfo) ->
           return _.uniq(_.reduceRight(logisticsInfo, (memo, l) ->
             return memo.concat(l.shipsTo)
@@ -100,3 +73,31 @@ define ->
 
 
         @startEventListeners = () ->
+          $(@addressBookComponent).on 'newAddress', @onAddressSaved
+          $(@addressBookComponent).on 'addressSelected', @onAddressSelected
+          $(@addressBookComponent).on 'postalCode', @onPostalCode
+
+        # When a new addresses is selected
+        # Should call API to get delivery options
+        @onAddressSelected  = (evt, addressObj) =>
+          console.log (addressObj)
+
+        @onPostalCodeLoaded = (ev, addressObj) =>
+          console.log (addressObj)
+
+        # When a new addresses is saved
+        @onAddressSaved = (evt, addressObj) =>
+          # Do an AJAX to save in your API
+          # When you're done, update with the new data
+          updated = false
+          for address in @orderForm.shippingData.availableAddresses
+            if address.addressId is addressObj.addressId
+              address = _.extend(address, addressObj)
+              updated = true
+              break;
+
+          if not updated
+            @orderForm.shippingData.availableAddresses.push(addressObj)
+
+          @orderForm.shippingData.address = addressObj
+          $(@addressBookComponent).trigger('updateAddresses', @orderForm.shippingData)
