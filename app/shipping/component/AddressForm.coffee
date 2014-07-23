@@ -37,6 +37,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
       # Google maps variables
       @map = null
       @marker = null
+      @API = window.vtexjs.checkout
 
       # Render this component according to the data object
       @render = (ev, data) ->
@@ -130,13 +131,13 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
       @getPostalCode = (data) ->
         country = @attr.data.country
         postalCode = data.replace(/-/g, '')
-        $.ajax(
-          url: 'http://postalcode.vtexfrete.com.br/api/postal/pub/address/' \
-            + country + '/' + postalCode
-          crossDomain: true
-        ).done((data) =>
-          if data.properties
-            address = data.properties[0].value.address
+        API.getAddressInformation({
+          postalCode: postalCode,
+          country: country
+        }).then((data) =>
+          console.log data
+          if data
+            address = data
             data = @attr.data
             if address.neighborhood isnt '' and address.street isnt '' \
             and address.stateAcronym isnt '' and address.city isnt ''
@@ -159,7 +160,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
             data.loading = false
             @trigger('addressFormRender', data)
             @$node.trigger('postalCode', @getCurrentAddress())
-        ).fail =>
+        , () =>
           data = @attr.data
           data.throttledLoading = false
           data.showAddressForm = true
@@ -168,6 +169,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
           data.loading = false
           @trigger('addressFormRender', data)
           @$node.trigger('postalCode', @getCurrentAddress())
+        )
 
       # Able the user to edit the suggested fields
       # filled by the postal code service

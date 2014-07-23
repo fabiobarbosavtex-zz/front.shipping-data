@@ -18,10 +18,8 @@ vtex.curl(vtex.curl.configuration,
     var addressForm = AddressForm.attachTo('.address-form-placeholder');
     window.shippingOptions = ShippingOptions.attachTo('.address-shipping-options');
 
-		// GEOLOCATION
+		// FLAGS
 		window.shippingUsingGeolocation = true;
-
-		// MOCK
 		window.mockShippingData = true;
 
     if (window.mockShippingData) {
