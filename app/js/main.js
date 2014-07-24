@@ -13,7 +13,7 @@ vtex.curl(vtex.curl.configuration,
 
 		// FLAGS
 		window.shippingUsingGeolocation = true;
-		var mockShippingData = true;
+		var mockShippingData = false;
 
 		// START SHIPPING DATA
 		var shippingData = new ShippingData(mockShippingData ? new CheckoutMock() : window.vtexjs.checkout);

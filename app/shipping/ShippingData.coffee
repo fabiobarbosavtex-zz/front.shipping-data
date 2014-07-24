@@ -39,7 +39,9 @@ define ['shipping/component/AddressForm',
       @startEventListeners()
 
       # Starts API
-      @API.getOrderForm()
+      @API.getOrderForm().then( =>
+        #@API.updateItems("332867")
+      )
 
     orchestrate: =>
       # Update addresses
@@ -102,6 +104,8 @@ define ['shipping/component/AddressForm',
       $(@addressBookComponent).on 'addressSelected', @onAddressSelected
       $(@addressBookComponent).on 'postalCode', @onPostalCode
       $(window).on 'orderFormUpdated.vtex', @orderFormUpdated
+      $(window).on 'enableShippingData.vtex', @enable
+      $(window).on 'disableShippingData.vtex', @disable
 
     orderFormUpdated: (evt, orderForm) =>
       console.log orderForm
