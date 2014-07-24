@@ -24,7 +24,7 @@ vtex.curl(vtex.curl.configuration,
 
     if (window.mockShippingData) {
 			var orchestrator = new Orchestrator(CheckoutMock);
-			orchestrator.startModule();
+			//orchestrator.startModule();
     }
   }
 );
