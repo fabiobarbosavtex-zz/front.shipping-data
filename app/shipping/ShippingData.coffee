@@ -1,8 +1,11 @@
 define = vtex.define || define
 require = vtex.require || require
 
-define ->
-  class Orchestrator
+define ['shipping/component/AddressForm',
+        'shipping/component/AddressList',
+        'shipping/component/ShippingOptions',
+        'link!shipping/css/main'], (AddressForm, AddressList, ShippingOptions) ->
+  class ShippingData
     constructor: (@API) ->
 
       @addressBookComponent = '.address-book'
@@ -27,10 +30,17 @@ define ->
       console.log "submit"
 
     startModule: =>
-      console.log("startModule")
-      @checkout = new @API(@addressBookComponent);
+      # Creates the components
+      addressList = AddressList.attachTo('.address-list-placeholder')
+      addressForm = AddressForm.attachTo('.address-form-placeholder')
+      window.shippingOptions = ShippingOptions.attachTo('.address-shipping-options')
+
+      # Starts API
+      @checkout = new @API();
       @orderForm = @checkout.orderForm
       @orchestrate();
+
+      # Start event listeners
       @startEventListeners()
 
     orchestrate: =>
