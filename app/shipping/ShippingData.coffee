@@ -31,24 +31,22 @@ define ['shipping/component/AddressForm',
 
     startModule: =>
       # Creates the components
-      addressList = AddressList.attachTo('.address-list-placeholder')
-      addressForm = AddressForm.attachTo('.address-form-placeholder')
-      window.shippingOptions = ShippingOptions.attachTo('.address-shipping-options')
-
-      # Starts API
-      @checkout = new @API();
-      @orderForm = @checkout.orderForm
-      @orchestrate();
+      AddressList.attachTo('.address-list-placeholder', { API: @API })
+      AddressForm.attachTo('.address-form-placeholder', { API: @API })
+      ShippingOptions.attachTo('.address-shipping-options', { API: @API })
 
       # Start event listeners
       @startEventListeners()
+
+      # Starts API
+      @API.getOrderForm()
 
     orchestrate: =>
       # Update addresses
       if (@orderForm.shippingData)
         addressData = @orderForm.shippingData
         addressData.deliveryCountries = @getDeliveryCountries(addressData.logisticsInfo)
-        $(@addressBookComponent).trigger 'updateAddresses', addressData
+      $(@addressBookComponent).trigger 'updateAddresses', addressData
 
       # Update shipping options
       if @orderForm.shippingData and @orderForm.sellers
@@ -103,6 +101,12 @@ define ['shipping/component/AddressForm',
       $(@addressBookComponent).on 'newAddress', @onAddressSaved
       $(@addressBookComponent).on 'addressSelected', @onAddressSelected
       $(@addressBookComponent).on 'postalCode', @onPostalCode
+      $(window).on 'orderFormUpdated.vtex', @orderFormUpdated
+
+    orderFormUpdated: (evt, orderForm) =>
+      console.log orderForm
+      @orderForm = orderForm
+      @orchestrate()
 
     # When a new addresses is selected
     # Should call API to get delivery options

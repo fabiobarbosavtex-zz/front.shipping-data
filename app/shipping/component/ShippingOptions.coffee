@@ -5,6 +5,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
   (defineComponent, extensions) ->
     ShippingOptions = ->
       @defaultAttrs
+        API: null
         data:
           shippingOptions: []
           loading: false

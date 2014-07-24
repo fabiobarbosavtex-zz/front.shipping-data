@@ -5,6 +5,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
   (defineComponent, extensions, AddressModel) ->
     AddressForm = ->
       @defaultAttrs
+        API: null
         data:
           address: new AddressModel({})
           postalCode: ''
@@ -31,13 +32,12 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         citySelector: '#ship-city'
         deliveryCountrySelector: '#ship-country'
         cancelAddressFormSelector: '.cancel-address-form a'
-        submitButtonSelector: '.submit .btn-success.address-save'
+        submitButtonSelector: '.submit .btn-success.address-save2'
         addressSearchBt: '.address-search-bt'
 
       # Google maps variables
       @map = null
       @marker = null
-      @API = window.vtexjs.checkout
 
       # Render this component according to the data object
       @render = (ev, data) ->
@@ -131,11 +131,10 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
       @getPostalCode = (data) ->
         country = @attr.data.country
         postalCode = data.replace(/-/g, '')
-        API.getAddressInformation({
+        @attr.API.getAddressInformation({
           postalCode: postalCode,
           country: country
         }).then((data) =>
-          console.log data
           if data
             address = data
             data = @attr.data

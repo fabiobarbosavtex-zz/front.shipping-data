@@ -426,3 +426,21 @@ define ->
               ]
             }
           }
+
+        getOrderForm: =>
+          $(window).trigger 'orderFormUpdated.vtex', @orderForm
+          return $.when(@orderForm)
+
+        getAddressInformation : =>
+          return $.when({
+            "postalCode": "22280050",
+            "city": "Rio de Janeiro",
+            "state": "RJ",
+            "country": "BRA",
+            "street": "Rua Teresa Guimarães",
+            "number": "",
+            "neighborhood": "Botafogo",
+            "complement": "",
+            "reference": "",
+            "geoCoordinates": []
+          })

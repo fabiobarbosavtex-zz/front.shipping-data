@@ -16,6 +16,6 @@ vtex.curl(vtex.curl.configuration,
 		var mockShippingData = true;
 
 		// START SHIPPING DATA
-		var shippingData = new ShippingData(mockShippingData ? CheckoutMock : window.vtexjs.checkout);
+		var shippingData = new ShippingData(mockShippingData ? new CheckoutMock() : window.vtexjs.checkout);
   }
 );

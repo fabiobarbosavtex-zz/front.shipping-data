@@ -5,6 +5,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
   (defineComponent, extensions) ->
     AddressList = ->
       @defaultAttrs
+        API: null
         data:
           address: {}
           availableAddresses: []
