@@ -3,7 +3,7 @@ require = vtex.require || require
 
 define ['shipping/component/AddressForm',
         'shipping/component/AddressList',
-        'shipping/component/ShippingOptions',
+        'shipping/component/ShippingOptions'
         'link!shipping/css/main'], (AddressForm, AddressList, ShippingOptions) ->
   class ShippingData
     constructor: (@API) ->

@@ -11,18 +11,45 @@
 	<link rel="stylesheet" href="//io.vtex.com.br/front-libs/font-awesome/3.2.1/css/font-awesome.min.css">
 	<script src="http://localhost:35729/livereload.js"></script>
 </head>
-<body>
+<body style="margin-top: 50px;">
 
-	<div class="container">
-		<div class="row span4">
-			<!-- PLACEHOLDER FOR THE ADDRESS BOOK COMPONENT -->
-			<div class="shipping-data address-book">
-				<h3 class="address-book-title"><i class="icon-home"></i> Entrega</h3>
-				<div class="address-book-body">
-					<div id="map-canvas"></div>
-					<div class="address-form-placeholder"></div>
-					<div class="address-list-placeholder"></div>
-					<div class="address-shipping-options"></div>
+	<div class="container container-main container-order-form">
+		<div class="checkout-container row-fluid orderform-active">
+			<div class="row-fluid orderform-template span12 active">
+				<div class="orderform-template-holder span8">
+					<div class="row-fluid">
+						<div class="span6 pull-right shipping-data">
+
+							<!-- PLACEHOLDER FOR THE ADDRESS BOOK COMPONENT -->
+							<div class="shipping-data address-book step accordion-group">
+
+								<!-- TITLE -->
+								<div class="accordion-heading">
+									<span class="accordion-toggle collapsed accordion-toggle-active">
+										<i class="icon-home"></i>
+										<span data-i18n="shippingData.shippingAddressTitle">Entrega</span>
+										<a href="#/shipping" id="edit-shipping-data" class="link-box-edit btn btn-small" title="alterar">
+											<i class="icon-edit"></i>
+										</a>
+									</span>
+								</div>
+
+								<div class="address-book-body">
+									<div id="map-canvas"></div>
+									<div class="address-form-placeholder"></div>
+									<div class="address-list-placeholder"></div>
+									<div class="address-shipping-options"></div>
+								</div>
+
+								<!-- NEXT STEP BUTTON -->
+								<p class="submit btn-submit-wrapper" style="display: block;">
+									<button type="submit" class="submit btn btn-large btn-success" tabindex="350">Ir para o Pagamento</button>
+								</p>
+
+							</div>
+
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

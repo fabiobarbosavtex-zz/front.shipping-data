@@ -1,6 +1,3 @@
-
-.address-book h3 { font-size: 16px; }
-
 span.error {
 	color: #dd4b39;
 	display: block;
@@ -322,4 +319,110 @@ input.postal-code:disabled {
   width: 200px;
   position: relative;
   display: none;
+}
+
+// PEGUEI DO CHECKOUT - STYLE.CSS
+
+body, label, input[type="text"], input[type="number"], input[type="email"], input[type="tel"], select, .btn, .btn-group > .btn {
+  font-size: 13px;
+}
+
+.step {
+  border: 3px solid #f4f4f4;
+  margin-bottom: 15px;
+  padding: 5px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+
+.accordion-group,
+.accordion-inner {
+  border: 0;
+}
+.accordion-toggle {
+  position: relative;
+}
+.accordion-inner {
+  padding: 9px;
+}
+.accordion-heading .accordion-toggle {
+  padding: 4px 8px 0;
+}
+.accordion-toggle {
+  color: #999999;
+  cursor: inherit;
+  font-size: 16px;
+  padding-bottom: 0;
+  padding-top: 4px;
+}
+.accordion-toggle span {
+  line-height: 18px;
+}
+.accordion-toggle .link-box-edit {
+  position: absolute;
+  right: -8px;
+  top: -8px;
+  padding: 4px 6px 2px;
+  border-radius: 0 6px;
+  background: #eee;
+  border-color: #eee;
+  color: #08c;
+  font-size: 14px;
+  opacity: .7;
+}
+.accordion-toggle .link-box-edit:hover {
+  opacity: 1;
+}
+.accordion-toggle-active {
+  color: #333333;
+  font-size: 24px;
+  line-height: 30px;
+  padding-top: 8px;
+}
+
+.step,
+.cart,
+.totalizers {
+  border: 3px solid #f4f4f4;
+  margin-bottom: 15px;
+  padding: 5px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+.step.active,
+.cart.active,
+.totalizers.active {
+  border-color: #e5e5e5;
+}
+
+.collapse {
+  overflow: visible;
+}
+
+.step .text label {
+  color: #999999;
+}
+.step .select label {
+  display: none;
+}
+.step .text input {
+  position: relative;
+  z-index: 6;
+}
+
+p.ship-name,
+p.ship-reference,
+p.ship-commercial,
+p.ship-neighborhood {
+  clear: both;
+}
+p.submit {
+  margin-top: 5px;
+  text-align: right;
+}
+
+.btn-large {
+  font-size: 16px;
 }
