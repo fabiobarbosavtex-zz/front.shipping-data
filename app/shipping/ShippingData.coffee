@@ -1,47 +1,46 @@
-define = vtex.define || define
-require = vtex.require || require
+define = vtex.define || window.define
+require = vtex.require || window.require
 
-define ['flight/lib/component', 'shipping/component/AddressForm', 'shipping/component/AddressList', 'shipping/component/ShippingOptions', 'link!shipping/css/main'],
-  (defineComponent, AddressForm, AddressList, ShippingOptions) ->
+define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component/AddressForm', 'shipping/component/AddressList', 'shipping/component/ShippingOptions', 'link!shipping/css/main'],
+  (defineComponent, extensions, AddressForm, AddressList, ShippingOptions) ->
     ShippingData = ->
       @defaultAttrs
         addressBookComponent: '.address-book'
-        checkout: null
-        orderForm: null
-        hash: ""
+        API: null
 
       #@startModule()
 
-      @enable: =>
+      @enable = ->
         console.log "enable"
 
-      @disable: =>
+      @disable = ->
         console.log "disable"
 
-      @commit: =>
+      @commit = ->
 
-      @revert: =>
+      @revert = ->
 
-      @update: =>
+      @update = =>
 
-      @submit: =>
+      @submit = =>
         console.log "submit"
 
-      @startModule: =>
+      @startModule = ->
         # Creates the components
-        AddressList.attachTo('.address-list-placeholder', { API: @API })
-        AddressForm.attachTo('.address-form-placeholder', { API: @API })
-        ShippingOptions.attachTo('.address-shipping-options', { API: @API })
+        AddressList.attachTo('.address-list-placeholder', { API: @attr.API })
+        AddressForm.attachTo('.address-form-placeholder', { API: @attr.API })
+        ShippingOptions.attachTo('.address-shipping-options', { API: @attr.API })
 
         # Start event listeners
         @startEventListeners()
 
         # Starts API
-        @API.getOrderForm().then( =>
+        @attr.API.getOrderForm().then( =>
           #@API.updateItems("332867")
+          console.log "haha"
         )
 
-      @orchestrate: =>
+      @orchestrate = =>
         # Update addresses
         if (@orderForm.shippingData)
           addressData = @orderForm.shippingData
@@ -53,12 +52,12 @@ define ['flight/lib/component', 'shipping/component/AddressForm', 'shipping/comp
           window.shippingOptionsData = @getShippingOptionsData()
           $(@addressBookComponent).trigger 'updateShippingOptions', shippingOptionsData
 
-      @getDeliveryCountries: (logisticsInfo) =>
+      @getDeliveryCountries = (logisticsInfo) =>
         return _.uniq(_.reduceRight(logisticsInfo, (memo, l) ->
           return memo.concat(l.shipsTo)
         , []))
 
-      @getShippingOptionsData: =>
+      @getShippingOptionsData = =>
         logisticsInfo = []
         for li in @orderForm.shippingData.logisticsInfo
           item = @orderForm.items[li.itemIndex]
@@ -96,30 +95,21 @@ define ['flight/lib/component', 'shipping/component/AddressForm', 'shipping/comp
 
         return logisticsInfoArray
 
-
-      @startEventListeners: =>
-        $(@addressBookComponent).on 'newAddress', @onAddressSaved
-        $(@addressBookComponent).on 'addressSelected', @onAddressSelected
-        $(@addressBookComponent).on 'postalCode', @onPostalCode
-        $(window).on 'orderFormUpdated.vtex', @orderFormUpdated
-        $(window).on 'enableShippingData.vtex', @enable
-        $(window).on 'disableShippingData.vtex', @disable
-
-      @orderFormUpdated: (evt, orderForm) =>
+      @orderFormUpdated = (evt, orderForm) =>
         console.log orderForm
         @orderForm = orderForm
         @orchestrate()
 
       # When a new addresses is selected
       # Should call API to get delivery options
-      @onAddressSelected: (evt, addressObj) =>
+      @onAddressSelected = (evt, addressObj) =>
         console.log (addressObj)
 
-      @onPostalCodeLoaded: (ev, addressObj) =>
+      @onPostalCodeLoaded = (ev, addressObj) =>
         console.log (addressObj)
 
       # When a new addresses is saved
-      @onAddressSaved: (evt, addressObj) =>
+      @onAddressSaved = (evt, addressObj) =>
         # Do an AJAX to save in your API
         # When you're done, update with the new data
         updated = false
@@ -134,5 +124,17 @@ define ['flight/lib/component', 'shipping/component/AddressForm', 'shipping/comp
 
         @orderForm.shippingData.address = addressObj
         $(@addressBookComponent).trigger('updateAddresses', @orderForm.shippingData)
+
+      @startEventListeners = =>
+        $(@addressBookComponent).on 'newAddress', @onAddressSaved
+        $(@addressBookComponent).on 'addressSelected', @onAddressSelected
+        $(@addressBookComponent).on 'postalCode', @onPostalCode
+        $(window).on 'orderFormUpdated.vtex', @orderFormUpdated
+        $(window).on 'enableShippingData.vtex', @enable
+        $(window).on 'disableShippingData.vtex', @disable
+
+      # Bind events
+      @after 'initialize', ->
+        @startModule()
 
     return defineComponent(ShippingData)
