@@ -7,6 +7,8 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
       @defaultAttrs
         addressBookComponent: '.address-book'
         API: null
+        data:
+          orderForm: false
 
       #@startModule()
 
@@ -26,7 +28,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
         console.log "submit"
 
       @startModule = ->
-        # Creates the components
+        # Start the components
         AddressList.attachTo('.address-list-placeholder', { API: @attr.API })
         AddressForm.attachTo('.address-form-placeholder', { API: @attr.API })
         ShippingOptions.attachTo('.address-shipping-options', { API: @attr.API })
@@ -34,35 +36,32 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
         # Start event listeners
         @startEventListeners()
 
-        # Starts API
-        @attr.API.getOrderForm().then( =>
-          #@API.updateItems("332867")
-          console.log "haha"
-        )
+        # Make first API call
+        @attr.API.getOrderForm();
 
-      @orchestrate = =>
+      @orchestrate = ->
         # Update addresses
-        if (@orderForm.shippingData)
-          addressData = @orderForm.shippingData
+        if (@attr.orderForm.shippingData)
+          addressData = @attr.orderForm.shippingData
           addressData.deliveryCountries = @getDeliveryCountries(addressData.logisticsInfo)
-        $(@addressBookComponent).trigger 'updateAddresses', addressData
+        $(@attr.addressBookComponent).trigger 'updateAddresses', addressData
 
         # Update shipping options
-        if @orderForm.shippingData and @orderForm.sellers
+        if @attr.orderForm.shippingData and @attr.orderForm.sellers
           window.shippingOptionsData = @getShippingOptionsData()
-          $(@addressBookComponent).trigger 'updateShippingOptions', shippingOptionsData
+          $(@attr.addressBookComponent).trigger 'updateShippingOptions', shippingOptionsData
 
       @getDeliveryCountries = (logisticsInfo) =>
         return _.uniq(_.reduceRight(logisticsInfo, (memo, l) ->
           return memo.concat(l.shipsTo)
         , []))
 
-      @getShippingOptionsData = =>
+      @getShippingOptionsData = ->
         logisticsInfo = []
-        for li in @orderForm.shippingData.logisticsInfo
-          item = @orderForm.items[li.itemIndex]
+        for li in @attr.orderForm.shippingData.logisticsInfo
+          item = @attr.orderForm.items[li.itemIndex]
 
-          seller = _.find @orderForm.sellers, (s) ->
+          seller = _.find @attr.orderForm.sellers, (s) ->
             return parseInt(s.id) is parseInt(item.seller)
 
           if seller
@@ -95,43 +94,43 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
 
         return logisticsInfoArray
 
-      @orderFormUpdated = (evt, orderForm) =>
+      @orderFormUpdated = (evt, orderForm) ->
         console.log orderForm
-        @orderForm = orderForm
+        @attr.orderForm = orderForm
         @orchestrate()
 
       # When a new addresses is selected
       # Should call API to get delivery options
-      @onAddressSelected = (evt, addressObj) =>
+      @onAddressSelected = (evt, addressObj) ->
         console.log (addressObj)
 
-      @onPostalCodeLoaded = (ev, addressObj) =>
+      @onPostalCodeLoaded = (ev, addressObj) ->
         console.log (addressObj)
 
       # When a new addresses is saved
-      @onAddressSaved = (evt, addressObj) =>
+      @onAddressSaved = (evt, addressObj) ->
         # Do an AJAX to save in your API
         # When you're done, update with the new data
         updated = false
-        for address in @orderForm.shippingData.availableAddresses
+        for address in @attr.orderForm.shippingData.availableAddresses
           if address.addressId is addressObj.addressId
             address = _.extend(address, addressObj)
             updated = true
             break;
 
         if not updated
-          @orderForm.shippingData.availableAddresses.push(addressObj)
+          @attr.orderForm.shippingData.availableAddresses.push(addressObj)
 
-        @orderForm.shippingData.address = addressObj
-        $(@addressBookComponent).trigger('updateAddresses', @orderForm.shippingData)
+        @attr.orderForm.shippingData.address = addressObj
+        $(@attr.addressBookComponent).trigger('updateAddresses', @attr.orderForm.shippingData)
 
-      @startEventListeners = =>
-        $(@addressBookComponent).on 'newAddress', @onAddressSaved
-        $(@addressBookComponent).on 'addressSelected', @onAddressSelected
-        $(@addressBookComponent).on 'postalCode', @onPostalCode
-        $(window).on 'orderFormUpdated.vtex', @orderFormUpdated
-        $(window).on 'enableShippingData.vtex', @enable
-        $(window).on 'disableShippingData.vtex', @disable
+      @startEventListeners = ->
+        @on @attr.addressBookComponent, 'newAddress', @onAddressSaved
+        @on @attr.addressBookComponent, 'addressSelected', @onAddressSelected
+        @on @attr.addressBookComponent, 'postalCode', @onPostalCodeLoaded
+        @on window, 'orderFormUpdated.vtex', @orderFormUpdated
+        @on window, 'enableShippingData.vtex', @enable
+        @on window, 'disableShippingData.vtex', @disable
 
       # Bind events
       @after 'initialize', ->
