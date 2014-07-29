@@ -13,8 +13,8 @@
 
 			<div class="well well-small">
 				<p>
-					 <label for="address-search"><span>Buscar por endereço</span></label>
-					 <input type="text" id="address-search" tabindex="221" class="input-large" value="{addressSearch}" name="address-search" >
+					 <label for="addressSearch"><span>Buscar por endereço</span></label>
+					 <input type="text" id="addressSearch" tabindex="221" class="input-large" value="{addressSearch}" name="addressSearch" >
 					 <div class="btn address-search-bt">Buscar</div>
 				</p>
       </div>

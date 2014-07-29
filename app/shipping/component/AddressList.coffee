@@ -144,5 +144,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           'createAddressSelector': @createAddress
           'addressItemSelector': @selectAddress
           'editAddressSelector': @editAddress
+        @on document, 'dblclick',
+          'addressItemSelector': @editAddress
         return
     return defineComponent(AddressList)

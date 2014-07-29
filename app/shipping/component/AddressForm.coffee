@@ -32,7 +32,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         citySelector: '#ship-city'
         deliveryCountrySelector: '#ship-country'
         cancelAddressFormSelector: '.cancel-address-form a'
-        submitButtonSelector: '.submit .btn-success.address-save2'
+        submitButtonSelector: '.submit .btn-success.address-save'
         addressSearchBt: '.address-search-bt'
 
       # Google maps variables
@@ -187,7 +187,8 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         disabled.attr 'disabled', 'disabled'
         addressObj = {}
         $.each serializedForm, ->
-          addressObj[@name] = @value
+          #addressObj[@name] = @value
+          addressObj[@name] = if (@value? and (@value isnt "")) then @value else null
 
         if addressObj.addressTypeCommercial
           addressObj.addressType = 'commercial'
@@ -199,18 +200,23 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         return addressObj
 
       # Submit address to the server
-      @submitAddress = (ev, data) ->
-        valid = $(@attr.addressFormSelector).parsley('validate')
-
-        if valid
-          addressObj = @getCurrentAddress()
-          @attr.data.address = addressObj
-
+      @submitAddress = (evt) ->
+        if $(@attr.addressFormSelector).parsley('validate')
+          @attr.data.address = @getCurrentAddress()
           @$node.trigger 'loading', true
           @attr.showAddressForm = false
-          @$node.trigger 'newAddress', addressObj
 
-        ev.preventDefault()
+          # @$node.trigger 'newAddress', addressObj
+
+          # Cria ID se ele não existir
+          if (@attr.data.address.addressId == null || @attr.data.address.addressId == "")
+            @attr.data.address.addressId = (new Date().getTime() * -1).toString()
+          if (@attr.data.address.addressSearch == null)
+            delete @attr.data.address["addressSearch"]
+
+          # Submit address object to API
+          @attr.API.sendAttachment("shippingData", { address: @attr.data.address });
+        evt.preventDefault()
 
       # Select a delivery country
       # This will load the country's form and rules
@@ -284,7 +290,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
       @startGoogleAddressSearch = ->
         window.setTimeout( =>
           addressListResponse = []
-          $('#address-search').typeahead({
+          $('#addressSearch').typeahead({
             minLength: 3,
             matcher: -> true
             source: (query, process) ->

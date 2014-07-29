@@ -9,6 +9,8 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
         API: null
         data:
           orderForm: false
+          isValid: false
+        goToPaymentBtn: ".btn-go-to-payment"
 
       #@startModule()
 
@@ -107,22 +109,32 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
       @onPostalCodeLoaded = (ev, addressObj) ->
         console.log (addressObj)
 
+      @validate = ->
+        return @attr.data.isValid = false;
+
+      @goToPayment = () ->
+        console.log "goToPayment"
+        if (@validate())
+          console.log "valid"
+        else
+          console.log "invalid"
+
       # When a new addresses is saved
       @onAddressSaved = (evt, addressObj) ->
         # Do an AJAX to save in your API
         # When you're done, update with the new data
-        updated = false
-        for address in @attr.orderForm.shippingData.availableAddresses
-          if address.addressId is addressObj.addressId
-            address = _.extend(address, addressObj)
-            updated = true
-            break;
-
-        if not updated
-          @attr.orderForm.shippingData.availableAddresses.push(addressObj)
-
-        @attr.orderForm.shippingData.address = addressObj
-        $(@attr.addressBookComponent).trigger('updateAddresses', @attr.orderForm.shippingData)
+#        updated = false
+#        for address in @attr.orderForm.shippingData.availableAddresses
+#          if address.addressId is addressObj.addressId
+#            address = _.extend(address, addressObj)
+#            updated = true
+#            break;
+#
+#        if not updated
+#          @attr.orderForm.shippingData.availableAddresses.push(addressObj)
+#
+#        @attr.orderForm.shippingData.address = addressObj
+#        $(@attr.addressBookComponent).trigger('updateAddresses', @attr.orderForm.shippingData)
 
       @startEventListeners = ->
         @on @attr.addressBookComponent, 'newAddress', @onAddressSaved
@@ -131,6 +143,8 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
         @on window, 'orderFormUpdated.vtex', @orderFormUpdated
         @on window, 'enableShippingData.vtex', @enable
         @on window, 'disableShippingData.vtex', @disable
+        @on document, 'click',
+          'goToPaymentBtn': @goToPayment
 
       # Bind events
       @after 'initialize', ->
