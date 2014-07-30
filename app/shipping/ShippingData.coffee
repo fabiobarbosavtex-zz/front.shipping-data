@@ -16,14 +16,23 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
           visited: false
           loading: false
         goToPaymentBtn: ".btn-go-to-payment"
+        editShippingData: "#edit-shipping-data"
 
       @enable = ->
+        @attr.state.active = true
         $(".address-book").addClass("active");
+        $('.shipping-data .btn-go-to-payment').show();
+        $('#edit-shipping-data').hide();
         $(window).trigger("showShippingSummary.vtex", false);
+        $(document).trigger("showAddressList.vtex");
 
       @disable = ->
+        @attr.state.active = false
         $(".address-book").removeClass("active");
+        $('.shipping-data .btn-go-to-payment').hide();
+        $('#edit-shipping-data').show();
         $(window).trigger("showShippingSummary.vtex", true);
+        $(document).trigger("hideAddressList.vtex");
 
       @commit = ->
 
@@ -58,6 +67,8 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
         if @attr.orderForm.shippingData and @attr.orderForm.sellers
           window.shippingOptionsData = @getShippingOptionsData()
           $(@attr.addressBookComponent).trigger 'updateShippingOptions', shippingOptionsData
+
+        @enable()
 
       @getDeliveryCountries = (logisticsInfo) =>
         return _.uniq(_.reduceRight(logisticsInfo, (memo, l) ->
@@ -150,6 +161,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
         @on window, 'disableShippingData.vtex', @disable
         @on document, 'click',
           'goToPaymentBtn': @goToPayment
+          'editShippingData': @enable
 
       # Bind events
       @after 'initialize', ->

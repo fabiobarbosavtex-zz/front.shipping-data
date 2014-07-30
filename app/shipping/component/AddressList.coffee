@@ -134,11 +134,18 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         @attr.data.showAddressList = true
         @render(@attr.data)
 
+      @hideAddressList = (evt, data) ->
+        @attr.data.showAddressList = false
+        @render(@attr.data)
+
+
       # Bind events
       @after 'initialize', ->
         @on document, 'newCountryRule', @addCountryRule
         @on document, 'updateAddresses', @updateAddresses
         @on document, 'addressFormCanceled', @showAddressList
+        @on document, 'showAddressList.vtex', @showAddressList
+        @on document, 'hideAddressList.vtex', @hideAddressList
         @on document, 'selectAddress', @selectAddress
         @on document, 'click',
           'createAddressSelector': @createAddress
