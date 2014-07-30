@@ -1,0 +1,15 @@
+{#showSummary}
+	<p class="address">
+		<span class="street">Rua Teresa Guimarães</span>,
+		<span class="number">83</span> - <span class="neighborhood">Botafogo</span>
+		<br>
+		<span class="city">Rio De Janeiro</span> -  <span class="state">RJ</span> - <span class="postal-code">22280-050</span>
+		<span class="country">Brasil</span>
+	</p>
+	<div class="shipping-options just-one">
+		<p><span class="text">Entrega:</span>
+			<span class="sla">Entrega Agendada</span>
+		</p>
+	</div>
+	<a href="#/shipping" id="change-other-shipping-option" class="link-change-shipping">Alterar opções de entrega</a>
+{/showSummary}

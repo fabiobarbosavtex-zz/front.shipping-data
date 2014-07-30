@@ -1,8 +1,9 @@
 define = vtex.define || window.define
 require = vtex.require || window.require
 
-define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component/AddressForm', 'shipping/component/AddressList', 'shipping/component/ShippingOptions', 'link!shipping/css/main'],
-  (defineComponent, extensions, AddressForm, AddressList, ShippingOptions) ->
+define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component/AddressForm', 'shipping/component/AddressList',
+        'shipping/component/ShippingOptions', 'shipping/component/ShippingSummary', 'link!shipping/css/main'],
+  (defineComponent, extensions, AddressForm, AddressList, ShippingOptions, ShippingSummary) ->
     ShippingData = ->
       @defaultAttrs
         addressBookComponent: '.address-book'
@@ -10,15 +11,19 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
         data:
           orderForm: false
           isValid: false
+        state:
+          active: false
+          visited: false
+          loading: false
         goToPaymentBtn: ".btn-go-to-payment"
 
-      #@startModule()
-
       @enable = ->
-        console.log "enable"
+        $(".address-book").addClass("active");
+        $(window).trigger("showShippingSummary.vtex", false);
 
       @disable = ->
-        console.log "disable"
+        $(".address-book").removeClass("active");
+        $(window).trigger("showShippingSummary.vtex", true);
 
       @commit = ->
 
@@ -34,6 +39,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
         AddressList.attachTo('.address-list-placeholder', { API: @attr.API })
         AddressForm.attachTo('.address-form-placeholder', { API: @attr.API })
         ShippingOptions.attachTo('.address-shipping-options', { API: @attr.API })
+        ShippingSummary.attachTo('.shipping-summary-placeholder', { API: @attr.API })
 
         # Start event listeners
         @startEventListeners()
@@ -97,7 +103,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
         return logisticsInfoArray
 
       @orderFormUpdated = (evt, orderForm) ->
-        console.log orderForm
         @attr.orderForm = orderForm
         @orchestrate()
 
