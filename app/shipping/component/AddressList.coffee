@@ -152,6 +152,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           @attr.locale = 'es'
         else
           @attr.locale = locale
+        $.i18n.setLng(@attr.locale)
 
       @localeUpdate = (ev, locale) ->
         console.log("localeUpdate")

@@ -5,6 +5,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
   (defineComponent, extensions) ->
     ShippingOptions = ->
       @defaultAttrs
+        locale: 'pt-BR'
         API: null
         data:
           shippingOptions: []
@@ -59,6 +60,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         @attr.locale = 'es'
       else
         @attr.locale = locale
+        $.i18n.setLng(@attr.locale)
 
     @localeUpdate = (ev, locale) ->
       @setLocale locale

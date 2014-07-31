@@ -5,8 +5,8 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
   (defineComponent, extensions, AddressModel) ->
     AddressForm = ->
       @defaultAttrs
-        API: null
         locale: 'pt-BR'
+        API: null
         data:
           address: new AddressModel({})
           postalCode: ''
@@ -399,6 +399,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
           @attr.locale = 'es'
         else
           @attr.locale = locale
+          $.i18n.setLng(@attr.locale)
 
       @localeUpdate = (ev, locale) ->
         @setLocale locale
