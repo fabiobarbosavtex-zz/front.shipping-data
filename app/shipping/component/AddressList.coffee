@@ -5,6 +5,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
   (defineComponent, extensions) ->
     AddressList = ->
       @defaultAttrs
+        locale: 'pt-BR'
         API: null
         data:
           address: {}
@@ -31,10 +32,18 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         if not data.showAddressList
           @$node.html('')
         else
-          require [@attr.templates.list.template], =>
+          require ['shipping/translation/' + @attr.locale, @attr.templates.list.template], (translation) =>
+            @extendTranslations(translation)
             dust.render @attr.templates.list.name, data, (err, output) =>
               output = $(output).i18n()
               $(@$node).html(output)
+
+      @extendTranslations = (translation) ->
+        if window.vtex.i18n[@attr.locale]
+          window.vtex.i18n[@attr.locale] = _.extend(translation, window.vtex.i18n[@attr.locale])
+          i18n.addResourceBundle(@attr.locale, 'translation', window.vtex.i18n[@attr.locale])
+        else
+          i18n.addResourceBundle(@attr.locale, 'translation', translation)
 
       # Create a new address
       # Trigger an event to AddressForm component
@@ -145,6 +154,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           @attr.locale = locale
 
       @localeUpdate = (ev, locale) ->
+        console.log("localeUpdate")
         @setLocale locale
         @render(@attr.data)
 
