@@ -1,10 +1,11 @@
 {#showSummary}
 	<p class="address">
-		<span class="street">Rua Teresa Guimarães</span>,
-		<span class="number">83</span> - <span class="neighborhood">Botafogo</span>
+		<span class="street">{address.street}</span>,
+		<span class="number"> {address.number}</span> - <span>{address.complement}</span> - <span class="neighborhood">{address.neighborhood}</span>
 		<br>
-		<span class="city">Rio De Janeiro</span> -  <span class="state">RJ</span> - <span class="postal-code">22280-050</span>
-		<span class="country">Brasil</span>
+		<span class="city">{address.city}</span> -  <span class="state">{address.state}</span> -
+		<span class="postal-code"> {address.postalCode}</span> -
+		<span class="country"> {address.country}</span>
 	</p>
 	<div class="shipping-options just-one">
 		<p><span class="text">Entrega:</span>
