@@ -54,8 +54,19 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         # console.log data
         @$node.trigger 'shippingOptionsRender'
 
+    @setLocale = (locale = "pt-BR") ->
+      if locale.match('es-')
+        @attr.locale = 'es'
+      else
+        @attr.locale = locale
+
+    @localeUpdate = (ev, locale) ->
+      @setLocale locale
+      @render(@attr.data)
+
       # Bind events
-      @after 'initialize', ->  
+      @after 'initialize', ->
+        @on window, 'localeSelected.vtex', @localeUpdate
         @on document, 'shippingOptionsRender', @render
         @on document, 'updateShippingOptions', @updateShippingOptions
 

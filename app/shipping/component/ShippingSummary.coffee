@@ -8,6 +8,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
       API: null
       data:
         address: {}
+        currentCountryName: false
         showSummary: false
 
       templates:
@@ -23,17 +24,29 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           $(@$node).html(output)
 
     @orderFormUpdated = (evt, orderForm) ->
-      @attr.data.address = orderForm.shippingData.address;
+      @attr.data.address = orderForm.shippingData.address
+      @attr.data.currentCountryName = "Brasil"
       @render(@attr.data)
 
     @showShippingSummary = (evt, data) ->
       @attr.data.showSummary = data
       @render(@attr.data)
 
+    @setLocale = (locale = "pt-BR") ->
+      if locale.match('es-')
+        @attr.locale = 'es'
+      else
+        @attr.locale = locale
+
+    @localeUpdate = (ev, locale) ->
+      @setLocale locale
+      @render(@attr.data)
+
     # Bind events
     @after 'initialize', ->
       @on window, 'orderFormUpdated.vtex', @orderFormUpdated
       @on window, 'showShippingSummary.vtex', @showShippingSummary
+      @on window, 'localeSelected.vtex', @localeUpdate
       return
 
   return defineComponent(ShippingSummary)

@@ -384,9 +384,20 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         @changeCities(ev, data)
         @changePostalCodeByState(ev, data)
 
+      @setLocale = (locale = "pt-BR") ->
+        if locale.match('es-')
+          @attr.locale = 'es'
+        else
+          @attr.locale = locale
+
+      @localeUpdate = (ev, locale) ->
+        @setLocale locale
+        @render(@attr.data)
+
       # Bind events
       @after 'initialize', ->
         @on 'loading', @loading
+        @on window, 'localeSelected.vtex', @localeUpdate
         @on document, 'newCountryRule', @addCountryRule
         @on document, 'addressFormRender', @render
         @on document, 'showAddressForm', @showAddressForm

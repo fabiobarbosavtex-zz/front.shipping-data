@@ -138,9 +138,19 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         @attr.data.showAddressList = false
         @render(@attr.data)
 
+      @setLocale = (locale = "pt-BR") ->
+        if locale.match('es-')
+          @attr.locale = 'es'
+        else
+          @attr.locale = locale
+
+      @localeUpdate = (ev, locale) ->
+        @setLocale locale
+        @render(@attr.data)
 
       # Bind events
       @after 'initialize', ->
+        @on window, 'localeSelected.vtex', @localeUpdate
         @on document, 'newCountryRule', @addCountryRule
         @on document, 'updateAddresses', @updateAddresses
         @on document, 'addressFormCanceled', @showAddressList

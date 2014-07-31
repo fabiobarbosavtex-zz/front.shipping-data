@@ -5,7 +5,7 @@
 		<br>
 		<span class="city">{address.city}</span> -  <span class="state">{address.state}</span> -
 		<span class="postal-code"> {address.postalCode}</span> -
-		<span class="country"> {address.country}</span>
+		<span class="country"> {currentCountryName}</span>
 	</p>
 	<div class="shipping-options just-one">
 		<p><span class="text">Entrega:</span>
