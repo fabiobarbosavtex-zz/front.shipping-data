@@ -139,9 +139,12 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         _.extend(@attr.data.countryRules, data)
 
       @showAddressList = (ev, data) ->
-        return if @attr.data.showAddressList
-        @attr.data.showAddressList = true
-        @render(@attr.data)
+        if (@attr.data.availableAddresses.length > 0)
+          @attr.data.showAddressList = true
+          @render(@attr.data)
+        else
+          # Se a lista esta vazia, abre form de novo endereço
+          $(document).trigger("showAddressForm");
 
       @hideAddressList = (evt, data) ->
         @attr.data.showAddressList = false
@@ -159,6 +162,11 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         @setLocale locale
         @render(@attr.data)
 
+      @orderFormUpdated = (evt, data) ->
+        if data.shippingData?
+          @attr.data.address = data.shippingData.address
+          @attr.data.availableAddresses = data.shippingData.availableAddresses
+
       # Bind events
       @after 'initialize', ->
         @on window, 'localeSelected.vtex', @localeUpdate
@@ -168,11 +176,10 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         @on document, 'showAddressList.vtex', @showAddressList
         @on document, 'hideAddressList.vtex', @hideAddressList
         @on document, 'selectAddress', @selectAddress
+        @on window, 'orderFormUpdated.vtex', @orderFormUpdated
         @on document, 'click',
           'createAddressSelector': @createAddress
           'addressItemSelector': @selectAddress
           'editAddressSelector': @editAddress
-        @on document, 'dblclick',
-          'addressItemSelector': @editAddress
         return
     return defineComponent(AddressList)

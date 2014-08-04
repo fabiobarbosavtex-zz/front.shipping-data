@@ -18,13 +18,16 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
 
     # Render this component according to the data object
     @render = (data) ->
-      require [@attr.templates.list.template], =>
-        dust.render @attr.templates.list.name, data, (err, output) =>
-          output = $(output).i18n()
-          $(@$node).html(output)
+      if data.address
+        require [@attr.templates.list.template], =>
+          dust.render @attr.templates.list.name, data, (err, output) =>
+            output = $(output).i18n()
+            $(@$node).html(output)
+      else
+        $(@$node).html("")
 
     @orderFormUpdated = (evt, orderForm) ->
-      @attr.data.address = orderForm.shippingData.address
+      @attr.data.address = orderForm.shippingData?.address?
       @attr.data.currentCountryName = "Brasil"
       @render(@attr.data)
 

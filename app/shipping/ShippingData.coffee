@@ -25,6 +25,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
         $('#edit-shipping-data').hide();
         $(window).trigger("showShippingSummary.vtex", false);
         $(document).trigger("showAddressList.vtex");
+        $(".accordion-shipping-title").addClass("accordion-toggle-active");
 
       @disable = ->
         @attr.state.active = false
@@ -33,6 +34,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
         $('#edit-shipping-data').show();
         $(window).trigger("showShippingSummary.vtex", true);
         $(document).trigger("hideAddressList.vtex");
+        $(".accordion-shipping-title").removeClass("accordion-toggle-active");
 
       @commit = ->
 
@@ -58,17 +60,19 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
 
       @orchestrate = ->
         # Update addresses
-        if (@attr.orderForm.shippingData)
+        if (@attr.orderForm.shippingData?.address?)
           addressData = @attr.orderForm.shippingData
           addressData.deliveryCountries = @getDeliveryCountries(addressData.logisticsInfo)
-        $(@attr.addressBookComponent).trigger 'updateAddresses', addressData
+          $(@attr.addressBookComponent).trigger 'updateAddresses', addressData
+          @enable()
+        else
+          $(".address-not-filled-verification").fadeIn();
 
         # Update shipping options
         if @attr.orderForm.shippingData and @attr.orderForm.sellers
           window.shippingOptionsData = @getShippingOptionsData()
           $(@attr.addressBookComponent).trigger 'updateShippingOptions', shippingOptionsData
-
-        @enable()
+          @enable()
 
       @getDeliveryCountries = (logisticsInfo) =>
         return _.uniq(_.reduceRight(logisticsInfo, (memo, l) ->
