@@ -10,11 +10,11 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         address: {}
         currentCountryName: false
         showSummary: false
-
       templates:
         list:
           name: 'shippingSummary'
           template: 'shipping/template/shippingSummary'
+      changeShippingOptionBt: "#change-other-shipping-option"
 
     # Render this component according to the data object
     @render = (data) ->
@@ -42,11 +42,17 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
       @setLocale locale
       @render(@attr.data)
 
+    @changeShippingOption = (evt, data) ->
+      @showShippingSummary false
+      $(document).trigger('showAddressList.vtex')
+
     # Bind events
     @after 'initialize', ->
       @on window, 'orderFormUpdated.vtex', @orderFormUpdated
       @on window, 'showShippingSummary.vtex', @showShippingSummary
       @on window, 'localeSelected.vtex', @localeUpdate
+      @on document, 'click',
+        'changeShippingOptionBt': @changeShippingOption
       return
 
   return defineComponent(ShippingSummary)

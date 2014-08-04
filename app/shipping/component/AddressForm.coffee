@@ -43,59 +43,60 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
       # Render this component according to the data object
       @render = (ev, data) ->
         data = @attr.data if not data
-        if data.showSelectCountry
-          require ['shipping/translation/' + @attr.locale, @attr.templates.selectCountry.template], (translation) =>
-            @extendTranslations(translation)
-            dust.render @attr.templates.selectCountry.name, data, (err, output) =>
-              output = $(output).i18n()
-              @$node.html(output)
-        else if data.showAddressForm
+        if data.showSelectCountry or data.showAddressForm
           require 'shipping/translation/' + @attr.locale, (translation) =>
-            rules = @getCurrentRule()
-            data.states = rules.states
-            data.regexes = rules.regexes
-            dust.render @attr.templates.form.name, data, (err, output) =>
-              output = $(output).i18n()
-              @$node.html(output)
+            if data.showSelectCountry
+              require [@attr.templates.selectCountry.template], =>
+                @extendTranslations(translation)
+                dust.render @attr.templates.selectCountry.name, data, (err, output) =>
+                  output = $(output).i18n()
+                  @$node.html(output)
+            else if data.showAddressForm
+              rules = @getCurrentRule()
+              data.states = rules.states
+              data.regexes = rules.regexes
+              dust.render @attr.templates.form.name, data, (err, output) =>
+                @extendTranslations(translation)
+                output = $(output).i18n()
+                @$node.html(output)
 
-              if data.loading
-                $('input, select, .btn', @$node).attr('disabled', 'disabled')
+                if data.loading
+                  $('input, select, .btn', @$node).attr('disabled', 'disabled')
 
-              if rules.citiesBasedOnStateChange
-                @changeCities()
-                if data.address.city
-                  $(@attr.citySelector, @$node).val(data.address.city)
+                if rules.citiesBasedOnStateChange
+                  @changeCities()
+                  if data.address.city
+                    $(@attr.citySelector, @$node).val(data.address.city)
 
-              if rules.usePostalCode
-                $(@attr.postalCodeSelector, @$node).inputmask
-                  mask: rules.masks.postalCode
-                if data.labelShippingFields
-                  $(@attr.postalCodeSelector).addClass('success')
+                if rules.usePostalCode
+                  $(@attr.postalCodeSelector, @$node).inputmask
+                    mask: rules.masks.postalCode
+                  if data.labelShippingFields
+                    $(@attr.postalCodeSelector).addClass('success')
 
-              $(@attr.addressFormSelector, @$node).parsley
-                errorClass: 'error'
-                successClass: 'success'
-                errors:
-                  errorsWrapper: '<div class="help error-list"></div>'
-                  errorElem: '<span class="help error"></span>'
-                validators:
-                  postalcode: =>
-                    validate: (val) =>
-                      rules = @attr.data.countryRules[@attr.data.country]
-                      return rules.regexes.postalCode.test(val)
-                    priority: 32
+                $(@attr.addressFormSelector, @$node).parsley
+                  errorClass: 'error'
+                  successClass: 'success'
+                  errors:
+                    errorsWrapper: '<div class="help error-list"></div>'
+                    errorElem: '<span class="help error"></span>'
+                  validators:
+                    postalcode: =>
+                      validate: (val) =>
+                        rules = @attr.data.countryRules[@attr.data.country]
+                        return rules.regexes.postalCode.test(val)
+                      priority: 32
 
-              # Focus on the first empty rqeuired field
-              inputs = 'input[type=email].required,' + \
-                       'input[type=tel].required,' + \
-                       'input[type=text].required'
-              $(@$node).find(inputs)
-                .filter ->
-                  if($(this).val() == "")
-                    return true
-              .first().focus()
-
-              @startGoogleAddressSearch()
+                # Focus on the first empty rqeuired field
+                inputs = 'input[type=email].required,' + \
+                         'input[type=tel].required,' + \
+                         'input[type=text].required'
+                $(@$node).find(inputs)
+                  .filter ->
+                    if($(this).val() == "")
+                      return true
+                .first().focus()
+                @startGoogleAddressSearch()
         else
           @$node.html('')
 
@@ -403,7 +404,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
 
       @localeUpdate = (ev, locale) ->
         @setLocale locale
-        @render(@attr.data)
+        @render()
 
       # Bind events
       @after 'initialize', ->
