@@ -27,7 +27,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         $(@$node).html("")
 
     @orderFormUpdated = (evt, orderForm) ->
-      @attr.data.address = orderForm.shippingData?.address?
+      @attr.data.address = orderForm.shippingData?.address
       @attr.data.currentCountryName = "Brasil"
       @render(@attr.data)
 
@@ -49,11 +49,20 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
       @showShippingSummary false
       $(document).trigger('showAddressList.vtex')
 
+    @onDisableShippingData = () ->
+      @showShippingSummary null, true
+
+    @onAddressSelected = (evt, data) ->
+      @attr.data.address = data
+      @render(@attr.data)
+
     # Bind events
     @after 'initialize', ->
+      @on window, 'addressSelected', @onAddressSelected
       @on window, 'orderFormUpdated.vtex', @orderFormUpdated
       @on window, 'showShippingSummary.vtex', @showShippingSummary
       @on window, 'localeSelected.vtex', @localeUpdate
+      @on window, 'disableShippingData.vtex', @onDisableShippingData
       @on document, 'click',
         'changeShippingOptionBt': @changeShippingOption
       return

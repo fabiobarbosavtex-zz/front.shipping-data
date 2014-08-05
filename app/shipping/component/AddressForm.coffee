@@ -127,7 +127,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
 
       # Handle the initial view of this component
       @showAddressForm = (evt, address) ->
-        @attr.data.address = new AddressModel(address?)
+        @attr.data.address = new AddressModel(address)
         @attr.data.isEditingAddress = true
         if address?.addressType?
           @selectCountry(address.country)
@@ -253,7 +253,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
             @trigger('addressFormRender', @attr.data)
 
       @addressMapper = (address) ->
-        console.log address
         console.log @getCurrentRule()
         _.each(@getCurrentRule().googleDataMap, (rule) =>
           _.each(address.address_components, (component)=>
@@ -319,7 +318,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
               addressObject = _.find(addressListResponse, (item)-> item.formatted_address is address)
               @clearAddressData()
               @addressMapper addressObject
-              @createMap(addressObject.geometry.location)
+              # @createMap(addressObject.geometry.location)
           })
         ,100)
 
