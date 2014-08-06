@@ -70,52 +70,13 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
 
         # Update shipping options
         if @attr.orderForm.shippingData and @attr.orderForm.sellers
-          window.shippingOptionsData = @getShippingOptionsData()
-          $(@attr.addressBookComponent).trigger 'updateShippingOptions', shippingOptionsData
+          $(@attr.addressBookComponent).trigger 'updateShippingOptions'
           @enable()
 
       @getDeliveryCountries = (logisticsInfo) =>
         return _.uniq(_.reduceRight(logisticsInfo, (memo, l) ->
           return memo.concat(l.shipsTo)
         , []))
-
-      @getShippingOptionsData = ->
-        logisticsInfo = []
-        for li in @attr.orderForm.shippingData.logisticsInfo
-          item = @attr.orderForm.items[li.itemIndex]
-
-          seller = _.find @attr.orderForm.sellers, (s) ->
-            return parseInt(s.id) is parseInt(item.seller)
-
-          if seller
-            current = _.extend({}, li, {seller:seller}, {item: item})
-            logisticsInfo.push(current)
-
-        logisticsBySeller = _.groupBy logisticsInfo, (so) -> return so.seller.id
-        logisticsInfoArray = _.map logisticsBySeller, (logistic) ->
-          composedLogistic =
-            items: []
-            seller: {}
-            selectedSla: ''
-            slas: []
-
-          for logi in logistic
-            composedLogistic.items.push(logi.item)
-            composedLogistic.seller = logi.seller
-            for sla in logi.slas
-              sla.isScheduled = sla.availableDeliveryWindows and sla.availableDeliveryWindows.length > 0
-              sla.businessDays = (sla.shippingEstimate+'').indexOf('bd') isnt -1
-              sla.shippingEstimateDays = parseInt((sla.shippingEstimate+'').replace(/bd|d/,''), 10)
-              sla.isSelected = (sla.id is logi.selectedSla)
-              sla.valueLabel = if sla.price > 0 then _.intAsCurrency sla.price else i18n.t('global.free')
-              sla.taxValueLabel = if sla.tax > 0 then _.intAsCurrency sla.tax else i18n.t('global.free')
-            composedLogistic.slas = logi.slas
-            selectedSla = _.find logi.slas, (sla) -> sla.name is logi.selectedSla
-            composedLogistic.selectedSla = selectedSla
-
-          return composedLogistic
-
-        return logisticsInfoArray
 
       @orderFormUpdated = (evt, orderForm) ->
         @attr.orderForm = orderForm

@@ -11,8 +11,11 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           shippingOptions: []
           loading: false
           multipleSellers: false
+          items: []
+          logisticsInfo: []
+          sellers: []
 
-        templates:          
+        templates:
           shippingOptions:
             name: 'shippingOptions'
             template: 'shipping/template/shippingOptions'
@@ -28,13 +31,13 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
             output = $(output).i18n()
             @$node.html(output)
 
-      @updateShippingOptions = (ev) ->
+      @updateShippingOptions = (_data) ->
         # When an event is triggered with an array as an argument
         # like this: $(foo).trigger(['a', 'b', 'c'])
         # The listener function receives it each element as a separate parameter
         # like this: (eventObj, a, b, c)
         # So here, we are transforming it back to an array, removing the eventObj
-        data = (Array.prototype.slice.call(arguments)).slice(1)
+        data = _data
         if not data then return
 
         if data.length > 1
@@ -55,22 +58,77 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         # console.log data
         @$node.trigger 'shippingOptionsRender'
 
-    @setLocale = (locale = "pt-BR") ->
-      if locale.match('es-')
-        @attr.locale = 'es'
-      else
-        @attr.locale = locale
-        $.i18n.setLng(@attr.locale)
+      @setLocale = (locale = "pt-BR") ->
+        if locale.match('es-')
+          @attr.locale = 'es'
+        else
+          @attr.locale = locale
+          $.i18n.setLng(@attr.locale)
 
-    @localeUpdate = (ev, locale) ->
-      @setLocale locale
-      @render(@attr.data)
+      @localeUpdate = (ev, locale) ->
+        @setLocale locale
+        @render(@attr.data)
+
+      @onOrderFormUpdated = (evt, data) ->
+        @attr.data.items = data.items
+        @attr.data.logisticsInfo = data.shippingData.logisticsInfo
+        @attr.data.sellers = data.sellers
+        @updateShippingOptions @getShippingOptionsData()
+
+      @getShippingOptionsData = ->
+        logisticsInfo = []
+
+        # PARA CADA ITEM
+        for logisticItem in @attr.data.logisticsInfo
+          item = @attr.data.items[logisticItem.itemIndex]
+
+          # ENCONTRA O SELLER DO ITEM
+          seller = _.find @attr.data.sellers, (seller) ->
+            return parseInt(seller.id) is parseInt(item.seller)
+
+          # EXTENDE LOGISTICS INFO COM O SELLER E OS DADOS DO ITEM
+          if seller
+            newLogisticItem = _.extend({}, logisticItem, {seller:seller}, {item: item})
+            logisticsInfo.push(newLogisticItem)
+
+        # AGRUPA OS ITEMS DE LOGISTIC INFO POR SELLER
+        logisticsBySeller = _.groupBy logisticsInfo, (so) -> return so.seller.id
+        logisticsInfoArray = _.map logisticsBySeller, (logistic) ->
+          composedLogistic =
+            items: []
+            seller: {}
+            selectedSla: ''
+            slas: []
+
+          for logi in logistic
+            composedLogistic.items.push(logi.item)
+            composedLogistic.seller = logi.seller
+            for sla in logi.slas
+              sla.isScheduled = sla.availableDeliveryWindows and sla.availableDeliveryWindows.length > 0
+              sla.businessDays = (sla.shippingEstimate+'').indexOf('bd') isnt -1
+              sla.shippingEstimateDays = parseInt((sla.shippingEstimate+'').replace(/bd|d/,''), 10)
+              sla.isSelected = (sla.id is logi.selectedSla)
+              sla.valueLabel = if sla.price > 0 then _.intAsCurrency sla.price else i18n.t('global.free')
+              sla.taxValueLabel = if sla.tax > 0 then _.intAsCurrency sla.tax else i18n.t('global.free')
+            composedLogistic.slas = logi.slas
+            selectedSla = _.find logi.slas, (sla) -> sla.name is logi.selectedSla
+            composedLogistic.selectedSla = selectedSla
+
+          return composedLogistic
+        return logisticsInfoArray
+
+      @onUpdateShippingOptions = () ->
+        @updateShippingOptions @getShippingOptionsData()
 
       # Bind events
       @after 'initialize', ->
         @on window, 'localeSelected.vtex', @localeUpdate
         @on document, 'shippingOptionsRender', @render
-        @on document, 'updateShippingOptions', @updateShippingOptions
+        @on document, 'updateShippingOptions', @onUpdateShippingOptions
+        @on window, 'orderFormUpdated.vtex', @onOrderFormUpdated
+
+        # guardar items
+        # guardar sellers
 
         return
     return defineComponent(ShippingOptions)
