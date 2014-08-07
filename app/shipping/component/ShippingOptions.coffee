@@ -8,11 +8,12 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         locale: 'pt-BR'
         API: null
         data:
+          address: false
           shippingOptions: []
+          availableAddresses: []
           loading: false
           multipleSellers: false
           items: []
-          logisticsInfo: []
           sellers: []
 
         templates:
@@ -31,19 +32,15 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
             output = $(output).i18n()
             @$node.html(output)
 
-      @updateShippingOptions = (_data) ->
-        # When an event is triggered with an array as an argument
-        # like this: $(foo).trigger(['a', 'b', 'c'])
-        # The listener function receives it each element as a separate parameter
-        # like this: (eventObj, a, b, c)
-        # So here, we are transforming it back to an array, removing the eventObj
-        data = _data
-        if not data then return
+      @updateShippingOptions = () ->
+        currentShippingOptions = _.find(@attr.data.availableAddresses, (address) =>
+          address.addressId == @attr.data.address.addressId
+        ).shippingOptions;
 
-        if data.length > 1
-          data.multipleSellers = true
+        if currentShippingOptions.length > 1
+          currentShippingOptions.multipleSellers = true
 
-        for shipping in data
+        for shipping in currentShippingOptions
           for sla in shipping.slas
             if sla.shippingEstimate isnt undefined and not sla.isScheduled
               if sla.businessDays
@@ -54,8 +51,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
                   count: sla.shippingEstimateDays
               sla.fullEstimateLabel = sla.name + ' - ' + sla.valueLabel + ' - ' + sla.deliveryEstimateLabel
 
-        @attr.data.shippingOptions = data
-        # console.log data
+        @attr.data.shippingOptions = currentShippingOptions
         @$node.trigger 'shippingOptionsRender'
 
       @setLocale = (locale = "pt-BR") ->
@@ -71,15 +67,31 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
 
       @onOrderFormUpdated = (evt, data) ->
         @attr.data.items = data.items
-        @attr.data.logisticsInfo = data.shippingData.logisticsInfo
+        @attr.data.availableAddresses = data.shippingData.availableAddresses
+        @attr.data.address = data.shippingData.address
         @attr.data.sellers = data.sellers
-        @updateShippingOptions @getShippingOptionsData()
+
+        # CRIA ARRAY DE LOGISTICS INFO  E SHIPPING OPTIONS PARA CADA ADDRESS
+        address.logisticsInfo = [] for address in @attr.data.availableAddresses
+        address.shippingOptions = [] for address in @attr.data.availableAddresses
+
+        # POVOA OS DADOS DO LOGISTICS INFO DO ENDEREÇO SELECIONADO
+        currentAddress = _.find(@attr.data.availableAddresses, (address) =>
+            address.addressId == @attr.data.address.addressId
+        )
+        currentAddress.logisticsInfo = data.shippingData.logisticsInfo
+        currentAddress.shippingOptions = @getShippingOptionsData()
+
+        @updateShippingOptions
 
       @getShippingOptionsData = ->
         logisticsInfo = []
+        currentAddress = _.find(@attr.data.availableAddresses, (address) =>
+          address.addressId == @attr.data.address.addressId
+        )
 
         # PARA CADA ITEM
-        for logisticItem in @attr.data.logisticsInfo
+        for logisticItem in currentAddress.logisticsInfo
           item = @attr.data.items[logisticItem.itemIndex]
 
           # ENCONTRA O SELLER DO ITEM
