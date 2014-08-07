@@ -1,6 +1,5 @@
 <div class="delivery-shipping-options">
     <h3 class="hide" data-i18n="shipping.shippingOptions.shippingOptions"></h3>
-    <!-- ko with: currentAddress -->
         {#loadingShippingOptions}
         <div class="loading-slas">
             {#loading}
@@ -18,11 +17,11 @@
                         <span class="choose-shipping-option" data-i18n="shipping.shippingOptions.chooseShippingOption"></span>
                     </span>
 
-                    {#multipleSellers}
+                    {#shippingOptions.multipleSellers}
                     <span class="pull-right">
-                        <span class="following" data-bind="fadeVisible: $parent.multipleSellers()" data-i18n="shipping.shippingOptions.followingProducts">Produtos de </span>
+                        <span class="following" data-i18n="shipping.shippingOptions.followingProducts">Produtos de </span>
                     </span>
-                    {/multipleSellers}
+                    {/shippingOptions.multipleSellers}
                 </h4>
 
                 <div class="sla-items-list">
@@ -54,11 +53,11 @@
         </div>
         {/loadingShippingOptions}
 
-        {#multipleSellers}
-        <fieldset class="shipping-options" data-bind="fadeVisible: showSlasForSeller, foreach: slasForSellerViewModelArray">
+        {#shippingOptions.multipleSellers}
+        <fieldset class="shipping-options">
         {:else}
-        <fieldset class="shipping-options just-one" data-bind="fadeVisible: showSlasForSeller, foreach: slasForSellerViewModelArray">
-        {/multipleSellers}
+        <fieldset class="shipping-options just-one">
+        {/shippingOptions.multipleSellers}
         {#shippingOptions}
             <h4 class="pull-left">
                 <span class="pull-left choose-shipping-option-container">
@@ -66,12 +65,12 @@
                     <span class="seller-of hide" data-i18n="shipping.shippingOptions.ofSeller"></span>
                 </span>
 
-                {#multipleSellers}
+                {#shippingOptions.multipleSellers}
                 <span class="pull-right">
                     <span class="following" data-i18n="shipping.shippingOptions.followingProducts">Produtos de </span>
-                    <strong class="seller-name">{seller.name}</strong>
+                    <strong class="seller-name"> {seller.name}</strong>
                 </span>
-                {/multipleSellers}
+                {/shippingOptions.multipleSellers}
             </h4>
 
             <table class="product-list unstyled">
@@ -159,5 +158,4 @@
             </div>
         {/shippingOptions}
         </fieldset>
-    <!-- /ko -->
 </div>
