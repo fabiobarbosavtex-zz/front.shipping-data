@@ -127,7 +127,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
 
       # Handle the initial view of this component
       @showAddressForm = (evt, address) ->
-        @attr.data.address = new AddressModel(address)
+        @attr.data.address = new AddressModel(if address then address else null)
         @attr.data.isEditingAddress = true
         if address?.addressType?
           @selectCountry(address.country)

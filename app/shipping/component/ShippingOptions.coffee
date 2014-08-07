@@ -5,12 +5,14 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
   (defineComponent, extensions) ->
     ShippingOptions = ->
       @defaultAttrs
+        addressBookComponent: '.address-book'
         locale: 'pt-BR'
         API: null
         data:
           address: false
           shippingOptions: []
           availableAddresses: []
+          logisticsInfo: []
           loading: false
           multipleSellers: false
           items: []
@@ -37,8 +39,10 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           address.addressId == @attr.data.address.addressId
         ).shippingOptions;
 
+        # VERIFICA SE EXISTEM MULTIPLO SELLERS
         if currentShippingOptions.length > 1
           currentShippingOptions.multipleSellers = true
+
 
         for shipping in currentShippingOptions
           for sla in shipping.slas
@@ -66,23 +70,37 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         @render(@attr.data)
 
       @onOrderFormUpdated = (evt, data) ->
-        @attr.data.items = data.items
-        @attr.data.availableAddresses = data.shippingData.availableAddresses
-        @attr.data.address = data.shippingData.address
-        @attr.data.sellers = data.sellers
+        if (data.shippingData)
 
-        # CRIA ARRAY DE LOGISTICS INFO  E SHIPPING OPTIONS PARA CADA ADDRESS
-        address.logisticsInfo = [] for address in @attr.data.availableAddresses
-        address.shippingOptions = [] for address in @attr.data.availableAddresses
+          # VERIFICA SE ITEMS OU ENDEREÇOS MUDARAM
+          addressesClone = $.map($.extend(true, {}, @attr.data.availableAddresses), (value) -> [value]);
+          for add in addressesClone
+            delete add["logisticsInfo"]
+            delete add["shippingOptions"]
+            delete add["firstPart"]
+            delete add["secondPart"]
 
-        # POVOA OS DADOS DO LOGISTICS INFO DO ENDEREÇO SELECIONADO
-        currentAddress = _.find(@attr.data.availableAddresses, (address) =>
+          if ((JSON.stringify(@attr.data.items) isnt JSON.stringify(data.items)) or (JSON.stringify(addressesClone) isnt JSON.stringify(data.shippingData.availableAddresses)))
+            @attr.data.items = data.items
+            @attr.data.availableAddresses = data.shippingData.availableAddresses
+            # CRIA ARRAY DE LOGISTICS INFO  E SHIPPING OPTIONS PARA CADA ADDRESS
+            for address in @attr.data.availableAddresses
+              address.logisticsInfo = []
+              address.shippingOptions = []
+
+          @attr.data.logisticsInfo = data.shippingData.logisticsInfo
+          @attr.data.address = data.shippingData.address
+          @attr.data.sellers = data.sellers
+
+          # POVOA OS DADOS DO LOGISTICS INFO DO ENDEREÇO SELECIONADO
+          currentAddress = _.find(@attr.data.availableAddresses, (address) =>
             address.addressId == @attr.data.address.addressId
-        )
-        currentAddress.logisticsInfo = data.shippingData.logisticsInfo
-        currentAddress.shippingOptions = @getShippingOptionsData()
+          )
 
-        @updateShippingOptions
+          if currentAddress
+            currentAddress.logisticsInfo = data.shippingData.logisticsInfo
+            currentAddress.shippingOptions = @getShippingOptionsData()
+            @updateShippingOptions()
 
       @getShippingOptionsData = ->
         logisticsInfo = []
@@ -96,7 +114,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
 
           # ENCONTRA O SELLER DO ITEM
           seller = _.find @attr.data.sellers, (seller) ->
-            return parseInt(seller.id) is parseInt(item.seller)
+            return String(seller.id) is String(item.seller)
 
           # EXTENDE LOGISTICS INFO COM O SELLER E OS DADOS DO ITEM
           if seller
@@ -129,15 +147,26 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           return composedLogistic
         return logisticsInfoArray
 
-      @onUpdateShippingOptions = () ->
-        @updateShippingOptions @getShippingOptionsData()
+      @onAddressSelected = (evt, address) ->
+        currentAddress = _.find(@attr.data.availableAddresses, (_address) => _address.addressId == address.addressId)
+        # VERIFICA SE JÁ TEM LOGISTICS INFO
+        if (currentAddress.logisticsInfo.length > 0)
+          console.log "tem logistic"
+        else
+          console.log "nao tem logistics"
+          @attr.API.sendAttachment("shippingData", {
+            attachmentId: "shippingData"
+            address: currentAddress
+            availableAddresses: @attr.data.availableAddresses
+            logisticsInfo: @attr.data.logisticsInfo
+          });
 
       # Bind events
       @after 'initialize', ->
         @on window, 'localeSelected.vtex', @localeUpdate
         @on document, 'shippingOptionsRender', @render
-        @on document, 'updateShippingOptions', @onUpdateShippingOptions
         @on window, 'orderFormUpdated.vtex', @onOrderFormUpdated
+        @on @attr.addressBookComponent, 'addressSelected', @onAddressSelected
 
         # guardar items
         # guardar sellers
