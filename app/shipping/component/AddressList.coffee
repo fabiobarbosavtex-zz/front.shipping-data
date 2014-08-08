@@ -13,6 +13,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           selectedAddressId: ''
           hasOtherAddresses: false
           canEditData: false
+          loggedIn: false
           showAddressList: true
           deliveryCountries: ['BRA', 'ARG', 'CHL']
           countryRules: {}
@@ -63,7 +64,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
       # Edit an existing address
       # Trigger an event to AddressForm component
       @editAddress = ->
-        if @attr.data.canEditData
+        if @attr.data.canEditData || @attr.data.loggedIn
           @attr.data.showAddressList = false
           @render(@attr.data)
           @attr.data.showDontKnowPostalCode = false
@@ -171,6 +172,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           @attr.data.address = data.shippingData.address
           @attr.data.availableAddresses = data.shippingData.availableAddresses
           @attr.data.canEditData = data.canEditData
+          @attr.data.loggedIn = data.loggedIn
 
       # Bind events
       @after 'initialize', ->
