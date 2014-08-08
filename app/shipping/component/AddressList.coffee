@@ -12,6 +12,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           availableAddresses: []
           selectedAddressId: ''
           hasOtherAddresses: false
+          canEditData: false
           showAddressList: true
           deliveryCountries: ['BRA', 'ARG', 'CHL']
           countryRules: {}
@@ -62,11 +63,14 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
       # Edit an existing address
       # Trigger an event to AddressForm component
       @editAddress = ->
-        @attr.data.showAddressList = false
-        @render(@attr.data)
-
-        @attr.data.showDontKnowPostalCode = false
-        @$node.trigger 'showAddressForm', @attr.data.address
+        if @attr.data.canEditData
+          @attr.data.showAddressList = false
+          @render(@attr.data)
+          @attr.data.showDontKnowPostalCode = false
+          @$node.trigger 'showAddressForm', @attr.data.address
+        else
+          # CALL VTEX ID
+          if window.vtexid? then window.vtexid.start(window.location.href)
 
       # Update address list
       @updateAddresses = (ev, data) ->
@@ -166,6 +170,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         if data.shippingData?
           @attr.data.address = data.shippingData.address
           @attr.data.availableAddresses = data.shippingData.availableAddresses
+          @attr.data.canEditData = data.canEditData
 
       # Bind events
       @after 'initialize', ->
