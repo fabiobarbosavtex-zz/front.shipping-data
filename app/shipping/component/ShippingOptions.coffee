@@ -150,11 +150,8 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
 
       @onAddressSelected = (evt, address) ->
         currentAddress = _.find(@attr.data.availableAddresses, (_address) => _address.addressId == address.addressId)
-        # VERIFICA SE JÁ TEM LOGISTICS INFO
-        if (currentAddress.logisticsInfo.length > 0)
-          console.log "tem logistic"
-        else
-          console.log "nao tem logistics"
+        # VERIFICA SE JÁ TEM LOGISTICS INFO E BUSCA NA API CASO PRECISE
+        if (not currentAddress.logisticsInfo.length > 0)
           @attr.API.sendAttachment("shippingData", {
             attachmentId: "shippingData"
             address: currentAddress

@@ -414,7 +414,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         @render()
 
       @onOrderFormUpdated = (evt, data) ->
-        @attr.data.availableAddresses = data.shippingData.availableAddresses
+        @attr.data.availableAddresses = if data.shippingData? then data.shippingData.availableAddresses else []
 
       # Bind events
       @after 'initialize', ->
