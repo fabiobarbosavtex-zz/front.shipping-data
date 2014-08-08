@@ -9,6 +9,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         API: null
         data:
           address: new AddressModel({})
+          availableAddresses: []
           postalCode: ''
           deliveryCountries: ['BRA', 'ARG', 'CHL', 'COL', 'PER', 'ECU', 'PRY', 'URY', 'USA']
           disableCityAndState: false
@@ -405,9 +406,22 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         @setLocale locale
         @render()
 
+      @enable = ->
+
+      @disable = ->
+        @attr.data.showSelectCountry = false
+        @attr.data.showAddressForm = false
+        @render()
+
+      @onOrderFormUpdated = (evt, data) ->
+        @attr.data.availableAddresses = data.shippingData.availableAddresses
+
       # Bind events
       @after 'initialize', ->
         @on 'loading', @loading
+        @on window, 'enableShippingData.vtex', @enable
+        @on window, 'disableShippingData.vtex', @disable
+        @on window, 'orderFormUpdated.vtex', @onOrderFormUpdated
         @on window, 'localeSelected.vtex', @localeUpdate
         @on document, 'newCountryRule', @addCountryRule
         @on document, 'addressFormRender', @render
@@ -423,7 +437,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
           'deliveryCountrySelector': @selectedCountry
           'stateSelector': @onChangeState
           'citySelector': @changePostalCodeByCity
-
         @on 'keyup',
           'postalCodeSelector': @validatePostalCode
         return

@@ -1,8 +1,11 @@
 <div class="select-country">
 
+
+    {#availableAddresses}
 	<p style="display: block;" class="cancel-address-form">
 		<a href="javascript:void(0);" class="cancel-new-address">Cancelar alterações e voltar para a lista de endereços</a>
 	</p>
+    {/availableAddresses}
 
 	<p class="ship-country required input text">
 		<label for="ship-country"><span data-i18n="shipping.addressForm.deliveryCountry"></span></label>

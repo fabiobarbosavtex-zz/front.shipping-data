@@ -26,6 +26,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
         $(window).trigger("showShippingSummary.vtex", false);
         $(document).trigger("showAddressList.vtex");
         $(".accordion-shipping-title").addClass("accordion-toggle-active");
+        $(".address-not-filled-verification").hide();
 
       @disable = ->
         @attr.state.active = false
@@ -35,6 +36,8 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
         $(window).trigger("showShippingSummary.vtex", true);
         $(document).trigger("hideAddressList.vtex");
         $(".accordion-shipping-title").removeClass("accordion-toggle-active");
+        if (!@attr.orderForm.shippingData?.address?)
+          $(".address-not-filled-verification").show();
 
       @commit = ->
 
@@ -66,7 +69,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
           $(@attr.addressBookComponent).trigger 'updateAddresses', addressData
           @enable()
         else
-          $(".address-not-filled-verification").fadeIn();
+          $(".address-not-filled-verification").show();
 
         # Update shipping options
         if @attr.orderForm.shippingData and @attr.orderForm.sellers

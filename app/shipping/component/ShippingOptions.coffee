@@ -17,6 +17,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           multipleSellers: false
           items: []
           sellers: []
+          showShippingOptions: true
 
         templates:
           shippingOptions:
@@ -161,12 +162,22 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
             logisticsInfo: @attr.data.logisticsInfo
           });
 
+      @onShowAddressForm = ->
+        @attr.data.showShippingOptions = false
+        @render()
+
+      @onAddressFormCanceled = ->
+        @attr.data.showShippingOptions = true
+        @render()
+
       # Bind events
       @after 'initialize', ->
         @on window, 'localeSelected.vtex', @localeUpdate
         @on document, 'shippingOptionsRender', @render
         @on window, 'orderFormUpdated.vtex', @onOrderFormUpdated
         @on @attr.addressBookComponent, 'addressSelected', @onAddressSelected
+        @on document, 'showAddressForm', @onShowAddressForm
+        @on document, 'addressFormCanceled', @onAddressFormCanceled
 
         # guardar items
         # guardar sellers
