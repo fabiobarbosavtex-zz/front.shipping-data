@@ -169,14 +169,14 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
 
       # Bind events
       @after 'initialize', ->
-        @on window, 'localeSelected.vtex', @localeUpdate
+        @on document, 'localeSelected.vtex', @localeUpdate
         @on document, 'newCountryRule', @addCountryRule
         @on document, 'updateAddresses', @updateAddresses
         @on document, 'addressFormCanceled', @showAddressList
         @on document, 'showAddressList.vtex', @showAddressList
         @on document, 'hideAddressList.vtex', @hideAddressList
         @on document, 'selectAddress', @selectAddress
-        @on window, 'orderFormUpdated.vtex', @orderFormUpdated
+        @on document, 'orderFormUpdated.vtex', @orderFormUpdated
         @on document, 'click',
           'createAddressSelector': @createAddress
           'addressItemSelector': @selectAddress

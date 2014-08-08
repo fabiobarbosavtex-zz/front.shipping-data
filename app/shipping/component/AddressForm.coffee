@@ -35,11 +35,11 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         deliveryCountrySelector: '#ship-country'
         cancelAddressFormSelector: '.cancel-address-form a'
         submitButtonSelector: '.submit .btn-success.address-save'
-        addressSearchBt: '.address-search-bt'
+        addressSearchBtSelector: '.address-search-bt'
 
-      # Google maps variables
-      @map = null
-      @marker = null
+        # Google maps variables
+        map = null
+        marker = null
 
       # Render this component according to the data object
       @render = (ev, data) ->
@@ -227,7 +227,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
             delete @attr.data.address["addressSearch"]
 
           # Submit address object to API
-          @attr.API.sendAttachment("shippingData", { address: @attr.data.address });
+          @attr.API.sendAttachment("shippingData", { address: @attr.data.address })
         evt.preventDefault()
 
       # Select a delivery country
@@ -286,16 +286,19 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         mapOptions =
           zoom: 14
           center: location
-        @map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions) if not @map?
-        @map.panTo(location);
-        @map.setZoom(14);
-        if @marker?
-          @marker.setMap(null)
-          @marker = null
-        @marker = new google.maps.Marker({
-          position: location
-        });
-        @marker.setMap(@map);
+
+        if not @attr.map?
+          @attr.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
+
+        @attr.map.panTo(location)
+        @attr.map.setZoom(14)
+
+        if @attr.marker?
+          @attr.marker.setMap(null)
+          @attr.marker = null
+
+        @attr.marker = new google.maps.Marker({position: location})
+        @marker.setMap(@map)
         $('#map-canvas').fadeIn(500)
 
       @startGoogleAddressSearch = ->
@@ -327,10 +330,11 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
       @selectedCountry = (ev, data) ->
         @attr.data.address = {}
         @attr.data.postalCode = ''
-#        @attr.data.street = 'mamamananana'
         country = $(@attr.deliveryCountrySelector, @$node).val()
         @selectCountry country if country
-        @startGoogleAddressSearch() if window.shippingUsingGeolocation and country is "PER"
+
+        if window.shippingUsingGeolocation and country is "PER"
+          @startGoogleAddressSearch()
 
       # Close the form
       @cancelAddressForm = ->
@@ -358,14 +362,14 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
       @changePostalCodeByState = (ev, data) ->
         rules = @getCurrentRule()
         return if not rules.postalCodeByState
-        
+
         state = $(@attr.stateSelector, @$node).val()
         for city, postalCode of rules.map[state]
           break
 
         $(@attr.postalCodeSelector, @$node).val(postalCode)
         @$node.trigger('postalCode', postalCode)
-      
+
       # Change postal code according to the city selected
       # postalCodeByCity should be true in the country's rule
       @changePostalCodeByCity = (ev, data) ->
@@ -419,10 +423,10 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
       # Bind events
       @after 'initialize', ->
         @on 'loading', @loading
-        @on window, 'enableShippingData.vtex', @enable
-        @on window, 'disableShippingData.vtex', @disable
-        @on window, 'orderFormUpdated.vtex', @onOrderFormUpdated
-        @on window, 'localeSelected.vtex', @localeUpdate
+        @on document, 'enableShippingData.vtex', @enable
+        @on document, 'disableShippingData.vtex', @disable
+        @on document, 'orderFormUpdated.vtex', @onOrderFormUpdated
+        @on document, 'localeSelected.vtex', @localeUpdate
         @on document, 'newCountryRule', @addCountryRule
         @on document, 'addressFormRender', @render
         @on document, 'showAddressForm', @showAddressForm
@@ -432,7 +436,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
           'forceShippingFieldsSelector': @forceShippingFields
           'cancelAddressFormSelector': @cancelAddressForm
           'submitButtonSelector': @submitAddress
-          'addressSearchBt': @searchAddress
+          'addressSearchBtSelector': @searchAddress
         @on 'change',
           'deliveryCountrySelector': @selectedCountry
           'stateSelector': @onChangeState

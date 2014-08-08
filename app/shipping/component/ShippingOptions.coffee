@@ -38,12 +38,11 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
       @updateShippingOptions = () ->
         currentShippingOptions = _.find(@attr.data.availableAddresses, (address) =>
           address.addressId == @attr.data.address.addressId
-        ).shippingOptions;
+        ).shippingOptions
 
-        # VERIFICA SE EXISTEM MULTIPLO SELLERS
+        # Verifica se existem multiplo sellers
         if currentShippingOptions.length > 1
           currentShippingOptions.multipleSellers = true
-
 
         for shipping in currentShippingOptions
           for sla in shipping.slas
@@ -73,18 +72,19 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
       @onOrderFormUpdated = (evt, data) ->
         if (data.shippingData)
 
-          # VERIFICA SE ITEMS OU ENDEREÇOS MUDARAM
-          addressesClone = $.map($.extend(true, {}, @attr.data.availableAddresses), (value) -> [value]);
+          # Verifica se items ou endereços mudaram
+          addressesClone = $.map($.extend(true, {}, @attr.data.availableAddresses), (value) -> [value])
           for add in addressesClone
             delete add["logisticsInfo"]
             delete add["shippingOptions"]
             delete add["firstPart"]
             delete add["secondPart"]
 
-          if ((JSON.stringify(@attr.data.items) isnt JSON.stringify(data.items)) or (JSON.stringify(addressesClone) isnt JSON.stringify(data.shippingData.availableAddresses)))
+          if (JSON.stringify(@attr.data.items) isnt JSON.stringify(data.items)) or
+             (JSON.stringify(addressesClone) isnt JSON.stringify(data.shippingData.availableAddresses))
             @attr.data.items = data.items
             @attr.data.availableAddresses = data.shippingData.availableAddresses
-            # CRIA ARRAY DE LOGISTICS INFO  E SHIPPING OPTIONS PARA CADA ADDRESS
+            # Cria array de logistics info  e shipping options para cada address
             for address in @attr.data.availableAddresses
               address.logisticsInfo = []
               address.shippingOptions = []
@@ -93,10 +93,9 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           @attr.data.address = data.shippingData.address
           @attr.data.sellers = data.sellers
 
-          # POVOA OS DADOS DO LOGISTICS INFO DO ENDEREÇO SELECIONADO
-          currentAddress = _.find(@attr.data.availableAddresses, (address) =>
+          # Povoa os dados do logistics info do endereço selecionado
+          currentAddress = _.find @attr.data.availableAddresses, (address) =>
             address.addressId == @attr.data.address.addressId
-          )
 
           if currentAddress
             currentAddress.logisticsInfo = data.shippingData.logisticsInfo
@@ -105,24 +104,23 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
 
       @getShippingOptionsData = ->
         logisticsInfo = []
-        currentAddress = _.find(@attr.data.availableAddresses, (address) =>
+        currentAddress = _.find @attr.data.availableAddresses, (address) =>
           address.addressId == @attr.data.address.addressId
-        )
 
-        # PARA CADA ITEM
+        # Para cada item
         for logisticItem in currentAddress.logisticsInfo
           item = @attr.data.items[logisticItem.itemIndex]
 
-          # ENCONTRA O SELLER DO ITEM
+          # Encontra o seller do item
           seller = _.find @attr.data.sellers, (seller) ->
             return String(seller.id) is String(item.seller)
 
-          # EXTENDE LOGISTICS INFO COM O SELLER E OS DADOS DO ITEM
+          # Extende logistics info com o seller e os dados do item
           if seller
             newLogisticItem = _.extend({}, logisticItem, {seller:seller}, {item: item})
             logisticsInfo.push(newLogisticItem)
 
-        # AGRUPA OS ITEMS DE LOGISTIC INFO POR SELLER
+        # Agrupa os items de logistic info por seller
         logisticsBySeller = _.groupBy logisticsInfo, (so) -> return so.seller.id
         logisticsInfoArray = _.map logisticsBySeller, (logistic) ->
           composedLogistic =
@@ -149,15 +147,16 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         return logisticsInfoArray
 
       @onAddressSelected = (evt, address) ->
-        currentAddress = _.find(@attr.data.availableAddresses, (_address) => _address.addressId == address.addressId)
-        # VERIFICA SE JÁ TEM LOGISTICS INFO E BUSCA NA API CASO PRECISE
-        if (not currentAddress.logisticsInfo.length > 0)
-          @attr.API.sendAttachment("shippingData", {
+        currentAddress = _.find @attr.data.availableAddresses, (_address) =>
+          _address.addressId == address.addressId
+
+        # Verifica se já tem logistics info e busca na api caso precise
+        if not currentAddress.logisticsInfo.length > 0
+          @attr.API.sendAttachment "shippingData",
             attachmentId: "shippingData"
             address: currentAddress
             availableAddresses: @attr.data.availableAddresses
             logisticsInfo: @attr.data.logisticsInfo
-          });
 
       @onShowAddressForm = ->
         @attr.data.showShippingOptions = false
@@ -169,9 +168,9 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
 
       # Bind events
       @after 'initialize', ->
-        @on window, 'localeSelected.vtex', @localeUpdate
+        @on document, 'localeSelected.vtex', @localeUpdate
         @on document, 'shippingOptionsRender', @render
-        @on window, 'orderFormUpdated.vtex', @onOrderFormUpdated
+        @on document, 'orderFormUpdated.vtex', @onOrderFormUpdated
         @on @attr.addressBookComponent, 'addressSelected', @onAddressSelected
         @on document, 'showAddressForm', @onShowAddressForm
         @on document, 'addressFormCanceled', @onAddressFormCanceled

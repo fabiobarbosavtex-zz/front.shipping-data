@@ -14,7 +14,8 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         list:
           name: 'shippingSummary'
           template: 'shipping/template/shippingSummary'
-      changeShippingOptionBt: "#change-other-shipping-option"
+
+      changeShippingOptionBtSelector: "#change-other-shipping-option"
 
     # Render this component according to the data object
     @render = (data) ->
@@ -58,13 +59,13 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
 
     # Bind events
     @after 'initialize', ->
-      @on window, 'addressSelected', @onAddressSelected
-      @on window, 'orderFormUpdated.vtex', @orderFormUpdated
-      @on window, 'showShippingSummary.vtex', @showShippingSummary
-      @on window, 'localeSelected.vtex', @localeUpdate
-      @on window, 'disableShippingData.vtex', @onDisableShippingData
+      @on document, 'addressSelected', @onAddressSelected
+      @on document, 'orderFormUpdated.vtex', @orderFormUpdated
+      @on document, 'showShippingSummary.vtex', @showShippingSummary
+      @on document, 'localeSelected.vtex', @localeUpdate
+      @on document, 'disableShippingData.vtex', @onDisableShippingData
       @on document, 'click',
-        'changeShippingOptionBt': @changeShippingOption
+        'changeShippingOptionBtSelector': @changeShippingOption
       return
 
   return defineComponent(ShippingSummary)

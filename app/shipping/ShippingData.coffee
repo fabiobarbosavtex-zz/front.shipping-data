@@ -15,8 +15,9 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
           active: false
           visited: false
           loading: false
-        goToPaymentBtn: ".btn-go-to-payment"
-        editShippingData: "#edit-shipping-data"
+
+        goToPaymentBtnSelector: ".btn-go-to-payment"
+        editShippingDataSelector: "#edit-shipping-data"
 
       @enable = ->
         @attr.state.active = true
@@ -124,12 +125,12 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
         @on @attr.addressBookComponent, 'newAddress', @onAddressSaved
         @on @attr.addressBookComponent, 'addressSelected', @onAddressSelected
         @on @attr.addressBookComponent, 'postalCode', @onPostalCodeLoaded
-        @on window, 'orderFormUpdated.vtex', @orderFormUpdated
-        @on window, 'enableShippingData.vtex', @enable
-        @on window, 'disableShippingData.vtex', @disable
+        @on document, 'orderFormUpdated.vtex', @orderFormUpdated
+        @on document, 'enableShippingData.vtex', @enable
+        @on document, 'disableShippingData.vtex', @disable
         @on document, 'click',
-          'goToPaymentBtn': @goToPayment
-          'editShippingData': @enable
+          'goToPaymentBtnSelector': @goToPayment
+          'editShippingDataSelector': @enable
 
       # Bind events
       @after 'initialize', ->
