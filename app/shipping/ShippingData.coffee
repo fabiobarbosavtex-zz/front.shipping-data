@@ -25,7 +25,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
         $('.shipping-data .btn-go-to-payment').show();
         $('#edit-shipping-data').hide();
         $(window).trigger("showShippingSummary.vtex", false);
-        $(document).trigger("showAddressList.vtex");
+        $(window).trigger("showAddressList.vtex");
         $(".accordion-shipping-title").addClass("accordion-toggle-active");
         $(".address-not-filled-verification").hide();
 
@@ -35,7 +35,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
         $('.shipping-data .btn-go-to-payment').hide();
         $('#edit-shipping-data').show();
         $(window).trigger("showShippingSummary.vtex", true);
-        $(document).trigger("hideAddressList.vtex");
+        $(window).trigger("hideAddressList.vtex");
         $(".accordion-shipping-title").removeClass("accordion-toggle-active");
         if (!@attr.orderForm.shippingData?.address?)
           $(".address-not-filled-verification").show();
@@ -125,10 +125,10 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
         @on @attr.addressBookComponent, 'newAddress', @onAddressSaved
         @on @attr.addressBookComponent, 'addressSelected', @onAddressSelected
         @on @attr.addressBookComponent, 'postalCode', @onPostalCodeLoaded
-        @on document, 'orderFormUpdated.vtex', @orderFormUpdated
-        @on document, 'enableShippingData.vtex', @enable
-        @on document, 'disableShippingData.vtex', @disable
-        @on document, 'click',
+        @on window, 'orderFormUpdated.vtex', @orderFormUpdated
+        @on window, 'enableShippingData.vtex', @enable
+        @on window, 'disableShippingData.vtex', @disable
+        @on window, 'click',
           'goToPaymentBtnSelector': @goToPayment
           'editShippingDataSelector': @enable
 

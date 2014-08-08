@@ -168,12 +168,12 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
 
       # Bind events
       @after 'initialize', ->
-        @on document, 'localeSelected.vtex', @localeUpdate
-        @on document, 'shippingOptionsRender', @render
-        @on document, 'orderFormUpdated.vtex', @onOrderFormUpdated
+        @on window, 'localeSelected.vtex', @localeUpdate
+        @on window, 'shippingOptionsRender', @render
+        @on window, 'orderFormUpdated.vtex', @onOrderFormUpdated
         @on @attr.addressBookComponent, 'addressSelected', @onAddressSelected
-        @on document, 'showAddressForm', @onShowAddressForm
-        @on document, 'addressFormCanceled', @onAddressFormCanceled
+        @on window, 'showAddressForm', @onShowAddressForm
+        @on window, 'addressFormCanceled', @onAddressFormCanceled
 
         return
     return defineComponent(ShippingOptions)

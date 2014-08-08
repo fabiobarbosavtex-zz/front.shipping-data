@@ -99,7 +99,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           for country, i in arguments
             prop = {}
             prop[@attr.data.deliveryCountries[i]] = new arguments[i]()
-            @trigger document, 'newCountryRule', prop
+            @trigger window, 'newCountryRule', prop
 
           if @attr.data.hasOtherAddresses
             for aa in @attr.data.availableAddresses
@@ -148,7 +148,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           @render(@attr.data)
         else
           # Se a lista esta vazia, abre form de novo endereço
-          $(document).trigger("showAddressForm");
+          $(window).trigger("showAddressForm");
 
       @hideAddressList = (evt, data) ->
         @attr.data.showAddressList = false
@@ -174,15 +174,15 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
 
       # Bind events
       @after 'initialize', ->
-        @on document, 'localeSelected.vtex', @localeUpdate
-        @on document, 'newCountryRule', @addCountryRule
-        @on document, 'updateAddresses', @updateAddresses
-        @on document, 'addressFormCanceled', @showAddressList
-        @on document, 'showAddressList.vtex', @showAddressList
-        @on document, 'hideAddressList.vtex', @hideAddressList
-        @on document, 'selectAddress', @selectAddress
-        @on document, 'orderFormUpdated.vtex', @orderFormUpdated
-        @on document, 'click',
+        @on window, 'localeSelected.vtex', @localeUpdate
+        @on window, 'newCountryRule', @addCountryRule
+        @on window, 'updateAddresses', @updateAddresses
+        @on window, 'addressFormCanceled', @showAddressList
+        @on window, 'showAddressList.vtex', @showAddressList
+        @on window, 'hideAddressList.vtex', @hideAddressList
+        @on window, 'selectAddress', @selectAddress
+        @on window, 'orderFormUpdated.vtex', @orderFormUpdated
+        @on window, 'click',
           'createAddressSelector': @createAddress
           'addressItemSelector': @selectAddress
           'editAddressSelector': @editAddress

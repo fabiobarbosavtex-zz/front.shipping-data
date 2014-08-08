@@ -48,7 +48,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
 
     @changeShippingOption = (evt, data) ->
       @showShippingSummary false
-      $(document).trigger('showAddressList.vtex')
+      $(window).trigger('showAddressList.vtex')
 
     @onDisableShippingData = () ->
       @showShippingSummary null, true
@@ -59,12 +59,12 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
 
     # Bind events
     @after 'initialize', ->
-      @on document, 'addressSelected', @onAddressSelected
-      @on document, 'orderFormUpdated.vtex', @orderFormUpdated
-      @on document, 'showShippingSummary.vtex', @showShippingSummary
-      @on document, 'localeSelected.vtex', @localeUpdate
-      @on document, 'disableShippingData.vtex', @onDisableShippingData
-      @on document, 'click',
+      @on window, 'addressSelected', @onAddressSelected
+      @on window, 'orderFormUpdated.vtex', @orderFormUpdated
+      @on window, 'showShippingSummary.vtex', @showShippingSummary
+      @on window, 'localeSelected.vtex', @localeUpdate
+      @on window, 'disableShippingData.vtex', @onDisableShippingData
+      @on window, 'click',
         'changeShippingOptionBtSelector': @changeShippingOption
       return
 

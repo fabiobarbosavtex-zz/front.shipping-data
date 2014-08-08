@@ -423,16 +423,16 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
       # Bind events
       @after 'initialize', ->
         @on 'loading', @loading
-        @on document, 'enableShippingData.vtex', @enable
-        @on document, 'disableShippingData.vtex', @disable
-        @on document, 'orderFormUpdated.vtex', @onOrderFormUpdated
-        @on document, 'localeSelected.vtex', @localeUpdate
-        @on document, 'newCountryRule', @addCountryRule
-        @on document, 'addressFormRender', @render
-        @on document, 'showAddressForm', @showAddressForm
-        @on document, 'updateAddresses', @cancelAddressForm
-        @on document, 'cancelAddressForm', @cancelAddressForm
-        @on document, 'click',
+        @on window, 'enableShippingData.vtex', @enable
+        @on window, 'disableShippingData.vtex', @disable
+        @on window, 'orderFormUpdated.vtex', @onOrderFormUpdated
+        @on window, 'localeSelected.vtex', @localeUpdate
+        @on window, 'newCountryRule', @addCountryRule
+        @on window, 'addressFormRender', @render
+        @on window, 'showAddressForm', @showAddressForm
+        @on window, 'updateAddresses', @cancelAddressForm
+        @on window, 'cancelAddressForm', @cancelAddressForm
+        @on window, 'click',
           'forceShippingFieldsSelector': @forceShippingFields
           'cancelAddressFormSelector': @cancelAddressForm
           'submitButtonSelector': @submitAddress
