@@ -179,8 +179,5 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         @on document, 'showAddressForm', @onShowAddressForm
         @on document, 'addressFormCanceled', @onAddressFormCanceled
 
-        # guardar items
-        # guardar sellers
-
         return
     return defineComponent(ShippingOptions)
