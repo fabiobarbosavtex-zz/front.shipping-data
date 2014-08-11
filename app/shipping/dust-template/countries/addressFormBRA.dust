@@ -1,23 +1,35 @@
 <div class="address-form">
+
+  <!-- BACK TO LIST BUTTON -->
+  {?availableAddresses}
+    <p style="display: block;" class="cancel-address-form">
+      <a href="javascript:void(0);" class="cancel-new-address" data-i18n="shipping.addressForm.cancelEditAddress">
+        Cancelar alterações e voltar para a lista de endereços
+      </a>
+    </p>
+  {/availableAddresses}
+
+  <!-- COUNTRIES SELECTOR -->
   {@if cond="{deliveryCountries.length} > 1"}
-  {>selectCountry /}
+    {>selectCountry /}
   {/if}
-  <div class="address-form-new box-new address-form-{country}" data-parsley-validate="true" parsley-bind="true">
+
+  <div class="address-form-new box-new address-form-{country}" data-parsley-validate="true" data-parsley-bind="true">
+
     {#address}
     <fieldset class="address-data">
       <input type="hidden" name="addressId" value="{address.addressId}"/>
-
       <p class="ship-country input">
         <input type="hidden" name="country" value="{country}"/>
       </p>
 
-			<div class="well well-small">
-				<p>
-					 <label for="addressSearch"><span>Buscar por endereço</span></label>
-					 <input type="text" id="addressSearch" tabindex="221" class="input-large" value="{addressSearch}" name="addressSearch" >
-					 <div class="btn address-search-bt">Buscar</div>
-				</p>
+      {?useGeolocation[country]}
+      <div class="well well-small">
+          <label for="addressSearch"><span>Buscar por endereço</span></label>
+          <input type="text" id="addressSearch" tabindex="221" class="input-large" value="{addressSearch}" name="addressSearch" >
+          <div class="btn address-search-bt">Buscar</div>
       </div>
+      {/useGeolocation[country]}
 
       <p class="ship-postal-code required input text mask">
         <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
