@@ -1,11 +1,10 @@
 define = vtex.define || window.define
 require = vtex.curl || window.require
 
-define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Address'],
-  (defineComponent, extensions, AddressModel) ->
+define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Address', 'shipping/mixin/withi18n'],
+  (defineComponent, extensions, AddressModel, withi18n) ->
     AddressForm = ->
       @defaultAttrs
-        locale: 'pt-BR'
         API: null
         data:
           address: new AddressModel({})
@@ -111,13 +110,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
                 @startGoogleAddressSearch()
         else
           @$node.html('')
-
-      @extendTranslations = (translation) ->
-        if window.vtex.i18n[@attr.locale]
-          window.vtex.i18n[@attr.locale] = _.extend(translation, window.vtex.i18n[@attr.locale])
-          i18n.addResourceBundle(@attr.locale, 'translation', window.vtex.i18n[@attr.locale])
-        else
-          i18n.addResourceBundle(@attr.locale, 'translation', translation)
 
       # Helper function to get the current country's rules
       @getCurrentRule = ->
@@ -463,4 +455,4 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
           'postalCodeSelector': @validatePostalCode
         return
 
-    return defineComponent(AddressForm)
+    return defineComponent(AddressForm, withi18n)

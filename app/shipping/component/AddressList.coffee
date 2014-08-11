@@ -1,11 +1,10 @@
 define = vtex.define || window.define
 require = vtex.curl || window.require
 
-define ['flight/lib/component', 'shipping/setup/extensions'],
-  (defineComponent, extensions) ->
+define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/withi18n'],
+  (defineComponent, extensions, withi18n) ->
     AddressList = ->
       @defaultAttrs
-        locale: 'pt-BR'
         API: null
         data:
           address: {}
@@ -39,13 +38,6 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
             dust.render @attr.templates.list.name, data, (err, output) =>
               output = $(output).i18n()
               $(@$node).html(output)
-
-      @extendTranslations = (translation) ->
-        if window.vtex.i18n[@attr.locale]
-          window.vtex.i18n[@attr.locale] = _.extend(translation, window.vtex.i18n[@attr.locale])
-          i18n.addResourceBundle(@attr.locale, 'translation', window.vtex.i18n[@attr.locale])
-        else
-          i18n.addResourceBundle(@attr.locale, 'translation', translation)
 
       # Create a new address
       # Trigger an event to AddressForm component
@@ -189,4 +181,5 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
           'addressItemSelector': @selectAddress
           'editAddressSelector': @editAddress
         return
-    return defineComponent(AddressList)
+
+    return defineComponent(AddressList, withi18n)

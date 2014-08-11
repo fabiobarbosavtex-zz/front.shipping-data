@@ -1,12 +1,10 @@
 define = vtex.define || window.define
 require = vtex.curl || window.require
 
-define ['flight/lib/component', 'shipping/setup/extensions'],
-  (defineComponent, extensions) ->
+define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/withi18n'],
+  (defineComponent, extensions, withi18n) ->
     ShippingOptions = ->
       @defaultAttrs
-        addressBookComponent: '.address-book'
-        locale: 'pt-BR'
         API: null
         data:
           address: false
@@ -24,6 +22,7 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
             name: 'shippingOptions'
             template: 'shipping/template/shippingOptions'
 
+        addressBookComponentSelector: '.address-book'
         addressFormSelector: '.address-form-new'
         postalCodeSelector: '#ship-postal-code'
 
@@ -47,13 +46,15 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         for shipping in currentShippingOptions
           for sla in shipping.slas
             if sla.shippingEstimate isnt undefined and not sla.isScheduled
-              if sla.businessDays
-                sla.deliveryEstimateLabel = i18n.t 'shipping.shippingOptions.workingDay',
-                  count: sla.shippingEstimateDays
-              else
-                sla.deliveryEstimateLabel = i18n.t 'shipping.shippingOptions.day',
-                  count: sla.shippingEstimateDays
-              sla.fullEstimateLabel = sla.name + ' - ' + sla.valueLabel + ' - ' + sla.deliveryEstimateLabel
+              require ['shipping/translation/' + @attr.locale], (translation) =>
+                @extendTranslations(translation)
+                if sla.businessDays
+                  sla.deliveryEstimateLabel = i18n.t 'shipping.shippingOptions.workingDay',
+                    count: sla.shippingEstimateDays
+                else
+                  sla.deliveryEstimateLabel = i18n.t 'shipping.shippingOptions.day',
+                    count: sla.shippingEstimateDays
+                sla.fullEstimateLabel = sla.name + ' - ' + sla.valueLabel + ' - ' + sla.deliveryEstimateLabel
 
         @attr.data.shippingOptions = currentShippingOptions
         @$node.trigger 'shippingOptionsRender'
@@ -171,9 +172,9 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         @on window, 'localeSelected.vtex', @localeUpdate
         @on window, 'shippingOptionsRender', @render
         @on window, 'orderFormUpdated.vtex', @onOrderFormUpdated
-        @on @attr.addressBookComponent, 'addressSelected', @onAddressSelected
+        @on @attr.addressBookComponentSelector, 'addressSelected', @onAddressSelected
         @on window, 'showAddressForm', @onShowAddressForm
         @on window, 'addressFormCanceled', @onAddressFormCanceled
 
         return
-    return defineComponent(ShippingOptions)
+    return defineComponent(ShippingOptions, withi18n)
