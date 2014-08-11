@@ -59,18 +59,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @attr.data.shippingOptions = currentShippingOptions
         @$node.trigger 'shippingOptionsRender'
 
-      @setLocale = (locale = "pt-BR") ->
-        if locale.match('es-')
-          @attr.locale = 'es'
-        else
-          @attr.locale = locale
-          $.i18n.setLng(@attr.locale)
-
-      @localeUpdate = (ev, locale) ->
-        @setLocale locale
-        @render(@attr.data)
-
-      @onOrderFormUpdated = (evt, data) ->
+      @onOrderFormUpdated = (ev, data) ->
         if (data.shippingData)
 
           # Verifica se items ou endereços mudaram

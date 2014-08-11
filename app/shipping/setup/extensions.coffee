@@ -14,13 +14,13 @@ define ->
           priority: 32
       animate: false
 
-      ###
-        Translate a variable
-        'prefix' being the prefix of the dicionary and 'text' you key
-        Usage:
-        {@i18n prefix="countries." text=country /}
-      ###
-      dust.helpers.i18n = (chunk, ctx, bodies, params) ->
-        prefix = params.prefix
-        text = params.text
-        return chunk.write(i18n.t(prefix+text))
+    ###
+      Translate a variable
+      'prefix' being the prefix of the dicionary and 'text' you key
+      Usage:
+      {@i18n prefix="countries." text=country /}
+    ###
+    dust.helpers.i18n = (chunk, ctx, bodies, params) ->
+      prefix = params.prefix
+      text = params.text
+      return chunk.write(i18n.t(prefix+text))

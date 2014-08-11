@@ -1,8 +1,8 @@
 define = vtex.define || window.define
 require = vtex.curl || window.require
 
-define ['flight/lib/component', 'shipping/setup/extensions'],
-(defineComponent, extensions) ->
+define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/withi18n'],
+(defineComponent, extensions, withi18n) ->
   ShippingSummary = ->
     @defaultAttrs
       API: null
@@ -36,16 +36,6 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
       @attr.data.showSummary = data
       @render(@attr.data)
 
-    @setLocale = (locale = "pt-BR") ->
-      if locale.match('es-')
-        @attr.locale = 'es'
-      else
-        @attr.locale = locale
-
-    @localeUpdate = (ev, locale) ->
-      @setLocale locale
-      @render(@attr.data)
-
     @changeShippingOption = (evt, data) ->
       @showShippingSummary false
       $(window).trigger('showAddressList.vtex')
@@ -68,4 +58,4 @@ define ['flight/lib/component', 'shipping/setup/extensions'],
         'changeShippingOptionBtSelector': @changeShippingOption
       return
 
-  return defineComponent(ShippingSummary)
+  return defineComponent(ShippingSummary, withi18n)

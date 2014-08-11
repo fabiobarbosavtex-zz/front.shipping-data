@@ -147,19 +147,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @attr.data.showAddressList = false
         @render(@attr.data)
 
-      @setLocale = (locale = "pt-BR") ->
-        if locale.match('es-')
-          @attr.locale = 'es'
-        else
-          @attr.locale = locale
-        $.i18n.setLng(@attr.locale)
-
-      @localeUpdate = (ev, locale) ->
-        console.log("localeUpdate")
-        @setLocale locale
-        @render(@attr.data)
-
-      @orderFormUpdated = (evt, data) ->
+      @orderFormUpdated = (ev, data) ->
         if data.shippingData?
           @attr.data.address = data.shippingData.address
           @attr.data.availableAddresses = data.shippingData.availableAddresses

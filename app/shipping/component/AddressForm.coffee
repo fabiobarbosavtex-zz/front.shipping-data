@@ -215,13 +215,11 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         return addressObj
 
       # Submit address to the server
-      @submitAddress = (evt) ->
+      @submitAddress = (ev) ->
         if $(@attr.addressFormSelector).parsley('validate')
           @attr.data.address = @getCurrentAddress()
           @$node.trigger 'loading', true
           @attr.showAddressForm = false
-
-          # @$node.trigger 'newAddress', addressObj
 
           # Cria ID se ele não existir
           if (@attr.data.address.addressId == null || @attr.data.address.addressId == "")
@@ -406,17 +404,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
       @onChangeState = (ev, data) ->
         @changeCities(ev, data)
         @changePostalCodeByState(ev, data)
-
-      @setLocale = (locale = "pt-BR") ->
-        if locale.match('es-')
-          @attr.locale = 'es'
-        else
-          @attr.locale = locale
-          $.i18n.setLng(@attr.locale)
-
-      @localeUpdate = (ev, locale) ->
-        @setLocale locale
-        @render()
 
       @enable = ->
 
