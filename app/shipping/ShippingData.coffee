@@ -1,8 +1,13 @@
 define = vtex.define || window.define
 require = vtex.require || window.require
 
-define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component/AddressForm', 'shipping/component/AddressList',
-        'shipping/component/ShippingOptions', 'shipping/component/ShippingSummary', 'link!shipping/css/main'],
+define ['flight/lib/component',
+        'shipping/setup/extensions',
+        'shipping/component/AddressForm',
+        'shipping/component/AddressList',
+        'shipping/component/ShippingOptions',
+        'shipping/component/ShippingSummary',
+        'link!shipping/css/main'],
   (defineComponent, extensions, AddressForm, AddressList, ShippingOptions, ShippingSummary) ->
     ShippingData = ->
       @defaultAttrs
@@ -82,13 +87,13 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
           return memo.concat(l.shipsTo)
         , []))
 
-      @orderFormUpdated = (evt, orderForm) ->
+      @orderFormUpdated = (ev, orderForm) ->
         @attr.orderForm = orderForm
         @orchestrate()
 
       # When a new addresses is selected
       # Should call API to get delivery options
-      @onAddressSelected = (evt, addressObj) ->
+      @onAddressSelected = (ev, addressObj) ->
         console.log (addressObj)
 
       @onPostalCodeLoaded = (ev, addressObj) ->
@@ -105,7 +110,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/component
           console.log "invalid"
 
       # When a new addresses is saved
-      @onAddressSaved = (evt, addressObj) ->
+      @onAddressSaved = (ev, addressObj) ->
         # Do an AJAX to save in your API
         # When you're done, update with the new data
 #        updated = false

@@ -143,7 +143,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           # Se a lista esta vazia, abre form de novo endereço
           $(window).trigger("showAddressForm");
 
-      @hideAddressList = (evt, data) ->
+      @hideAddressList = (ev, data) ->
         @attr.data.showAddressList = false
         @render(@attr.data)
 

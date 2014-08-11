@@ -27,23 +27,23 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
       else
         $(@$node).html("")
 
-    @orderFormUpdated = (evt, orderForm) ->
+    @orderFormUpdated = (ev, orderForm) ->
       @attr.data.address = orderForm.shippingData?.address
       @attr.data.currentCountryName = "Brasil"
       @render(@attr.data)
 
-    @showShippingSummary = (evt, data) ->
+    @showShippingSummary = (ev, data) ->
       @attr.data.showSummary = data
       @render(@attr.data)
 
-    @changeShippingOption = (evt, data) ->
+    @changeShippingOption = (ev, data) ->
       @showShippingSummary false
       $(window).trigger('showAddressList.vtex')
 
     @onDisableShippingData = () ->
       @showShippingSummary null, true
 
-    @onAddressSelected = (evt, data) ->
+    @onAddressSelected = (ev, data) ->
       @attr.data.address = data
       @render(@attr.data)
 

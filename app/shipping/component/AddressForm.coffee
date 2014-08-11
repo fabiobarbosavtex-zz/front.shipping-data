@@ -1,7 +1,10 @@
 define = vtex.define || window.define
 require = vtex.curl || window.require
 
-define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Address', 'shipping/mixin/withi18n'],
+define ['flight/lib/component',
+        'shipping/setup/extensions',
+        'shipping/models/Address',
+        'shipping/mixin/withi18n'],
   (defineComponent, extensions, AddressModel, withi18n) ->
     AddressForm = ->
       @defaultAttrs
@@ -130,7 +133,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
             @getPostalCode postalCode
 
       # Handle the initial view of this component
-      @showAddressForm = (evt, address) ->
+      @showAddressForm = (ev, address) ->
         @attr.data.address = new AddressModel(if address then address else null)
         @attr.data.isEditingAddress = true
         if address?.addressType?
@@ -229,7 +232,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
 
           # Submit address object to API
           @attr.API.sendAttachment("shippingData", { address: @attr.data.address })
-        evt.preventDefault()
+        ev.preventDefault()
 
       # Select a delivery country
       # This will load the country's form and rules
@@ -412,7 +415,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         @attr.data.showAddressForm = false
         @render()
 
-      @onOrderFormUpdated = (evt, data) ->
+      @onOrderFormUpdated = (ev, data) ->
         @attr.data.availableAddresses = if data.shippingData? then data.shippingData.availableAddresses else []
         if data.shippingData
           @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)

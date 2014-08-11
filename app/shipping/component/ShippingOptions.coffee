@@ -112,7 +112,8 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
 
         # Agrupa os items de logistic info por seller
         logisticsBySeller = _.groupBy logisticsInfo, (so) -> return so.seller.id
-        logisticsInfoArray = _.map logisticsBySeller, (logistic) ->
+
+        logisticsInfoArray = _.map logisticsBySeller, (logistic) =>
           composedLogistic =
             items: []
             seller: {}
@@ -136,7 +137,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           return composedLogistic
         return logisticsInfoArray
 
-      @onAddressSelected = (evt, address) ->
+      @onAddressSelected = (ev, address) ->
         currentAddress = _.find @attr.data.availableAddresses, (_address) =>
           _address.addressId == address.addressId
 
