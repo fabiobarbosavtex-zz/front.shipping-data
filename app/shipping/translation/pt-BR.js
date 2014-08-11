@@ -38,7 +38,7 @@ define(function() {
 				"type": 'Tipo do endereço',
 				"receiver": 'Destinatário',
 				"deliveryCountry": 'País de entrega',
-                "cancelEditAddress": "Cancelar alterações e voltar para a lista de endereços"
+				"cancelEditAddress": 'Cancelar alterações e voltar para a lista de endereços'
 			},
 			"shippingOptions": {
 				"shippingOptions": 'Escolha as opções de entrega',

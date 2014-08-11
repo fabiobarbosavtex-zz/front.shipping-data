@@ -1,5 +1,12 @@
 <div class="select-country">
 
+
+    {@if cond="{availableAddresses.length} > 0"}
+	<p style="display: block;" class="cancel-address-form">
+		<a href="javascript:void(0);" class="cancel-new-address" data-i18n="shipping.addressForm.cancelEditAddress"></a>
+	</p>
+    {/if}
+
 	<p class="ship-country required input text">
 		<label for="ship-country"><span data-i18n="shipping.addressForm.deliveryCountry"></span></label>
 		<select id="ship-country" tabindex="1" class="input-medium required" name="country">
@@ -11,5 +18,5 @@
 			{/deliveryCountries}
 		</select>
 	</p>
-
+	
 </div>
