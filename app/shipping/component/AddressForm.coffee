@@ -10,6 +10,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         data:
           address: new AddressModel({})
           availableAddresses: []
+          country: false
           postalCode: ''
           deliveryCountries: ['BRA', 'ARG', 'CHL', 'COL', 'PER', 'ECU', 'PRY', 'URY', 'USA']
           disableCityAndState: false
@@ -19,6 +20,16 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
           showDontKnowPostalCode: true
           showSelectCountry: false
           countryRules: {}
+          useGeolocation:
+            'BRA': false
+            'ARG': false
+            'CHL': false
+            'COL': false
+            'PER': false
+            'ECU': false
+            'PRY': false
+            'URY': false
+            'USA': false
 
         templates:
           form:
@@ -336,6 +347,11 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         if window.shippingUsingGeolocation and country is "PER"
           @startGoogleAddressSearch()
 
+      @getDeliveryCountries = (logisticsInfo) =>
+        return _.uniq(_.reduceRight(logisticsInfo, (memo, l) ->
+          return memo.concat(l.shipsTo)
+        , []))
+
       # Close the form
       @cancelAddressForm = ->
         @attr.data.showAddressForm = false
@@ -419,6 +435,8 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
 
       @onOrderFormUpdated = (evt, data) ->
         @attr.data.availableAddresses = if data.shippingData? then data.shippingData.availableAddresses else []
+        if data.shippingData
+          @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)
 
       # Bind events
       @after 'initialize', ->
