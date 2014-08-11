@@ -37,7 +37,8 @@ define(function() {
 				"province": "Provincia",
 				"type": 'Tipo de dirección',
 				"receiver": 'Nombre de la persona que va a recibir',
-				"deliveryCountry": 'Elija el país de entrega'
+				"deliveryCountry": 'Elija el país de entrega',
+                "cancelEditAddress": "Cancelar las alteraciones e volver a la lista de enderecios"
 			}
 		},
 		"validation": {

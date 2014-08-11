@@ -1,10 +1,11 @@
 <div class="select-country">
 
-
-    {#availableAddresses}
-	<p style="display: block;" class="cancel-address-form">
-		<a href="javascript:void(0);" class="cancel-new-address">Cancelar alterações e voltar para a lista de endereços</a>
-	</p>
+    {?availableAddresses}
+        <p style="display: block;" class="cancel-address-form">
+            <a href="javascript:void(0);" class="cancel-new-address" data-i18n="shipping.addressForm.cancelEditAddress">
+                Cancelar alterações e voltar para a lista de endereços
+            </a>
+        </p>
     {/availableAddresses}
 
 	<p class="ship-country required input text">
@@ -18,9 +19,5 @@
 			{/deliveryCountries}
 		</select>
 	</p>
-	
-	{?hasOtherAddresses}
-	{^showAddressForm}
-	{/showAddressForm}
-	{/hasOtherAddresses}
+
 </div>

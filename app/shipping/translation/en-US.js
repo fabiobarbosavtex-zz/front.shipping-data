@@ -37,7 +37,8 @@ define(function(){
 				"province": "Province",
 				"type": 'Address type',
 				"receiver": 'Receiver',
-				"deliveryCountry": 'Delivery country'
+				"deliveryCountry": 'Delivery country',
+                "cancelEditAddress": "Cancel adrress edit and back to address list"
 			}
 		},
 		"validation": {
