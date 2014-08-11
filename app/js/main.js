@@ -24,6 +24,5 @@ vtex.curl(vtex.curl.configuration,
 
 		// START SHIPPING DATA
 		ShippingData.attachTo('.address-book',  { API: _API });
-
   }
 );
