@@ -90,7 +90,8 @@ define(function() {
 			"greaterthan": 'Este campo deve ser maior que %s.',
 			"lessthan": 'Este campo deve ser menor que %s.',
 			"beforedate": 'Esta data deve ser anterior a %s.',
-			"afterdate": 'Esta data deve ser posterior a %s.'
+			"afterdate": 'Esta data deve ser posterior a %s.',
+			"americandate": 'Esta data deve ser válida (MM/DD/YYYY).'
 		},
 		"countries": {
 			"ARG": 'Argentina',

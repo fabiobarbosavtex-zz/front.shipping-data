@@ -39,6 +39,21 @@ define(function() {
 				"receiver": 'Nombre de la persona que va a recibir',
 				"deliveryCountry": 'Elija el país de entrega',
 				"backToAddressList": 'Volver a las direcciones ya registradas'
+			},
+			"shippingOptions": {
+				"shippingOptions": 'Elija las opciones de envío',
+				"chooseShippingOption": 'Elija el tipo de envío',
+				"followingProducts": 'Productos del',
+				"shippingOption": 'Tipo de envío',
+				"shippingEstimate": 'Estimado',
+				"ofSeller": 'del vendedor ',
+				"deliveryDate": 'Fecha de entrega',
+				"chooseScheduledDate": 'Seleccione la fecha de entrega',
+				"deliveryHour": 'Hora de entrega',
+				"workingDay": 'Hasta __count__ día hábil',
+				"workingDay_plural": 'Hasta __count__ días hábiles',
+				"day": 'Hasta __count__ día',
+				"day_plural": 'Hasta __count__ días'
 			}
 		},
 		"validation": {
