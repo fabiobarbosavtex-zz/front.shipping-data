@@ -111,14 +111,11 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
             @createAddress()
 
       # Handle selection of an address in the list
-      @selectAddress = (ev, data) ->
-        selectedAddressId = undefined
+      @selectAddressHandler = (ev, data) ->
+        ev.preventDefault()
+        @selectAddress($('input', data.el).attr('value'))
 
-        if ev.type is 'click'
-          selectedAddressId = $('input', data.el).attr('value')
-        else
-          selectedAddressId = data
-
+      @selectAddress = (selectedAddressId) ->
         wantedAddress = _.find @attr.data.availableAddresses, (a) ->
           a.addressId is selectedAddressId
         @attr.data.address = wantedAddress
@@ -128,8 +125,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
 
         @attr.data.showAddressList = true
         @render(@attr.data)
-
-        ev.preventDefault()
 
       # Store new country rules in the data object
       @addCountryRule = (ev, data) ->
@@ -166,7 +161,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @on window, 'orderFormUpdated.vtex', @orderFormUpdated
         @on window, 'click',
           'createAddressSelector': @createAddress
-          'addressItemSelector': @selectAddress
+          'addressItemSelector': @selectAddressHandler
           'editAddressSelector': @editAddress
         return
 
