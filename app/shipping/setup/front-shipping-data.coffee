@@ -1,13 +1,11 @@
 
 configuration =
   paths:
-    'shipping': '/shipui/shipping/'
-    'flight': '//walmartv5.vtexlocal.com.br/shipui/libs/flight/'
-  pluginPath: '//walmartv5.vtexlocal.com.br/shipui/libs/curl/plugin/'
+    'shipping': '/front.shipping-data/shipping/'
+    'flight': '//io.vtex.com.br/front-libs/flight/1.1.4-vtex/'
+  pluginPath: '//io.vtex.com.br/front-libs/curl/0.8.10-vtex/plugin/'
 
 if vtex.curl.configuration
-	paths = _.extend({}, vtex.curl.configuration.paths, configuration.paths)
-	configuration['paths'] = paths
-	_.extend({}, vtex.curl.configuration, configuration)
+	_.extend(vtex.curl.configuration.paths, configuration.paths)
 else
 	vtex.curl.configuration = configuration

@@ -3,7 +3,7 @@ module.exports = (grunt) ->
 
   # Project configuration.
   grunt.initConfig
-    relativePath: 'shipui'
+    relativePath: 'front.shipping-data'
     appName: pkg.name
 
   # Tasks
@@ -102,7 +102,7 @@ module.exports = (grunt) ->
 
     watch:
       options:
-        livereload: true
+        livereload: !grunt.option('no-lr')
       coffee:
         files: ['app/shipping/**/*.coffee', '!app/shipping/rule/**']
         tasks: ['coffee:lean', 'copy:build']
@@ -168,7 +168,7 @@ module.exports = (grunt) ->
 
         transform:
           replace:
-            "/shipui/": "//io.vtex.com.br/<%= appName %>/{{version}}/"
+            "/front.shipping-data/": "//io.vtex.com.br/<%= appName %>/{{version}}/"
             VERSION_NUMBER: "{{version}}"
 
           files: ["index.html", "index.debug.html",
@@ -182,6 +182,9 @@ module.exports = (grunt) ->
                               'less', 'copy:build']
 
   grunt.registerTask 'default', ['base', 'server', 'watch']
+
+  # Does not run server
+  grunt.registerTask 'dev', ['base', 'watch']
 
   # minifies files
   grunt.registerTask 'min', ['useminPrepare', 'concat', 'uglify', 'usemin']

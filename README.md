@@ -8,8 +8,8 @@ Componente de endereços construído em [Flight](http://flightjs.github.io/).
 <!-- index.html -->
 
 <!--[if lt IE 9]>
-<script src="/shipui/libs/es5-shim/es5-shim.min.js"></script>
-<script src="/shipui/libs/es5-shim/es5-sham.min.js"></script>
+<script src="/front.shipping-data/libs/es5-shim/es5-shim.min.js"></script>
+<script src="/front.shipping-data/libs/es5-shim/es5-sham.min.js"></script>
 <![endif]-->
 <script src="//io.vtex.com.br/front-libs/jquery/1.8.3/jquery-1.8.3.min.js"></script>
 <script src="//io.vtex.com.br/front-libs/underscore/1.5.2-gentle/underscore-min.js"></script>

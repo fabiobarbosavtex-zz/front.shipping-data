@@ -1,7 +1,7 @@
 'use strict';
 
 var paths = {
-  'example': '/shipui/js/'
+  'example': '/front.shipping-data/js/'
 };
 
 _.extend(vtex.curl.configuration.paths, paths);

@@ -32,7 +32,7 @@ module.exports = function(config) {
 
       // loaded with require
       {pattern: 'bower_components/flight/**/*.js', included: false},
-      {pattern: 'build/shipui/shipping/**/*', included: false},
+      {pattern: 'build/front.shipping-data/shipping/**/*', included: false},
       {pattern: 'test/spec/**/*.spec.coffee', included: false},
 
       'test/test-main.js'
@@ -41,7 +41,7 @@ module.exports = function(config) {
 
     // list of files to exclude
     exclude: [
-      'build/shipui/shipping/setup/front-shipping-data.js'
+      'build/front.shipping-data/shipping/setup/front-shipping-data.js'
     ],
 
 
