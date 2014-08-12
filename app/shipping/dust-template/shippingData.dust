@@ -11,8 +11,8 @@
 
 <div class="accordion-inner">
 
-    <!-- MENSAGEM DE NÃO ATIVO NEM VISITADO -->
-    <p class="notification address-not-filled-verification" style="display: none;" data-i18n="global.waiting"></p>
+    <!-- MENSAGEM DE NÃO ATIVO E SEM ENDEREÇO -->
+    <p class="notification address-not-filled-verification" data-i18n="global.waiting"></p>
 
     <!-- RESUMO DE SHIPPING DATA -->
     <div class="box-step box-info shipping-summary-placeholder"></div>
@@ -29,7 +29,7 @@
 </div>
 
 <!-- NEXT STEP BUTTON -->
-<p class="submit btn-submit-wrapper" style="display: block;">
+<p class="submit btn-submit-wrapper">
     <button type="submit" class="submit btn btn-large btn-success btn-go-to-payment" data-i18n="shipping.goToPayment"
-            tabindex="350" style="display: none;"></button>
+            tabindex="350"></button>
 </p>

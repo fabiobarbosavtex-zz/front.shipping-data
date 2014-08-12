@@ -61,22 +61,12 @@ define ['flight/lib/component',
         require 'shipping/translation/' + @attr.locale, (translation) =>
           @extendTranslations(translation)
           # Only render parts not controlled by children components
-
-
-      @orchestrate = ->
-        # Update addresses
-        if (@attr.orderForm.shippingData?.address?)
-          addressData = @attr.orderForm.shippingData
-          addressData.deliveryCountries = @getDeliveryCountries(addressData.logisticsInfo)
-          @$node.trigger 'updateAddresses', addressData
-          @enable()
-        else
-          $(".address-not-filled-verification").show();
-
-        # Update shipping options
-        if @attr.orderForm.shippingData and @attr.orderForm.sellers
-          @$node.trigger 'updateShippingOptions'
-          @enable()
+          dust.render template, @attr.data, (err, output) =>
+            translatedOutput = $(output).i18n()
+            $(".accordion-heading", @$node).html($(".accordion-heading", translatedOutput))
+            $(".address-not-filled-verification", @$node).html($(".address-not-filled-verification", translatedOutput))
+            $(".shipping-summary-placeholder", @$node).html($(".shipping-summary-placeholder", translatedOutput))
+            $(".btn-submit-wrapper", @$node).html($(".btn-submit-wrapper", translatedOutput))
 
       @getDeliveryCountries = (logisticsInfo) =>
         return _.uniq(_.reduceRight(logisticsInfo, (memo, l) ->
@@ -85,7 +75,18 @@ define ['flight/lib/component',
 
       @orderFormUpdated = (ev, orderForm) ->
         @attr.orderForm = orderForm
-        @orchestrate()
+
+        # Update addresses
+        if (@attr.orderForm.shippingData?.address?)
+          addressData = @attr.orderForm.shippingData
+          addressData.deliveryCountries = @getDeliveryCountries(addressData.logisticsInfo)
+          @$node.trigger 'updateAddresses', addressData
+        else
+          $(".address-not-filled-verification").show();
+
+        # Update shipping options
+        if @attr.orderForm.shippingData and @attr.orderForm.sellers
+          @$node.trigger 'updateShippingOptions'
 
       # When a new addresses is selected
       # Should call API to get delivery options
@@ -147,7 +148,7 @@ define ['flight/lib/component',
               'goToPaymentBtnSelector': @goToPayment
               'editShippingDataSelector': @enable
 
-            # Make first API call
-            @attr.API.getOrderForm()
+            if vtexjs.checkout.orderForm?
+              @orderFormUpdated null, vtexjs.checkout.orderForm
 
     return defineComponent(ShippingData, withi18n)

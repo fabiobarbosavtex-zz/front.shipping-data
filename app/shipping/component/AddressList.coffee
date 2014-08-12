@@ -28,8 +28,8 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         submitButtonSelector: '.submit .btn-success'
 
       # Render this component according to the data object
-      @render = (data) ->
-        data = @attr.data if not data
+      @render = ->
+        data = @attr.data
         if not data.showAddressList
           @$node.html('')
         else
@@ -43,7 +43,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
       # Trigger an event to AddressForm component
       @createAddress = ->
         @attr.data.showAddressList = false
-        @render(@attr.data)
+        @render()
 
         @attr.data.address = {}
         @attr.data.postalCode = ''
@@ -58,7 +58,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
       @editAddress = ->
         if @attr.data.canEditData || @attr.data.loggedIn
           @attr.data.showAddressList = false
-          @render(@attr.data)
+          @render()
           @attr.data.showDontKnowPostalCode = false
           @$node.trigger 'showAddressForm', @attr.data.address
         else
@@ -124,23 +124,20 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @$node.trigger 'addressSelected', @attr.data.address
 
         @attr.data.showAddressList = true
-        @render(@attr.data)
+        @render()
 
       # Store new country rules in the data object
       @addCountryRule = (ev, data) ->
         _.extend(@attr.data.countryRules, data)
 
       @showAddressList = (ev, data) ->
-        if (@attr.data.availableAddresses.length > 0)
+        if @attr.data.availableAddresses.length > 0
           @attr.data.showAddressList = true
-          @render(@attr.data)
-        else
-          # Se a lista esta vazia, abre form de novo endereço
-          $(window).trigger("showAddressForm");
+          @render()
 
       @hideAddressList = (ev, data) ->
         @attr.data.showAddressList = false
-        @render(@attr.data)
+        @render()
 
       @orderFormUpdated = (ev, data) ->
         if data.shippingData?
