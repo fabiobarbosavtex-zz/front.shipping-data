@@ -23,6 +23,6 @@ vtex.curl(vtex.curl.configuration,
     window.vtex.i18n.init();
 
     // START SHIPPING DATA
-    ShippingData.attachTo('.address-book',  { API: _API });
+    ShippingData.attachTo('#shipping-data',  { API: _API });
   }
 );

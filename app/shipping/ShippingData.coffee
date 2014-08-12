@@ -1,5 +1,5 @@
 define = vtex.define || window.define
-require = vtex.require || window.require
+require = vtex.curl || window.require
 
 define ['flight/lib/component',
         'shipping/setup/extensions',
@@ -7,15 +7,18 @@ define ['flight/lib/component',
         'shipping/component/AddressList',
         'shipping/component/ShippingOptions',
         'shipping/component/ShippingSummary',
+        'shipping/template/shippingData',
+        'shipping/mixin/withi18n',
         'link!shipping/css/main'],
-  (defineComponent, extensions, AddressForm, AddressList, ShippingOptions, ShippingSummary) ->
+  (defineComponent, extensions, AddressForm, AddressList, ShippingOptions, ShippingSummary, template, withi18n) ->
     ShippingData = ->
       @defaultAttrs
-        addressBookComponent: '.address-book'
         API: null
+
         data:
           orderForm: false
           isValid: false
+
         state:
           active: false
           visited: false
@@ -26,24 +29,24 @@ define ['flight/lib/component',
 
       @enable = ->
         @attr.state.active = true
-        $(".address-book").addClass("active");
-        $('.shipping-data .btn-go-to-payment').show();
-        $('#edit-shipping-data').hide();
-        $(window).trigger("showShippingSummary.vtex", false);
-        $(window).trigger("showAddressList.vtex");
-        $(".accordion-shipping-title").addClass("accordion-toggle-active");
-        $(".address-not-filled-verification").hide();
+        @$node.addClass("active", "visited")
+        $('.btn-go-to-payment', @$node).show()
+        $('#edit-shipping-data').hide()
+        $(window).trigger("showShippingSummary.vtex", false)
+        $(window).trigger("showAddressList.vtex")
+        $(".accordion-shipping-title").addClass("accordion-toggle-active")
+        $(".address-not-filled-verification").hide()
 
       @disable = ->
         @attr.state.active = false
-        $(".address-book").removeClass("active");
-        $('.shipping-data .btn-go-to-payment').hide();
-        $('#edit-shipping-data').show();
-        $(window).trigger("showShippingSummary.vtex", true);
-        $(window).trigger("hideAddressList.vtex");
-        $(".accordion-shipping-title").removeClass("accordion-toggle-active");
-        if (!@attr.orderForm.shippingData?.address?)
-          $(".address-not-filled-verification").show();
+        @$node.removeClass("active")
+        $('.btn-go-to-payment', @$node).hide()
+        $('#edit-shipping-data').show()
+        $(window).trigger("showShippingSummary.vtex", true)
+        $(window).trigger("hideAddressList.vtex")
+        $(".accordion-shipping-title").removeClass("accordion-toggle-active")
+        if !@attr.orderForm.shippingData?.address?
+          $(".address-not-filled-verification").show()
 
       @commit = ->
 
@@ -54,32 +57,25 @@ define ['flight/lib/component',
       @submit = =>
         console.log "submit"
 
-      @startModule = ->
-        # Start the components
-        AddressList.attachTo('.address-list-placeholder', { API: @attr.API })
-        AddressForm.attachTo('.address-form-placeholder', { API: @attr.API })
-        ShippingOptions.attachTo('.address-shipping-options', { API: @attr.API })
-        ShippingSummary.attachTo('.shipping-summary-placeholder', { API: @attr.API })
+      @render = ->
+        require 'shipping/translation/' + @attr.locale, (translation) =>
+          @extendTranslations(translation)
+          # Only render parts not controlled by children components
 
-        # Start event listeners
-        @startEventListeners()
-
-        # Make first API call
-        @attr.API.getOrderForm();
 
       @orchestrate = ->
         # Update addresses
         if (@attr.orderForm.shippingData?.address?)
           addressData = @attr.orderForm.shippingData
           addressData.deliveryCountries = @getDeliveryCountries(addressData.logisticsInfo)
-          $(@attr.addressBookComponent).trigger 'updateAddresses', addressData
+          @$node.trigger 'updateAddresses', addressData
           @enable()
         else
           $(".address-not-filled-verification").show();
 
         # Update shipping options
         if @attr.orderForm.shippingData and @attr.orderForm.sellers
-          $(@attr.addressBookComponent).trigger 'updateShippingOptions'
+          @$node.trigger 'updateShippingOptions'
           @enable()
 
       @getDeliveryCountries = (logisticsInfo) =>
@@ -124,21 +120,34 @@ define ['flight/lib/component',
 #          @attr.orderForm.shippingData.availableAddresses.push(addressObj)
 #
 #        @attr.orderForm.shippingData.address = addressObj
-#        $(@attr.addressBookComponent).trigger('updateAddresses', @attr.orderForm.shippingData)
-
-      @startEventListeners = ->
-        @on @attr.addressBookComponent, 'newAddress', @onAddressSaved
-        @on @attr.addressBookComponent, 'addressSelected', @onAddressSelected
-        @on @attr.addressBookComponent, 'postalCode', @onPostalCodeLoaded
-        @on window, 'orderFormUpdated.vtex', @orderFormUpdated
-        @on window, 'enableShippingData.vtex', @enable
-        @on window, 'disableShippingData.vtex', @disable
-        @on window, 'click',
-          'goToPaymentBtnSelector': @goToPayment
-          'editShippingDataSelector': @enable
+#        @$node.trigger('updateAddresses', @attr.orderForm.shippingData)
 
       # Bind events
       @after 'initialize', ->
-        @startModule()
+        require 'shipping/translation/' + @attr.locale, (translation) =>
+          @extendTranslations(translation)
+          dust.render template, @attr.data, (err, output) =>
+            translatedOutput = $(output).i18n()
+            @$node.html(translatedOutput)
 
-    return defineComponent(ShippingData)
+            # Start the components
+            AddressList.attachTo('.address-list-placeholder', { API: @attr.API })
+            AddressForm.attachTo('.address-form-placeholder', { API: @attr.API })
+            ShippingOptions.attachTo('.address-shipping-options', { API: @attr.API })
+            ShippingSummary.attachTo('.shipping-summary-placeholder', { API: @attr.API })
+
+            # Start event listeners
+            @on @$node, 'newAddress', @onAddressSaved
+            @on @$node, 'addressSelected', @onAddressSelected
+            @on @$node, 'postalCode', @onPostalCodeLoaded
+            @on window, 'orderFormUpdated.vtex', @orderFormUpdated
+            @on window, 'enableShippingData.vtex', @enable
+            @on window, 'disableShippingData.vtex', @disable
+            @on 'click',
+              'goToPaymentBtnSelector': @goToPayment
+              'editShippingDataSelector': @enable
+
+            # Make first API call
+            @attr.API.getOrderForm()
+
+    return defineComponent(ShippingData, withi18n)

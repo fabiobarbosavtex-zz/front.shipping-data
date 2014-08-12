@@ -1,0 +1,35 @@
+<!-- TITLE -->
+<div class="accordion-heading">
+    <span class="accordion-toggle collapsed accordion-shipping-title">
+        <i class="icon-home"></i>
+        <span data-i18n="shipping.title"></span>
+        <a href="#/shipping" id="edit-shipping-data" class="link-box-edit btn btn-small" data-i18n="[title]global.edit">
+            <i class="icon-edit"></i>
+        </a>
+    </span>
+</div>
+
+<div class="accordion-inner">
+
+    <!-- MENSAGEM DE NÃO ATIVO NEM VISITADO -->
+    <p class="notification address-not-filled-verification" style="display: none;" data-i18n="global.waiting"></p>
+
+    <!-- RESUMO DE SHIPPING DATA -->
+    <div class="box-step box-info shipping-summary-placeholder"></div>
+    <!-- FIM DO RESUMO DE SHIPPING DATA -->
+
+    <!-- CONTAINER DOS COMPONENTES FILHOS -->
+    <div class="box-step">
+        <div class="address-form-placeholder"></div>
+        <div class="address-list-placeholder"></div>
+        <div class="address-shipping-options"></div>
+    </div>
+    <!-- FIM CONTAINER DOS COMPONENTES FILHOS -->
+
+</div>
+
+<!-- NEXT STEP BUTTON -->
+<p class="submit btn-submit-wrapper" style="display: block;">
+    <button type="submit" class="submit btn btn-large btn-success btn-go-to-payment" data-i18n="shipping.goToPayment"
+            tabindex="350" style="display: none;"></button>
+</p>

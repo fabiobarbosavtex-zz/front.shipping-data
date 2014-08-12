@@ -109,7 +109,7 @@ define ['flight/lib/component',
                   .filter ->
                     if($(this).val() == "")
                       return true
-                .first().focus()
+                .first()
                 @startGoogleAddressSearch()
         else
           @$node.html('')

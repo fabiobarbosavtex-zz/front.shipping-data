@@ -19,51 +19,9 @@
 			<div class="row-fluid orderform-template span12 active">
 				<div class="orderform-template-holder span8">
 					<div class="row-fluid">
-            <div class="span6 pull-right shipping-data">
-
+                        <div class="span6 pull-right shipping-data">
 							<!-- PLACEHOLDER FOR THE ADDRESS BOOK COMPONENT -->
-							<div class="shipping-data address-book step accordion-group">
-
-								<!-- TITLE -->
-								<div class="accordion-heading">
-									<span class="accordion-toggle collapsed accordion-shipping-title">
-										<i class="icon-home"></i>
-										<span data-i18n="shippingData.shippingAddressTitle">Entrega</span>
-										<a href="#/shipping" id="edit-shipping-data" class="link-box-edit btn btn-small" title="alterar">
-											<i class="icon-edit"></i>
-										</a>
-									</span>
-								</div>
-
-								<div class="accordion-inner">
-
-									<!-- MENSAGEM DE NÃO ATIVO NEM VISITADO -->
-									<p class="notification address-not-filled-verification"  style="display: none;">Aguardando o preenchimento dos dados</p>
-
-									<!-- RESUMO DE SHIPPING DATA -->
-									<div class="box-step box-info shipping-summary-placeholder">
-
-									</div>
-									<!-- FIM DO RESUMO DE SHIPPING DATA -->
-
-                  <!-- CONTAINER DOS COMPONENTES FILHOS -->
-									<div class="box-step">
-										<!--<div id="map-canvas"></div>-->
-										<div class="address-form-placeholder"></div>
-										<div class="address-list-placeholder"></div>
-										<div class="address-shipping-options"></div>
-									</div>
-                  <!-- FIM CONTAINER DOS COMPONENTES FILHOS -->
-
-								</div>
-
-								<!-- NEXT STEP BUTTON -->
-								<p class="submit btn-submit-wrapper" style="display: block;">
-									<button type="submit" class="submit btn btn-large btn-success btn-go-to-payment" tabindex="350" style="display: none;">Ir para o Pagamento</button>
-								</p>
-
-							</div>
-
+							<div id="shipping-data" class="shipping-data step accordion-group"></div>
 						</div>
 					</div>
 				</div>
