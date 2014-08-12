@@ -1,11 +1,13 @@
 define = vtex.define || window.define
 require = vtex.curl || window.require
 
-define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Address'],
-  (defineComponent, extensions, AddressModel) ->
+define ['flight/lib/component',
+        'shipping/setup/extensions',
+        'shipping/models/Address',
+        'shipping/mixin/withi18n'],
+  (defineComponent, extensions, AddressModel, withi18n) ->
     AddressForm = ->
       @defaultAttrs
-        locale: 'pt-BR'
         API: null
         data:
           address: new AddressModel({})
@@ -112,13 +114,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         else
           @$node.html('')
 
-      @extendTranslations = (translation) ->
-        if window.vtex.i18n[@attr.locale]
-          window.vtex.i18n[@attr.locale] = _.extend(translation, window.vtex.i18n[@attr.locale])
-          i18n.addResourceBundle(@attr.locale, 'translation', window.vtex.i18n[@attr.locale])
-        else
-          i18n.addResourceBundle(@attr.locale, 'translation', translation)
-
       # Helper function to get the current country's rules
       @getCurrentRule = ->
         @attr.data.countryRules[@attr.data.country]
@@ -138,7 +133,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
             @getPostalCode postalCode
 
       # Handle the initial view of this component
-      @showAddressForm = (evt, address) ->
+      @showAddressForm = (ev, address) ->
         @attr.data.address = new AddressModel(if address then address else null)
         @attr.data.isEditingAddress = true
         if address?.addressType?
@@ -223,13 +218,11 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         return addressObj
 
       # Submit address to the server
-      @submitAddress = (evt) ->
+      @submitAddress = (ev) ->
         if $(@attr.addressFormSelector).parsley('validate')
           @attr.data.address = @getCurrentAddress()
           @$node.trigger 'loading', true
           @attr.showAddressForm = false
-
-          # @$node.trigger 'newAddress', addressObj
 
           # Cria ID se ele não existir
           if (@attr.data.address.addressId == null || @attr.data.address.addressId == "")
@@ -239,7 +232,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
 
           # Submit address object to API
           @attr.API.sendAttachment("shippingData", { address: @attr.data.address })
-        evt.preventDefault()
+        ev.preventDefault()
 
       # Select a delivery country
       # This will load the country's form and rules
@@ -415,17 +408,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         @changeCities(ev, data)
         @changePostalCodeByState(ev, data)
 
-      @setLocale = (locale = "pt-BR") ->
-        if locale.match('es-')
-          @attr.locale = 'es'
-        else
-          @attr.locale = locale
-          $.i18n.setLng(@attr.locale)
-
-      @localeUpdate = (ev, locale) ->
-        @setLocale locale
-        @render()
-
       @enable = ->
 
       @disable = ->
@@ -433,7 +415,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
         @attr.data.showAddressForm = false
         @render()
 
-      @onOrderFormUpdated = (evt, data) ->
+      @onOrderFormUpdated = (ev, data) ->
         @attr.data.availableAddresses = if data.shippingData? then data.shippingData.availableAddresses else []
         if data.shippingData
           @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)
@@ -463,4 +445,4 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/models/Ad
           'postalCodeSelector': @validatePostalCode
         return
 
-    return defineComponent(AddressForm)
+    return defineComponent(AddressForm, withi18n)
