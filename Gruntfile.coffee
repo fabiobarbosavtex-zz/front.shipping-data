@@ -179,9 +179,9 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'base', ['clean', 'dust', 'copy:templates',
                               'copy:main', 'coffee:main', 'coffee:example',
-                              'less', 'copy:build', 'server']
+                              'less', 'copy:build']
 
-  grunt.registerTask 'default', ['base', 'watch']
+  grunt.registerTask 'default', ['base', 'server', 'watch']
 
   # minifies files
   grunt.registerTask 'min', ['useminPrepare', 'concat', 'uglify', 'usemin']
@@ -194,5 +194,5 @@ module.exports = (grunt) ->
   grunt.registerTask 'dist', ['clean', 'dust', 'copy:templates', 'copy:main',
                               'coffee:main', 'min', 'copy:build']
 
-  grunt.registerTask 'test', ['base', 'karma:single']
+  grunt.registerTask 'test', ['base', 'server', 'karma:single']
   grunt.registerTask 'server', ['configureProxies:server', 'connect']
