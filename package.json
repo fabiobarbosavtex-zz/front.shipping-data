@@ -1,5 +1,5 @@
 {
-  "name": "shipping-ui",
+  "name": "front.shipping-data",
   "version": "1.0.10",
   "devDependencies": {
     "karma": "~0.10.0",
