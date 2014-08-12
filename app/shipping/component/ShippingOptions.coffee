@@ -22,6 +22,12 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
             name: 'shippingOptions'
             template: 'shipping/template/shippingOptions'
 
+        isScheduledDeliveryAvailable: false
+        pickadateFiles: ['shipping/libs/pickadate/picker',
+                         'shipping/libs/pickadate/picker-date',
+                         'link!shipping/libs/pickadate/classic',
+                         'link!shipping/libs/pickadate/classic-date']
+
         addressBookComponentSelector: '.address-book'
         addressFormSelector: '.address-form-new'
         postalCodeSelector: '#ship-postal-code'
@@ -29,7 +35,12 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
       # Render this component according to the data object
       @render = (ev, data) ->
         data = @attr.data if not arguments.slice
-        require [@attr.templates.shippingOptions.template], =>
+
+        requiredFiles = [@attr.templates.shippingOptions.template]
+        if @attr.isScheduledDeliveryAvailable
+          requiredFiles = requiredFiles.concat(@attr.pickadateFiles)
+
+        require requiredFiles, =>
           dust.render @attr.templates.shippingOptions.name, data, (err, output) =>
             output = $(output).i18n()
             @$node.html(output)
@@ -125,6 +136,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
             composedLogistic.seller = logi.seller
             for sla in logi.slas
               sla.isScheduled = sla.availableDeliveryWindows and sla.availableDeliveryWindows.length > 0
+              if sla.isScheduled then @attr.isScheduledDeliveryAvailable = true
               sla.businessDays = (sla.shippingEstimate+'').indexOf('bd') isnt -1
               sla.shippingEstimateDays = parseInt((sla.shippingEstimate+'').replace(/bd|d/,''), 10)
               sla.isSelected = (sla.id is logi.selectedSla)
@@ -135,6 +147,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
             composedLogistic.selectedSla = selectedSla
 
           return composedLogistic
+
         return logisticsInfoArray
 
       @addressSelected = (ev, address) ->
