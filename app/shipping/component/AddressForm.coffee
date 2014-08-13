@@ -128,7 +128,7 @@ define ['flight/lib/component',
           @attr.data.postalCode = postalCode
           @attr.data.address.postalCode = postalCode
           @attr.data.loading = true if rules.queryPostalCode
-          @$node.trigger 'addressFormRender', @attr.data
+          @render()
           if rules.queryPostalCode
             @getPostalCode postalCode
 
@@ -143,7 +143,7 @@ define ['flight/lib/component',
           @selectCountry(country)
         else
           @attr.data.showSelectCountry = true
-          @trigger('addressFormRender', @attr.data)
+          @render()
 
       # Call the postal code API
       @getPostalCode = (data) ->
@@ -192,7 +192,7 @@ define ['flight/lib/component',
       # filled by the postal code service
       @forceShippingFields = ->
         @attr.data.labelShippingFields = false
-        @trigger('addressFormRender', @attr.data)
+        @render()
 
       # Get the current address typed in the form
       @getCurrentAddress = ->
@@ -221,7 +221,7 @@ define ['flight/lib/component',
       @submitAddress = (ev) ->
         if $(@attr.addressFormSelector).parsley('validate')
           @attr.data.address = @getCurrentAddress()
-          @$node.trigger 'loading', true
+          @trigger 'loading', true
           @attr.showAddressForm = false
 
           # Cria ID se ele não existir
@@ -252,10 +252,10 @@ define ['flight/lib/component',
           deps.push('shipping/rule/Country'+country)
           require deps, (formTemplate, selectedCountryTemplate, countryRule) =>
             @attr.data.countryRules[country] = new countryRule()
-            @trigger('addressFormRender', @attr.data)
+            @render()
         else
           require deps, (formTemplate, selectedCountryTemplate) =>
-            @trigger('addressFormRender', @attr.data)
+            @render()
 
       @addressMapper = (address) ->
         console.log @getCurrentRule()
@@ -270,7 +270,7 @@ define ['flight/lib/component',
           address.geometry.location.lat()
         ]
         console.log(@attr.data)
-        @trigger('addressFormRender', @attr.data)
+        @render()
 
       @clearAddressData = ->
         @attr.data.addressId = null
@@ -350,7 +350,7 @@ define ['flight/lib/component',
         @attr.data.showAddressForm = false
         @attr.data.showSelectCountry = false
         @attr.data.loading = false
-        @trigger('addressFormRender', @attr.data)
+        @render()
         @trigger('addressFormCanceled')
 
       # Change the city select options when a state is selected
@@ -396,7 +396,7 @@ define ['flight/lib/component',
       # This will disable all fields
       @loading = (ev, data) ->
         @attr.data.loading = true
-        @trigger('addressFormRender', @attr.data)
+        @render()
         console.log "loaded"
 
       # Store new country rules in the data object
@@ -415,7 +415,7 @@ define ['flight/lib/component',
         @attr.data.showAddressForm = false
         @render()
 
-      @onOrderFormUpdated = (ev, data) ->
+      @orderFormUpdated = (ev, data) ->
         @attr.data.availableAddresses = if data.shippingData? then data.shippingData.availableAddresses else []
         if data.shippingData
           @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)
@@ -425,10 +425,9 @@ define ['flight/lib/component',
         @on 'loading', @loading
         @on window, 'enableShippingData.vtex', @enable
         @on window, 'disableShippingData.vtex', @disable
-        @on window, 'orderFormUpdated.vtex', @onOrderFormUpdated
+        @on window, 'orderFormUpdated.vtex', @orderFormUpdated
         @on window, 'localeSelected.vtex', @localeUpdate
         @on window, 'newCountryRule', @addCountryRule
-        @on window, 'addressFormRender', @render
         @on window, 'showAddressForm', @showAddressForm
         @on window, 'updateAddresses', @cancelAddressForm
         @on window, 'cancelAddressForm', @cancelAddressForm
@@ -443,6 +442,8 @@ define ['flight/lib/component',
           'citySelector': @changePostalCodeByCity
         @on 'keyup',
           'postalCodeSelector': @validatePostalCode
-        return
+
+        if vtexjs?.checkout?.orderForm?
+          @orderFormUpdated null, vtexjs.checkout.orderForm
 
     return defineComponent(AddressForm, withi18n)

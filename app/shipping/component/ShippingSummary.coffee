@@ -18,7 +18,8 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
       changeShippingOptionBtSelector: "#change-other-shipping-option"
 
     # Render this component according to the data object
-    @render = (data) ->
+    @render = () ->
+      data = @attr.data
       if data.address
         require [@attr.templates.list.template], =>
           dust.render @attr.templates.list.name, data, (err, output) =>
@@ -30,11 +31,15 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
     @orderFormUpdated = (ev, orderForm) ->
       @attr.data.address = orderForm.shippingData?.address
       @attr.data.currentCountryName = "Brasil"
-      @render(@attr.data)
+      @render()
 
-    @showShippingSummary = (ev, data) ->
-      @attr.data.showSummary = data
-      @render(@attr.data)
+    @showShippingSummary = ->
+      @attr.data.showSummary = true
+      @render()
+      
+    @hideShippingSummary = ->
+      @attr.data.showSummary = false
+      @render()
 
     @changeShippingOption = (ev, data) ->
       @showShippingSummary false
@@ -45,17 +50,20 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
 
     @onAddressSelected = (ev, data) ->
       @attr.data.address = data
-      @render(@attr.data)
+      @render()
 
     # Bind events
     @after 'initialize', ->
       @on window, 'addressSelected', @onAddressSelected
       @on window, 'orderFormUpdated.vtex', @orderFormUpdated
       @on window, 'showShippingSummary.vtex', @showShippingSummary
+      @on window, 'hideShippingSummary.vtex', @hideShippingSummary
       @on window, 'localeSelected.vtex', @localeUpdate
       @on window, 'disableShippingData.vtex', @onDisableShippingData
       @on window, 'click',
         'changeShippingOptionBtSelector': @changeShippingOption
-      return
+
+      if vtexjs?.checkout?.orderForm?
+        @orderFormUpdated null, vtexjs.checkout.orderForm
 
   return defineComponent(ShippingSummary, withi18n)

@@ -65,12 +65,13 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           # CALL VTEX ID
           if window.vtexid? then window.vtexid.start(window.location.href)
 
+      @getDeliveryCountries = (logisticsInfo) =>
+        return _.uniq(_.reduceRight(logisticsInfo, (memo, l) ->
+          return memo.concat(l.shipsTo)
+        , []))
+
       # Update address list
       @updateAddresses = (ev, data) ->
-        # First, check which countries the store deliveries
-        if data?.deliveryCountries?.length > 0
-          @attr.data.deliveryCountries = data.deliveryCountries
-
         # Remove all the addresses located in countries the store is not
         # delivering
         @attr.data.availableAddresses = _.filter data?.availableAddresses, (a) =>
@@ -142,6 +143,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
       @orderFormUpdated = (ev, data) ->
         if data.shippingData?
           @attr.data.address = data.shippingData.address
+          @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)
           @attr.data.availableAddresses = data.shippingData.availableAddresses
           @attr.data.canEditData = data.canEditData
           @attr.data.loggedIn = data.loggedIn
@@ -160,6 +162,8 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           'createAddressSelector': @createAddress
           'addressItemSelector': @selectAddressHandler
           'editAddressSelector': @editAddress
-        return
+
+        if vtexjs?.checkout?.orderForm?
+          @orderFormUpdated null, vtexjs.checkout.orderForm
 
     return defineComponent(AddressList, withi18n)

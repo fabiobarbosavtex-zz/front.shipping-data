@@ -59,7 +59,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @attr.data.shippingOptions = currentShippingOptions
         @$node.trigger 'shippingOptionsRender'
 
-      @onOrderFormUpdated = (ev, data) ->
+      @orderFormUpdated = (ev, data) ->
         if (data.shippingData)
 
           # Verifica se items ou endereços mudaram
@@ -137,7 +137,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           return composedLogistic
         return logisticsInfoArray
 
-      @onAddressSelected = (ev, address) ->
+      @addressSelected = (ev, address) ->
         currentAddress = _.find @attr.data.availableAddresses, (_address) =>
           _address.addressId == address.addressId
 
@@ -149,11 +149,11 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
             availableAddresses: @attr.data.availableAddresses
             logisticsInfo: @attr.data.logisticsInfo
 
-      @onShowAddressForm = ->
+      @showAddressForm = ->
         @attr.data.showShippingOptions = false
         @render()
 
-      @onAddressFormCanceled = ->
+      @addressFormCanceled = ->
         @attr.data.showShippingOptions = true
         @render()
 
@@ -161,10 +161,12 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
       @after 'initialize', ->
         @on window, 'localeSelected.vtex', @localeUpdate
         @on window, 'shippingOptionsRender', @render
-        @on window, 'orderFormUpdated.vtex', @onOrderFormUpdated
-        @on @attr.addressBookComponentSelector, 'addressSelected', @onAddressSelected
-        @on window, 'showAddressForm', @onShowAddressForm
-        @on window, 'addressFormCanceled', @onAddressFormCanceled
+        @on window, 'orderFormUpdated.vtex', @orderFormUpdated
+        @on @attr.addressBookComponentSelector, 'addressSelected', @addressSelected
+        @on window, 'showAddressForm', @showAddressForm
+        @on window, 'addressFormCanceled', @addressFormCanceled
 
-        return
+        if vtexjs?.checkout?.orderForm?
+          @orderFormUpdated null, vtexjs.checkout.orderForm
+
     return defineComponent(ShippingOptions, withi18n)
