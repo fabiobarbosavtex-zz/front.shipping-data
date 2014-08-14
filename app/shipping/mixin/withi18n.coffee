@@ -2,7 +2,7 @@ define = vtex.define || window.define
 require = vtex.curl || window.require
 
 define [], () ->
-  withi18n = ->
+  ->
     @defaultAttrs
       locale: 'pt-BR'
 

@@ -9,8 +9,9 @@ define ['flight/lib/component',
         'shipping/component/ShippingSummary',
         'shipping/template/shippingData',
         'shipping/mixin/withi18n',
+        'shipping/mixin/withValidation',
         'link!shipping/css/main'],
-  (defineComponent, extensions, AddressForm, AddressList, ShippingOptions, ShippingSummary, template, withi18n) ->
+  (defineComponent, extensions, AddressForm, AddressList, ShippingOptions, ShippingSummary, template, withi18n, withValidation) ->
     ShippingData = ->
       @defaultAttrs
         API: null
@@ -40,6 +41,7 @@ define ['flight/lib/component',
             @select('goToPaymentButtonSelector').show()
             @select('shippingTitleSelector').addClass('accordion-toggle-active')
             @select('addressNotFilledSelector').hide()
+            @updateValidationClass()
           else
             @$node.removeClass('active')
             @select('editShippingDataSelector').show()
@@ -47,6 +49,7 @@ define ['flight/lib/component',
             @select('shippingTitleSelector').removeClass('accordion-toggle-active')
             if !@attr.orderForm.shippingData?.address?
               @select('addressNotFilledSelector').show()
+            @clearValidationClass()
 
       @enable = ->
         @attr.data.active = true
@@ -77,8 +80,8 @@ define ['flight/lib/component',
 
       @orderFormUpdated = (ev, orderForm) ->
         @attr.orderForm = orderForm
+        @validate() # Trigger componentValidated event
         @updateView()
-        @trigger("shippingDataInitialized.vtex")
 
       # When a new addresses is selected
       # Should call API to get delivery options
@@ -88,12 +91,9 @@ define ['flight/lib/component',
       @onPostalCodeLoaded = (ev, addressObj) ->
         console.log (addressObj)
 
-      @validate = ->
-        return @attr.data.valid = false;
-
-      @goToPayment = () ->
+      @goToPayment = ->
         console.log 'goToPayment'
-        if (@validate())
+        if (@isValid())
           console.log 'valid'
         else
           console.log 'invalid'
@@ -114,6 +114,18 @@ define ['flight/lib/component',
 #
 #        @attr.orderForm.shippingData.address = addressObj
 #        @$node.trigger('updateAddresses', @attr.orderForm.shippingData)
+
+      ###
+      Validations
+      ###
+
+      @validateAddress = ->
+        address = @attr.orderForm.shippingData?.address
+        address isnt undefined
+
+      @validateShippingOptions = ->
+        logisticsInfo = @attr.orderForm.shippingData?.logisticsInfo
+        logisticsInfo.length > 0 and logisticsInfo[0].selectedSla isnt undefined
 
       # Bind events
       @after 'initialize', ->
@@ -140,7 +152,12 @@ define ['flight/lib/component',
               'goToPaymentButtonSelector': @goToPayment
               'editShippingDataSelector': @enable
 
+            @setValidators [
+              @validateAddress
+              @validateShippingOptions
+            ]
+
             if vtexjs?.checkout?.orderForm?
               @orderFormUpdated null, vtexjs.checkout.orderForm
 
-    return defineComponent(ShippingData, withi18n)
+    return defineComponent(ShippingData, withi18n, withValidation)
