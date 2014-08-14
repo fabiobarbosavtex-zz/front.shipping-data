@@ -14,6 +14,33 @@ var require = vtex.curl || window.require;
 }(function( Picker ) {
 
 
+window.vtex.pickadate = {}
+
+// Portuguese
+window.vtex.pickadate['pt-BR'] = {
+    monthsFull: [ 'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro' ],
+    monthsShort: [ 'jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez' ],
+    weekdaysFull: [ 'domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado' ],
+    weekdaysShort: [ 'dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab' ],
+    today: 'hoje',
+    clear: 'excluir',
+    format: 'dddd, d !de mmmm !de yyyy',
+    formatSubmit: 'yyyy/mm/dd'
+}
+
+// Spanish
+window.vtex.pickadate['es'] = {
+    monthsFull: [ 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre' ],
+    monthsShort: [ 'ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic' ],
+    weekdaysFull: [ 'domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado' ],
+    weekdaysShort: [ 'dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb' ],
+    today: 'hoy',
+    clear: 'borrar',
+    firstDay: 1,
+    format: 'dddd d !de mmmm !de yyyy',
+    formatSubmit: 'yyyy/mm/dd'
+}
+
 /**
  * Globals and constants
  */
@@ -96,10 +123,10 @@ function DatePicker( picker, settings ) {
         37: function() { return isRTL() ? 1 : -1 }, // Left
         go: function( timeChange ) {
             var highlightedObject = calendar.item.highlight,
-                targetDate = new Date( highlightedObject.year, highlightedObject.month, highlightedObject.date + timeChange )
+                targetDate = new Date( Date.UTC(highlightedObject.year, highlightedObject.month, highlightedObject.date + timeChange) )
             calendar.set(
                 'highlight',
-                [ targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate() ],
+                targetDate,
                 { interval: timeChange }
             )
             this.render()
@@ -216,13 +243,18 @@ DatePicker.prototype.create = function( type, value, options ) {
     // If it’s an array, convert it into a date and make sure
     // that it’s a valid date – otherwise default to today.
     else if ( $.isArray( value ) ) {
-        value = new Date( value[ 0 ], value[ 1 ], value[ 2 ] )
+        value = new Date(Date.UTC(value[ 0 ], value[ 1 ], value[ 2 ] ))
         value = _.isDate( value ) ? value : calendar.create().obj
     }
 
-    // If it’s a number or date object, make a normalized date.
-    else if ( _.isInteger( value ) || _.isDate( value ) ) {
+    // If it’s a number, make a normalized date.
+    else if ( _.isInteger( value ) ) {
         value = calendar.normalize( new Date( value ), options )
+    }
+
+    // If it’s a date object, make a normalized date.
+    else if ( _.isDate( value ) ) {
+        value = calendar.normalize( value, options )
     }
 
     // If it’s a literal true or any other case, set it to now.
@@ -232,10 +264,10 @@ DatePicker.prototype.create = function( type, value, options ) {
 
     // Return the compiled object.
     return {
-        year: isInfiniteValue || value.getFullYear(),
-        month: isInfiniteValue || value.getMonth(),
-        date: isInfiniteValue || value.getDate(),
-        day: isInfiniteValue || value.getDay(),
+        year: isInfiniteValue || value.getUTCFullYear(),
+        month: isInfiniteValue || value.getUTCMonth(),
+        date: isInfiniteValue || value.getUTCDate(),
+        day: isInfiniteValue || value.getUTCDay(),
         obj: isInfiniteValue || value,
         pick: isInfiniteValue || value.getTime()
     }
@@ -310,7 +342,7 @@ DatePicker.prototype.overlapRanges = function( one, two ) {
 DatePicker.prototype.now = function( type, value, options ) {
     value = new Date()
     if ( options && options.rel ) {
-        value.setDate( value.getDate() + options.rel )
+        value.setUTCDate( value.getUTCDate() + options.rel )
     }
     return this.normalize( value, options )
 }
@@ -352,13 +384,13 @@ DatePicker.prototype.navigate = function( type, value, options ) {
         }
 
         // Figure out the expected target year and month.
-        targetDateObject = new Date( targetYear, targetMonth + ( options && options.nav ? options.nav : 0 ), 1 )
-        targetYear = targetDateObject.getFullYear()
-        targetMonth = targetDateObject.getMonth()
+        targetDateObject = new Date( Date.UTC( targetYear, targetMonth + ( options && options.nav ? options.nav : 0 ), 1 ) )
+        targetYear = targetDateObject.getUTCFullYear()
+        targetMonth = targetDateObject.getUTCMonth()
 
         // If the month we’re going to doesn’t have enough days,
         // keep decreasing the date until we reach the month’s last date.
-        while ( /*safety &&*/ new Date( targetYear, targetMonth, targetDate ).getMonth() !== targetMonth ) {
+        while ( /*safety &&*/ new Date( Date.UTC( targetYear, targetMonth, targetDate ) ).getUTCMonth() !== targetMonth ) {
             targetDate -= 1
             /*safety -= 1
             if ( !safety ) {
@@ -377,7 +409,7 @@ DatePicker.prototype.navigate = function( type, value, options ) {
  * Normalize a date by setting the hours to midnight.
  */
 DatePicker.prototype.normalize = function( value/*, options*/ ) {
-    value.setHours( 0, 0, 0, 0 )
+    value.setUTCHours( 0, 0, 0, 0 )
     return value
 }
 
@@ -922,7 +954,7 @@ DatePicker.prototype.activate = function( type, datesToEnable ) {
                         if ( !matchFound[3] ) matchFound.push( 'inverted' )
                     }
                     else if ( _.isDate( unitToEnable ) ) {
-                        matchFound = [ unitToEnable.getFullYear(), unitToEnable.getMonth(), unitToEnable.getDate(), 'inverted' ]
+                        matchFound = [ unitToEnable.getUTCFullYear(), unitToEnable.getUTCMonth(), unitToEnable.getUTCDate(), 'inverted' ]
                     }
                     break
                 }
@@ -1338,6 +1370,5 @@ Picker.extend( 'pickadate', DatePicker )
 
 
 }));
-
 
 

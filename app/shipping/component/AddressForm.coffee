@@ -55,8 +55,9 @@ define ['flight/lib/component',
         marker = null
 
       # Render this component according to the data object
-      @render = (ev, data) ->
+      @render = (data) ->
         data = @attr.data if not data
+
         if data.showSelectCountry or data.showAddressForm
           require 'shipping/translation/' + @attr.locale, (translation) =>
             if data.showSelectCountry
@@ -157,37 +158,35 @@ define ['flight/lib/component',
         }).then((data) =>
           if data
             address = data
-            data = @attr.data
             if address.neighborhood isnt '' and address.street isnt '' \
-            and address.state isnt '' and address.city isnt ''
-              data.labelShippingFields = true
+            and address.stateAcronym isnt '' and address.city isnt ''
+              @attr.data.labelShippingFields = true
             else
-              data.labelShippingFields = false
-            if address.state isnt '' and address.city
-              data.disableCityAndState = true
+              @attr.data.labelShippingFields = false
+            if address.stateAcronym isnt '' and address.city
+              @attr.data.disableCityAndState = true
             else
-              data.disableCityAndState = false
-            data.showDontKnowPostalCode = false
-            data.address.city = address.city
-            data.address.state = address.state
-            data.address.street = address.street
-            data.address.neighborhood = address.neighborhood
-            data.address.geoCoordinates = address.geoCoordinates
-            data.address.country = data.country
-            data.throttledLoading = false
-            data.showAddressForm = true
-            data.loading = false
-            this.render();
-            @$node.trigger('postalCode', @getCurrentAddress())
+              @attr.data.disableCityAndState = false
+            @attr.data.showDontKnowPostalCode = false
+            @attr.data.address.city = address.city
+            @attr.data.address.state = address.stateAcronym
+            @attr.data.address.street = address.street
+            @attr.data.address.neighborhood = address.neighborhood
+            @attr.data.address.geoCoordinates = address.geoCoordinates
+            @attr.data.address.country = data.country
+            @attr.data.throttledLoading = false
+            @attr.data.showAddressForm = true
+            @attr.data.loading = false
+            @render()
+            @trigger('postalCode', @getCurrentAddress())
         , () =>
-          data = @attr.data
-          data.throttledLoading = false
-          data.showAddressForm = true
-          data.labelShippingFields = false
-          data.disableCityAndState = false
-          data.loading = false
-          this.render()
-          @$node.trigger('postalCode', @getCurrentAddress())
+          @attr.data.throttledLoading = false
+          @attr.data.showAddressForm = true
+          @attr.data.labelShippingFields = false
+          @attr.data.disableCityAndState = false
+          @attr.data.loading = false
+          @render()
+          @trigger('postalCode', @getCurrentAddress())
         )
 
       # Able the user to edit the suggested fields
@@ -227,9 +226,9 @@ define ['flight/lib/component',
           @attr.showAddressForm = false
 
           # Cria ID se ele não existir
-          if (@attr.data.address.addressId == null || @attr.data.address.addressId == "")
+          if @attr.data.address.addressId == null or @attr.data.address.addressId == ""
             @attr.data.address.addressId = (new Date().getTime() * -1).toString()
-          if (@attr.data.address.addressSearch == null)
+          if @attr.data.address.addressSearch == null
             delete @attr.data.address["addressSearch"]
 
           # Submit address object to API
@@ -379,7 +378,7 @@ define ['flight/lib/component',
           break
 
         $(@attr.postalCodeSelector, @$node).val(postalCode)
-        @$node.trigger('postalCode', postalCode)
+        @trigger('postalCode', postalCode)
 
       # Change postal code according to the city selected
       # postalCodeByCity should be true in the country's rule
@@ -392,7 +391,7 @@ define ['flight/lib/component',
         postalCode = rules.map[state][city]
 
         $(@attr.postalCodeSelector, @$node).val(postalCode)
-        @$node.trigger('postalCode', @getCurrentAddress())
+        @trigger('postalCode', @getCurrentAddress())
 
       # Set to a loading state
       # This will disable all fields

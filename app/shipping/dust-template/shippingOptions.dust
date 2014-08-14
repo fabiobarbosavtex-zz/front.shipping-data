@@ -109,11 +109,11 @@
                 </select>
                 </div>
                 {:else}
-                <div data-bind="foreach: slas" class="span btn-group btn-group-vertical">
+                <div class="span btn-group btn-group-vertical">
                     {#slas}
-                    <label class="shipping-option-item label-vertical-group input btn {#isSelected}active{/isSelected}" data-bind="attr: {'for': idAttr, htmlFor: idAttr}, 'focus': hasFocus }">
-                        <input type="radio" tabindex="33{@idx}.{/idx}" data-bind="attr: {'id': idAttr, 'name': nameAttr}, hasfocus: hasFocus, disable: checkout.disableInputs()" value="{name}" {#isSelected}checked="checked"{/isSelected}>
-                        <span class="shipping-option-item-text-wrapper" data-bind="attr: { 'title': estimateLabel }">
+                    <label class="shipping-option-item label-vertical-group input btn {#isSelected}active{/isSelected}" for="{idAttr}" data-bind="css: {'focus': hasFocus}">
+                        <input type="radio" tabindex="33{@idx}{.}{/idx}" id="{idAttr}" name="{nameAttr}" data-bind="hasfocus: hasFocus, disable: checkout.disableInputs()" value="{name}" {#isSelected}checked="checked"{/isSelected}>
+                        <span class="shipping-option-item-text-wrapper" title="{deliveryEstimateLabel}">
                             <span class="shipping-option-item-name">{name}</span>
                             <span class="shipping-option-item-sep"> - </span>
                             <span class="shipping-option-item-value">{valueLabel}</span>
@@ -134,25 +134,17 @@
 
 
                 {#scheduledSla}
-                <div class="scheduled-sla" data-bind="fadeVisible: selectedSlaName() == scheduledSla.name">
+                <div class="scheduled-sla">
                     <p><span data-i18n="shipping.shippingOptions.deliveryDate"></span>:</p>
                     <input class="datepicker" type="text"
-                           data-bind="pickadate: $data, validationTargetBind: 'pickadate', validate: validateSlaFunction, disable: checkout.disableInputs()"
+                           data-bind="disable: checkout.disableInputs()"
                            data-i18n="[placeholder]shipping.shippingOptions.chooseScheduledDate" style="cursor: pointer;">
                     <p class="scheduled-sla-time" data-bind="fadeVisible: selectedDeliveryDate() != undefined">
                         <span data-i18n="shipping.shippingOptions.deliveryHour"></span>:
                         <br/>
-                        <!-- ko foreach: deliveryWindowsForDate -->
-                        <label class="radio">
-                            <input type="radio" data-bind="
-                                value: index,
-                                attr: {'id': 'delivery-window-'+index,
-                                name: 'delivery-window-'+$parent.nameAttr},
-                                checked: $parent.deliveryWindowIndex,
-                                disable: checkout.disableInputs()">
-                            <span data-bind="text: label"></span>
-                        </label>
-                        <!-- /ko -->
+                        <div class="delivery-windows-placeholder">
+                        {>deliveryWindows /}
+                        </div>
                     </p>
                 </div>
                 {/scheduledSla}

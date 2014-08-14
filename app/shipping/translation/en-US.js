@@ -55,7 +55,8 @@ define(function () {
         "workingDay": 'Up to __count__ working day',
         "workingDay_plural": 'Up to __count__ working days',
         "day": 'Up to __count__ day',
-        "day_plural": 'Up to __count__ day'
+        "day_plural": 'Up to __count__ day',
+        "fromToHour": 'From __from__ to __to__'
       }
     },
     "validation": {
@@ -107,6 +108,7 @@ define(function () {
       "USA": 'USA'
     },
     "global": {
+      "free": "Free",
       "cancel": 'Cancel',
       "loading": 'Loading',
       "edit": 'Edit',

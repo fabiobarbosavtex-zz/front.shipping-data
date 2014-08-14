@@ -55,7 +55,8 @@ define(function () {
         "workingDay": 'Hasta __count__ día hábil',
         "workingDay_plural": 'Hasta __count__ días hábiles',
         "day": 'Hasta __count__ día',
-        "day_plural": 'Hasta __count__ días'
+        "day_plural": 'Hasta __count__ días',
+        "fromToHour": 'Desde las __from__ hasta las __to__'
       }
     },
     "validation": {
@@ -107,6 +108,7 @@ define(function () {
       "USA": 'Estados Unidos'
     },
     "global": {
+      "free": 'Gratis',
       "cancel": 'Cancelar',
       "loading": 'Cargando',
       "edit": 'Cambiar',

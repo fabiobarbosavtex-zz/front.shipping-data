@@ -23,6 +23,8 @@ vtex.curl(vtex.curl.configuration,
     window.vtex.i18n.init();
 
     // START SHIPPING DATA
-    ShippingData.attachTo('#shipping-data',  { API: _API });
+    vtexjs.checkout.getOrderForm().done(function(){
+      ShippingData.attachTo('#shipping-data',  { API: _API });
+    });
   }
 );

@@ -28,8 +28,9 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         submitButtonSelector: '.submit .btn-success'
 
       # Render this component according to the data object
-      @render = ->
-        data = @attr.data
+      @render = (data) ->
+        data = @attr.data if not data
+
         if not data.showAddressList
           @$node.html('')
         else
@@ -51,7 +52,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @attr.data.disableCityAndState = false
         @attr.data.address.addressId = (new Date().getTime() * -1).toString()
         @attr.data.showDontKnowPostalCode = true
-        @$node.trigger 'showAddressForm', @attr.data
+        @trigger 'showAddressForm', @attr.data
 
       # Edit an existing address
       # Trigger an event to AddressForm component
@@ -60,7 +61,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           @attr.data.showAddressList = false
           @render()
           @attr.data.showDontKnowPostalCode = false
-          @$node.trigger 'showAddressForm', @attr.data.address
+          @trigger 'showAddressForm', @attr.data.address
         else
           # CALL VTEX ID
           if window.vtexid? then window.vtexid.start(window.location.href)
@@ -124,7 +125,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @attr.data.address = wantedAddress
 
         @attr.data.selectedAddressId = selectedAddressId
-        @$node.trigger 'addressSelected', @attr.data.address
+        @trigger 'addressSelected', @attr.data.address
 
         @attr.data.showAddressList = true
         @render()
@@ -151,6 +152,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           @attr.data.selectedAddressId = data.shippingData.address?.addressId
           @attr.data.canEditData = data.canEditData
           @attr.data.loggedIn = data.loggedIn
+          #@updateAddresses(null, @attr.data)
 
       # Bind events
       @after 'initialize', ->
