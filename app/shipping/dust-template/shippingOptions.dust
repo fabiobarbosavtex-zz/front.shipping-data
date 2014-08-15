@@ -142,9 +142,9 @@
                     <p class="scheduled-sla-time" data-bind="fadeVisible: selectedDeliveryDate() != undefined">
                         <span data-i18n="shipping.shippingOptions.deliveryHour"></span>:
                         <br/>
-                        <div class="delivery-windows-placeholder">
+                        <span class="delivery-windows-placeholder">
                         {>deliveryWindows /}
-                        </div>
+                        </span>
                     </p>
                 </div>
                 {/scheduledSla}
