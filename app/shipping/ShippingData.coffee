@@ -125,7 +125,7 @@ define ['flight/lib/component',
 
       @validateShippingOptions = ->
         logisticsInfo = @attr.orderForm.shippingData?.logisticsInfo
-        logisticsInfo.length > 0 and logisticsInfo[0].selectedSla isnt undefined
+        logisticsInfo?.length > 0 and logisticsInfo?[0].selectedSla isnt undefined
 
       # Bind events
       @after 'initialize', ->
