@@ -65,14 +65,16 @@ define ['flight/lib/component',
                 dust.render @attr.templates.selectCountry.name, data, (err, output) =>
                   output = $(output).i18n()
                   @$node.html(output)
+                  @addFormListeners()
             else if data.showAddressForm
               rules = @getCurrentRule()
-              data.states = rules.states
+              data.statesForm = rules.states
               data.regexes = rules.regexes
               dust.render @attr.templates.form.name, data, (err, output) =>
                 @extendTranslations(translation)
                 output = $(output).i18n()
                 @$node.html(output)
+                @addFormListeners()
 
                 if data.loading
                   $('input, select, .btn', @$node).attr('disabled', 'disabled')
@@ -417,8 +419,17 @@ define ['flight/lib/component',
 
       @orderFormUpdated = (ev, data) ->
         @attr.data.availableAddresses = if data.shippingData? then data.shippingData.availableAddresses else []
+        @attr.data.address = if data.shippingData? then data.shippingData.address else @attr.data.address
         if data.shippingData
           @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)
+
+      @addFormListeners = () ->
+        # ESCUTA POR QUALQUER MUDANÇA NO FORM
+        $(".address-form-new").on("change", =>
+          console.log "change"
+          @attr.data.address = @getCurrentAddress()
+          $(window).trigger('addressSelected', @attr.data.address)
+        )
 
       # Bind events
       @after 'initialize', ->

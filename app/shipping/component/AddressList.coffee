@@ -144,7 +144,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @render()
 
       @orderFormUpdated = (ev, data) ->
-        console.log "@orderFormUpdated List"
         if data.shippingData?
           @attr.data.address = data.shippingData.address
           @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)

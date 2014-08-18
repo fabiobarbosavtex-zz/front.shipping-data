@@ -15,9 +15,7 @@ define ['flight/lib/component',
     ShippingData = ->
       @defaultAttrs
         API: null
-
         orderForm: false
-
         data:
           valid: false
           active: false
@@ -65,6 +63,7 @@ define ['flight/lib/component',
 
       @disable = ->
         if @isValid()
+          @shippingDataSubmitHandler(@attr.orderForm.shippingData)
           @attr.data.active = false
           @trigger('showShippingSummary.vtex')
           @trigger('hideAddressList.vtex')
@@ -72,6 +71,13 @@ define ['flight/lib/component',
           @trigger('hideAddressForm.vtex')
 
         @updateView()
+
+      # Handler do envio de ShippingData.
+      @shippingDataSubmitHandler = (shippingData) =>
+        # Montando dados para send attachment
+        attachmentId = 'shippingData'
+        attachment = shippingData
+        API.sendAttachment(attachmentId, attachment)
 
       @commit = ->
 
@@ -91,6 +97,7 @@ define ['flight/lib/component',
       # Should call API to get delivery options
       @onAddressSelected = (ev, addressObj) ->
         console.log (addressObj)
+        @attr.orderForm.address = addressObj
 
       @onPostalCodeLoaded = (ev, addressObj) ->
         console.log (addressObj)
@@ -140,7 +147,7 @@ define ['flight/lib/component',
 
             # Start event listeners
             @on 'newAddress', @onAddressSaved
-            @on 'addressSelected', @onAddressSelected
+            @on window, 'addressSelected', @onAddressSelected
             @on 'postalCode', @onPostalCodeLoaded
             @on window, 'orderFormUpdated.vtex', @orderFormUpdated
             @on window, 'enableShippingData.vtex', @enable
