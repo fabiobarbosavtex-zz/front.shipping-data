@@ -136,7 +136,7 @@ define ['flight/lib/component',
       @showAddressForm = (ev, address) ->
         @attr.data.address = new AddressModel(if address then address else null)
         @attr.data.isEditingAddress = true
-        if address?.addressType?
+        if address?.country?
           @selectCountry(address.country)
         else if @attr.data.deliveryCountries.length is 1
           country = @attr.data.deliveryCountries[0]
@@ -157,17 +157,17 @@ define ['flight/lib/component',
             address = data
             data = @attr.data
             if address.neighborhood isnt '' and address.street isnt '' \
-            and address.stateAcronym isnt '' and address.city isnt ''
+            and address.state isnt '' and address.city isnt ''
               data.labelShippingFields = true
             else
               data.labelShippingFields = false
-            if address.stateAcronym isnt '' and address.city
+            if address.state isnt '' and address.city
               data.disableCityAndState = true
             else
               data.disableCityAndState = false
             data.showDontKnowPostalCode = false
             data.address.city = address.city
-            data.address.state = address.stateAcronym
+            data.address.state = address.state
             data.address.street = address.street
             data.address.neighborhood = address.neighborhood
             data.address.geoCoordinates = address.geoCoordinates
@@ -175,7 +175,8 @@ define ['flight/lib/component',
             data.throttledLoading = false
             data.showAddressForm = true
             data.loading = false
-            @trigger('addressFormRender', data)
+            this.render();
+            #@trigger('addressFormRender', data)
             @$node.trigger('postalCode', @getCurrentAddress())
         , () =>
           data = @attr.data
