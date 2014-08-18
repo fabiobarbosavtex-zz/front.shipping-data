@@ -116,7 +116,7 @@ define ['flight/lib/component',
 
       @validateAddress = ->
         address = @attr.orderForm.shippingData?.address
-        address isnt undefined
+        address?
 
       @validateShippingOptions = ->
         logisticsInfo = @attr.orderForm.shippingData?.logisticsInfo
