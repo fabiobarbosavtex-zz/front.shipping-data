@@ -69,6 +69,7 @@ define ['flight/lib/component',
 
         @trigger('showShippingSummary.vtex')
         @trigger('hideAddressList.vtex')
+        @trigger('componentDone.vtex')
 
       @commit = ->
 
@@ -91,13 +92,6 @@ define ['flight/lib/component',
 
       @onPostalCodeLoaded = (ev, addressObj) ->
         console.log (addressObj)
-
-      @goToPayment = ->
-        console.log 'goToPayment'
-        if (@isValid())
-          console.log 'valid'
-        else
-          console.log 'invalid'
 
       # When a new addresses is saved
       @onAddressSaved = (ev, addressObj) ->
@@ -150,7 +144,7 @@ define ['flight/lib/component',
             @on window, 'enableShippingData.vtex', @enable
             @on window, 'disableShippingData.vtex', @disable
             @on 'click',
-              'goToPaymentButtonSelector': @goToPayment
+              'goToPaymentButtonSelector': @disable
               'editShippingDataSelector': @enable
 
             @setValidators [
