@@ -72,6 +72,8 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
 
       # Update address list
       @updateAddresses = (ev, data) ->
+
+        console.log "@updateAddresses"
         # Remove all the addresses located in countries the store is not
         # delivering
         @attr.data.availableAddresses = _.filter data?.availableAddresses, (a) =>
@@ -86,30 +88,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           @attr.data.hasOtherAddresses = true
           @attr.data.showAddressList = true
 
-        countriesUsedRequire = _.map @attr.data.deliveryCountries, (c) ->
-          return 'shipping/rule/Country'+c
-
-        require countriesUsedRequire, =>
-          for country, i in arguments
-            prop = {}
-            prop[@attr.data.deliveryCountries[i]] = new arguments[i]()
-            @trigger window, 'newCountryRule', prop
-
-          if @attr.data.hasOtherAddresses
-            for aa in @attr.data.availableAddresses
-              aa.firstPart = '' + aa.street
-              aa.firstPart += ', ' + aa.complement if aa.complement
-              aa.firstPart += ', ' + aa.number if aa.number
-              aa.firstPart += ', ' + aa.neighborhood if aa.neighborhood
-              aa.firstPart += ', ' + aa.reference if aa.reference
-              aa.secondPart = '' + aa.city
-              aa.secondPart += ' - ' + aa.state
-              if @attr.data.countryRules[aa.country].usePostalCode
-                aa.secondPart += ' - ' + aa.postalCode
-              aa.secondPart += ' - ' + i18n.t('countries.'+aa.country)
-            @render()
-          else
-            @createAddress()
+        @createAddressesSummarys()
 
       @createAddressesSummarys = ->
         countriesUsedRequire = _.map @attr.data.deliveryCountries, (c) ->
@@ -165,10 +144,12 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @render()
 
       @orderFormUpdated = (ev, data) ->
+        console.log "@orderFormUpdated List"
         if data.shippingData?
           @attr.data.address = data.shippingData.address
           @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)
           @attr.data.availableAddresses = data.shippingData.availableAddresses
+          @attr.data.selectedAddressId = data.shippingData.address?.addressId
           @attr.data.canEditData = data.canEditData
           @attr.data.loggedIn = data.loggedIn
 
