@@ -102,7 +102,7 @@ module.exports = (grunt) ->
 
     watch:
       options:
-        livereload: !grunt.option('no-lr')
+        livereload: true
       coffee:
         files: ['app/shipping/**/*.coffee', '!app/shipping/rule/**']
         tasks: ['coffee:lean', 'copy:build']
@@ -177,6 +177,11 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks name for name of pkg.devDependencies \
     when name[0..5] is 'grunt-'
 
+  grunt.registerTask 'nolr', ->
+    # Turn off LiveReload in development mode
+    grunt.config 'watch.options.livereload', false
+    return true
+
   grunt.registerTask 'base', ['clean', 'dust', 'copy:templates',
                               'copy:main', 'coffee:main', 'coffee:example',
                               'less', 'copy:build']
@@ -184,7 +189,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'default', ['base', 'server', 'watch']
 
   # Does not run server
-  grunt.registerTask 'dev', ['base', 'watch']
+  grunt.registerTask 'dev', ['nolr', 'base', 'watch']
 
   # minifies files
   grunt.registerTask 'min', ['useminPrepare', 'concat', 'uglify', 'usemin']
