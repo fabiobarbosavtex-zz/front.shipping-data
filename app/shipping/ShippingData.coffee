@@ -46,8 +46,10 @@ define ['flight/lib/component',
             @select('editShippingDataSelector').show()
             @select('goToPaymentButtonSelector').hide()
             @select('shippingTitleSelector').removeClass('accordion-toggle-active')
-            if !@attr.orderForm.shippingData?.address?
+            if !@attr.orderForm.shippingData?.address
               @select('addressNotFilledSelector').show()
+            else
+              @select('addressNotFilledSelector').hide();
             @clearValidationClass()
 
       @enable = ->
@@ -89,6 +91,7 @@ define ['flight/lib/component',
         console.log 'submit'
 
       @orderFormUpdated = (ev, orderForm) ->
+        debugger
         @attr.orderForm = orderForm
         @validate() # Trigger componentValidated event
         @updateView()
