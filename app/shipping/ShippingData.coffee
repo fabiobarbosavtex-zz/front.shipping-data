@@ -91,9 +91,10 @@ define ['flight/lib/component',
         console.log 'submit'
 
       @orderFormUpdated = (ev, orderForm) ->
-        debugger
         @attr.orderForm = orderForm
         @validate() # Trigger componentValidated event
+        if (orderForm.shippingData?.address and !@attr.data.active)
+          @trigger('showShippingSummary.vtex')
         @updateView()
 
       # When a new addresses is selected
