@@ -1,5 +1,4 @@
 <div class="address-list">
-  <h4 data-i18n="shipping.addressList.header"></h4>
   <div class="address-list-items">
     <fieldset>
     {#availableAddresses}
