@@ -28,6 +28,7 @@ define ['flight/lib/component',
         editShippingDataSelector: '#edit-shipping-data'
         shippingTitleSelector: '.accordion-shipping-title'
         addressNotFilledSelector: '.address-not-filled-verification'
+        shippingStepSelector: '.step'
 
       # Render would be a deceptive name because it does not replace the entire
       # component DOM. Doing this would force us to re-render the child components.
@@ -36,14 +37,14 @@ define ['flight/lib/component',
         require 'shipping/translation/' + @attr.locale, (translation) =>
           @extendTranslations(translation)
           if @attr.data.active
-            @$node.addClass('active', 'visited')
+            @select('shippingStepSelector').addClass('active', 'visited')
             @select('editShippingDataSelector').hide()
             @select('goToPaymentButtonSelector').show()
             @select('shippingTitleSelector').addClass('accordion-toggle-active')
             @select('addressNotFilledSelector').hide()
             @updateValidationClass()
           else
-            @$node.removeClass('active')
+            @select('shippingStepSelector').removeClass('active')
             @select('editShippingDataSelector').show()
             @select('goToPaymentButtonSelector').hide()
             @select('shippingTitleSelector').removeClass('accordion-toggle-active')
