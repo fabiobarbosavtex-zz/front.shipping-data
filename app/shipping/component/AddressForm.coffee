@@ -429,6 +429,7 @@ define ['flight/lib/component',
         @on window, 'localeSelected.vtex', @localeUpdate
         @on window, 'newCountryRule', @addCountryRule
         @on window, 'showAddressForm', @showAddressForm
+        @on window, 'hideAddressForm.vtex', @disable
         @on window, 'updateAddresses', @cancelAddressForm
         @on window, 'cancelAddressForm', @cancelAddressForm
         @on window, 'click',

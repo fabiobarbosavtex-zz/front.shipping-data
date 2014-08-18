@@ -29,7 +29,7 @@ define [], () ->
     @isValid = ->
       validationResults = matchValidationRules.call(this)
       # validationResults is an array of errors
-      validationResults.length? is 0 or validationResults is true
+      validationResults.length is 0 or validationResults is true
 
     # Returns array of errors
     @validate = ->

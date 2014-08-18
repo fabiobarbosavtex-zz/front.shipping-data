@@ -69,6 +69,7 @@ define ['flight/lib/component',
           @trigger('showShippingSummary.vtex')
           @trigger('hideAddressList.vtex')
           @trigger('componentDone.vtex')
+          @trigger('hideAddressForm.vtex')
 
         @updateView()
 
