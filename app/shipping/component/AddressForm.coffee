@@ -176,7 +176,6 @@ define ['flight/lib/component',
             data.showAddressForm = true
             data.loading = false
             this.render();
-            #@trigger('addressFormRender', data)
             @$node.trigger('postalCode', @getCurrentAddress())
         , () =>
           data = @attr.data
@@ -185,7 +184,7 @@ define ['flight/lib/component',
           data.labelShippingFields = false
           data.disableCityAndState = false
           data.loading = false
-          @trigger('addressFormRender', data)
+          this.render()
           @$node.trigger('postalCode', @getCurrentAddress())
         )
 

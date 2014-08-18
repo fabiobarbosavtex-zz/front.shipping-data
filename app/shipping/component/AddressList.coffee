@@ -111,6 +111,29 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           else
             @createAddress()
 
+      @createAddressesSummarys = ->
+        countriesUsedRequire = _.map @attr.data.deliveryCountries, (c) ->
+          return 'shipping/rule/Country'+c
+
+        require countriesUsedRequire, =>
+          for country, i in arguments
+            prop = {}
+            prop[@attr.data.deliveryCountries[i]] = new arguments[i]()
+            @trigger window, 'newCountryRule', prop
+
+            for aa in @attr.data.availableAddresses
+              aa.firstPart = '' + aa.street
+              aa.firstPart += ', ' + aa.complement if aa.complement
+              aa.firstPart += ', ' + aa.number if aa.number
+              aa.firstPart += ', ' + aa.neighborhood if aa.neighborhood
+              aa.firstPart += ', ' + aa.reference if aa.reference
+              aa.secondPart = '' + aa.city
+              aa.secondPart += ' - ' + aa.state
+              if @attr.data.countryRules[aa.country].usePostalCode
+                aa.secondPart += ' - ' + aa.postalCode
+              aa.secondPart += ' - ' + i18n.t('countries.'+aa.country)
+
+
       # Handle selection of an address in the list
       @selectAddressHandler = (ev, data) ->
         ev.preventDefault()
@@ -134,6 +157,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
       @showAddressList = (ev, data) ->
         if @attr.data.availableAddresses.length > 0
           @attr.data.showAddressList = true
+          @createAddressesSummarys()
           @render()
 
       @hideAddressList = (ev, data) ->
