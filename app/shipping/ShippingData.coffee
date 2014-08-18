@@ -64,12 +64,13 @@ define ['flight/lib/component',
         @trigger('hideShippingSummary.vtex')
 
       @disable = ->
-        @attr.data.active = false
-        @updateView()
+        if @isValid()
+          @attr.data.active = false
+          @trigger('showShippingSummary.vtex')
+          @trigger('hideAddressList.vtex')
+          @trigger('componentDone.vtex')
 
-        @trigger('showShippingSummary.vtex')
-        @trigger('hideAddressList.vtex')
-        @trigger('componentDone.vtex')
+        @updateView()
 
       @commit = ->
 
