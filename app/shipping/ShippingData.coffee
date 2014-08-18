@@ -64,13 +64,13 @@ define ['flight/lib/component',
         @trigger('hideShippingSummary.vtex')
 
       @disable = ->
-        if @isValid()
-          @shippingDataSubmitHandler(@attr.orderForm.shippingData)
-          @attr.data.active = false
-          @trigger('showShippingSummary.vtex')
-          @trigger('hideAddressList.vtex')
-          @trigger('componentDone.vtex')
-          @trigger('hideAddressForm.vtex')
+        #if @isValid()
+        @shippingDataSubmitHandler(@attr.orderForm.shippingData)
+        @attr.data.active = false
+        @trigger('showShippingSummary.vtex')
+        @trigger('hideAddressList.vtex')
+        @trigger('componentDone.vtex')
+        @trigger('hideAddressForm.vtex')
 
         @updateView()
 
@@ -101,7 +101,7 @@ define ['flight/lib/component',
       # Should call API to get delivery options
       @onAddressSelected = (ev, addressObj) ->
         console.log (addressObj)
-        @attr.orderForm.address = addressObj
+        @attr.orderForm.shippingData.address = addressObj
 
       @onPostalCodeLoaded = (ev, addressObj) ->
         console.log (addressObj)
