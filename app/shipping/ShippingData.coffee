@@ -37,9 +37,12 @@ define ['flight/lib/component',
           if @attr.data.active
             @select('shippingStepSelector').addClass('active', 'visited')
             @select('editShippingDataSelector').hide()
-            @select('goToPaymentButtonSelector').show()
             @select('shippingTitleSelector').addClass('accordion-toggle-active')
             @select('addressNotFilledSelector').hide()
+            if (@attr.orderForm?.shippingData?.address?.postalCode)
+              @select('goToPaymentButtonSelector').show()
+            else
+              @select('goToPaymentButtonSelector').hide()
             @updateValidationClass()
           else
             @select('shippingStepSelector').removeClass('active')
@@ -69,13 +72,13 @@ define ['flight/lib/component',
         @attr.data.active = false
         @trigger('showShippingSummary.vtex')
         @trigger('hideAddressList.vtex')
+        @trigger('hideShippingOptions.vtex')
         @trigger('componentDone.vtex')
         @trigger('hideAddressForm.vtex')
-
         @updateView()
 
       # Handler do envio de ShippingData.
-      @shippingDataSubmitHandler = (shippingData) =>
+      @shippingDataSubmitHandler = (shippingData) ->
         # Montando dados para send attachment
         attachmentId = 'shippingData'
         attachment = shippingData

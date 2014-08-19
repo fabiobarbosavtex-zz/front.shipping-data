@@ -21,6 +21,8 @@ define ['flight/lib/component',
           showAddressForm: false
           showDontKnowPostalCode: true
           showSelectCountry: false
+          currentSearch: false
+          addressSearchResults: {}
           countryRules: {}
           useGeolocation:
             'BRA': false
@@ -128,7 +130,7 @@ define ['flight/lib/component',
         if rules.regexes.postalCode.test(postalCode)
           @attr.data.throttledLoading = true
           @attr.data.postalCode = postalCode
-          @attr.data.address.postalCode = postalCode
+          @attr.data.address?.postalCode = postalCode
           @attr.data.loading = true if rules.queryPostalCode
           @render()
           if rules.queryPostalCode
@@ -151,24 +153,28 @@ define ['flight/lib/component',
       @getPostalCode = (data) ->
         country = @attr.data.country
         postalCode = data.replace(/-/g, '')
+        @attr.data.currentSearch = postalCode
         @attr.API.getAddressInformation({
           postalCode: postalCode,
           country: country
         }).then((data) =>
           if data
             address = data
+            # ATUALIZA O MAPA DE RESPOSTAS DE POSTAL CODE
+            @attr.data.addressSearchResults[@attr.data.currentSearch] = address;
+            debugger;
             if address.neighborhood isnt '' and address.street isnt '' \
-            and address.stateAcronym isnt '' and address.city isnt ''
+            and address.state isnt '' and address.city isnt ''
               @attr.data.labelShippingFields = true
             else
               @attr.data.labelShippingFields = false
-            if address.stateAcronym isnt '' and address.city
+            if address.state isnt '' and address.city
               @attr.data.disableCityAndState = true
             else
               @attr.data.disableCityAndState = false
             @attr.data.showDontKnowPostalCode = false
             @attr.data.address.city = address.city
-            @attr.data.address.state = address.stateAcronym
+            @attr.data.address.state = address.state
             @attr.data.address.street = address.street
             @attr.data.address.neighborhood = address.neighborhood
             @attr.data.address.geoCoordinates = address.geoCoordinates
@@ -178,6 +184,7 @@ define ['flight/lib/component',
             @attr.data.loading = false
             @render()
             @trigger('postalCode', @getCurrentAddress())
+            @trigger('addressSelected', @attr.data.address)
         , () =>
           @attr.data.throttledLoading = false
           @attr.data.showAddressForm = true

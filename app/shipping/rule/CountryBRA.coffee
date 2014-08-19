@@ -27,30 +27,35 @@ define ->
                          'country', 'number', 'neighborhood']
 
       @googleDataMap = [
-        postalCode =
           value: "postalCode"
           length: "long_name"
-          types: ["postal_code"]
-        number =
+          types: ["postal_code"],
+          required: false
+        ,
           value: "number"
           length: "long_name"
-          types: ["street_number"]
-        street =
+          types: ["street_number"],
+          required: false
+        ,
           value: "street"
           length: "long_name"
-          types: ["route"]
-        neighborhood =
+          types: ["route"],
+          required: true
+        ,
           value: "neighborhood"
           length: "long_name"
-          types: ["neighborhood"]
-        state =
+          types: ["neighborhood"],
+          required: true
+        ,
           value: "state"
           length: "short_name"
-          types: ["administrative_area_level_1"]
-        city =
+          types: ["administrative_area_level_1"],
+          required: true
+        ,
           value: "city"
           length: "long_name"
-          types: ["administrative_area_level_2", "locality"]
+          types: ["administrative_area_level_2", "locality"],
+          required: true
       ]
 
       # Address components documentation
