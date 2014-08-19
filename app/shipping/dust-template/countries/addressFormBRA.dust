@@ -26,13 +26,13 @@
       País: {{country}}
     </p>
 
-    {?useGeolocation[country]}
+    {?useGeolocation}
     <div class="well well-small">
         <label for="addressSearch"><span>Buscar por endereço</span></label>
-        <input type="text" id="addressSearch" tabindex="221" class="input-large" value="{addressSearch}" name="addressSearch" >
+        <input type="text" id="address-search" tabindex="221" class="input-large" value="{addressSearch}" name="addressSearch" >
         <div class="btn address-search-bt">Buscar</div>
     </div>
-    {/useGeolocation[country]}
+    {/useGeolocation}
 
     <p class="ship-postal-code required input text mask">
       <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>

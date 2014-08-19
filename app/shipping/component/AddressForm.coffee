@@ -77,6 +77,8 @@ define ['flight/lib/component',
               rules = @getCurrentRule()
               data.statesForm = rules.states
               data.regexes = rules.regexes
+              data.useGeolocation = rules.useGeolocation
+
               dust.render @attr.templates.form.name, data, (err, output) =>
                 @extendTranslations(translation)
                 output = $(output).i18n()
