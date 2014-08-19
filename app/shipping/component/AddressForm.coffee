@@ -49,6 +49,8 @@ define ['flight/lib/component',
         cancelAddressFormSelector: '.cancel-address-form a'
         submitButtonSelector: '.submit .btn-success.address-save'
         addressSearchBtSelector: '.address-search-bt'
+        addressSearchSelector: '#address-search'
+        mapCanvasSelector: '#map-canvas'
 
         # Google maps variables
         map = null
@@ -59,14 +61,18 @@ define ['flight/lib/component',
         data = @attr.data if not data
 
         if data.showSelectCountry or data.showAddressForm
-          require 'shipping/translation/' + @attr.locale, (translation) =>
+          deps = [
+            'shipping/translation/' + @attr.locale,
+            @attr.templates.selectCountry.template
+          ]
+          require deps, (translation) =>
             if data.showSelectCountry
-              require [@attr.templates.selectCountry.template], =>
-                @extendTranslations(translation)
-                dust.render @attr.templates.selectCountry.name, data, (err, output) =>
-                  output = $(output).i18n()
-                  @$node.html(output)
-                  @addFormListeners()
+              @extendTranslations(translation)
+              dust.render @attr.templates.selectCountry.name, data, (err, output) =>
+                output = $(output).i18n()
+                @$node.html(output)
+                @addFormListeners()
+
             else if data.showAddressForm
               rules = @getCurrentRule()
               data.statesForm = rules.states
@@ -83,15 +89,15 @@ define ['flight/lib/component',
                 if rules.citiesBasedOnStateChange
                   @changeCities()
                   if data.address.city
-                    $(@attr.citySelector, @$node).val(data.address.city)
+                    @select('citySelector').val(data.address.city)
 
                 if rules.usePostalCode
-                  $(@attr.postalCodeSelector, @$node).inputmask
+                  @select('postalCodeSelector').inputmask
                     mask: rules.masks.postalCode
                   if data.labelShippingFields
-                    $(@attr.postalCodeSelector).addClass('success')
+                    @select('postalCodeSelector').addClass('success')
 
-                $(@attr.addressFormSelector, @$node).parsley
+                @select('addressFormSelector').parsley
                   errorClass: 'error'
                   successClass: 'success'
                   errors:
@@ -104,15 +110,6 @@ define ['flight/lib/component',
                         return rules.regexes.postalCode.test(val)
                       priority: 32
 
-                # Focus on the first empty rqeuired field
-                inputs = 'input[type=email].required,' + \
-                         'input[type=tel].required,' + \
-                         'input[type=text].required'
-                $(@$node).find(inputs)
-                  .filter ->
-                    if($(this).val() == "")
-                      return true
-                .first()
                 @startGoogleAddressSearch()
         else
           @$node.html('')
@@ -197,10 +194,10 @@ define ['flight/lib/component',
 
       # Get the current address typed in the form
       @getCurrentAddress = ->
-        disabled = $(@attr.addressFormSelector)
+        disabled = @select('addressFormSelector')
           .find(':input:disabled').removeAttr('disabled')
 
-        serializedForm = $(@attr.addressFormSelector)
+        serializedForm = @select('addressFormSelector')
           .find('select,textarea,input').serializeArray()
 
         disabled.attr 'disabled', 'disabled'
@@ -220,19 +217,19 @@ define ['flight/lib/component',
 
       # Submit address to the server
       @submitAddress = (ev) ->
-        if $(@attr.addressFormSelector).parsley('validate')
+        if @select('addressFormSelector').parsley('validate')
           @attr.data.address = @getCurrentAddress()
           @trigger 'loading', true
           @attr.showAddressForm = false
 
           # Cria ID se ele não existir
-          if @attr.data.address.addressId == null or @attr.data.address.addressId == ""
+          if @attr.data.address.addressId is null or @attr.data.address.addressId is ""
             @attr.data.address.addressId = (new Date().getTime() * -1).toString()
           if @attr.data.address.addressSearch == null
             delete @attr.data.address["addressSearch"]
 
           # Submit address object to API
-          @attr.API.sendAttachment("shippingData", { address: @attr.data.address })
+          @attr.API.sendAttachment("shippingData", address: @attr.data.address)
         ev.preventDefault()
 
       # Select a delivery country
@@ -249,28 +246,27 @@ define ['flight/lib/component',
 
         deps = [@attr.templates.form.template,
                 @attr.templates.selectCountry.template]
+
         if not @attr.data.countryRules[country]
           deps.push('shipping/rule/Country'+country)
-          require deps, (formTemplate, selectedCountryTemplate, countryRule) =>
+          return require deps, (formTemplate, selectedCountryTemplate, countryRule) =>
             @attr.data.countryRules[country] = new countryRule()
             @render()
         else
-          require deps, (formTemplate, selectedCountryTemplate) =>
+          return require deps, (formTemplate, selectedCountryTemplate) =>
             @render()
 
       @addressMapper = (address) ->
-        console.log @getCurrentRule()
-        _.each(@getCurrentRule().googleDataMap, (rule) =>
-          _.each(address.address_components, (component)=>
+        _.each @getCurrentRule().googleDataMap, (rule) =>
+          _.each address.address_components, (component) =>
             if _.intersection(component.types, rule.types).length > 0
               @attr.data[rule.value] = component[rule.length]
-          )
-        )
+
         @attr.data.geoCoordinates = [
           address.geometry.location.lng()
           address.geometry.location.lat()
         ]
-        console.log(@attr.data)
+
         @render()
 
       @clearAddressData = ->
@@ -302,47 +298,48 @@ define ['flight/lib/component',
           @attr.marker.setMap(null)
           @attr.marker = null
 
-        @attr.marker = new google.maps.Marker({position: location})
+        @attr.marker = new google.maps.Marker(position: location)
         @marker.setMap(@map)
-        $('#map-canvas').fadeIn(500)
+        @select('mapCanvasSelector').fadeIn(500)
 
       @startGoogleAddressSearch = ->
         window.setTimeout( =>
           addressListResponse = []
-          $('#addressSearch').typeahead({
+          @select('addressSearchSelector').typeahead
             minLength: 3,
             matcher: -> true
             source: (query, process) ->
               geocoder = new google.maps.Geocoder()
-              geocoder.geocode( address: query, (response, status) =>
+              geocoder.geocode address: query, (response, status) =>
                 if status is "OK" and response.length > 0
                   addressListResponse = response
                   itemsToDisplay = []
-                  _.each(response, (item) ->
-                    itemsToDisplay.push item.formatted_address
-                  )
-                  process itemsToDisplay
-              )
-            updater: (address)=>
-              addressObject = _.find(addressListResponse, (item)-> item.formatted_address is address)
+                  _.each response, (item) ->
+                    itemsToDisplay.push item.formatted_address                  
+                  process(itemsToDisplay)
+
+            updater: (address) =>
+              addressObject = _.find addressListResponse, (item) ->
+                item.formatted_address is address
               @clearAddressData()
-              @addressMapper addressObject
-              # @createMap(addressObject.geometry.location)
-          })
-        ,100)
+              @addressMapper(addressObject)
+              @createMap(addressObject.geometry.location)          
+        , 100)
 
       # Handle the selection event
       @selectedCountry = (ev, data) ->
         @attr.data.address = {}
         @attr.data.postalCode = ''
-        country = $(@attr.deliveryCountrySelector, @$node).val()
-        @selectCountry country if country
+        country = @select('deliveryCountrySelector').val()
 
-        if window.shippingUsingGeolocation and country is "PER"
-          @startGoogleAddressSearch()
+        if country
+          @selectCountry(country).done ->
+            rule = @getCurrentRule()
+            if rule.useGeolocation
+              @startGoogleAddressSearch()
 
       @getDeliveryCountries = (logisticsInfo) =>
-        return _.uniq(_.reduceRight(logisticsInfo, (memo, l) ->
+        _.uniq(_.reduceRight(logisticsInfo, (memo, l) ->
           return memo.concat(l.shipsTo)
         , []))
 
@@ -360,12 +357,12 @@ define ['flight/lib/component',
         rules = @getCurrentRule()
         return if not rules.citiesBasedOnStateChange
 
-        state = $(@attr.stateSelector, @$node).val()
-        $(@attr.citySelector, @$node).find('option').remove().end()
+        state = @select('stateSelector').val()
+        @select('citySelector').find('option').remove().end()
 
         for city of rules.map[state]
           elem = '<option value="'+city+'">'+city+'</option>'
-          $(@attr.citySelector, @$node).append(elem)
+          @select('citySelector').append(elem)
 
       # Change postal code according to the state selected
       # postalCodeByState should be true in the country's rule
@@ -373,11 +370,11 @@ define ['flight/lib/component',
         rules = @getCurrentRule()
         return if not rules.postalCodeByState
 
-        state = $(@attr.stateSelector, @$node).val()
+        state = @select('stateSelector').val()
         for city, postalCode of rules.map[state]
           break
 
-        $(@attr.postalCodeSelector, @$node).val(postalCode)
+        @select('postalCodeSelector').val(postalCode)
         @trigger('postalCode', postalCode)
 
       # Change postal code according to the city selected
@@ -386,11 +383,11 @@ define ['flight/lib/component',
         rules = @getCurrentRule()
         return if not rules.postalCodeByCity
 
-        state = $(@attr.stateSelector, @$node).val()
-        city = $(@attr.citySelector, @$node).val()
+        state = @select('stateSelector').val()
+        city = @select('citySelector').val()
         postalCode = rules.map[state][city]
 
-        $(@attr.postalCodeSelector, @$node).val(postalCode)
+        @select('postalCodeSelector').val(postalCode)
         @trigger('postalCode', @getCurrentAddress())
 
       # Set to a loading state
@@ -398,7 +395,6 @@ define ['flight/lib/component',
       @loading = (ev, data) ->
         @attr.data.loading = true
         @render()
-        console.log "loaded"
 
       # Store new country rules in the data object
       @addCountryRule = (ev, data) ->
@@ -423,12 +419,10 @@ define ['flight/lib/component',
           @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)
 
       @addFormListeners = () ->
-        # ESCUTA POR QUALQUER MUDANÇA NO FORM
-        $(".address-form-new").on("change", =>
-          console.log "change"
+        # Escuta por qualquer mudança no form
+        @select('addressFormSelector').on 'change', =>
           @attr.data.address = @getCurrentAddress()
-          $(window).trigger('addressSelected', @attr.data.address)
-        )
+          @trigger('addressSelected', @attr.data.address)
 
       # Bind events
       @after 'initialize', ->

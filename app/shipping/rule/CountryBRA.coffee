@@ -14,7 +14,7 @@ define ->
       @queryPostalCode = true
       @postalCodeByState = false
       @postalCodeByCity = false
-      @useGeolocation = true
+      @useGeolocation = false
 
       @regexes =
         postalCode: new RegExp(/^([\d]{5})\-?([\d]{3})$/)

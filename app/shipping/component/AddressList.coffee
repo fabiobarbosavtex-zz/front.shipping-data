@@ -57,7 +57,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
       # Edit an existing address
       # Trigger an event to AddressForm component
       @editAddress = ->
-        if @attr.data.canEditData || @attr.data.loggedIn
+        if @attr.data.canEditData or @attr.data.loggedIn
           @attr.data.showAddressList = false
           @render()
           @attr.data.showDontKnowPostalCode = false
@@ -73,8 +73,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
 
       # Update address list
       @updateAddresses = (ev, data) ->
-
-        console.log "@updateAddresses"
         # Remove all the addresses located in countries the store is not
         # delivering
         @attr.data.availableAddresses = _.filter data?.availableAddresses, (a) =>
