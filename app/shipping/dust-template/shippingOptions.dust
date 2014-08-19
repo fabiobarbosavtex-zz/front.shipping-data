@@ -1,4 +1,3 @@
-{#showShippingOptions}
 <div class="delivery-shipping-options">
     <h3 class="hide" data-i18n="shipping.shippingOptions.shippingOptions"></h3>
         {#loadingShippingOptions}
@@ -149,4 +148,3 @@
         {/shippingOptions}
         </fieldset>
 </div>
-{/showShippingOptions}

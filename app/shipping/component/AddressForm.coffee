@@ -62,61 +62,58 @@ define ['flight/lib/component',
       @render = (data) ->
         data = @attr.data if not data
 
-        if data.showSelectCountry or data.showAddressForm
-          deps = [
-            'shipping/translation/' + @attr.locale,
-            @attr.templates.selectCountry.template
-          ]
-          require deps, (translation) =>
-            if data.showSelectCountry
+        deps = [
+          'shipping/translation/' + @attr.locale,
+          @attr.templates.selectCountry.template
+        ]
+        require deps, (translation) =>
+          if data.showSelectCountry
+            @extendTranslations(translation)
+            dust.render @attr.templates.selectCountry.name, data, (err, output) =>
+              output = $(output).i18n()
+              @$node.html(output)
+              @addFormListeners()
+
+          else if data.showAddressForm
+            rules = @getCurrentRule()
+            data.statesForm = rules.states
+            data.regexes = rules.regexes
+            data.useGeolocation = rules.useGeolocation
+
+            dust.render @attr.templates.form.name, data, (err, output) =>
               @extendTranslations(translation)
-              dust.render @attr.templates.selectCountry.name, data, (err, output) =>
-                output = $(output).i18n()
-                @$node.html(output)
-                @addFormListeners()
+              output = $(output).i18n()
+              @$node.html(output)
+              @addFormListeners()
 
-            else if data.showAddressForm
-              rules = @getCurrentRule()
-              data.statesForm = rules.states
-              data.regexes = rules.regexes
-              data.useGeolocation = rules.useGeolocation
+              if data.loading
+                $('input, select, .btn', @$node).attr('disabled', 'disabled')
 
-              dust.render @attr.templates.form.name, data, (err, output) =>
-                @extendTranslations(translation)
-                output = $(output).i18n()
-                @$node.html(output)
-                @addFormListeners()
+              if rules.citiesBasedOnStateChange
+                @changeCities()
+                if data.address.city
+                  @select('citySelector').val(data.address.city)
 
-                if data.loading
-                  $('input, select, .btn', @$node).attr('disabled', 'disabled')
+              if rules.usePostalCode
+                @select('postalCodeSelector').inputmask
+                  mask: rules.masks.postalCode
+                if data.labelShippingFields
+                  @select('postalCodeSelector').addClass('success')
 
-                if rules.citiesBasedOnStateChange
-                  @changeCities()
-                  if data.address.city
-                    @select('citySelector').val(data.address.city)
+              @select('addressFormSelector').parsley
+                errorClass: 'error'
+                successClass: 'success'
+                errors:
+                  errorsWrapper: '<div class="help error-list"></div>'
+                  errorElem: '<span class="help error"></span>'
+                validators:
+                  postalcode: =>
+                    validate: (val) =>
+                      rules = @attr.data.countryRules[@attr.data.country]
+                      return rules.regexes.postalCode.test(val)
+                    priority: 32
 
-                if rules.usePostalCode
-                  @select('postalCodeSelector').inputmask
-                    mask: rules.masks.postalCode
-                  if data.labelShippingFields
-                    @select('postalCodeSelector').addClass('success')
-
-                @select('addressFormSelector').parsley
-                  errorClass: 'error'
-                  successClass: 'success'
-                  errors:
-                    errorsWrapper: '<div class="help error-list"></div>'
-                    errorElem: '<span class="help error"></span>'
-                  validators:
-                    postalcode: =>
-                      validate: (val) =>
-                        rules = @attr.data.countryRules[@attr.data.country]
-                        return rules.regexes.postalCode.test(val)
-                      priority: 32
-
-                @startGoogleAddressSearch()
-        else
-          @$node.html('')
+              @startGoogleAddressSearch()
 
       # Helper function to get the current country's rules
       @getCurrentRule = ->
@@ -135,20 +132,6 @@ define ['flight/lib/component',
           @render()
           if rules.queryPostalCode
             @getPostalCode postalCode
-
-      # Handle the initial view of this component
-      @showAddressForm = (ev, address) ->
-        ev.stopPropagation()
-        @attr.data.address = new AddressModel(if address then address else null)
-        @attr.data.isEditingAddress = true
-        if address?.country?
-          @selectCountry(address.country)
-        else if @attr.data.deliveryCountries.length is 1
-          country = @attr.data.deliveryCountries[0]
-          @selectCountry(country)
-        else
-          @attr.data.showSelectCountry = true
-          @render()
 
       # Call the postal code API
       @getPostalCode = (data) ->
@@ -358,7 +341,7 @@ define ['flight/lib/component',
         @attr.data.showSelectCountry = false
         @attr.data.loading = false
         @render()
-        @trigger('addressFormCanceled.vtex')
+        @trigger('showAddressList.vtex')
 
       # Change the city select options when a state is selected
       # citiesBasedOnStateChange should be true in the country's rule
@@ -414,13 +397,6 @@ define ['flight/lib/component',
         @changeCities(ev, data)
         @changePostalCodeByState(ev, data)
 
-      @enable = ->
-
-      @disable = ->
-        @attr.data.showSelectCountry = false
-        @attr.data.showAddressForm = false
-        @render()
-
       @orderFormUpdated = (ev, data) ->
         @attr.data.availableAddresses = if data.shippingData? then data.shippingData.availableAddresses else []
         @attr.data.address = if data.shippingData? then data.shippingData.address else @attr.data.address
@@ -433,14 +409,32 @@ define ['flight/lib/component',
           @attr.data.address = @getCurrentAddress()
           @trigger('addressSelected.vtex', @attr.data.address)
 
+      # Handle the initial view of this component
+      @enable = (ev, address) ->
+        if ev then ev.stopPropagation()
+        @attr.data.address = new AddressModel(if address then address else null)
+        @attr.data.isEditingAddress = true
+        if address?.country?
+          @selectCountry(address.country)
+        else if @attr.data.deliveryCountries.length is 1
+          country = @attr.data.deliveryCountries[0]
+          @selectCountry(country)
+        else
+          @attr.data.showSelectCountry = true
+          @render()
+
+      @disable = (ev) ->
+        if ev then ev.stopPropagation()
+        @$node.html('')
+
       # Bind events
       @after 'initialize', ->
+        @on 'enable.vtex', @enable
+        @on 'disable.vtex', @disable
         @on 'loading.vtex', @loading
         @on window, 'orderFormUpdated.vtex', @orderFormUpdated
         @on window, 'localeSelected.vtex', @localeUpdate
         @on window, 'newCountryRule', @addCountryRule # TODO -> MELHORAR AQUI
-        @on @$node.parent(), 'showAddressForm.vtex', @showAddressForm
-        @on 'hideAddressForm.vtex', @disable
         @on 'updateAddresses.vtex', @cancelAddressForm
         @on 'cancelAddressForm.vtex', @cancelAddressForm
         @on 'click',

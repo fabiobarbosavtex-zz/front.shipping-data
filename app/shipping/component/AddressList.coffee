@@ -13,7 +13,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           hasOtherAddresses: false
           canEditData: false
           loggedIn: false
-          showAddressList: true
           deliveryCountries: ['BRA', 'ARG', 'CHL']
           countryRules: {}
 
@@ -31,35 +30,34 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
       @render = (data) ->
         data = @attr.data if not data
 
-        if not data.showAddressList
-          @$node.html('')
-        else
-          require ['shipping/translation/' + @attr.locale, @attr.templates.list.template], (translation) =>
-            @extendTranslations(translation)
-            dust.render @attr.templates.list.name, data, (err, output) =>
-              output = $(output).i18n()
-              $(@$node).html(output)
+        require ['shipping/translation/' + @attr.locale, @attr.templates.list.template], (translation) =>
+          @extendTranslations(translation)
+          dust.render @attr.templates.list.name, data, (err, output) =>
+            output = $(output).i18n()
+            $(@$node).html(output)
 
       # Create a new address
       # Trigger an event to AddressForm component
       @createAddress = ->
-        @attr.data.showAddressList = false
-        @render()
+        if @attr.data.canEditData or @attr.data.loggedIn
+          @disable()
 
-        @attr.data.address = {}
-        @attr.data.postalCode = ''
-        @attr.data.labelShippingFields = false
-        @attr.data.disableCityAndState = false
-        @attr.data.address.addressId = (new Date().getTime() * -1).toString()
-        @attr.data.showDontKnowPostalCode = true
-        @trigger('showAddressForm.vtex', @attr.data)
+          @attr.data.address = {}
+          @attr.data.postalCode = ''
+          @attr.data.labelShippingFields = false
+          @attr.data.disableCityAndState = false
+          @attr.data.address.addressId = (new Date().getTime() * -1).toString()
+          @attr.data.showDontKnowPostalCode = true
+          @trigger('showAddressForm.vtex', @attr.data)
+        else
+          # CALL VTEX ID
+          if window.vtexid? then window.vtexid.start(window.location.href)
 
       # Edit an existing address
       # Trigger an event to AddressForm component
       @editAddress = ->
         if @attr.data.canEditData or @attr.data.loggedIn
-          @attr.data.showAddressList = false
-          @render()
+          @disable()
           @attr.data.showDontKnowPostalCode = false
           @trigger('showAddressForm.vtex', @attr.data.address)
         else
@@ -85,7 +83,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           @attr.data.address = data.address
           @attr.data.selectedAddressId = data.address.addressId
           @attr.data.hasOtherAddresses = true
-          @attr.data.showAddressList = true
 
         @createAddressesSummaries()
 
@@ -125,22 +122,21 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @attr.data.selectedAddressId = selectedAddressId
         @trigger 'addressSelected.vtex', @attr.data.address
 
-        @attr.data.showAddressList = true
         @render()
 
       # Store new country rules in the data object
-      @addCountryRule = (ev, data) ->
+      @addCountryRule = (data) ->
         _.extend(@attr.data.countryRules, data)
 
-      @showAddressList = (ev, data) ->
+      @enable = (ev) ->
+        if ev then ev.stopPropagation()
         if @attr.data.availableAddresses.length > 0
-          @attr.data.showAddressList = true
           @createAddressesSummaries()
           @render()
 
-      @hideAddressList = (ev, data) ->
-        @attr.data.showAddressList = false
-        @render()
+      @disable = (ev) ->
+        if ev then ev.stopPropagation()
+        @$node.html('')
 
       @orderFormUpdated = (ev, data) ->
         if data.shippingData?
@@ -154,12 +150,12 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
 
       # Bind events
       @after 'initialize', ->
+        @on 'enable.vtex', @enable
+        @on 'disable.vtex', @disable
         @on window, 'localeSelected.vtex', @localeUpdate
         @on window, 'orderFormUpdated.vtex', @orderFormUpdated
-        @on window, 'addressFormCanceled.vtex', @showAddressList
+        @on window, 'addressFormCanceled.vtex', @enable
         @on 'updateAddresses.vtex', @updateAddresses
-        @on 'showAddressList.vtex', @showAddressList
-        @on 'hideAddressList.vtex', @hideAddressList
         @on 'selectAddress.vtex', @selectAddress
         @on 'click',
           'createAddressSelector': @createAddress

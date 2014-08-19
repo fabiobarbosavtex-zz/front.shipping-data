@@ -9,7 +9,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
       data:
         address: {}
         currentCountryName: false
-        showSummary: false
+
       templates:
         list:
           name: 'shippingSummary'
@@ -20,46 +20,37 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
     # Render this component according to the data object
     @render = () ->
       data = @attr.data
-      if data.address
-        require [@attr.templates.list.template], =>
-          dust.render @attr.templates.list.name, data, (err, output) =>
-            output = $(output).i18n()
-            $(@$node).html(output)
-      else
-        $(@$node).html("")
+      require [@attr.templates.list.template], =>
+        dust.render @attr.templates.list.name, data, (err, output) =>
+          output = $(output).i18n()
+          $(@$node).html(output)
 
     @orderFormUpdated = (ev, orderForm) ->
       @attr.data.address = orderForm.shippingData?.address
       @attr.data.currentCountryName = "Brasil"
-      @render()
-
-    @showShippingSummary = ->
-      @attr.data.showSummary = true
-      @render()
-      
-    @hideShippingSummary = ->
-      @attr.data.showSummary = false
-      @render()
 
     @changeShippingOption = (ev, data) ->
-      @showShippingSummary false
-      $(window).trigger('showAddressList.vtex')
-
-    @onDisableShippingData = () ->
-      @showShippingSummary null, true
+      @trigger('showAddressList.vtex')
 
     @onAddressSelected = (ev, data) ->
       @attr.data.address = data
       @render()
 
+    @enable = (ev) ->
+      if ev then ev.stopPropagation()
+      @render()
+
+    @disable = (ev) ->
+      if ev then ev.stopPropagation()
+      @$node.html('')
+
     # Bind events
     @after 'initialize', ->
+      @on 'enable.vtex', @enable
+      @on 'disable.vtex', @disable
       @on window, 'addressSelected', @onAddressSelected
       @on window, 'orderFormUpdated.vtex', @orderFormUpdated
-      @on window, 'showShippingSummary.vtex', @showShippingSummary
-      @on window, 'hideShippingSummary.vtex', @hideShippingSummary
       @on window, 'localeSelected.vtex', @localeUpdate
-      @on window, 'disableShippingData.vtex', @onDisableShippingData
       @on window, 'click',
         'changeShippingOptionBtSelector': @changeShippingOption
 

@@ -15,7 +15,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           multipleSellers: false
           items: []
           sellers: []
-          showShippingOptions: true
 
         templates:
           shippingOptions:
@@ -109,7 +108,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
                 sla.fullEstimateLabel = sla.name + ' - ' + sla.valueLabel + ' - ' + _.dateFormat(deliveryDate)
 
           @attr.data.shippingOptions = currentShippingOptions
-          @render()
 
       @orderFormUpdated = (ev, data) ->
         if data.shippingData
@@ -386,16 +384,21 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
             availableAddresses: @attr.data.availableAddresses
             logisticsInfo: @attr.data.logisticsInfo
 
-      @addressFormCanceled = ->
-        @attr.data.showShippingOptions = true
+      @enable = (ev) ->
+        if ev then ev.stopPropagation()
         @render()
+
+      @disable = (ev) ->
+        if ev then ev.stopPropagation()
+        @$node.html('')
 
       # Bind events
       @after 'initialize', ->
+        @on 'enable.vtex', @enable
+        @on 'disable.vtex', @disable
         @on window, 'localeSelected.vtex', @localeUpdate        
         @on window, 'orderFormUpdated.vtex', @orderFormUpdated
         @on @$node.parent(), 'addressSelected.vtex', @addressSelected
-        @on @$node.parent(), 'addressFormCanceled.vtex', @addressFormCanceled
         @on 'scheduleDateSelected.vtex', @scheduleDateSelected
         @on 'click',
           'shippingOptionSelector': @selectShippingOptionHandler

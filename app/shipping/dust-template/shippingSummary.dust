@@ -1,16 +1,12 @@
-{#showSummary}
-	<p class="address">
-		<span class="street">{address.street}</span>,
-		<span class="number"> {address.number}</span> - <span class="neighborhood">{address.neighborhood}</span>
-		<br>
-		<span class="city">{address.city}</span> -  <span class="state">{address.state}</span> -
-		<span class="postal-code"> {address.postalCode}</span> -
-		<span class="country"> {currentCountryName}</span>
-	</p>
-	<div class="shipping-options just-one">
-		<p><span class="text">Entrega:</span>
-			<span class="sla">Entrega Agendada</span>
-		</p>
-	</div>
-	<a href="#/shipping" id="change-other-shipping-option" class="link-change-shipping">Alterar opções de entrega</a>
-{/showSummary}
+<p class="address">
+	<span class="street">{address.street}</span>,
+	<span class="number"> {address.number}</span> - <span class="neighborhood">{address.neighborhood}</span>
+	<br>
+	<span class="city">{address.city}</span> -  <span class="state">{address.state}</span> -
+	<span class="postal-code"> {address.postalCode}</span> -
+	<span class="country"> {currentCountryName}</span>
+</p>
+<div class="shipping-options just-one">
+	<p><span class="text">Entrega:</span> <span class="sla">Entrega Agendada</span></p>
+</div>
+<a href="#/shipping" id="change-other-shipping-option" class="link-change-shipping">Alterar opções de entrega</a>

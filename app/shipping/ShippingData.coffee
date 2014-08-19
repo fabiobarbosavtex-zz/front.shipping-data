@@ -64,21 +64,33 @@ define ['flight/lib/component',
         @updateView()
 
         if @attr.orderForm.shippingData?.address?
-          @trigger('showAddressList.vtex')
+          @select('addressListSelector').trigger('enable.vtex')
+          @select('shippingOptionsSelector').trigger('enable.vtex')
         else
-          @select("addressFormSelector").trigger('showAddressForm.vtex')
+          @select('addressFormSelector').trigger('enable.vtex')
+          @select('shippingOptionsSelector').trigger('disable.vtex')
 
-        @trigger('hideShippingSummary.vtex')
+        @select('shippingSummarySelector').trigger('disable.vtex')
 
       @disable = ->
-        if @isValid()
+        if @attr.data.active and @isValid()
           @shippingDataSubmitHandler(@attr.orderForm.shippingData)
           @attr.data.active = false
-          @trigger('showShippingSummary.vtex')
-          @trigger('hideAddressList.vtex')
-          @trigger('hideShippingOptions.vtex')
+          @select('shippingSummarySelector').trigger('enable.vtex')
+          @select('addressFormSelector').trigger('disable.vtex')
+          @select('addressListSelector').trigger('disable.vtex')
+          @select('shippingOptionsSelector').trigger('disable.vtex')
           @trigger('componentDone.vtex')
-          @trigger('hideAddressForm.vtex')
+          @updateView()
+        else
+          @attr.data.active = false
+          if @attr.orderForm.shippingData?.address
+            @select('shippingSummarySelector').trigger('enable.vtex')
+          else
+            @select('shippingSummarySelector').trigger('disable.vtex')
+          @select('addressFormSelector').trigger('disable.vtex')
+          @select('addressListSelector').trigger('disable.vtex')
+          @select('shippingOptionsSelector').trigger('disable.vtex')
           @updateView()
 
       # Handler do envio de ShippingData.
@@ -100,9 +112,10 @@ define ['flight/lib/component',
       @orderFormUpdated = (ev, orderForm) ->
         @attr.orderForm = orderForm
         @validate() # Trigger componentValidated event
-        if (orderForm.shippingData?.address and !@attr.data.active)
-          @trigger('showShippingSummary.vtex')
-        @updateView()
+        if not @attr.data.active
+          @disable()
+        else
+          @enable()
 
       # When a new addresses is selected
       # Should call API to get delivery options
@@ -142,6 +155,19 @@ define ['flight/lib/component',
         logisticsInfo = @attr.orderForm.shippingData?.logisticsInfo
         logisticsInfo?.length > 0 and logisticsInfo?[0].selectedSla isnt undefined
 
+      @showAddressForm = (ev, data) ->
+        ev.stopPropagation()
+        @select('shippingSummarySelector').trigger('disable.vtex')
+        @select('addressListSelector').trigger('disable.vtex')
+        @select('addressFormSelector').trigger('enable.vtex', data)
+        @select('shippingOptionsSelector').trigger('disable.vtex')
+
+      @showAddressListAndShippingOption = (ev) ->
+        @select('shippingSummarySelector').trigger('disable.vtex')
+        @select('addressListSelector').trigger('enable.vtex')
+        @select('addressFormSelector').trigger('disable.vtex')
+        @select('shippingOptionsSelector').trigger('enable.vtex')
+
       # Bind events
       @after 'initialize', ->
         require 'shipping/translation/' + @attr.locale, (translation) =>
@@ -157,12 +183,14 @@ define ['flight/lib/component',
             ShippingOptions.attachTo(@attr.shippingOptionsSelector, { API: @attr.API })
 
             # Start event listeners
+            @on 'enable.vtex', @enable
+            @on 'disable.vtex', @disable
             @on 'newAddress', @onAddressSaved
             @on 'addressSelected', @onAddressSelected
             @on 'postalCode', @onPostalCodeLoaded
             @on window, 'orderFormUpdated.vtex', @orderFormUpdated
-            @on 'enable.vtex', @enable
-            @on 'disable.vtex', @disable
+            @on 'showAddressList.vtex', @showAddressListAndShippingOption
+            @on 'showAddressForm.vtex', @showAddressForm
             @on 'click',
               'goToPaymentButtonSelector': @disable
               'editShippingDataSelector': @enable
