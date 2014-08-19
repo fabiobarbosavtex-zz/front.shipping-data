@@ -1,10 +1,8 @@
-{#scheduledSla}
-	{#deliveryWindowsForDate}
-	<label class="radio">
-	    <input type="radio" value="{@idx}{.}{/idx}" id="delivery-window-{@idx}{.}{/idx}" name="delivery-window-{nameAttr}"
-	    {#isWindowSelected}checked="checked"{/isWindowSelected}
-	        data-bind="checked: $parent.deliveryWindowIndex, disable: checkout.disableInputs()">	    
-	    <span>{label}</span>
-	</label>
-	{/deliveryWindowsForDate}
-{/scheduledSla}
+{#deliveryWindowsForDate}
+<label class="radio">
+    <input type="radio" value="{@idx}{.}{/idx}" id="delivery-window-{@idx}{.}{/idx}" name="delivery-window-{nameAttr}" data-shipping-option="{index}"
+    {#isWindowSelected}checked="checked"{/isWindowSelected}
+    data-bind="disable: checkout.disableInputs()">
+    <span>{label}</span>
+</label>
+{/deliveryWindowsForDate}

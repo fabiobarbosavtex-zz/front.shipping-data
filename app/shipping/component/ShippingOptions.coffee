@@ -35,8 +35,9 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         addressFormSelector: '.address-form-new'
         postalCodeSelector: '#ship-postal-code'
         shippingOptionSelector: '.shipping-option-item'
-        pickadateSelector: '.scheduled-sla .datepicker'
-        deliveryWindowsSelector: '.delivery-windows-placeholder'
+        pickadateSelector: '.datepicker'
+        deliveryWindowsSelector: '.delivery-windows'
+        deliveryWindowSelector: '.delivery-windows input[type=radio]'
 
       # Render this component according to the data object
       @render = (options) ->
@@ -47,10 +48,12 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           requiredFiles = requiredFiles.concat(@attr.pickadateFiles)
 
         require requiredFiles, =>
-          if options is 'deliveryWindows'
+          if options and options.template is 'deliveryWindows'
+            data = options.sla
+            index = options.index
             dust.render @attr.templates.deliveryWindows.name, data, (err, output) =>
               output = $(output).i18n()
-              $(@attr.deliveryWindowsSelector).html(output)
+              @getDeliveryWindowsSelector(index).html(output)
           else
             dust.render @attr.templates.shippingOptions.name, data, (err, output) =>
               output = $(output).i18n()
@@ -59,30 +62,39 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
               # Caso tenha entrega agendada
               if @attr.isScheduledDeliveryAvailable
                 # Coloca a tradução correta no pickadate
-                $.extend( $.fn.pickadate.defaults, vtex.pickadate[@attr.locale] ) if locale isnt 'en-US'
-                # Instancia o picker apenas com as datas possíveis de entrega
-                $(@attr.pickadateSelector).pickadate
-                  disable: [true].concat(@attr.deliveryDates)
-                # Pega a instancia do picker
-                picker = $(@attr.pickadateSelector).pickadate('picker')
-                # Seleciona a data selecionada
-                picker.set 'select',
-                  new Date(@attr.data.scheduledSla.deliveryWindow.startDateUtc)
-                # Ao selecionar uma data, o evento é disparado
-                picker.on 'set', () ->
-                  $(window).trigger('newScheduleDateSelected.vtex')
+                if locale isnt 'en-US'
+                  $.extend( $.fn.pickadate.defaults, vtex.pickadate[@attr.locale] )
 
+                _.each @attr.data.shippingOptions, (so) =>
+                  if so.selectedSla.isScheduled
+                    # Instancia o picker apenas com as datas possíveis de entrega
+                    @getPickadateSelector(so.index).pickadate
+                      disable: [true].concat(so.selectedSla.deliveryDates)
+                    # Pega a instancia do picker
+                    picker = @getPickadateSelector(so.index).pickadate('picker')
+                    # Seleciona a data selecionada
+                    picker.set 'select',
+                      new Date(so.selectedSla.deliveryWindow.startDateUtc)
+                    # Ao selecionar uma data, o evento é disparado
+                    picker.on 'set', () =>
+                      @trigger('scheduleDateSelected.vtex', [so.index])
+
+      @getDeliveryWindowsSelector = (shippingOptionIndex) ->
+        $('.shipping-option-'+shippingOptionIndex + ' ' + @attr.deliveryWindowsSelector)
+
+      @getPickadateSelector = (shippingOptionIndex) ->
+        $('.shipping-option-'+shippingOptionIndex + ' ' + @attr.pickadateSelector)
 
       @updateShippingOptions = (currentShippingOptions) ->
         # Verifica se existem multiplo sellers
         if currentShippingOptions.length > 1
-          currentShippingOptions.multipleSellers = true
+          @attr.data.multipleSellers = true
 
-        for shipping in currentShippingOptions
-          for sla in shipping.slas
-            if sla.shippingEstimate isnt undefined and not sla.isScheduled
-              require ['shipping/translation/' + @attr.locale], (translation) =>
-                @extendTranslations(translation)
+        require ['shipping/translation/' + @attr.locale], (translation) =>
+          @extendTranslations(translation)
+          for shipping in currentShippingOptions
+            for sla in shipping.slas
+              if sla.shippingEstimate isnt undefined and not sla.isScheduled
                 if sla.businessDays
                   sla.deliveryEstimateLabel = i18n.t 'shipping.shippingOptions.workingDay',
                     count: sla.shippingEstimateDays
@@ -90,9 +102,12 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
                   sla.deliveryEstimateLabel = i18n.t 'shipping.shippingOptions.day',
                     count: sla.shippingEstimateDays
                 sla.fullEstimateLabel = sla.name + ' - ' + sla.valueLabel + ' - ' + sla.deliveryEstimateLabel
+              else if sla.isScheduled and sla.deliveryWindow
+                deliveryDate = new Date(sla.deliveryWindow.endDateUtc)
+                sla.fullEstimateLabel = sla.name + ' - ' + sla.valueLabel + ' - ' + _.dateFormat(deliveryDate)
 
-        @attr.data.shippingOptions = currentShippingOptions
-        @render()
+          @attr.data.shippingOptions = currentShippingOptions
+          @render()
 
       @orderFormUpdated = (ev, data) ->
         if data.shippingData
@@ -106,7 +121,10 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
 
           if (JSON.stringify(@attr.data.items) isnt JSON.stringify(data.items)) or
              (JSON.stringify(addressesClone) isnt JSON.stringify(data.shippingData.availableAddresses))
-            @attr.data.items = data.items
+            @attr.data.items = _.map data.items, (item, i) ->
+              item.index = i
+              return item
+
             @attr.data.availableAddresses = data.shippingData.availableAddresses
             # Cria array de logistics info e shipping options para cada address
             for address in @attr.data.availableAddresses
@@ -118,18 +136,20 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           @attr.data.sellers = data.sellers
 
           # Povoa os dados do logistics info do endereço selecionado
-          currentAddress = _.find @attr.data.availableAddresses, (address) =>
-            address.addressId == @attr.data.address.addressId
+          currentAddress = @getCurrentAddress()
 
           if currentAddress
             currentAddress.logisticsInfo = data.shippingData.logisticsInfo
             currentAddress.shippingOptions = @getShippingOptionsData()
             @updateShippingOptions(currentAddress.shippingOptions)
 
+      @getCurrentAddress = ->
+        _.find @attr.data.availableAddresses, (address) =>
+          address.addressId is @attr.data.address.addressId
+
       @getShippingOptionsData = ->
         logisticsInfo = []
-        currentAddress = _.find @attr.data.availableAddresses, (address) =>
-          address.addressId == @attr.data.address.addressId
+        currentAddress = @getCurrentAddress()
 
         # Para cada item
         for logisticItem in currentAddress.logisticsInfo
@@ -148,12 +168,15 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         logisticsBySeller = _.groupBy logisticsInfo, (so) -> return so.seller.id
 
         # Vamos massagear todo o logistics info
+        i = 0
         logisticsInfoArray = _.map logisticsBySeller, (logistic) =>
           composedLogistic =
             items: []
             seller: {}
             selectedSla: ''
             slas: []
+            index: i
+          i += 1
 
           for logi in logistic
             composedLogistic.items.push(logi.item)
@@ -163,10 +186,10 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
               composedSla = _.find composedLogistic.slas, (_sla) -> _sla.id is sla.id
 
               # Caso nao esteja no array de SLAS computados, o SLA será computado pela primeira vez
-              if not composedSla                
+              if not composedSla
                 if sla.availableDeliveryWindows and sla.availableDeliveryWindows.length > 0
                   sla.isScheduled = true
-                  @attr.isScheduledDeliveryAvailable = true              
+                  @attr.isScheduledDeliveryAvailable = true
 
                 sla.businessDays = (sla.shippingEstimate+'').indexOf('bd') isnt -1
                 sla.shippingEstimateDays = parseInt((sla.shippingEstimate+'').replace(/bd|d/,''), 10)
@@ -179,7 +202,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
                   sla.isSelected = true
                   selectedSla = sla
 
-                  if selectedSla.isScheduled
+                  if sla.isScheduled
                     deliveryDates = []
                     # Preenche o array de deliveryDates
                     _.each sla.availableDeliveryWindows, (dw) =>
@@ -195,26 +218,22 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
                         deliveryDates.push dateAsArray
 
                     # Salva as datas possíveis de entrega para ser usado no render
-                    @attr.deliveryDates = deliveryDates
+                    sla.deliveryDates = deliveryDates
 
                     # Agrupamos as delivery windows pela suas datas
-                    @attr.deliveryWindows = _.groupBy selectedSla.availableDeliveryWindows, (dw) =>
+                    sla.deliveryWindows = _.groupBy sla.availableDeliveryWindows, (dw) =>
                       return @dateAsString(new Date(dw.startDateUtc))
-                    
+
+                    # Caso não tenha uma delivery window selecionada
+                    if not sla.deliveryWindow
+                      # Pegamos a primeira disponível
+                      sla.deliveryWindow = @getFirstDeliveryWindow(sla)
+
                     # Atualizamos seus preços e labels
                     @updateDeliveryWindows(sla)
 
-                    # Caso não tenha uma delivery window selecionada
-                    if not selectedSla.deliveryWindow
-                      # Pegamos a primeira disponível
-                      selectedSla.deliveryWindow = @getFirstDeliveryWindow()
-
-                    # Salva a entrega para ser usado no render
-                    @attr.data.scheduledSla = selectedSla
-
-                    # Pega as delivery windows para a data selecionada
-                    deliveryWindowDate = @dateAsString(new Date(selectedSla.deliveryWindow.startDateUtc))
-                    @attr.data.scheduledSla.deliveryWindowsForDate = @attr.deliveryWindows[deliveryWindowDate]                    
+                    # Marcamos a delivery window como selecionada
+                    @selectDeliveryWindow(sla, sla.deliveryWindow)
               else
                 # Caso o SLA já tenha sido computado antes, iremos apenas somar o preço e a taxa
                 sla.price += composedSla.price
@@ -222,7 +241,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
 
                 if sla.isSelected and sla.isScheduled
                   @updateDeliveryWindows(sla)
-                  @attr.data.scheduledSla = selectedSla
 
               sla.valueLabel = if sla.price > 0 then _.intAsCurrency sla.price else i18n.t('global.free')
               sla.taxValueLabel = if sla.tax > 0 then _.intAsCurrency sla.tax else i18n.t('global.free')
@@ -240,18 +258,22 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
       @dateAsString = (date) -> date.getUTCFullYear() + '/' + date.getUTCMonth() + '/' + date.getUTCDate()
       @dateHourMinLabel = (date) -> _.pad(date.getUTCHours(), 2) + ":" + _.pad(date.getUTCMinutes(),2) if date
 
-      @getFirstDeliveryWindow = () ->
-        firstDeliveryWindow = null
-
-        # Pegando a primeira delivery window
-        for key, dateArray of @attr.deliveryWindows
-          for dateWindow in dateArray
-            if firstDeliveryWindow is null
+      @getFirstDeliveryWindow = (sla, date) ->
+        # Caso a função receba uma data
+        # pegamos a primeira delivery window deste dia
+        if dateAsString
+          dateAsString = @dateAsString(new Date(date))
+          return sla.deliveryWindows[dateAsString][0]
+        else
+          # Caso contrario, pegamos a primeira delivery window
+          # entre todas as datas
+          for key, dateArray of sla.deliveryWindows
+            for dateWindow in dateArray
               return dateWindow
 
       @updateDeliveryWindows = (sla) ->
-        # Para cada delivery window, iremos criar o seu label e preço
-        for key, dateArray of @attr.deliveryWindows
+        # Para cada delivery window, iremos criar/atualizar o seu label e preço
+        for key, dateArray of sla.deliveryWindows
           for dateWindow in dateArray
             if dateWindow.price + sla.price > 0
               dateWindow.valueLabel = _.intAsCurrency dateWindow.price + sla.price
@@ -263,18 +285,65 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
               to: @dateHourMinLabel(new Date(dateWindow.endDateUtc))
             dateWindow.label = i18n.t('shipping.shippingOptions.fromToHour', objTranslation) + " " + " - " + dateWindow.valueLabel
 
-            if sla.deliveryWindow?.startDateUtc is dateWindow.startDateUtc and
-              sla.deliveryWindow.endDateUtc is dateWindow.endDateUtc
+      @prepareLogisticsInfoToAPI = () ->
+        currentAddress = @getCurrentAddress()
+
+        logisticsInfo = []
+        for li in currentAddress.logisticsInfo
+          for item in li.items
+            newLogisticInfo =
+              itemIndex: item.index
+
+
+      @selectDeliveryWindow = (sla, deliveryWindow) ->        
+        sla.deliveryWindow = deliveryWindow
+
+        for key, dateAsArray of sla.deliveryWindows
+          for dateWindow in dateAsArray
+            # Caso a data max e min sejam iguais, significa que é esta
+            # delivery window
+            if deliveryWindow?.startDateUtc is dateWindow.startDateUtc and
+              deliveryWindow.endDateUtc is dateWindow.endDateUtc
+                # Marcamos-a como selecionada
                 dateWindow.isWindowSelected = true
+                # Guardamos a referencia para o array de delivery windows
+                # desta data
+                sla.deliveryWindowsForDate = dateAsArray
             else
+              # Devemos sempre deixar a flag de todas as outras como false
               dateWindow.isWindowSelected = false
 
+        return
 
-      @newScheduleDateSelected = (ev, data) ->
-        date = $(@attr.pickadateSelector).pickadate('get', 'select')?.obj
-        deliveryWindowDate = @dateAsString(new Date(date))
-        @attr.data.scheduledSla.deliveryWindowsForDate = @attr.deliveryWindows[deliveryWindowDate]
-        @render('deliveryWindows')
+      @scheduleDateSelected = (ev, index) ->
+        # Pega a data seleciona no pickadate
+        date = @getPickadateSelector(index).pickadate('get', 'select')?.obj
+
+        # Pega o sla em questão
+        currentAddress = @getCurrentAddress()
+        sla = currentAddress.shippingOptions[index].selectedSla
+
+        # Por default, pegamos a primeira delivery window para esta data
+        @selectDeliveryWindow(sla, @getFirstDeliveryWindow(sla, new Date(date)))
+
+        # Renderizamos as novas delivery windows para a data selecionada
+        @render(template: 'deliveryWindows', sla: sla, index: index)
+
+      @deliveryWindowSelected = (ev, data) ->
+        # Pega o indice da delivery window
+        deliveryWindowIndex = $(data.el).attr('value')
+        # Pega o indice da shipping option
+        shippingOptionIndex = $(data.el).data('shipping-option')
+
+        # Pega o sla em questão
+        currentAddress = @getCurrentAddress()
+        sla = currentAddress.shippingOptions[shippingOptionIndex].selectedSla
+
+        # Pega a delivery window através do seu indíce
+        deliveryWindow = sla.deliveryWindowsForDate[deliveryWindowIndex]
+
+        # Atualizamos o modelo
+        @selectDeliveryWindow(sla, deliveryWindow)
 
       @selectShippingOptionHandler = (ev, data) ->
         ev.preventDefault()
@@ -284,8 +353,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         console.log 'oi'
 
       @addressSelected = (ev, address) ->
-        currentAddress = _.find @attr.data.availableAddresses, (_address) =>
-          _address.addressId == address.addressId
+        currentAddress = @getCurrentAddress()
 
         # Verifica se já tem logistics info e busca na api caso precise
         if not currentAddress.logisticsInfo.length > 0
@@ -310,9 +378,10 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @on @attr.addressBookComponentSelector, 'addressSelected', @addressSelected
         @on window, 'showAddressForm', @showAddressForm
         @on window, 'addressFormCanceled', @addressFormCanceled
-        @on window, 'newScheduleDateSelected.vtex', @newScheduleDateSelected
+        @on window, 'scheduleDateSelected.vtex', @scheduleDateSelected
         @on 'click',
           'shippingOptionSelector': @selectShippingOptionHandler
+          'deliveryWindowSelector': @deliveryWindowSelected
 
         if vtexjs?.checkout?.orderForm?
           @orderFormUpdated null, vtexjs.checkout.orderForm
