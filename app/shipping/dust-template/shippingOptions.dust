@@ -99,7 +99,7 @@
                 <div class="span btn-group btn-group-vertical">
                 <select id="change-sla-items-list" class="span12" tabindex="329" data-bind="disable: checkout.disableInputs()">
                     {#slas}
-                    <option value="{name}" {#isSelected}selected="selected"{/isSelected}>{fullEstimateLabel}</option>
+                    <option value="{id}" {#isSelected}selected="selected"{/isSelected} data-shipping-option="{index}">{fullEstimateLabel}</option>
                     {/slas}
                 </select>
                 </div>
@@ -107,7 +107,7 @@
                 <div class="span btn-group btn-group-vertical">
                     {#slas}
                     <label class="shipping-option-item label-vertical-group input btn {#isSelected}active{/isSelected}" for="{idAttr}" data-bind="css: {'focus': hasFocus}">
-                        <input type="radio" tabindex="33{@idx}{.}{/idx}" id="{idAttr}" name="{nameAttr}" data-bind="hasfocus: hasFocus, disable: checkout.disableInputs()" value="{name}" {#isSelected}checked="checked"{/isSelected}>
+                        <input type="radio" tabindex="33{@idx}{.}{/idx}" id="{idAttr}" name="{nameAttr}" data-bind="hasfocus: hasFocus, disable: checkout.disableInputs()" value="{id}" {#isSelected}checked="checked"{/isSelected} data-shipping-option="{index}">
                         <span class="shipping-option-item-text-wrapper" title="{deliveryEstimateLabel}">
                             <span class="shipping-option-item-name">{name}</span>
                             <span class="shipping-option-item-sep"> - </span>
