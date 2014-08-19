@@ -9,8 +9,7 @@ define ['flight/lib/component',
         'shipping/component/ShippingSummary',
         'shipping/template/shippingData',
         'shipping/mixin/withi18n',
-        'shipping/mixin/withValidation',
-        'link!shipping/css/main'],
+        'shipping/mixin/withValidation'],
   (defineComponent, extensions, AddressForm, AddressList, ShippingOptions, ShippingSummary, template, withi18n, withValidation) ->
     ShippingData = ->
       @defaultAttrs
