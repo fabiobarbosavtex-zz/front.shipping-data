@@ -43,7 +43,7 @@ define ['flight/lib/component',
             @select('editShippingDataSelector').hide()
             @select('shippingTitleSelector').addClass('accordion-toggle-active')
             @select('addressNotFilledSelector').hide()
-            if (@attr.orderForm?.shippingData?.address?.postalCode)
+            if @attr.orderForm?.shippingData?.address?.postalCode
               @select('goToPaymentButtonSelector').show()
             else
               @select('goToPaymentButtonSelector').hide()
@@ -53,10 +53,10 @@ define ['flight/lib/component',
             @select('editShippingDataSelector').show()
             @select('goToPaymentButtonSelector').hide()
             @select('shippingTitleSelector').removeClass('accordion-toggle-active')
-            if !@attr.orderForm.shippingData?.address
-              @select('addressNotFilledSelector').show()
+            if @attr.orderForm.shippingData?.address
+              @select('addressNotFilledSelector').hide()
             else
-              @select('addressNotFilledSelector').hide();
+              @select('addressNotFilledSelector').show()
             @clearValidationClass()
 
       @enable = ->
@@ -151,10 +151,10 @@ define ['flight/lib/component',
             @$node.html(translatedOutput)
 
             # Start the components
-            ShippingSummary.attachTo('.shipping-summary-placeholder', { API: @attr.API })
-            AddressForm.attachTo('.address-form-placeholder', { API: @attr.API })
-            AddressList.attachTo('.address-list-placeholder', { API: @attr.API })
-            ShippingOptions.attachTo('.address-shipping-options', { API: @attr.API })
+            ShippingSummary.attachTo(@attr.shippingSummarySelector, { API: @attr.API })
+            AddressForm.attachTo(@attr.addressFormSelector, { API: @attr.API })
+            AddressList.attachTo(@attr.addressListSelector, { API: @attr.API })
+            ShippingOptions.attachTo(@attr.shippingOptionsSelector, { API: @attr.API })
 
             # Start event listeners
             @on 'newAddress', @onAddressSaved

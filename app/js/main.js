@@ -13,7 +13,7 @@ vtex.curl(vtex.curl.configuration,
    'link!shipping/css/main'],
   function(ShippingData,  CheckoutMock, AddressForm) {
 
-    // FLAGS
+    // Flags
     window.shippingUsingGeolocation = true;
     var mockShippingData = false;
     var _API = mockShippingData ? new CheckoutMock() : window.vtexjs.checkout;
@@ -23,7 +23,7 @@ vtex.curl(vtex.curl.configuration,
 
     window.vtex.i18n.init();
 
-    // START SHIPPING DATA
+    // Start shipping data
     vtexjs.checkout.getOrderForm().done(function(){
       ShippingData.attachTo('#shipping-data',  { API: _API });
     });

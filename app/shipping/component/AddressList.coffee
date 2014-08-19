@@ -112,7 +112,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
                 aa.secondPart += ' - ' + aa.postalCode
               aa.secondPart += ' - ' + i18n.t('countries.'+aa.country)
 
-
       # Handle selection of an address in the list
       @selectAddressHandler = (ev, data) ->
         ev.preventDefault()
