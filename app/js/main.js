@@ -9,7 +9,8 @@ _.extend(vtex.curl.configuration.paths, paths);
 vtex.curl(vtex.curl.configuration, 
   ['shipping/ShippingData',
    'example/CheckoutMock',
-   'shipping/component/AddressForm'],
+   'shipping/component/AddressForm',
+   'link!shipping/css/main'],
   function(ShippingData,  CheckoutMock, AddressForm) {
 
     // FLAGS
