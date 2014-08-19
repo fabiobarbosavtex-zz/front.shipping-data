@@ -31,7 +31,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
                          'link!shipping/libs/pickadate/classic',
                          'link!shipping/libs/pickadate/classic-date']
 
-        addressBookComponentSelector: '.address-book'
         addressFormSelector: '.address-form-new'
         postalCodeSelector: '#ship-postal-code'
         shippingOptionSelector: '.shipping-option-item'
@@ -363,10 +362,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
             availableAddresses: @attr.data.availableAddresses
             logisticsInfo: @attr.data.logisticsInfo
 
-      @showAddressForm = ->
-        @attr.data.showShippingOptions = false
-        @render()
-
       @addressFormCanceled = ->
         @attr.data.showShippingOptions = true
         @render()
@@ -375,10 +370,9 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
       @after 'initialize', ->
         @on window, 'localeSelected.vtex', @localeUpdate        
         @on window, 'orderFormUpdated.vtex', @orderFormUpdated
-        @on @attr.addressBookComponentSelector, 'addressSelected', @addressSelected
-        @on window, 'showAddressForm', @showAddressForm
-        @on window, 'addressFormCanceled', @addressFormCanceled
-        @on window, 'scheduleDateSelected.vtex', @scheduleDateSelected
+        @on @$node.parent(), 'addressSelected.vtex', @addressSelected
+        @on @$node.parent(), 'addressFormCanceled.vtex', @addressFormCanceled
+        @on 'scheduleDateSelected.vtex', @scheduleDateSelected
         @on 'click',
           'shippingOptionSelector': @selectShippingOptionHandler
           'deliveryWindowSelector': @deliveryWindowSelected

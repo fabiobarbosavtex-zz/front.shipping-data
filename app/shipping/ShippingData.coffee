@@ -28,6 +28,11 @@ define ['flight/lib/component',
         addressNotFilledSelector: '.address-not-filled-verification'
         shippingStepSelector: '.step'
 
+        shippingSummarySelector: '.shipping-summary-placeholder'
+        addressFormSelector: '.address-form-placeholder'
+        addressListSelector: '.address-list-placeholder'
+        shippingOptionsSelector: '.address-shipping-options'
+
       # Render would be a deceptive name because it does not replace the entire
       # component DOM. Doing this would force us to re-render the child components.
       # It's best, then, to simply update the needed DOM.
@@ -62,20 +67,20 @@ define ['flight/lib/component',
         if @attr.orderForm.shippingData?.address?
           @trigger('showAddressList.vtex')
         else
-          @trigger('showAddressForm')
+          @select("addressFormSelector").trigger('showAddressForm.vtex')
 
         @trigger('hideShippingSummary.vtex')
 
       @disable = ->
-        #if @isValid()
-        @shippingDataSubmitHandler(@attr.orderForm.shippingData)
-        @attr.data.active = false
-        @trigger('showShippingSummary.vtex')
-        @trigger('hideAddressList.vtex')
-        @trigger('hideShippingOptions.vtex')
-        @trigger('componentDone.vtex')
-        @trigger('hideAddressForm.vtex')
-        @updateView()
+        if @isValid()
+          @shippingDataSubmitHandler(@attr.orderForm.shippingData)
+          @attr.data.active = false
+          @trigger('showShippingSummary.vtex')
+          @trigger('hideAddressList.vtex')
+          @trigger('hideShippingOptions.vtex')
+          @trigger('componentDone.vtex')
+          @trigger('hideAddressForm.vtex')
+          @updateView()
 
       # Handler do envio de ShippingData.
       @shippingDataSubmitHandler = (shippingData) ->
@@ -154,11 +159,11 @@ define ['flight/lib/component',
 
             # Start event listeners
             @on 'newAddress', @onAddressSaved
-            @on window, 'addressSelected', @onAddressSelected
+            @on 'addressSelected', @onAddressSelected
             @on 'postalCode', @onPostalCodeLoaded
             @on window, 'orderFormUpdated.vtex', @orderFormUpdated
-            @on window, 'enableShippingData.vtex', @enable
-            @on window, 'disableShippingData.vtex', @disable
+            @on 'enable.vtex', @enable
+            @on 'disable.vtex', @disable
             @on 'click',
               'goToPaymentButtonSelector': @disable
               'editShippingDataSelector': @enable

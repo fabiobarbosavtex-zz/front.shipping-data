@@ -138,6 +138,7 @@ define ['flight/lib/component',
 
       # Handle the initial view of this component
       @showAddressForm = (ev, address) ->
+        ev.stopPropagation()
         @attr.data.address = new AddressModel(if address then address else null)
         @attr.data.isEditingAddress = true
         if address?.country?
@@ -161,8 +162,7 @@ define ['flight/lib/component',
           if data
             address = data
             # ATUALIZA O MAPA DE RESPOSTAS DE POSTAL CODE
-            @attr.data.addressSearchResults[@attr.data.currentSearch] = address;
-            debugger;
+            @attr.data.addressSearchResults[@attr.data.currentSearch] = address
             if address.neighborhood isnt '' and address.street isnt '' \
             and address.state isnt '' and address.city isnt ''
               @attr.data.labelShippingFields = true
@@ -183,8 +183,8 @@ define ['flight/lib/component',
             @attr.data.showAddressForm = true
             @attr.data.loading = false
             @render()
-            @trigger('postalCode', @getCurrentAddress())
-            @trigger('addressSelected', @attr.data.address)
+            @trigger('postalCode.vtex', @getCurrentAddress())
+            @trigger('addressSelected.vtex', @attr.data.address)
         , () =>
           @attr.data.throttledLoading = false
           @attr.data.showAddressForm = true
@@ -192,7 +192,7 @@ define ['flight/lib/component',
           @attr.data.disableCityAndState = false
           @attr.data.loading = false
           @render()
-          @trigger('postalCode', @getCurrentAddress())
+          @trigger('postalCode.vtex', @getCurrentAddress())
         )
 
       # Able the user to edit the suggested fields
@@ -228,7 +228,7 @@ define ['flight/lib/component',
       @submitAddress = (ev) ->
         if @select('addressFormSelector').parsley('validate')
           @attr.data.address = @getCurrentAddress()
-          @trigger 'loading', true
+          @trigger 'loading.vtex', true
           @attr.showAddressForm = false
 
           # Cria ID se ele não existir
@@ -358,7 +358,7 @@ define ['flight/lib/component',
         @attr.data.showSelectCountry = false
         @attr.data.loading = false
         @render()
-        @trigger('addressFormCanceled')
+        @trigger('addressFormCanceled.vtex')
 
       # Change the city select options when a state is selected
       # citiesBasedOnStateChange should be true in the country's rule
@@ -384,7 +384,7 @@ define ['flight/lib/component',
           break
 
         @select('postalCodeSelector').val(postalCode)
-        @trigger('postalCode', postalCode)
+        @trigger('postalCode.vtex', postalCode)
 
       # Change postal code according to the city selected
       # postalCodeByCity should be true in the country's rule
@@ -397,7 +397,7 @@ define ['flight/lib/component',
         postalCode = rules.map[state][city]
 
         @select('postalCodeSelector').val(postalCode)
-        @trigger('postalCode', @getCurrentAddress())
+        @trigger('postalCode.vtex', @getCurrentAddress())
 
       # Set to a loading state
       # This will disable all fields
@@ -431,21 +431,19 @@ define ['flight/lib/component',
         # Escuta por qualquer mudança no form
         @select('addressFormSelector').on 'change', =>
           @attr.data.address = @getCurrentAddress()
-          @trigger('addressSelected', @attr.data.address)
+          @trigger('addressSelected.vtex', @attr.data.address)
 
       # Bind events
       @after 'initialize', ->
-        @on 'loading', @loading
-        @on window, 'enableShippingData.vtex', @enable
-        @on window, 'disableShippingData.vtex', @disable
+        @on 'loading.vtex', @loading
         @on window, 'orderFormUpdated.vtex', @orderFormUpdated
         @on window, 'localeSelected.vtex', @localeUpdate
-        @on window, 'newCountryRule', @addCountryRule
-        @on window, 'showAddressForm', @showAddressForm
-        @on window, 'hideAddressForm.vtex', @disable
-        @on window, 'updateAddresses', @cancelAddressForm
-        @on window, 'cancelAddressForm', @cancelAddressForm
-        @on window, 'click',
+        @on window, 'newCountryRule', @addCountryRule # TODO -> MELHORAR AQUI
+        @on @$node.parent(), 'showAddressForm.vtex', @showAddressForm
+        @on 'hideAddressForm.vtex', @disable
+        @on 'updateAddresses.vtex', @cancelAddressForm
+        @on 'cancelAddressForm.vtex', @cancelAddressForm
+        @on 'click',
           'forceShippingFieldsSelector': @forceShippingFields
           'cancelAddressFormSelector': @cancelAddressForm
           'submitButtonSelector': @submitAddress

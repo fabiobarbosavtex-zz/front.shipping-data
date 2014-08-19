@@ -52,7 +52,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @attr.data.disableCityAndState = false
         @attr.data.address.addressId = (new Date().getTime() * -1).toString()
         @attr.data.showDontKnowPostalCode = true
-        @trigger 'showAddressForm', @attr.data
+        @trigger('showAddressForm.vtex', @attr.data)
 
       # Edit an existing address
       # Trigger an event to AddressForm component
@@ -61,7 +61,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           @attr.data.showAddressList = false
           @render()
           @attr.data.showDontKnowPostalCode = false
-          @trigger 'showAddressForm', @attr.data.address
+          @trigger('showAddressForm.vtex', @attr.data.address)
         else
           # CALL VTEX ID
           if window.vtexid? then window.vtexid.start(window.location.href)
@@ -87,9 +87,9 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           @attr.data.hasOtherAddresses = true
           @attr.data.showAddressList = true
 
-        @createAddressesSummarys()
+        @createAddressesSummaries()
 
-      @createAddressesSummarys = ->
+      @createAddressesSummaries = ->
         countriesUsedRequire = _.map @attr.data.deliveryCountries, (c) ->
           return 'shipping/rule/Country'+c
 
@@ -98,6 +98,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
             prop = {}
             prop[@attr.data.deliveryCountries[i]] = new arguments[i]()
             @trigger window, 'newCountryRule', prop
+            @addCountryRule prop
 
             for aa in @attr.data.availableAddresses
               aa.firstPart = '' + aa.street
@@ -123,7 +124,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @attr.data.address = wantedAddress
 
         @attr.data.selectedAddressId = selectedAddressId
-        @trigger 'addressSelected', @attr.data.address
+        @trigger 'addressSelected.vtex', @attr.data.address
 
         @attr.data.showAddressList = true
         @render()
@@ -135,7 +136,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
       @showAddressList = (ev, data) ->
         if @attr.data.availableAddresses.length > 0
           @attr.data.showAddressList = true
-          @createAddressesSummarys()
+          @createAddressesSummaries()
           @render()
 
       @hideAddressList = (ev, data) ->
@@ -155,14 +156,13 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
       # Bind events
       @after 'initialize', ->
         @on window, 'localeSelected.vtex', @localeUpdate
-        @on window, 'newCountryRule', @addCountryRule
-        @on window, 'updateAddresses', @updateAddresses
-        @on window, 'addressFormCanceled', @showAddressList
-        @on window, 'showAddressList.vtex', @showAddressList
-        @on window, 'hideAddressList.vtex', @hideAddressList
-        @on window, 'selectAddress', @selectAddress
         @on window, 'orderFormUpdated.vtex', @orderFormUpdated
-        @on window, 'click',
+        @on window, 'addressFormCanceled.vtex', @showAddressList
+        @on 'updateAddresses.vtex', @updateAddresses
+        @on 'showAddressList.vtex', @showAddressList
+        @on 'hideAddressList.vtex', @hideAddressList
+        @on 'selectAddress.vtex', @selectAddress
+        @on 'click',
           'createAddressSelector': @createAddress
           'addressItemSelector': @selectAddressHandler
           'editAddressSelector': @editAddress
