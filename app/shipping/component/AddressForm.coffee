@@ -129,7 +129,7 @@ define ['flight/lib/component',
 
       @validateAddress = ->
         address = @attr.data.address
-        address?
+        address.isValid(@getCountryRule())
 
       @clearAddressSearch = ->
         @trigger('clearSelectedAddress.vtex')
@@ -392,7 +392,7 @@ define ['flight/lib/component',
         @attr.data.availableAddresses = data.shippingData.availableAddresses ? []
         @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)
         @attr.data.address = new Address(data.shippingData.address, @attr.data.deliveryCountries)
-        @validate()
+        @selectCountry(@attr.data.address.country).then @validate.bind(this)
 
       # Handle the initial view of this component
       @enable = (ev, address) ->
