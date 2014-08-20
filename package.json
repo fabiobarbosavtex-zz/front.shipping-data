@@ -1,6 +1,14 @@
 {
   "name": "front.shipping-data",
-  "version": "2.0.3-beta",
+  "version": "2.0.4-beta",
+  "hosts": [
+    "*.vtexcommerce.com.br",
+    "*.vtexcommercebeta.com.br",
+    "*.vtexcommercestable.com.br",
+    "*.vtexcommercealfa.com.br",
+    "*.vtexlocal.com.br"
+  ],
+  "backend": "https://io.vtex.com.br/",
   "devDependencies": {
     "generator-flight": "~0.6.0",
     "karma": "~0.10.0",
