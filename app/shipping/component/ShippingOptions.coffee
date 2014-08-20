@@ -373,17 +373,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @updateShippingOptionsLabels(currentAddress.shippingOptions)
         @render()
 
-      @addressSelected = (ev, address) ->
-        currentAddress = @getCurrentAddress()
-
-        # Verifica se já tem logistics info e busca na api caso precise
-        if not currentAddress.logisticsInfo.length > 0
-          @attr.API.sendAttachment "shippingData",
-            attachmentId: "shippingData"
-            address: currentAddress
-            availableAddresses: @attr.data.availableAddresses
-            logisticsInfo: @attr.data.logisticsInfo
-
       @enable = (ev) ->
         if ev then ev.stopPropagation()
         @render()
@@ -398,7 +387,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @on 'disable.vtex', @disable
         @on window, 'localeSelected.vtex', @localeUpdate        
         @on window, 'orderFormUpdated.vtex', @orderFormUpdated
-        @on @$node.parent(), 'addressSelected.vtex', @addressSelected
         @on 'scheduleDateSelected.vtex', @scheduleDateSelected
         @on 'click',
           'shippingOptionSelector': @selectShippingOptionHandler
