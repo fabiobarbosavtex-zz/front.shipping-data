@@ -1,8 +1,11 @@
 define = vtex.define || window.define
 require = vtex.curl || window.require
 
-define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/withi18n'],
-  (defineComponent, extensions, withi18n) ->
+define ['flight/lib/component',
+        'shipping/setup/extensions',
+        'shipping/mixin/withi18n',
+        'shipping/mixin/withValidation'],
+  (defineComponent, extensions, withi18n, withValidation) ->
     ShippingOptions = ->
       @defaultAttrs
         API: null
@@ -111,38 +114,40 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           @attr.data.shippingOptions = currentShippingOptions
 
       @orderFormUpdated = (ev, data) ->
-        if data.shippingData
-          # Verifica se items ou endereços mudaram
-          addressesClone = $.map($.extend(true, {}, @attr.data.availableAddresses), (value) -> [value])
-          for add in addressesClone
-            delete add["logisticsInfo"]
-            delete add["shippingOptions"]
-            delete add["firstPart"]
-            delete add["secondPart"]
+        return unless data.shippingData
+        # Verifica se items ou endereços mudaram
+        addressesClone = $.map($.extend(true, {}, @attr.data.availableAddresses), (value) -> [value])
+        for add in addressesClone
+          delete add["logisticsInfo"]
+          delete add["shippingOptions"]
+          delete add["firstPart"]
+          delete add["secondPart"]
 
-          if (JSON.stringify(@attr.data.items) isnt JSON.stringify(data.items)) or
-             (JSON.stringify(addressesClone) isnt JSON.stringify(data.shippingData.availableAddresses))
-            @attr.data.items = _.map data.items, (item, i) ->
-              item.index = i
-              return item
+        if (JSON.stringify(@attr.data.items) isnt JSON.stringify(data.items)) or
+           (JSON.stringify(addressesClone) isnt JSON.stringify(data.shippingData.availableAddresses))
+          @attr.data.items = _.map data.items, (item, i) ->
+            item.index = i
+            return item
 
-            @attr.data.availableAddresses = data.shippingData.availableAddresses
-            # Cria array de logistics info e shipping options para cada address
-            for address in @attr.data.availableAddresses
-              address.logisticsInfo = []
-              address.shippingOptions = []
+          @attr.data.availableAddresses = data.shippingData.availableAddresses
+          # Cria array de logistics info e shipping options para cada address
+          for address in @attr.data.availableAddresses
+            address.logisticsInfo = []
+            address.shippingOptions = []
 
-          @attr.data.logisticsInfo = data.shippingData.logisticsInfo
-          @attr.data.address = data.shippingData.address
-          @attr.data.sellers = data.sellers
+        @attr.data.logisticsInfo = data.shippingData.logisticsInfo
+        @attr.data.address = data.shippingData.address
+        @attr.data.sellers = data.sellers
 
-          # Povoa os dados do logistics info do endereço selecionado
-          currentAddress = @getCurrentAddress()
+        # Povoa os dados do logistics info do endereço selecionado
+        currentAddress = @getCurrentAddress()
 
-          if currentAddress
-            currentAddress.logisticsInfo = data.shippingData.logisticsInfo
-            currentAddress.shippingOptions = @getShippingOptionsData()
-            @updateShippingOptionsLabels(currentAddress.shippingOptions)
+        if currentAddress
+          currentAddress.logisticsInfo = data.shippingData.logisticsInfo
+          currentAddress.shippingOptions = @getShippingOptionsData()
+          @updateShippingOptionsLabels(currentAddress.shippingOptions)
+
+        @validate()
 
       @getCurrentAddress = ->
         _.find @attr.data.availableAddresses, (address) =>
@@ -389,6 +394,10 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @attr.data.loadingShippingOptions = true
         @render()
 
+      @validateShippingOptions = ->
+        logisticsInfo = @attr.data.logisticsInfo
+        logisticsInfo?.length > 0 and logisticsInfo?[0].selectedSla isnt undefined
+
       # Bind events
       @after 'initialize', ->
         @on 'enable.vtex', @enable
@@ -401,7 +410,11 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           'shippingOptionSelector': @selectShippingOptionHandler
           'deliveryWindowSelector': @deliveryWindowSelected
 
+        @setValidators [
+          @validateShippingOptions
+        ]
+
         if vtexjs?.checkout?.orderForm?
           @orderFormUpdated null, vtexjs.checkout.orderForm
 
-    return defineComponent(ShippingOptions, withi18n)
+    return defineComponent(ShippingOptions, withi18n, withValidation)

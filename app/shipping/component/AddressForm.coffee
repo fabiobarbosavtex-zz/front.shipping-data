@@ -5,8 +5,9 @@ define ['flight/lib/component',
         'shipping/setup/extensions',
         'shipping/models/Address',
         'shipping/mixin/withi18n',
+        'shipping/mixin/withValidation',
         'shipping/template/selectCountry'],
-  (defineComponent, extensions, Address, withi18n, selectCountryTemplate) ->
+  (defineComponent, extensions, Address, withi18n, withValidation, selectCountryTemplate) ->
     AddressForm = ->
       @defaultAttrs
         API: null
@@ -125,6 +126,10 @@ define ['flight/lib/component',
           @render()
           if rules.queryPostalCode
             @getPostalCode postalCode
+
+      @validateAddress = ->
+        address = @attr.data.address
+        address?
 
       @clearAddressSearch = ->
         @trigger('clearSelectedAddress.vtex')
@@ -383,10 +388,11 @@ define ['flight/lib/component',
         @changePostalCodeByState(ev, data)
 
       @orderFormUpdated = (ev, data) ->
-        if data.shippingData
-          @attr.data.availableAddresses = data.shippingData.availableAddresses ? []
-          @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)
-          @attr.data.address = new Address(data.shippingData.address, @attr.data.deliveryCountries)
+        return unless data.shippingData
+        @attr.data.availableAddresses = data.shippingData.availableAddresses ? []
+        @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)
+        @attr.data.address = new Address(data.shippingData.address, @attr.data.deliveryCountries)
+        @validate()
 
       # Handle the initial view of this component
       @enable = (ev, address) ->
@@ -439,6 +445,10 @@ define ['flight/lib/component',
         @on 'keyup',
           'postalCodeSelector': @validatePostalCode
 
+        @setValidators [
+          @validateAddress
+        ]
+
         if vtexjs?.checkout?.orderForm?
           @orderFormUpdated null, vtexjs.checkout.orderForm
 
@@ -447,4 +457,4 @@ define ['flight/lib/component',
           @attr.isGoogleMapsAPILoaded = true
           @startGoogleAddressSearch()
 
-    return defineComponent(AddressForm, withi18n)
+    return defineComponent(AddressForm, withi18n, withValidation)

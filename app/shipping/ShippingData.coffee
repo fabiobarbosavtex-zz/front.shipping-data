@@ -21,6 +21,10 @@ define ['flight/lib/component',
           visited: false
           loading: false
 
+        validationResults: # starts as invalid
+          addressForm: [false]
+          shippingOptions: [false]
+
         goToPaymentButtonSelector: '.btn-go-to-payment'
         editShippingDataSelector: '#edit-shipping-data'
         shippingTitleSelector: '.accordion-shipping-title'
@@ -94,7 +98,6 @@ define ['flight/lib/component',
 
       @orderFormUpdated = (ev, orderForm) ->
         @attr.orderForm = orderForm
-        @validate() # Trigger componentValidated event
         @updateView()
 
         if @attr.data.active and @attr.orderForm.shippingData.logisticsInfo.length > 0
@@ -110,16 +113,21 @@ define ['flight/lib/component',
         @shippingDataSubmitHandler(@attr.orderForm.shippingData)
         @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
 
-      @onPostalCodeLoaded = (ev, addressObj) ->
-        console.log (addressObj)
-
       @validateAddress = ->
-        address = @attr.orderForm.shippingData?.address
-        address?
+        @attr.validationResults.addressForm.length is 0
 
       @validateShippingOptions = ->
-        logisticsInfo = @attr.orderForm.shippingData?.logisticsInfo
-        logisticsInfo?.length > 0 and logisticsInfo?[0].selectedSla isnt undefined
+        @attr.validationResults.shippingOptions.length is 0
+
+      @handleAddressValidation = (ev, results) ->
+        ev?.stopPropagation()
+        @attr.validationResults.addressForm = results
+        @validate()
+
+      @handleShippingOptionsValidation = (ev, results) ->
+        ev?.stopPropagation()
+        @attr.validationResults.shippingOptions = results
+        @validate()
 
       @clearSelectedAddress = (ev) ->
         ev.stopPropagation()
@@ -157,11 +165,12 @@ define ['flight/lib/component',
             @on 'enable.vtex', @enable
             @on 'disable.vtex', @disable
             @on 'addressSelected.vtex', @addressSelected
-            @on 'postalCode', @onPostalCodeLoaded
             @on window, 'orderFormUpdated.vtex', @orderFormUpdated
             @on 'showAddressList.vtex', @showAddressListAndShippingOption
             @on 'editAddress.vtex', @editAddress
             @on 'clearSelectedAddress.vtex', @clearSelectedAddress
+            @on @attr.addressFormSelector, 'componentValidated.vtex', @handleAddressValidation
+            @on @attr.shippingOptionsSelector, 'componentValidated.vtex', @handleShippingOptionsValidation
             @on 'click',
               'goToPaymentButtonSelector': @disable
               'editShippingDataSelector': @enable
