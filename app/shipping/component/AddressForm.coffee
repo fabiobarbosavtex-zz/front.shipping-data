@@ -78,18 +78,25 @@ define ['flight/lib/component',
           if @attr.data.showGeolocationSearch
             @startGoogleAddressSearch()
 
-          @select('addressFormSelector').parsley
+          window.ParsleyValidator.addValidator('postalcode',
+            (val) =>
+                rules = @getCountryRule()
+                return rules.regexes.postalCode.test(val)
+            , 32)
+
+          @attr.parsley = @select('addressFormSelector').parsley
             errorClass: 'error'
             successClass: 'success'
-            errors:
-              errorsWrapper: '<div class="help error-list"></div>'
-              errorElem: '<span class="help error"></span>'
-            validators:
-              postalcode: =>
-                validate: (val) =>
-                  rules = @getCountryRule()
-                  return rules.regexes.postalCode.test(val)
-                priority: 32
+            errorsWrapper: '<div class="help error-list"></div>'
+            errorTemplate: '<span class="help error"></span>'
+
+          if not @attr.data.isSearchingAddress
+            @attr.parsley.subscribe 'parsley:field:validated', (fieldInstance) =>
+              formInstance = fieldInstance.parent
+              if formInstance.isValid()
+                @submitAddress(true)
+              else if @attr.data.address.isValid
+                @submitAddress(false)
 
       # Render this component according to the data object
       @render = ->
@@ -198,19 +205,22 @@ define ['flight/lib/component',
 
         return addressObj
 
+      @submitAddressHandler = (ev) ->
+        @submitAddress(@attr.parsley.isValid())
+
       # Submit address to the server
-      @submitAddress = (ev) ->
-        if @select('addressFormSelector').parsley('validate')
-          @attr.data.address = @getCurrentAddress()
-          @trigger 'loading.vtex', true
+      @submitAddress = (isValid) ->
+        ev?.preventDefault()
 
-          # limpa campo criado para busca do google
-          if @attr.data.address.addressSearch is null
-            delete @attr.data.address["addressSearch"]
+        @attr.data.address = @getCurrentAddress()
+        @attr.data.address.isValid = valid
 
-          # Submit address object to API
-          @attr.API.sendAttachment("shippingData", address: @attr.data.address)
-        ev.preventDefault()
+        # limpa campo criado para busca do google
+        if @attr.data.address.addressSearch is null
+          delete @attr.data.address["addressSearch"]
+
+        # Submit address object
+        @trigger('currentAddress.vtex', @attr.data.address)
 
       # Select a delivery country
       # This will load the country's form and rules
@@ -227,7 +237,7 @@ define ['flight/lib/component',
 
         return require deps, (formTemplate, countryRule) =>
           @attr.data.countryRules[country] = new countryRule()
-          @attr.data.statesForm = @attr.data.countryRules[country].states
+          @attr.data.states = @attr.data.countryRules[country].states
           @attr.data.regexes = @attr.data.countryRules[country].regexes
           @attr.data.useGeolocation = @attr.data.countryRules[country].useGeolocation
 
@@ -308,10 +318,7 @@ define ['flight/lib/component',
 
       # Close the form
       @cancelAddressForm = ->
-        @attr.data.showAddressForm = false
-        @attr.data.showSelectCountry = false
-        @attr.data.loading = false
-        @render()
+        @disable()
         @trigger('showAddressList.vtex')
 
       # Change the city select options when a state is selected
@@ -391,7 +398,7 @@ define ['flight/lib/component',
         console.error("Unable to load country dependencies", reason)
 
       @disable = (ev) ->
-        if ev then ev.stopPropagation()
+        ev?.stopPropagation()
         @$node.html('')
 
       @openGeolocationSearch = ->
@@ -410,12 +417,10 @@ define ['flight/lib/component',
         @on window, 'orderFormUpdated.vtex', @orderFormUpdated
         @on window, 'localeSelected.vtex', @localeUpdate
         @on window, 'newCountryRule', @addCountryRule # TODO -> MELHORAR AQUI
-        @on 'updateAddresses.vtex', @cancelAddressForm
-        @on 'cancelAddressForm.vtex', @cancelAddressForm
         @on 'click',
           'forceShippingFieldsSelector': @forceShippingFields
           'cancelAddressFormSelector': @cancelAddressForm
-          'submitButtonSelector': @submitAddress
+          'submitButtonSelector': @submitAddressHandler
           'addressSearchBtSelector': @searchAddress
           'clearAddressSearchSelector': @clearAddressSearch
           'dontKnowPostalCodeSelector': @openGeolocationSearch

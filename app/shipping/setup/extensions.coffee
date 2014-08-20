@@ -3,16 +3,16 @@ require = vtex.curl || window.require
 
 define ->
   class Extensions
-    window.ParsleyConfig = window.ParsleyConfig or {}
 
-    window.ParsleyConfig = $.extend true, {}, window.ParsleyConfig,
-      validators:
-        alphanumponc: ->
-          validate: (val) ->
-            regex = new RegExp(/^[A-Za-zÀ-ž0-9\/\\\-\.\,\s\(\)\'\#ªº]*$/)
-            return regex.test(val)
-          priority: 32
+    window.ParsleyConfig = $.extend true, {}, window.ParsleyConfig or {},
+      validationThreshold: 1
       animate: false
+
+    window.ParsleyValidator.addValidator('alphanumponc',
+      (val) ->
+        regex = new RegExp(/^[A-Za-zÀ-ž0-9\/\\\-\.\,\s\(\)\'\#ªº]*$/)
+        return regex.test(val)
+      , 32)
 
     ###
       Translate a variable
