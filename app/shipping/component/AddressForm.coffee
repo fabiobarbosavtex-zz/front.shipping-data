@@ -4,8 +4,9 @@ require = vtex.curl || window.require
 define ['flight/lib/component',
         'shipping/setup/extensions',
         'shipping/models/Address',
-        'shipping/mixin/withi18n'],
-  (defineComponent, extensions, Address, withi18n) ->
+        'shipping/mixin/withi18n',
+        'shipping/template/selectCountry'],
+  (defineComponent, extensions, Address, withi18n, selectCountryTemplate) ->
     AddressForm = ->
       @defaultAttrs
         API: null
@@ -37,9 +38,6 @@ define ['flight/lib/component',
         templates:
           form:
             baseName: 'countries/addressForm'
-          selectCountry:
-            name: 'selectCountry'
-            template: 'shipping/template/selectCountry'
 
         addressFormSelector: '.address-form-new'
         postalCodeSelector: '#ship-postal-code'
@@ -58,58 +56,53 @@ define ['flight/lib/component',
         map = null
         marker = null
 
+      @renderSelectCountry = (data) ->
+        dust.render 'selectCountry', data, (err, output) =>
+          output = $(output).i18n()
+          @$node.html(output)
+
+      @renderAddressForm = (data) ->
+        dust.render @attr.templates.form.name, data, (err, output) =>
+          output = $(output).i18n()
+          @$node.html(output)
+
+          if data.loading
+            $('input, select, .btn', @$node).attr('disabled', 'disabled')
+
+          rules = @getCountryRule()
+
+          if rules.citiesBasedOnStateChange
+            @changeCities()
+            if data.address.city
+              @select('citySelector').val(data.address.city)
+
+          if rules.usePostalCode
+            @select('postalCodeSelector').inputmask
+              mask: rules.masks.postalCode
+            if data.labelShippingFields
+              @select('postalCodeSelector').addClass('success')
+
+          @select('addressFormSelector').parsley
+            errorClass: 'error'
+            successClass: 'success'
+            errors:
+              errorsWrapper: '<div class="help error-list"></div>'
+              errorElem: '<span class="help error"></span>'
+            validators:
+              postalcode: =>
+                validate: (val) =>
+                  rules = @getCountryRule()
+                  return rules.regexes.postalCode.test(val)
+                priority: 32
+
       # Render this component according to the data object
       @render = ->
-        data = @attr.data
-
-        deps = [
-          'shipping/translation/' + @attr.locale,
-          @attr.templates.selectCountry.template
-        ]
-        require deps, (translation) =>
-          if data.showSelectCountry
-            @extendTranslations(translation)
-            dust.render @attr.templates.selectCountry.name, data, (err, output) =>
-              output = $(output).i18n()
-              @$node.html(output)
-
-          else if data.showAddressForm
-            rules = @getCountryRule()
-            data.statesForm = rules.states
-            data.regexes = rules.regexes
-            data.useGeolocation = rules.useGeolocation
-
-            dust.render @attr.templates.form.name, data, (err, output) =>
-              @extendTranslations(translation)
-              output = $(output).i18n()
-              @$node.html(output)
-
-              if data.loading
-                $('input, select, .btn', @$node).attr('disabled', 'disabled')
-
-              if rules.citiesBasedOnStateChange
-                @changeCities()
-                if data.address.city
-                  @select('citySelector').val(data.address.city)
-
-              if rules.usePostalCode
-                @select('postalCodeSelector').inputmask
-                  mask: rules.masks.postalCode
-                if data.labelShippingFields
-                  @select('postalCodeSelector').addClass('success')
-
-              @select('addressFormSelector').parsley
-                errorClass: 'error'
-                successClass: 'success'
-                errors:
-                  errorsWrapper: '<div class="help error-list"></div>'
-                  errorElem: '<span class="help error"></span>'
-                validators:
-                  postalcode: =>
-                    validate: (val) =>
-                      rules = @attr.data.countryRules[@attr.data.country]
-                      return rules.regexes.postalCode.test(val)
-                    priority: 32
+        require 'shipping/translation/' + @attr.locale, (translation) =>
+          @extendTranslations(translation)
+          if @attr.data.showSelectCountry
+            @renderSelectCountry(@attr.data)
+          else if @attr.data.showAddressForm
+            @renderAddressForm(@attr.data)
 
       # Helper function to get the current country's rules
       @getCountryRule = ->
@@ -234,11 +227,13 @@ define ['flight/lib/component',
         @attr.templates.form.template = 'shipping/template/' + @attr.templates.form.name
 
         deps = [@attr.templates.form.template,
-                @attr.templates.selectCountry.template,
                 'shipping/rule/Country'+country]
 
-        return require deps, (formTemplate, selectedCountryTemplate, countryRule) =>
+        return require deps, (formTemplate, countryRule) =>
           @attr.data.countryRules[country] = new countryRule()
+          @attr.data.statesForm = @attr.data.countryRules[country].states
+          @attr.data.regexes = @attr.data.countryRules[country].regexes
+          @attr.data.useGeolocation = @attr.data.countryRules[country].useGeolocation
 
       @addressMapper = (address) ->
         _.each @getCountryRule().googleDataMap, (rule) =>
