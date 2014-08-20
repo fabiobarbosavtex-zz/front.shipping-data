@@ -20,7 +20,6 @@ define ['flight/lib/component',
           labelShippingFields: false
           showPostalCode: false
           showAddressForm: false
-          showDontKnowPostalCode: true
           showSelectCountry: false
           addressSearchResults: {}
           countryRules: {}
@@ -75,6 +74,9 @@ define ['flight/lib/component',
               mask: rules.masks.postalCode
             if data.labelShippingFields
               @select('postalCodeSelector').addClass('success')
+
+          if @attr.data.showGeolocationSearch
+            @startGoogleAddressSearch()
 
           @select('addressFormSelector').parsley
             errorClass: 'error'
@@ -137,11 +139,10 @@ define ['flight/lib/component',
         @attr.data.loading = false
         @attr.data.showAddressForm = true
         @attr.data.isSearchingAddress = false
-        @attr.data.showDontKnowPostalCode = false
-        @attr.data.labelShippingFields = address.neighborhood isnt '' and
-          address.street isnt '' and
-          address.state isnt '' and
-          address.city isnt ''
+        @attr.data.labelShippingFields = address.neighborhood isnt '' and address.neighborhood? and
+          address.street isnt '' and address.street? and
+          address.state isnt '' and address.state? and
+          address.city isnt '' and address.city?
         @attr.data.disableCityAndState = address.state isnt '' and address.city
         @attr.data.address = new Address(address, @attr.data.deliveryCountries)
         @render()
@@ -263,6 +264,14 @@ define ['flight/lib/component',
         @select('mapCanvasSelector').fadeIn(500)
 
       @startGoogleAddressSearch = ->
+        console.log '@startGoogleAddressSearch'
+        if not @attr.isGoogleMapsAPILoaded
+          script = document.createElement("script")
+          script.type = "text/javascript"
+          script.src = "http://maps.googleapis.com/maps/api/js?sensor=false&callback=vtex.googleMapsLoaded"
+          document.body.appendChild(script)
+          return
+
         addressListResponse = []
         @select('addressSearchSelector').typeahead
           minLength: 3,
@@ -387,15 +396,8 @@ define ['flight/lib/component',
       @openGeolocationSearch = ->
         @attr.data.showGeolocationSearch = true;
         @render()
-        if (not @attr.isGoogleMapsAPILoaded)
-          script = document.createElement("script")
-          script.type = "text/javascript"
-          script.src = "http://maps.googleapis.com/maps/api/js?sensor=false&callback=vtex.googleMapsLoaded"
-          document.body.appendChild(script)
-        else
-          @startGoogleAddressSearch()
 
-      @openZipSeach = ->
+      @openZipSearch = ->
         @attr.data.showGeolocationSearch = false;
         @render()
 
@@ -416,7 +418,7 @@ define ['flight/lib/component',
           'addressSearchBtSelector': @searchAddress
           'clearAddressSearchSelector': @clearAddressSearch
           'dontKnowPostalCodeSelector': @openGeolocationSearch
-          'knowPostalCodeSelector': @openZipSeach
+          'knowPostalCodeSelector': @openZipSearch
         @on 'change',
           'deliveryCountrySelector': @selectedCountry
           'stateSelector': @onChangeState

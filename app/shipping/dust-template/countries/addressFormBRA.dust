@@ -40,9 +40,7 @@
         </i>
         {:else}
         <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small required" value="{postalCodeQuery}" parsley-postalcode="true"  name="postalCodeQuery">
-        {?showDontKnowPostalCode}
         <small><a href="javascript:void(0);" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressForm.dontKnowPostalCode"></a></small>
-        {/showDontKnowPostalCode}
         {/throttledLoading}
 
         {/showGeolocationSearch}
