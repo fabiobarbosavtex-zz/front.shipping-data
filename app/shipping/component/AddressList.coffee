@@ -41,14 +41,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
       @createAddress = ->
         if @attr.data.canEditData or @attr.data.loggedIn
           @disable()
-
-          @attr.data.address = {}
-          @attr.data.postalCode = ''
-          @attr.data.labelShippingFields = false
-          @attr.data.disableCityAndState = false
-          @attr.data.address.addressId = (new Date().getTime() * -1).toString()
-          @attr.data.showDontKnowPostalCode = true
-          @trigger('showAddressForm.vtex', @attr.data)
+          @trigger('editAddress.vtex')
         else
           # CALL VTEX ID
           if window.vtexid? then window.vtexid.start(window.location.href)
@@ -59,7 +52,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         if @attr.data.canEditData or @attr.data.loggedIn
           @disable()
           @attr.data.showDontKnowPostalCode = false
-          @trigger('showAddressForm.vtex', @attr.data.address)
+          @trigger('editAddress.vtex', @attr.data.address)
         else
           # CALL VTEX ID
           if window.vtexid? then window.vtexid.start(window.location.href)

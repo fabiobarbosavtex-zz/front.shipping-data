@@ -122,7 +122,7 @@ define ['flight/lib/component',
         rules = @getCountryRule()
         if rules.regexes.postalCode.test(postalCode)
           @attr.data.throttledLoading = true
-          @attr.data.postalCode = postalCode
+          @attr.data.postalCodeQuery = postalCode
           @attr.data.address?.postalCode = postalCode
           @attr.data.loading = true if rules.queryPostalCode
           @render()
@@ -131,7 +131,8 @@ define ['flight/lib/component',
 
       @clearAddressSearch = ->
         @trigger('clearSelectedAddress.vtex')
-        @attr.data.postalCode = null
+        @attr.data.postalCodeQuery = null
+        @attr.data.address = null
         @attr.data.isSearchingAddress = true
         @render()
 
@@ -252,20 +253,6 @@ define ['flight/lib/component',
 
         @render()
 
-      @clearAddressData = ->
-        @attr.data.addressId = null
-        @attr.data.addressType = null
-        @attr.data.postalCode = ""
-        @attr.data.number = ""
-        @attr.data.street = ""
-        @attr.data.neighborhood = ""
-        @attr.data.state = ""
-        @attr.data.city = ""
-        @attr.data.complement = ""
-        @attr.data.receiverName = ""
-        @attr.data.reference = ""
-        @attr.data.geoCoordinates = []
-
       @createMap = (location) ->
         mapOptions =
           zoom: 14
@@ -304,7 +291,6 @@ define ['flight/lib/component',
             updater: (address) =>
               addressObject = _.find addressListResponse, (item) ->
                 item.formatted_address is address
-              @clearAddressData()
               @addressMapper(addressObject)
               @createMap(addressObject.geometry.location)          
         , 100)

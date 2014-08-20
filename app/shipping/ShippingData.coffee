@@ -163,7 +163,7 @@ define ['flight/lib/component',
         ev.stopPropagation()
         @select('shippingOptionsSelector').trigger('disable.vtex')
 
-      @showAddressForm = (ev, data) ->
+      @editAddress = (ev, data) ->
         ev.stopPropagation()
         @attr.isEditingAddress = true
         @select('shippingSummarySelector').trigger('disable.vtex')
@@ -201,7 +201,7 @@ define ['flight/lib/component',
             @on 'postalCode', @onPostalCodeLoaded
             @on window, 'orderFormUpdated.vtex', @orderFormUpdated
             @on 'showAddressList.vtex', @showAddressListAndShippingOption
-            @on 'showAddressForm.vtex', @showAddressForm
+            @on 'editAddress.vtex', @editAddress
             @on 'clearSelectedAddress.vtex', @clearSelectedAddress
             @on 'click',
               'goToPaymentButtonSelector': @disable

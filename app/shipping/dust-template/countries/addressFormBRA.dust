@@ -17,7 +17,7 @@
   {#address}
   <fieldset class="address-data">
 
-    <!-- HIDEEN FIELDS -->
+    <!-- HIDDEN FIELDS -->
     <input type="hidden" name="addressId" value="{address.addressId}"/>
     <input type="hidden" name="country" value="{country}"/>
 
@@ -32,13 +32,13 @@
         <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
 
         {?throttledLoading}
-        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small loading-postal-code" disabled="disabled" value="{postalCode}" name="postalCode" >
+        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small loading-postal-code" disabled="disabled" value="{postalCodeQuery}" name="postalCodeQuery" >
 
         <i class="loading-inline icon-spinner icon-spin">
           <span data-i18n="global.loading"></span>
         </i>
         {:else}
-        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small required" value="{postalCode}" parsley-postalode="true"  name="postalCode">
+        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small required" value="{postalCodeQuery}" parsley-postalcode="true"  name="postalCodeQuery">
         {?showDontKnowPostalCode}
         <small><a href="{postalCodeForgottenURL}" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressForm.dontKnowPostalCode"></a></small>
         {/showDontKnowPostalCode}
@@ -56,7 +56,7 @@
     <p class="ship-postal-code required input text mask">
         <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
         <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small loading-postal-code" readonly="readonly" value="{postalCode}" name="postalCode" >
-        <button class="clear-address-search"><i class="fa fa-clear"></i></button>
+        <button class="btn clear-address-search"><i class="icon icon-remove"></i></button>
     </p>
     <div class="box-delivery">
       {?labelShippingFields}
