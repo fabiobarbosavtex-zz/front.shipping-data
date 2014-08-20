@@ -44,6 +44,7 @@ define ['flight/lib/component',
         mapCanvasSelector: '#map-canvas'
         clearAddressSearchSelector: '.clear-address-search'
         dontKnowPostalCodeSelector: '#dont-know-postal-code'
+        knowPostalCodeSelector: '#know-postal-code'
 
         # Google maps variables
         map = null
@@ -142,7 +143,7 @@ define ['flight/lib/component',
           address.state isnt '' and
           address.city isnt ''
         @attr.data.disableCityAndState = address.state isnt '' and address.city
-        @attr.data.address = new Address(address)
+        @attr.data.address = new Address(address, @attr.data.deliveryCountries)
         @render()
 
         # Montando dados para send attachment
@@ -228,18 +229,19 @@ define ['flight/lib/component',
           @attr.data.regexes = @attr.data.countryRules[country].regexes
           @attr.data.useGeolocation = @attr.data.countryRules[country].useGeolocation
 
-      @addressMapper = (address) ->
+      @addressMapper = (googleAddress) ->
+        address = {}
         _.each @getCountryRule().googleDataMap, (rule) =>
-          _.each address.address_components, (component) =>
+          _.each googleAddress.address_components, (component) =>
             if _.intersection(component.types, rule.types).length > 0
-              @attr.data[rule.value] = component[rule.length]
+              address[rule.value] = component[rule.length]
 
-        @attr.data.geoCoordinates = [
-          address.geometry.location.lng()
-          address.geometry.location.lat()
+        address.geoCoordinates = [
+          googleAddress.geometry.location.lng()
+          googleAddress.geometry.location.lat()
         ]
 
-        @render()
+        @handleAddressSearch(address)
 
       @createMap = (location) ->
         mapOptions =
@@ -261,28 +263,25 @@ define ['flight/lib/component',
         @select('mapCanvasSelector').fadeIn(500)
 
       @startGoogleAddressSearch = ->
-        console.log 'startGoogleAddressSearch'
-        window.setTimeout( =>
-          addressListResponse = []
-          @select('addressSearchSelector').typeahead
-            minLength: 3,
-            matcher: -> true
-            source: (query, process) ->
-              geocoder = new google.maps.Geocoder()
-              geocoder.geocode address: query, (response, status) =>
-                if status is "OK" and response.length > 0
-                  addressListResponse = response
-                  itemsToDisplay = []
-                  _.each response, (item) ->
-                    itemsToDisplay.push item.formatted_address
-                  process(itemsToDisplay)
+        addressListResponse = []
+        @select('addressSearchSelector').typeahead
+          minLength: 3,
+          matcher: -> true
+          source: (query, process) ->
+            geocoder = new google.maps.Geocoder()
+            geocoder.geocode address: query, (response, status) =>
+              if status is "OK" and response.length > 0
+                addressListResponse = response
+                itemsToDisplay = []
+                _.each response, (item) ->
+                  itemsToDisplay.push item.formatted_address
+                process(itemsToDisplay)
 
-            updater: (address) =>
-              addressObject = _.find addressListResponse, (item) ->
-                item.formatted_address is address
-              @addressMapper(addressObject)
-              @createMap(addressObject.geometry.location)
-        , 100)
+          updater: (address) =>
+            addressObject = _.find addressListResponse, (item) ->
+              item.formatted_address is address
+            @addressMapper(addressObject)
+            #@createMap(addressObject.geometry.location)
 
       # Handle the selection event
       @selectedCountry = ->
@@ -386,10 +385,8 @@ define ['flight/lib/component',
         @$node.html('')
 
       @openGeolocationSearch = ->
-        console.log '@openGeolocationSearch'
         @attr.data.showGeolocationSearch = true;
         @render()
-
         if (not @attr.isGoogleMapsAPILoaded)
           script = document.createElement("script")
           script.type = "text/javascript"
@@ -397,6 +394,10 @@ define ['flight/lib/component',
           document.body.appendChild(script)
         else
           @startGoogleAddressSearch()
+
+      @openZipSeach = ->
+        @attr.data.showGeolocationSearch = false;
+        @render()
 
       # Bind events
       @after 'initialize', ->
@@ -415,6 +416,7 @@ define ['flight/lib/component',
           'addressSearchBtSelector': @searchAddress
           'clearAddressSearchSelector': @clearAddressSearch
           'dontKnowPostalCodeSelector': @openGeolocationSearch
+          'knowPostalCodeSelector': @openZipSeach
         @on 'change',
           'deliveryCountrySelector': @selectedCountry
           'stateSelector': @onChangeState

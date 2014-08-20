@@ -50,7 +50,7 @@
         {?showGeolocationSearch}
         <label for="addressSearch"><span>Buscar por endereço</span></label>
         <input type="text" id="address-search" tabindex="221" class="input-large" value="{addressSearch}" name="addressSearch" /><br/>
-        <small><a href="javascript:void(0);" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressForm.knowPostalCode"></a></small>
+        <small><a href="javascript:void(0);" id="know-postal-code" target="_blank" data-i18n="shipping.addressForm.knowPostalCode"></a></small>
         {/showGeolocationSearch}
       </p>
     {/isSearchingAddress}
