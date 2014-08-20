@@ -30,32 +30,32 @@ define ->
           value: "postalCode"
           length: "long_name"
           types: ["postal_code"],
-          required: true
+          required: false
         ,
           value: "number"
           length: "long_name"
           types: ["street_number"],
-          required: true
+          required: false
         ,
           value: "street"
           length: "long_name"
           types: ["route"],
-          required: true
+          required: false
         ,
           value: "neighborhood"
           length: "long_name"
           types: ["neighborhood"],
-          required: true
+          required: false
         ,
           value: "state"
           length: "short_name"
           types: ["administrative_area_level_1"],
-          required: true
+          required: false
         ,
           value: "city"
           length: "long_name"
           types: ["administrative_area_level_2", "locality"],
-          required: true
+          required: false
       ]
 
       # Address components documentation
