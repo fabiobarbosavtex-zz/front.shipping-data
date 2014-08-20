@@ -29,6 +29,7 @@
 
     {?isSearchingAddress}
       <p class="ship-postal-code required input text mask">
+        {^showGeolocationSearch}
         <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
 
         {?throttledLoading}
@@ -40,15 +41,17 @@
         {:else}
         <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small required" value="{postalCodeQuery}" parsley-postalcode="true"  name="postalCodeQuery">
         {?showDontKnowPostalCode}
-        <small><a href="{postalCodeForgottenURL}" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressForm.dontKnowPostalCode"></a></small>
+        <small><a href="javascript:void(0);" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressForm.dontKnowPostalCode"></a></small>
         {/showDontKnowPostalCode}
         {/throttledLoading}
 
-        {?showGeolocation}
+        {/showGeolocationSearch}
+
+        {?showGeolocationSearch}
         <label for="addressSearch"><span>Buscar por endereço</span></label>
-        <input type="text" id="address-search" tabindex="221" class="input-large" value="{addressSearch}" name="addressSearch" />
-        <button class="btn address-search-bt">Buscar</button>
-        {/showGeolocation}
+        <input type="text" id="address-search" tabindex="221" class="input-large" value="{addressSearch}" name="addressSearch" /><br/>
+        <small><a href="javascript:void(0);" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressForm.knowPostalCode"></a></small>
+        {/showGeolocationSearch}
       </p>
     {/isSearchingAddress}
 

@@ -24,21 +24,13 @@ define ['flight/lib/component',
           showSelectCountry: false
           addressSearchResults: {}
           countryRules: {}
-          useGeolocation:
-            'BRA': false
-            'ARG': false
-            'CHL': false
-            'COL': false
-            'PER': false
-            'ECU': false
-            'PRY': false
-            'URY': false
-            'USA': false
+          showGeolocationSearch: false
 
         templates:
           form:
             baseName: 'countries/addressForm'
 
+        isGoogleMapsAPILoaded: false
         addressFormSelector: '.address-form-new'
         postalCodeSelector: '#ship-postal-code'
         forceShippingFieldsSelector: '#force-shipping-fields'
@@ -51,6 +43,7 @@ define ['flight/lib/component',
         addressSearchSelector: '#address-search'
         mapCanvasSelector: '#map-canvas'
         clearAddressSearchSelector: '.clear-address-search'
+        dontKnowPostalCodeSelector: '#dont-know-postal-code'
 
         # Google maps variables
         map = null
@@ -268,6 +261,7 @@ define ['flight/lib/component',
         @select('mapCanvasSelector').fadeIn(500)
 
       @startGoogleAddressSearch = ->
+        console.log 'startGoogleAddressSearch'
         window.setTimeout( =>
           addressListResponse = []
           @select('addressSearchSelector').typeahead
@@ -280,14 +274,14 @@ define ['flight/lib/component',
                   addressListResponse = response
                   itemsToDisplay = []
                   _.each response, (item) ->
-                    itemsToDisplay.push item.formatted_address                  
+                    itemsToDisplay.push item.formatted_address
                   process(itemsToDisplay)
 
             updater: (address) =>
               addressObject = _.find addressListResponse, (item) ->
                 item.formatted_address is address
               @addressMapper(addressObject)
-              @createMap(addressObject.geometry.location)          
+              @createMap(addressObject.geometry.location)
         , 100)
 
       # Handle the selection event
@@ -390,6 +384,19 @@ define ['flight/lib/component',
         if ev then ev.stopPropagation()
         @$node.html('')
 
+      @openGeolocationSearch = ->
+        console.log '@openGeolocationSearch'
+        @attr.data.showGeolocationSearch = true;
+        @render()
+
+        if (not @attr.isGoogleMapsAPILoaded)
+          script = document.createElement("script")
+          script.type = "text/javascript"
+          script.src = "http://maps.googleapis.com/maps/api/js?sensor=false&callback=vtex.googleMapsLoaded"
+          document.body.appendChild(script)
+        else
+          @startGoogleAddressSearch()
+
       # Bind events
       @after 'initialize', ->
         @on 'enable.vtex', @enable
@@ -406,6 +413,7 @@ define ['flight/lib/component',
           'submitButtonSelector': @submitAddress
           'addressSearchBtSelector': @searchAddress
           'clearAddressSearchSelector': @clearAddressSearch
+          'dontKnowPostalCodeSelector': @openGeolocationSearch
         @on 'change',
           'deliveryCountrySelector': @selectedCountry
           'stateSelector': @onChangeState
@@ -415,5 +423,10 @@ define ['flight/lib/component',
 
         if vtexjs?.checkout?.orderForm?
           @orderFormUpdated null, vtexjs.checkout.orderForm
+
+        # Called when google maps api is loaded
+        window.vtex.googleMapsLoaded = =>
+          @attr.isGoogleMapsAPILoaded = true
+          @startGoogleAddressSearch()
 
     return defineComponent(AddressForm, withi18n)

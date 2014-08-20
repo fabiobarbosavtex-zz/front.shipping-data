@@ -16,6 +16,7 @@ define(function () {
       "addressForm": {
         "header": 'New address',
         "dontKnowPostalCode": 'I don\'t know my postal code',
+        "knowPostalCode": 'Use my postal code',
         "postalCodeBRA": 'CEP',
         "postalCodeUSA": 'ZIP',
         "postalCode": 'Postal Code',

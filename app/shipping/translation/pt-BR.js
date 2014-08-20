@@ -16,6 +16,7 @@ define(function () {
       "addressForm": {
         "header": 'Cadastrar Novo endereço',
         "dontKnowPostalCode": 'Não sei meu CEP',
+        "knowPostalCode": 'Buscar pelo meu CEP',
         "postalCodeBRA": 'CEP',
         "postalCodeUSA": 'ZIP',
         "postalCode": 'Código Postal',
