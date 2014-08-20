@@ -5,23 +5,22 @@ define ['flight/lib/component',
         'shipping/setup/extensions',
         'shipping/models/Address',
         'shipping/mixin/withi18n'],
-  (defineComponent, extensions, AddressModel, withi18n) ->
+  (defineComponent, extensions, Address, withi18n) ->
     AddressForm = ->
       @defaultAttrs
         API: null
         data:
-          address: new AddressModel({})
+          address: null
           availableAddresses: []
           country: false
           postalCode: ''
-          deliveryCountries: ['BRA', 'ARG', 'CHL', 'COL', 'PER', 'ECU', 'PRY', 'URY', 'USA']
+          deliveryCountries: []
           disableCityAndState: false
           labelShippingFields: false
           showPostalCode: false
           showAddressForm: false
           showDontKnowPostalCode: true
           showSelectCountry: false
-          currentSearch: false
           addressSearchResults: {}
           countryRules: {}
           useGeolocation:
@@ -53,14 +52,16 @@ define ['flight/lib/component',
         addressSearchBtSelector: '.address-search-bt'
         addressSearchSelector: '#address-search'
         mapCanvasSelector: '#map-canvas'
+        clearAddressSearchSelector: '.clear-address-search'
 
         # Google maps variables
         map = null
         marker = null
 
       # Render this component according to the data object
-      @render = (data) ->
-        data = @attr.data if not data
+      @render = ->
+        data = @attr.data
+        debugger
 
         deps = [
           'shipping/translation/' + @attr.locale,
@@ -72,10 +73,9 @@ define ['flight/lib/component',
             dust.render @attr.templates.selectCountry.name, data, (err, output) =>
               output = $(output).i18n()
               @$node.html(output)
-              @addFormListeners()
 
           else if data.showAddressForm
-            rules = @getCurrentRule()
+            rules = @getCountryRule()
             data.statesForm = rules.states
             data.regexes = rules.regexes
             data.useGeolocation = rules.useGeolocation
@@ -84,7 +84,6 @@ define ['flight/lib/component',
               @extendTranslations(translation)
               output = $(output).i18n()
               @$node.html(output)
-              @addFormListeners()
 
               if data.loading
                 $('input, select, .btn', @$node).attr('disabled', 'disabled')
@@ -113,17 +112,15 @@ define ['flight/lib/component',
                       return rules.regexes.postalCode.test(val)
                     priority: 32
 
-              @startGoogleAddressSearch()
-
       # Helper function to get the current country's rules
-      @getCurrentRule = ->
-        @attr.data.countryRules[@attr.data.country]
+      @getCountryRule = ->
+        @attr.data.countryRules[@attr.data.address.country]
 
       # Validate the postal code input
       # If successful, this will call the postal code API
       @validatePostalCode = (ev, data) ->
         postalCode = data.el.value
-        rules = @getCurrentRule()
+        rules = @getCountryRule()
         if rules.regexes.postalCode.test(postalCode)
           @attr.data.throttledLoading = true
           @attr.data.postalCode = postalCode
@@ -132,64 +129,56 @@ define ['flight/lib/component',
           @render()
           if rules.queryPostalCode
             @getPostalCode postalCode
-        else if @attr.data.postalCode
-          @trigger('clearSelectedAddress.vtex')
-          @attr.data.isSearchingAddress = true
-          @render()
+
+      @clearAddressSearch = ->
+        @trigger('clearSelectedAddress.vtex')
+        @attr.data.postalCode = null
+        @attr.data.isSearchingAddress = true
+        @render()
 
       # Call the postal code API
-      @getPostalCode = (data) ->
-        country = @attr.data.country
-        postalCode = data.replace(/-/g, '')
-        @attr.data.currentSearch = postalCode
+      @getPostalCode = (postalCode) ->
         @attr.API.getAddressInformation({
-          postalCode: postalCode,
-          country: country
-        }).then((data) =>
-          if data
-            address = data
-            @attr.data.isSearchingAddress = false
-            # Atualiza o mapa de repsostas de postal code
-            @attr.data.addressSearchResults[@attr.data.currentSearch] = address
-            if address.neighborhood isnt '' and address.street isnt '' \
-            and address.state isnt '' and address.city isnt ''
-              @attr.data.labelShippingFields = true
-            else
-              @attr.data.labelShippingFields = false
-            if address.state isnt '' and address.city
-              @attr.data.disableCityAndState = true
-            else
-              @attr.data.disableCityAndState = false
-            @attr.data.showDontKnowPostalCode = false
-            @attr.data.address.city = address.city
-            @attr.data.address.state = address.state
-            @attr.data.address.street = address.street
-            @attr.data.address.neighborhood = address.neighborhood
-            @attr.data.address.geoCoordinates = address.geoCoordinates
-            @attr.data.address.country = data.country
-            @attr.data.throttledLoading = false
-            @attr.data.showAddressForm = true
-            @attr.data.loading = false
-            @render()
-            # Montando dados para send attachment
-            attachment =
-              address: @attr.data.address,
-              clearAddressIfPostalCodeNotFound: true
-            @attr.API?.sendAttachment('shippingData', attachment)
-        , () =>
-          @attr.data.isSearchingAddress = false
-          @attr.data.throttledLoading = false
-          @attr.data.showAddressForm = true
-          @attr.data.labelShippingFields = false
-          @attr.data.disableCityAndState = false
-          @attr.data.loading = false
-          @render()
-          # Montando dados para send attachment
-          attachment =
-            address: @attr.data.address,
-            clearAddressIfPostalCodeNotFound: true
-          @attr.API?.sendAttachment('shippingData', attachment)
-        )
+          postalCode: postalCode.replace(/-/g, '')
+          country: @attr.data.country
+        }).then(@handleAddressSearch.bind(this), @handleAddressSearchError.bind(this))
+
+      # TODO getAddressFromGoogle
+
+      @handleAddressSearch = (address) ->
+        @attr.data.throttledLoading = false
+        @attr.data.loading = false
+        @attr.data.showAddressForm = true
+        @attr.data.isSearchingAddress = false
+        @attr.data.showDontKnowPostalCode = false
+        @attr.data.labelShippingFields = address.neighborhood isnt '' and
+          address.street isnt '' and
+          address.state isnt '' and
+          address.city isnt ''
+        @attr.data.disableCityAndState = address.state isnt '' and address.city
+        @attr.data.address = new Address(address)
+        @render()
+
+        # Montando dados para send attachment
+        attachment =
+          address: @attr.data.address,
+          clearAddressIfPostalCodeNotFound: @getCountryRule()?.usePostalCode
+        @attr.API?.sendAttachment('shippingData', attachment)
+
+      @handleAddressSearchError = ->
+        @attr.data.isSearchingAddress = false
+        @attr.data.throttledLoading = false
+        @attr.data.showAddressForm = true
+        @attr.data.labelShippingFields = false
+        @attr.data.disableCityAndState = false
+        @attr.data.loading = false
+        @render()
+
+        # Montando dados para send attachment
+        attachment =
+          address: @attr.data.address,
+          clearAddressIfPostalCodeNotFound: @getCountryRule()?.usePostalCode
+        @attr.API?.sendAttachment('shippingData', attachment)
 
       # Able the user to edit the suggested fields
       # filled by the postal code service
@@ -241,25 +230,18 @@ define ['flight/lib/component',
         @attr.data.showAddressForm = true
         @attr.data.showSelectCountry = false
 
-        @attr.templates.form.name =
-          @attr.templates.form.baseName + country
-        @attr.templates.form['template'] =
-          'shipping/template/' + @attr.templates.form.name
+        @attr.templates.form.name = @attr.templates.form.baseName + country
+        @attr.templates.form.template = 'shipping/template/' + @attr.templates.form.name
 
         deps = [@attr.templates.form.template,
-                @attr.templates.selectCountry.template]
+                @attr.templates.selectCountry.template,
+                'shipping/rule/Country'+country]
 
-        if not @attr.data.countryRules[country]
-          deps.push('shipping/rule/Country'+country)
-          return require deps, (formTemplate, selectedCountryTemplate, countryRule) =>
-            @attr.data.countryRules[country] = new countryRule()
-            @render()
-        else
-          return require deps, (formTemplate, selectedCountryTemplate) =>
-            @render()
+        return require deps, (formTemplate, selectedCountryTemplate, countryRule) =>
+          @attr.data.countryRules[country] = new countryRule()
 
       @addressMapper = (address) ->
-        _.each @getCurrentRule().googleDataMap, (rule) =>
+        _.each @getCountryRule().googleDataMap, (rule) =>
           _.each address.address_components, (component) =>
             if _.intersection(component.types, rule.types).length > 0
               @attr.data[rule.value] = component[rule.length]
@@ -329,16 +311,12 @@ define ['flight/lib/component',
         , 100)
 
       # Handle the selection event
-      @selectedCountry = (ev, data) ->
-        @attr.data.address = {}
-        @attr.data.postalCode = ''
+      @selectedCountry = ->
+        @clearAddressSearch()
         country = @select('deliveryCountrySelector').val()
 
         if country
-          @selectCountry(country).done ->
-            rule = @getCurrentRule()
-            if rule.useGeolocation
-              @startGoogleAddressSearch()
+          @selectCountry(country).then(@render.bind(this), @handleCountrySelectError.bind(this))
 
       @getDeliveryCountries = (logisticsInfo) =>
         _.uniq(_.reduceRight(logisticsInfo, (memo, l) ->
@@ -356,7 +334,7 @@ define ['flight/lib/component',
       # Change the city select options when a state is selected
       # citiesBasedOnStateChange should be true in the country's rule
       @changeCities = (ev, data) ->
-        rules = @getCurrentRule()
+        rules = @getCountryRule()
         return if not rules.citiesBasedOnStateChange
 
         state = @select('stateSelector').val()
@@ -369,7 +347,7 @@ define ['flight/lib/component',
       # Change postal code according to the state selected
       # postalCodeByState should be true in the country's rule
       @changePostalCodeByState = (ev, data) ->
-        rules = @getCurrentRule()
+        rules = @getCountryRule()
         return if not rules.postalCodeByState
 
         state = @select('stateSelector').val()
@@ -382,7 +360,7 @@ define ['flight/lib/component',
       # Change postal code according to the city selected
       # postalCodeByCity should be true in the country's rule
       @changePostalCodeByCity = (ev, data) ->
-        rules = @getCurrentRule()
+        rules = @getCountryRule()
         return if not rules.postalCodeByCity
 
         state = @select('stateSelector').val()
@@ -408,32 +386,25 @@ define ['flight/lib/component',
         @changePostalCodeByState(ev, data)
 
       @orderFormUpdated = (ev, data) ->
-        @attr.data.availableAddresses = if data.shippingData? then data.shippingData.availableAddresses else []
-        @attr.data.address = if data.shippingData? then data.shippingData.address else @attr.data.address
         if data.shippingData
+          @attr.data.availableAddresses = data.shippingData.availableAddresses ? []
           @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)
-
-      @addFormListeners = () ->
-        # Escuta por qualquer mudança no form
-        @select('addressFormSelector').on 'change', =>
-          @attr.data.address = @getCurrentAddress()
-          @trigger('addressSelected.vtex', @attr.data.address)
+          @attr.data.address = new Address(data.shippingData.address, @attr.data.deliveryCountries)
 
       # Handle the initial view of this component
       @enable = (ev, address) ->
-        if ev then ev.stopPropagation()
+        ev?.stopPropagation()
 
         @attr.data.isSearchingAddress = not address
+        @attr.data.address = new Address(address, @attr.data.deliveryCountries)
 
-        @attr.data.address = new AddressModel(if address then address else null)
-
-        country = address?.country ? @attr.data.deliveryCountries[0]?
-        if country
-          @selectCountry(country)
-        else
+        if @attr.data.deliveryCountries.length > 1 and @attr.data.isSearchingAddress
           @attr.data.showSelectCountry = true
-          @render()
 
+        @selectCountry(@attr.data.address.country).then(@render.bind(this), @handleCountrySelectError.bind(this))
+
+      @handleCountrySelectError = (reason) ->
+        console.error("Unable to load country dependencies", reason)
 
       @disable = (ev) ->
         if ev then ev.stopPropagation()
@@ -454,6 +425,7 @@ define ['flight/lib/component',
           'cancelAddressFormSelector': @cancelAddressForm
           'submitButtonSelector': @submitAddress
           'addressSearchBtSelector': @searchAddress
+          'clearAddressSearchSelector': @clearAddressSearch
         @on 'change',
           'deliveryCountrySelector': @selectedCountry
           'stateSelector': @onChangeState

@@ -28,7 +28,7 @@
 
 
     {?isSearchingAddress}
-      <div class="ship-postal-code required input text mask">
+      <p class="ship-postal-code required input text mask">
         <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
 
         {?throttledLoading}
@@ -45,16 +45,19 @@
         {/throttledLoading}
 
         {?showGeolocation}
-          <div class="well well-small">
-            <label for="addressSearch"><span>Buscar por endereço</span></label>
-            <input type="text" id="address-search" tabindex="221" class="input-large" value="{addressSearch}" name="addressSearch" >
-            <div class="btn address-search-bt">Buscar</div>
-          </div>
+        <label for="addressSearch"><span>Buscar por endereço</span></label>
+        <input type="text" id="address-search" tabindex="221" class="input-large" value="{addressSearch}" name="addressSearch" />
+        <button class="btn address-search-bt">Buscar</button>
         {/showGeolocation}
-      </div>
+      </p>
     {/isSearchingAddress}
 
     {^isSearchingAddress}
+    <p class="ship-postal-code required input text mask">
+        <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
+        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small loading-postal-code" readonly="readonly" value="{postalCode}" name="postalCode" >
+        <button class="clear-address-search"><i class="fa fa-clear"></i></button>
+    </p>
     <div class="box-delivery">
       {?labelShippingFields}
       <p class="ship-filled-data">
