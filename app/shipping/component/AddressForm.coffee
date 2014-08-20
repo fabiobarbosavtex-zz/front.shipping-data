@@ -132,6 +132,10 @@ define ['flight/lib/component',
           @render()
           if rules.queryPostalCode
             @getPostalCode postalCode
+        else if @attr.data.postalCode
+          @trigger('clearSelectedAddress.vtex')
+          @attr.data.isSearchingAddress = true
+          @render()
 
       # Call the postal code API
       @getPostalCode = (data) ->
@@ -144,7 +148,8 @@ define ['flight/lib/component',
         }).then((data) =>
           if data
             address = data
-            # ATUALIZA O MAPA DE RESPOSTAS DE POSTAL CODE
+            @attr.data.isSearchingAddress = false
+            # Atualiza o mapa de repsostas de postal code
             @attr.data.addressSearchResults[@attr.data.currentSearch] = address
             if address.neighborhood isnt '' and address.street isnt '' \
             and address.state isnt '' and address.city isnt ''
@@ -172,6 +177,7 @@ define ['flight/lib/component',
               clearAddressIfPostalCodeNotFound: true
             @attr.API?.sendAttachment('shippingData', attachment)
         , () =>
+          @attr.data.isSearchingAddress = false
           @attr.data.throttledLoading = false
           @attr.data.showAddressForm = true
           @attr.data.labelShippingFields = false
@@ -416,16 +422,18 @@ define ['flight/lib/component',
       # Handle the initial view of this component
       @enable = (ev, address) ->
         if ev then ev.stopPropagation()
+
+        @attr.data.isSearchingAddress = not address
+
         @attr.data.address = new AddressModel(if address then address else null)
-        @attr.data.isEditingAddress = true
-        if address?.country?
-          @selectCountry(address.country)
-        else if @attr.data.deliveryCountries.length is 1
-          country = @attr.data.deliveryCountries[0]
+
+        country = address?.country ? @attr.data.deliveryCountries[0]?
+        if country
           @selectCountry(country)
         else
           @attr.data.showSelectCountry = true
           @render()
+
 
       @disable = (ev) ->
         if ev then ev.stopPropagation()

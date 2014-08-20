@@ -15,6 +15,7 @@ define ['flight/lib/component',
       @defaultAttrs
         API: null
         orderForm: false
+        isEditingAddress: false
         data:
           valid: false
           active: false
@@ -115,7 +116,10 @@ define ['flight/lib/component',
         if not @attr.data.active
           @disable()
         else
-          @enable()
+          if @attr.isEditingAddress and @attr.orderForm.shippingData.logisticsInfo.length > 0
+            @select('shippingOptionsSelector').trigger('enable.vtex')
+          else
+            @enable()
 
       # When a new addresses is selected
       # Should call API to get delivery options
@@ -155,14 +159,21 @@ define ['flight/lib/component',
         logisticsInfo = @attr.orderForm.shippingData?.logisticsInfo
         logisticsInfo?.length > 0 and logisticsInfo?[0].selectedSla isnt undefined
 
+      @clearSelectedAddress = (ev) ->
+        ev.stopPropagation()
+        @select('shippingOptionsSelector').trigger('disable.vtex')
+
       @showAddressForm = (ev, data) ->
         ev.stopPropagation()
+        @attr.isEditingAddress = true
         @select('shippingSummarySelector').trigger('disable.vtex')
         @select('addressListSelector').trigger('disable.vtex')
         @select('addressFormSelector').trigger('enable.vtex', data)
         @select('shippingOptionsSelector').trigger('disable.vtex')
 
       @showAddressListAndShippingOption = (ev) ->
+        ev.stopPropagation()
+        @attr.isEditingAddress = false
         @select('shippingSummarySelector').trigger('disable.vtex')
         @select('addressListSelector').trigger('enable.vtex')
         @select('addressFormSelector').trigger('disable.vtex')
@@ -191,6 +202,7 @@ define ['flight/lib/component',
             @on window, 'orderFormUpdated.vtex', @orderFormUpdated
             @on 'showAddressList.vtex', @showAddressListAndShippingOption
             @on 'showAddressForm.vtex', @showAddressForm
+            @on 'clearSelectedAddress.vtex', @clearSelectedAddress
             @on 'click',
               'goToPaymentButtonSelector': @disable
               'editShippingDataSelector': @enable

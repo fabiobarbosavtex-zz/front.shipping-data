@@ -26,34 +26,35 @@
       País: {{country}}
     </p>
 
-    {?useGeolocation}
-    <div class="well well-small">
-        <label for="addressSearch"><span>Buscar por endereço</span></label>
-        <input type="text" id="address-search" tabindex="221" class="input-large" value="{addressSearch}" name="addressSearch" >
-        <div class="btn address-search-bt">Buscar</div>
-    </div>
-    {/useGeolocation}
 
-    <p class="ship-postal-code required input text mask">
-      <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
+    {?isSearchingAddress}
+      <div class="ship-postal-code required input text mask">
+        <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
 
-      {?throttledLoading}
-      <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small loading-postal-code" disabled="disabled" value="{postalCode}" name="postalCode" >
+        {?throttledLoading}
+        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small loading-postal-code" disabled="disabled" value="{postalCode}" name="postalCode" >
 
-      <i class="loading-inline icon-spinner icon-spin">
-        <span data-i18n="global.loading"></span>
-      </i>
-      {:else}
-      <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small required" value="{postalCode}" parsley-postalode="true"  name="postalCode">
-      {?showDontKnowPostalCode}
-      <small><a href="{postalCodeForgottenURL}" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressForm.dontKnowPostalCode"></a></small>
-      {/showDontKnowPostalCode}
-      {/throttledLoading}
-      {?showPostalCode}
-      {/showPostalCode}
-    </p>
+        <i class="loading-inline icon-spinner icon-spin">
+          <span data-i18n="global.loading"></span>
+        </i>
+        {:else}
+        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small required" value="{postalCode}" parsley-postalode="true"  name="postalCode">
+        {?showDontKnowPostalCode}
+        <small><a href="{postalCodeForgottenURL}" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressForm.dontKnowPostalCode"></a></small>
+        {/showDontKnowPostalCode}
+        {/throttledLoading}
 
-    {?showAddressForm}
+        {?showGeolocation}
+          <div class="well well-small">
+            <label for="addressSearch"><span>Buscar por endereço</span></label>
+            <input type="text" id="address-search" tabindex="221" class="input-large" value="{addressSearch}" name="addressSearch" >
+            <div class="btn address-search-bt">Buscar</div>
+          </div>
+        {/showGeolocation}
+      </div>
+    {/isSearchingAddress}
+
+    {^isSearchingAddress}
     <div class="box-delivery">
       {?labelShippingFields}
       <p class="ship-filled-data">
@@ -140,7 +141,7 @@
     {?hasOtherAddresses}
     <p class="cancel-address-form pull-left"><a href="javascript:void(0);" class="btn btn-link" data-i18n="global.cancel"></a></p>
     {/hasOtherAddresses}
-    {/showAddressForm}
+    {/isSearchingAddress}
   </fieldset>
   {/address}
 </form>
