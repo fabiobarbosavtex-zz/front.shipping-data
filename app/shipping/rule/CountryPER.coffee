@@ -49,7 +49,7 @@ define ->
 
       @requiredFields = ['addressType', 'addressId', 'receiverName',
                          'street', 'city', 'state',
-                         'country', 'neighborhood']
+                         'country', 'neighborhood', 'geocordinates']
 
       @googleDataMap = [
           value: "postalCode"

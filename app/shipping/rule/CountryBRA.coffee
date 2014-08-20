@@ -14,7 +14,7 @@ define ->
       @queryPostalCode = true
       @postalCodeByState = false
       @postalCodeByCity = false
-      @useGeolocation = false
+      @enableGoogleAddressSearch = true
 
       @regexes =
         postalCode: new RegExp(/^([\d]{5})\-?([\d]{3})$/)
@@ -25,6 +25,8 @@ define ->
       @requiredFields = ['addressType', 'addressId', 'receiverName',
                          'postalCode', 'street', 'city', 'state',
                          'country', 'number', 'neighborhood']
+
+      @GoogleAddressSearchMinimunFields = []
 
       @googleDataMap = [
           value: "postalCode"
