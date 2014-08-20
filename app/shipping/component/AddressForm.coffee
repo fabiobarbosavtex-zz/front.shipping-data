@@ -151,6 +151,7 @@ define ['flight/lib/component',
         attachment =
           address: @attr.data.address,
           clearAddressIfPostalCodeNotFound: @getCountryRule()?.usePostalCode
+        @trigger('startLoadingShippingOptions.vtex')
         @attr.API?.sendAttachment('shippingData', attachment)
 
       @handleAddressSearchError = ->

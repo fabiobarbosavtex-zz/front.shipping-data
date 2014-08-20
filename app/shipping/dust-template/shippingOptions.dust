@@ -2,7 +2,6 @@
     <h3 class="hide" data-i18n="shipping.shippingOptions.shippingOptions"></h3>
         {#loadingShippingOptions}
         <div class="loading-slas">
-            {#loading}
             <div class="loading loading-bg">
                 <div class="loading-img">
                     <i class="icon-spinner icon-spin">
@@ -10,7 +9,6 @@
                     </i>
                 </div>
             </div>
-            {/loading}
             <fieldset class="shipping-options just-one">
                 <h4 class="pull-left">
                     <span class="pull-left choose-shipping-option-container">
@@ -53,11 +51,8 @@
         </div>
         {/loadingShippingOptions}
 
-        {#shippingOptions.multipleSellers}
-        <fieldset class="shipping-options">
-        {:else}
-        <fieldset class="shipping-options just-one">
-        {/shippingOptions.multipleSellers}
+        {^loadingShippingOptions}
+        <fieldset class="shipping-options {#shippingOptions.multipleSellers}just-one{/shippingOptions.multipleSellers}">
         {#shippingOptions}
             <h4 class="pull-left">
                 <span class="pull-left choose-shipping-option-container">
@@ -74,7 +69,7 @@
             </h4>
 
             <table class="product-list unstyled">
-                <tbody data-bind="foreach: logisticsInfoArray">
+                <tbody>
                     {#items}
                     <tr>
                         <td class="img hide"><img src="{imageUrl}"/></td>
@@ -147,4 +142,5 @@
             </div>
         {/shippingOptions}
         </fieldset>
+        {/loadingShippingOptions}
 </div>

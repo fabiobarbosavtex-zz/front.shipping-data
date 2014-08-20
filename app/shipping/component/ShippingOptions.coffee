@@ -15,6 +15,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           multipleSellers: false
           items: []
           sellers: []
+          loadingShippingOptions: false
 
         templates:
           shippingOptions:
@@ -374,12 +375,19 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @render()
 
       @enable = (ev) ->
-        if ev then ev.stopPropagation()
+        ev?.stopPropagation()
+        @attr.data.loadingShippingOptions = false
         @render()
 
       @disable = (ev) ->
-        if ev then ev.stopPropagation()
+        ev?.stopPropagation()
+        @attr.data.loadingShippingOptions = false
         @$node.html('')
+
+      @startLoadingShippingOptions = (ev) ->
+        ev?.stopPropagation()
+        @attr.data.loadingShippingOptions = true
+        @render()
 
       # Bind events
       @after 'initialize', ->
@@ -388,6 +396,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @on window, 'localeSelected.vtex', @localeUpdate        
         @on window, 'orderFormUpdated.vtex', @orderFormUpdated
         @on 'scheduleDateSelected.vtex', @scheduleDateSelected
+        @on @$node.parent(), 'startLoadingShippingOptions.vtex', @startLoadingShippingOptions
         @on 'click',
           'shippingOptionSelector': @selectShippingOptionHandler
           'deliveryWindowSelector': @deliveryWindowSelected

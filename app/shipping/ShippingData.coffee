@@ -108,7 +108,7 @@ define ['flight/lib/component',
         @attr.orderForm.shippingData.address = addressObj
         @attr.orderForm.shippingData.logisticsInfo = null
         @shippingDataSubmitHandler(@attr.orderForm.shippingData)
-        @select('shippingOptionsSelector').trigger('disable.vtex')
+        @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
 
       @onPostalCodeLoaded = (ev, addressObj) ->
         console.log (addressObj)
