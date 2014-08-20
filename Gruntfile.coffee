@@ -25,7 +25,12 @@ module.exports = (grunt) ->
         expand: true
         cwd: 'build-raw/'
         src: '**/*.*'
-        dest: 'build/'      
+        dest: 'build/'
+      pkg:
+        files: [
+          src: ['package.json']
+          dest: "build/<%= relativePath %>/package.json"
+        ]
       templates:
         expand: true
         cwd: 'app/shipping/'
@@ -200,7 +205,7 @@ module.exports = (grunt) ->
                                 'copy:build', 'server', 'watch']
   # Dist - minifies files
   grunt.registerTask 'dist', ['clean', 'dust', 'copy:templates', 'copy:main',
-                              'coffee:main', 'min', 'copy:build']
+                              'coffee:main', 'min', 'copy:build', 'copy:pkg']
 
   grunt.registerTask 'test', ->
   grunt.registerTask 'server', ['configureProxies:server', 'connect']
