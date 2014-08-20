@@ -202,5 +202,5 @@ module.exports = (grunt) ->
   grunt.registerTask 'dist', ['clean', 'dust', 'copy:templates', 'copy:main',
                               'coffee:main', 'min', 'copy:build']
 
-  grunt.registerTask 'test', ['base', 'server', 'karma:single']
+  grunt.registerTask 'test', ->
   grunt.registerTask 'server', ['configureProxies:server', 'connect']
