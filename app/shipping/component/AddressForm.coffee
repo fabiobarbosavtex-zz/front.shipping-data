@@ -11,6 +11,9 @@ define ['flight/lib/component',
     AddressForm = ->
       @defaultAttrs
         API: null
+        map: false
+        marker: false
+        currentResponseCoordinates: false
         data:
           address: null
           availableAddresses: []
@@ -80,6 +83,9 @@ define ['flight/lib/component',
           if @attr.data.showGeolocationSearch
             @startGoogleAddressSearch()
 
+          if @attr.currentResponseCoordinates
+            @createMap(@attr.currentResponseCoordinates)
+
           window.ParsleyValidator.addValidator('postalcode',
             (val) =>
                 rules = @getCountryRule()
@@ -140,6 +146,8 @@ define ['flight/lib/component',
 
       # Call the postal code API
       @getPostalCode = (postalCode) ->
+        # Clear map postition
+        @attr.currentResponseCoordinates = null
         @attr.API.getAddressInformation({
           postalCode: postalCode.replace(/-/g, '')
           country: @attr.data.country
@@ -263,29 +271,27 @@ define ['flight/lib/component',
             @attr.data.requiredGoogleFieldsNotFound.push(rule.value)
 
         if @attr.data.requiredGoogleFieldsNotFound.length is 0
+          @attr.currentResponseCoordinates = googleAddress.geometry.location
           @handleAddressSearch(address)
         else
           console.log @attr.data.requiredGoogleFieldsNotFound
           @render()
 
       @createMap = (location) ->
+        @select('mapCanvasSelector').css('display', 'block')
         mapOptions =
           zoom: 14
           center: location
 
-        if not @attr.map?
-          @attr.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
+        if @attr.map
+          @attr.map = null
+        @attr.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
 
-        @attr.map.panTo(location)
-        @attr.map.setZoom(14)
-
-        if @attr.marker?
+        if @attr.marker
           @attr.marker.setMap(null)
           @attr.marker = null
-
         @attr.marker = new google.maps.Marker(position: location)
-        @marker.setMap(@map)
-        @select('mapCanvasSelector').fadeIn(500)
+        @attr.marker.setMap(@attr.map)
 
       @startGoogleAddressSearch = ->
         if not @attr.isGoogleMapsAPILoaded
@@ -313,7 +319,6 @@ define ['flight/lib/component',
             addressObject = _.find addressListResponse, (item) ->
               item.formatted_address is address
             @addressMapper(addressObject)
-            #@createMap(addressObject.geometry.location)
 
       # Handle the selection event
       @selectedCountry = ->
