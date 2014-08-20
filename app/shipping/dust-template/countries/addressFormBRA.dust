@@ -146,6 +146,8 @@
         <label for="ship-name"><span data-i18n="shipping.addressForm.receiver"></span>  <span class="item-required">*</span></label>
         <input type="text" tabindex="229" id="ship-name" class="input-xlarge" data-parsley-trigger="change blur" data-parsley-required="true" data-parsley-alphanumponc="true" name="receiverName" value="{receiverName}">
       </p>
+
+      <div id="map-canvas"></div>
     </div>
     <p class="submit btn-submit-wrapper pull-left hide" data-bind="fadeVisible: showContinueButton">
       <button type="submit" class="submit btn btn-large btn-success address-save" data-bind="attr: { 'disabled': disableContinueButton }" tabindex="350" data-i18n="global.save"></button>
