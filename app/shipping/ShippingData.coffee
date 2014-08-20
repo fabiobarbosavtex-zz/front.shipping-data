@@ -186,7 +186,7 @@ define ['flight/lib/component',
             @on 'enable.vtex', @enable
             @on 'disable.vtex', @disable
             @on 'newAddress', @onAddressSaved
-            @on 'addressSelected', @onAddressSelected
+            @on 'addressSelected.vtex', @onAddressSelected
             @on 'postalCode', @onPostalCodeLoaded
             @on window, 'orderFormUpdated.vtex', @orderFormUpdated
             @on 'showAddressList.vtex', @showAddressListAndShippingOption

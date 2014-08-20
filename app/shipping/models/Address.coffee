@@ -4,7 +4,7 @@ require = vtex.curl || window.require
 define ->
   class Address
     constructor: (data = {}) ->
-      @addressId = data.addressId
+      @addressId = data.addressId ? (new Date().getTime() * -1).toString()
       @addressType = data.addressType ? "residential"
       @city = data.city
       @complement = data.complement
