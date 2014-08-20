@@ -26,18 +26,16 @@ define ->
                          'postalCode', 'street', 'city', 'state',
                          'country', 'number', 'neighborhood']
 
-      @GoogleAddressSearchMinimunFields = []
-
       @googleDataMap = [
           value: "postalCode"
           length: "long_name"
           types: ["postal_code"],
-          required: false
+          required: true
         ,
           value: "number"
           length: "long_name"
           types: ["street_number"],
-          required: false
+          required: true
         ,
           value: "street"
           length: "long_name"

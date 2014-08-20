@@ -48,6 +48,15 @@
         <label for="addressSearch"><span>Buscar por endereço</span></label>
         <input type="text" id="address-search" tabindex="221" class="input-large" value="{addressSearch}" name="addressSearch" /><br/>
         <small><a href="javascript:void(0);" id="know-postal-code" target="_blank" data-i18n="shipping.addressForm.knowPostalCode"></a></small>
+        {@if cond="{requiredGoogleFieldsNotFound.length} > 0"}
+        <div class="well">
+          Faltaram os seguintes campos obrigatórios:
+          <br/><br/>
+          {#requiredGoogleFieldsNotFound}
+            <span data-i18n="shipping.addressForm.{.}">{.}</span> <br/>
+          {/requiredGoogleFieldsNotFound}
+        </div>
+        {/if}
         {/showGeolocationSearch}
       </p>
     {/isSearchingAddress}

@@ -24,6 +24,7 @@ define ['flight/lib/component',
           addressSearchResults: {}
           countryRules: {}
           showGeolocationSearch: false
+          requiredGoogleFieldsNotFound: []
 
         templates:
           form:
@@ -139,8 +140,6 @@ define ['flight/lib/component',
           country: @attr.data.country
         }).then(@handleAddressSearch.bind(this), @handleAddressSearchError.bind(this))
 
-      # TODO getAddressFromGoogle
-
       @handleAddressSearch = (address) ->
         @attr.data.throttledLoading = false
         @attr.data.loading = false
@@ -242,18 +241,27 @@ define ['flight/lib/component',
           @attr.data.useGeolocation = @attr.data.countryRules[country].useGeolocation
 
       @addressMapper = (googleAddress) ->
-        address = {}
-        _.each @getCountryRule().googleDataMap, (rule) =>
+        # Clean required google fields error and render
+        @attr.data.requiredGoogleFieldsNotFound = []
+        googleDataMap = @getCountryRule().googleDataMap
+        address = {
+          geoCoordinates: [
+            googleAddress.geometry.location.lng()
+            googleAddress.geometry.location.lat()
+          ]
+        }
+        _.each googleDataMap, (rule) =>
           _.each googleAddress.address_components, (component) =>
             if _.intersection(component.types, rule.types).length > 0
               address[rule.value] = component[rule.length]
+          if rule.required and not address[rule.value]
+            @attr.data.requiredGoogleFieldsNotFound.push(rule.value)
 
-        address.geoCoordinates = [
-          googleAddress.geometry.location.lng()
-          googleAddress.geometry.location.lat()
-        ]
-
-        @handleAddressSearch(address)
+        if @attr.data.requiredGoogleFieldsNotFound.length is 0
+          @handleAddressSearch(address)
+        else
+          console.log @attr.data.requiredGoogleFieldsNotFound
+          @render()
 
       @createMap = (location) ->
         mapOptions =
@@ -275,7 +283,6 @@ define ['flight/lib/component',
         @select('mapCanvasSelector').fadeIn(500)
 
       @startGoogleAddressSearch = ->
-        console.log '@startGoogleAddressSearch'
         if not @attr.isGoogleMapsAPILoaded
           script = document.createElement("script")
           script.type = "text/javascript"
