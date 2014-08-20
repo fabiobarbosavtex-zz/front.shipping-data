@@ -166,8 +166,11 @@ define ['flight/lib/component',
             @attr.data.showAddressForm = true
             @attr.data.loading = false
             @render()
-            @trigger('postalCode.vtex', @getCurrentAddress())
-            @trigger('addressSelected.vtex', @attr.data.address)
+            # Montando dados para send attachment
+            attachment =
+              address: @attr.data.address,
+              clearAddressIfPostalCodeNotFound: true
+            @attr.API?.sendAttachment('shippingData', attachment)
         , () =>
           @attr.data.throttledLoading = false
           @attr.data.showAddressForm = true
@@ -175,7 +178,11 @@ define ['flight/lib/component',
           @attr.data.disableCityAndState = false
           @attr.data.loading = false
           @render()
-          @trigger('postalCode.vtex', @getCurrentAddress())
+          # Montando dados para send attachment
+          attachment =
+            address: @attr.data.address,
+            clearAddressIfPostalCodeNotFound: true
+          @attr.API?.sendAttachment('shippingData', attachment)
         )
 
       # Able the user to edit the suggested fields
@@ -212,12 +219,9 @@ define ['flight/lib/component',
         if @select('addressFormSelector').parsley('validate')
           @attr.data.address = @getCurrentAddress()
           @trigger 'loading.vtex', true
-          @attr.showAddressForm = false
 
-          # Cria ID se ele não existir
-          if @attr.data.address.addressId is null or @attr.data.address.addressId is ""
-            @attr.data.address.addressId = (new Date().getTime() * -1).toString()
-          if @attr.data.address.addressSearch == null
+          # limpa campo criado para busca do google
+          if @attr.data.address.addressSearch is null
             delete @attr.data.address["addressSearch"]
 
           # Submit address object to API
