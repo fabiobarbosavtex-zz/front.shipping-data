@@ -117,9 +117,9 @@ define ['flight/lib/component',
 
       @clearAddressSearch = ->
         @trigger('clearSelectedAddress.vtex')
-        @attr.data.postalCodeQuery = null
-        @attr.data.address = null
+        @attr.data.address = new Address(null, @attr.data.deliveryCountries)
         @attr.data.isSearchingAddress = true
+        @attr.data.postalCodeQuery = null
         @render()
 
       # Call the postal code API
@@ -370,6 +370,7 @@ define ['flight/lib/component',
         ev?.stopPropagation()
 
         @attr.data.isSearchingAddress = not address
+        @attr.data.postalCodeQuery = null
         @attr.data.address = new Address(address, @attr.data.deliveryCountries)
 
         if @attr.data.deliveryCountries.length > 1 and @attr.data.isSearchingAddress
