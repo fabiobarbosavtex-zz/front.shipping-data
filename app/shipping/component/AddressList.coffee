@@ -149,7 +149,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @on window, 'orderFormUpdated.vtex', @orderFormUpdated
         @on window, 'addressFormCanceled.vtex', @enable
         @on 'updateAddresses.vtex', @updateAddresses
-        @on 'selectAddress.vtex', @selectAddress
         @on 'click',
           'createAddressSelector': @createAddress
           'addressItemSelector': @selectAddressHandler

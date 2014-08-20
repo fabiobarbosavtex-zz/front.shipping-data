@@ -123,33 +123,14 @@ define ['flight/lib/component',
 
       # When a new addresses is selected
       # Should call API to get delivery options
-      @onAddressSelected = (ev, addressObj) ->
-        console.log (addressObj)
+      @addressSelected = (ev, addressObj) ->
         @attr.orderForm.shippingData.address = addressObj
+        @attr.orderForm.shippingData.logisticsInfo = null
+        @shippingDataSubmitHandler(@attr.orderForm.shippingData)
+        @select('shippingOptionsSelector').trigger('disable.vtex')
 
       @onPostalCodeLoaded = (ev, addressObj) ->
         console.log (addressObj)
-
-      # When a new addresses is saved
-      @onAddressSaved = (ev, addressObj) ->
-        # Do an AJAX to save in your API
-        # When you're done, update with the new data
-#        updated = false
-#        for address in @attr.orderForm.shippingData.availableAddresses
-#          if address.addressId is addressObj.addressId
-#            address = _.extend(address, addressObj)
-#            updated = true
-#            break;
-#
-#        if not updated
-#          @attr.orderForm.shippingData.availableAddresses.push(addressObj)
-#
-#        @attr.orderForm.shippingData.address = addressObj
-#        @$node.trigger('updateAddresses', @attr.orderForm.shippingData)
-
-      ###
-      Validations
-      ###
 
       @validateAddress = ->
         address = @attr.orderForm.shippingData?.address
@@ -196,8 +177,7 @@ define ['flight/lib/component',
             # Start event listeners
             @on 'enable.vtex', @enable
             @on 'disable.vtex', @disable
-            @on 'newAddress', @onAddressSaved
-            @on 'addressSelected.vtex', @onAddressSelected
+            @on 'addressSelected.vtex', @addressSelected
             @on 'postalCode', @onPostalCodeLoaded
             @on window, 'orderFormUpdated.vtex', @orderFormUpdated
             @on 'showAddressList.vtex', @showAddressListAndShippingOption

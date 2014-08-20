@@ -32,7 +32,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
     @changeShippingOption = (ev, data) ->
       @trigger('showAddressList.vtex')
 
-    @onAddressSelected = (ev, data) ->
+    @addressSelected = (ev, data) ->
       @attr.data.address = data
       @render()
 
@@ -48,7 +48,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
     @after 'initialize', ->
       @on 'enable.vtex', @enable
       @on 'disable.vtex', @disable
-      @on window, 'addressSelected', @onAddressSelected
+      @on window, 'addressSelected', @addressSelected
       @on window, 'orderFormUpdated.vtex', @orderFormUpdated
       @on window, 'localeSelected.vtex', @localeUpdate
       @on window, 'click',
