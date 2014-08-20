@@ -62,23 +62,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           return memo.concat(l.shipsTo)
         , []))
 
-      # Update address list
-      @updateAddresses = (ev, data) ->
-        # Remove all the addresses located in countries the store is not
-        # delivering
-        @attr.data.availableAddresses = _.filter data?.availableAddresses, (a) =>
-          return a.country in @attr.data.deliveryCountries
-
-        if @attr.data.availableAddresses.length is 0
-          # The user has no addresses yet
-          @attr.data.hasOtherAddresses = false
-        else
-          @attr.data.address = data.address
-          @attr.data.selectedAddressId = data.address.addressId
-          @attr.data.hasOtherAddresses = true
-
-        @createAddressesSummaries()
-
       @createAddressesSummaries = ->
         countriesUsedRequire = _.map @attr.data.deliveryCountries, (c) ->
           return 'shipping/rule/Country'+c
@@ -139,7 +122,7 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           @attr.data.selectedAddressId = data.shippingData.address?.addressId
           @attr.data.canEditData = data.canEditData
           @attr.data.loggedIn = data.loggedIn
-          #@updateAddresses(null, @attr.data)
+          @createAddressesSummaries()
 
       # Bind events
       @after 'initialize', ->
@@ -148,7 +131,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @on window, 'localeSelected.vtex', @localeUpdate
         @on window, 'orderFormUpdated.vtex', @orderFormUpdated
         @on window, 'addressFormCanceled.vtex', @enable
-        @on 'updateAddresses.vtex', @updateAddresses
         @on 'click',
           'createAddressSelector': @createAddress
           'addressItemSelector': @selectAddressHandler
