@@ -61,7 +61,6 @@ define ['flight/lib/component',
       # Render this component according to the data object
       @render = ->
         data = @attr.data
-        debugger
 
         deps = [
           'shipping/translation/' + @attr.locale,
