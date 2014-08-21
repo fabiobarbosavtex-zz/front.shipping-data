@@ -41,7 +41,7 @@ define ['flight/lib/component',
       # It's best, then, to simply update the needed DOM.
       @updateView = ->
         require 'shipping/translation/' + @attr.locale, (translation) =>
-          if not @validateAddress()
+          if @attr.data.active and not @validateAddress()
             @editAddress(null, @attr.orderForm.shippingData.address)
             if @attr.orderForm.shippingData.logisticsInfo.length > 0
               @select('shippingOptionsSelector').trigger('enable.vtex')
@@ -93,6 +93,7 @@ define ['flight/lib/component',
         API.sendAttachment(attachmentId, attachment)
 
       @orderFormUpdated = (ev, orderForm) ->
+        debugger
         @attr.orderForm = orderForm
         @updateView()
 
