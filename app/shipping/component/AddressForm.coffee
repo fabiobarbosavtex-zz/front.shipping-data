@@ -14,6 +14,7 @@ define ['flight/lib/component',
         API: null
         map: false
         marker: false
+        circle: false
         currentResponseCoordinates: false
         data:
           address: null
@@ -290,6 +291,12 @@ define ['flight/lib/component',
         mapOptions =
           zoom: 14
           center: location
+          streetViewControl: false
+          mapTypeControl: false
+          zoomControl: true
+          zoomControlOptions:
+            position: google.maps.ControlPosition.TOP_RIGHT
+            style: google.maps.ZoomControlStyle.SMALL
 
         if @attr.map
           @attr.map = null
@@ -300,6 +307,21 @@ define ['flight/lib/component',
           @attr.marker = null
         @attr.marker = new google.maps.Marker(position: location)
         @attr.marker.setMap(@attr.map)
+
+        circleOptions =
+          center: location
+          fillColor: '#2cb6d6'
+          fillOpacity: 0.3
+          strokeColor: '#ff6661'
+          strokeOpacity: 0.8
+          strokeWeight: 4
+          radius: 600
+
+        if @attr.circle
+          @attr.circle.setMap(null)
+          @attr.circle = null
+        @attr.circle = new google.maps.Circle(circleOptions)
+        @attr.circle.setMap(@attr.map)
 
       @startGoogleAddressSearch = ->
         if not @attr.isGoogleMapsAPILoaded
