@@ -66,10 +66,8 @@ define ['flight/lib/component',
 
       @updateComponentView = ->
         if @attr.data.active
-          if not @validateAddress()
+          if @attr.validationResults.addressForm.length > 0 # Address isnt valid
             @editAddress(null, @attr.orderForm.shippingData.address)
-            if @attr.orderForm.shippingData.logisticsInfo.length > 0
-              @select('shippingOptionsSelector').trigger('enable.vtex')
           else
             @showAddressListAndShippingOption()
 
@@ -110,10 +108,14 @@ define ['flight/lib/component',
         @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
 
       @validateAddress = ->
-        @attr.validationResults.addressForm[0] ? true
+        if @attr.validationResults.addressForm.length > 0
+          return "Address invalid"
+        return true
 
       @validateShippingOptions = ->
-        @attr.validationResults.shippingOptions[0] ? true
+        if @attr.validationResults.shippingOptions.length >0
+          return "Shipping options invalid"
+        return true
 
       @handleAddressValidation = (ev, results) ->
         ev?.stopPropagation()
