@@ -12,7 +12,7 @@
               <span class="secondpart">{secondPart}</span>              
             </label>
           </p>
-          <span class="text-box-selected" data-i18n="shipping.addressList.selected"></span>&nbsp;
+          <span class="text-box-selected hide" data-i18n="shipping.addressList.selected"></span>&nbsp;
           <span class="link-box-select selected">
             <i class="icon-ok-circle"></i>
           </span>

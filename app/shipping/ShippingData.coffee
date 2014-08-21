@@ -41,20 +41,13 @@ define ['flight/lib/component',
       # It's best, then, to simply update the needed DOM.
       @updateView = ->
         require 'shipping/translation/' + @attr.locale, (translation) =>
-          if @attr.data.active and not @validateAddress()
-            @editAddress(null, @attr.orderForm.shippingData.address)
-            if @attr.orderForm.shippingData.logisticsInfo.length > 0
-              @select('shippingOptionsSelector').trigger('enable.vtex')
-          else
-            @showAddressListAndShippingOption()
-
           @extendTranslations(translation)
           if @attr.data.active
             @select('shippingStepSelector').addClass('active', 'visited')
             @select('editShippingDataSelector').hide()
             @select('shippingTitleSelector').addClass('accordion-toggle-active')
             @select('addressNotFilledSelector').hide()
-            if @attr.orderForm?.shippingData?.address?.postalCode
+            if @isValid()
               @select('goToPaymentButtonSelector').show()
             else
               @select('goToPaymentButtonSelector').hide()
@@ -70,9 +63,19 @@ define ['flight/lib/component',
               @select('addressNotFilledSelector').show()
             @clearValidationClass()
 
+      @updateComponentView = ->
+        if @attr.data.active
+          if not @validateAddress()
+            @editAddress(null, @attr.orderForm.shippingData.address)
+            if @attr.orderForm.shippingData.logisticsInfo.length > 0
+              @select('shippingOptionsSelector').trigger('enable.vtex')
+          else
+            @showAddressListAndShippingOption()
+
       @enable = ->
         @attr.data.active = true
         @updateView()
+        @updateComponentView()
 
       @disable = ->
         @select('shippingSummarySelector').trigger('enable.vtex')
@@ -95,6 +98,7 @@ define ['flight/lib/component',
       @orderFormUpdated = (ev, orderForm) ->
         @attr.orderForm = orderForm
         @updateView()
+        @updateComponentView()
 
       # When a new addresses is selected
       # Should call API to get delivery options
@@ -138,6 +142,16 @@ define ['flight/lib/component',
         @select('addressFormSelector').trigger('disable.vtex')
         @select('shippingOptionsSelector').trigger('enable.vtex')
 
+      @addressUpdated = (ev, address) ->
+        ev.stopPropagation()
+        @attr.orderForm.shippingData.address = address
+        @updateView()
+
+      @shippingOptionsUpdated = (ev, logisticsInfo) ->
+        ev.stopPropagation()
+        @attr.orderForm.shippingData.logisticsInfo = logisticsInfo
+        @updateView()
+
       # Bind events
       @after 'initialize', ->
         require 'shipping/translation/' + @attr.locale, (translation) =>
@@ -159,6 +173,8 @@ define ['flight/lib/component',
             @on window, 'orderFormUpdated.vtex', @orderFormUpdated
             @on 'showAddressList.vtex', @showAddressListAndShippingOption
             @on 'editAddress.vtex', @editAddress
+            @on 'currentAddress.vtex', @addressUpdated
+            @on 'currentShippingOptions.vtex', @shippingOptionsUpdated
             @on 'clearSelectedAddress.vtex', @clearSelectedAddress
             @on @attr.addressFormSelector, 'componentValidated.vtex', @handleAddressValidation
             @on @attr.shippingOptionsSelector, 'componentValidated.vtex', @handleShippingOptionsValidation

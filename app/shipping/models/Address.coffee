@@ -25,7 +25,7 @@ define ->
       regex = new RegExp(/^[A-Za-zÀ-ž0-9\/\\\-\.\,\s\(\)\'\#ªº]*$/)
       return name in rules.requiredFields and (not value or regex.test(value))
 
-    isValid: (rules) =>
+    validate: (rules) =>
       # City
       if 'city' in rules.requiredFields
         # Caso nao esteja preenchido

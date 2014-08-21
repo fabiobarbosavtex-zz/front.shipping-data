@@ -311,6 +311,8 @@ define ['flight/lib/component',
             li.deliveryWindow = deliveryWindow
 
         @selectDeliveryWindow(shippingOption.selectedSla, deliveryWindow)
+        @trigger('currentShippingOptions.vtex', currentAddress.logisticsInfo)
+        @validate()
 
       @selectDeliveryWindow = (sla, deliveryWindow) ->
         sla.deliveryWindow = deliveryWindow
@@ -396,7 +398,11 @@ define ['flight/lib/component',
 
       @validateShippingOptions = ->
         logisticsInfo = @attr.data.logisticsInfo
-        logisticsInfo?.length > 0 and logisticsInfo?[0].selectedSla isnt undefined
+        debugger
+        if logisticsInfo?.length > 0 and logisticsInfo?[0].selectedSla isnt undefined
+          @trigger('componentValidated.vtex', [[]])
+        else
+          @trigger('componentValidated.vtex', [false])
 
       # Bind events
       @after 'initialize', ->

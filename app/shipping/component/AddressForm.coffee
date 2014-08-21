@@ -135,9 +135,13 @@ define ['flight/lib/component',
 
       @validateAddress = ->
         address = @attr.data.address
-        address.isValid(@getCountryRule())
+        if address.validate(@getCountryRule())
+          @trigger('componentValidated.vtex', [[]])
+        else
+          @trigger('componentValidated.vtex', [false])
 
-      @clearAddressSearch = ->
+      @clearAddressSearch = (ev) ->
+        ev.preventDefault()
         @trigger('clearSelectedAddress.vtex')
         @attr.data.address = new Address(null, @attr.data.deliveryCountries)
         @attr.data.isSearchingAddress = true
