@@ -9,8 +9,9 @@ define ['flight/lib/component',
         'shipping/component/ShippingSummary',
         'shipping/template/shippingData',
         'shipping/mixin/withi18n',
+        'shipping/mixin/withOrderForm',
         'shipping/mixin/withValidation'],
-  (defineComponent, extensions, AddressForm, AddressList, ShippingOptions, ShippingSummary, template, withi18n, withValidation) ->
+  (defineComponent, extensions, AddressForm, AddressList, ShippingOptions, ShippingSummary, template, withi18n, withOrderForm, withValidation) ->
     ShippingData = ->
       @defaultAttrs
         API: null
@@ -96,7 +97,7 @@ define ['flight/lib/component',
         API.sendAttachment(attachmentId, attachment)
 
       @orderFormUpdated = (ev, orderForm) ->
-        @attr.orderForm = orderForm
+        @attr.orderForm = _.clone orderForm
         @updateView()
         @updateComponentView()
 
@@ -170,7 +171,6 @@ define ['flight/lib/component',
             @on 'enable.vtex', @enable
             @on 'disable.vtex', @disable
             @on 'addressSelected.vtex', @addressSelected
-            @on window, 'orderFormUpdated.vtex', @orderFormUpdated
             @on 'showAddressList.vtex', @showAddressListAndShippingOption
             @on 'editAddress.vtex', @editAddress
             @on 'currentAddress.vtex', @addressUpdated
@@ -187,7 +187,4 @@ define ['flight/lib/component',
               @validateShippingOptions
             ]
 
-            if vtexjs?.checkout?.orderForm?
-              @orderFormUpdated null, vtexjs.checkout.orderForm
-
-    return defineComponent(ShippingData, withi18n, withValidation)
+    return defineComponent(ShippingData, withi18n, withValidation, withOrderForm)

@@ -1,36 +1,26 @@
 define = vtex.define || window.define
 require = vtex.curl || window.require
 
-define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/withi18n'],
-(defineComponent, extensions, withi18n) ->
+define ['flight/lib/component',
+        'shipping/setup/extensions',
+        'shipping/mixin/withi18n',
+        'shipping/mixin/withOrderForm',
+        'shipping/template/shippingSummary'],
+(defineComponent, extensions, withi18n, withOrderForm, template) ->
   ShippingSummary = ->
     @defaultAttrs
       API: null
       data:
         address: {}
-        currentCountryName: false
-
-      templates:
-        list:
-          name: 'shippingSummary'
-          template: 'shipping/template/shippingSummary'
-
-      changeShippingOptionBtSelector: "#change-other-shipping-option"
 
     # Render this component according to the data object
-    @render = () ->
-      data = @attr.data
-      require [@attr.templates.list.template], =>
-        dust.render @attr.templates.list.name, data, (err, output) =>
-          output = $(output).i18n()
-          $(@$node).html(output)
+    @render = ->
+      dust.render template, @attr.data, (err, output) =>
+        output = $(output).i18n()
+        @$node.html(output)
 
     @orderFormUpdated = (ev, orderForm) ->
       @attr.data.address = orderForm.shippingData?.address
-      @attr.data.currentCountryName = "Brasil"
-
-    @changeShippingOption = (ev, data) ->
-      @trigger('showAddressList.vtex')
 
     @addressSelected = (ev, data) ->
       @attr.data.address = data
@@ -48,13 +38,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
     @after 'initialize', ->
       @on 'enable.vtex', @enable
       @on 'disable.vtex', @disable
-      @on window, 'addressSelected', @addressSelected
-      @on window, 'orderFormUpdated.vtex', @orderFormUpdated
-      @on window, 'localeSelected.vtex', @localeUpdate
-      @on window, 'click',
-        'changeShippingOptionBtSelector': @changeShippingOption
+      @on @$node.parent(), 'addressSelected.vtex', @addressSelected
 
-      if vtexjs?.checkout?.orderForm?
-        @orderFormUpdated null, vtexjs.checkout.orderForm
-
-  return defineComponent(ShippingSummary, withi18n)
+  return defineComponent(ShippingSummary, withi18n, withOrderForm)

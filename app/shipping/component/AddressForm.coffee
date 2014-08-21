@@ -6,8 +6,9 @@ define ['flight/lib/component',
         'shipping/models/Address',
         'shipping/mixin/withi18n',
         'shipping/mixin/withValidation',
+        'shipping/mixin/withOrderForm',
         'shipping/template/selectCountry'],
-  (defineComponent, extensions, Address, withi18n, withValidation, selectCountryTemplate) ->
+  (defineComponent, extensions, Address, withi18n, withValidation, withOrderForm, selectCountryTemplate) ->
     AddressForm = ->
       @defaultAttrs
         API: null
@@ -447,8 +448,6 @@ define ['flight/lib/component',
         @on 'enable.vtex', @enable
         @on 'disable.vtex', @disable
         @on 'loading.vtex', @loading
-        @on window, 'orderFormUpdated.vtex', @orderFormUpdated
-        @on window, 'localeSelected.vtex', @localeUpdate
         @on window, 'newCountryRule', @addCountryRule # TODO -> MELHORAR AQUI
         @on 'click',
           'forceShippingFieldsSelector': @forceShippingFields
@@ -469,13 +468,10 @@ define ['flight/lib/component',
           @validateAddress
         ]
 
-        if vtexjs?.checkout?.orderForm?
-          @orderFormUpdated null, vtexjs.checkout.orderForm
-
         # Called when google maps api is loaded
         window.vtex.googleMapsLoaded = =>
           @attr.data.loading = false
           @attr.isGoogleMapsAPILoaded = true
           @render()
 
-    return defineComponent(AddressForm, withi18n, withValidation)
+    return defineComponent(AddressForm, withi18n, withValidation, withOrderForm)

@@ -1,8 +1,12 @@
 define = vtex.define || window.define
 require = vtex.curl || window.require
 
-define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/withi18n'],
-  (defineComponent, extensions, withi18n) ->
+define ['flight/lib/component',
+        'shipping/setup/extensions',
+        'shipping/mixin/withi18n',
+        'shipping/mixin/withOrderForm',
+        'shipping/template/addressList'],
+  (defineComponent, extensions, withi18n, withOrderForm, template) ->
     AddressList = ->
       @defaultAttrs
         API: null
@@ -16,11 +20,6 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
           deliveryCountries: ['BRA', 'ARG', 'CHL']
           countryRules: {}
 
-        templates:
-          list:
-            name: 'addressList'
-            template: 'shipping/template/addressList'
-
         createAddressSelector: '.address-create'
         editAddressSelector: '.address-edit'
         addressItemSelector: '.address-list .address-item'
@@ -30,9 +29,9 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
       @render = (data) ->
         data = @attr.data if not data
 
-        require ['shipping/translation/' + @attr.locale, @attr.templates.list.template], (translation) =>
+        require ['shipping/translation/' + @attr.locale], (translation) =>
           @extendTranslations(translation)
-          dust.render @attr.templates.list.name, data, (err, output) =>
+          dust.render template, data, (err, output) =>
             output = $(output).i18n()
             $(@$node).html(output)
 
@@ -115,28 +114,22 @@ define ['flight/lib/component', 'shipping/setup/extensions', 'shipping/mixin/wit
         @$node.html('')
 
       @orderFormUpdated = (ev, data) ->
-        if data.shippingData?
-          @attr.data.address = data.shippingData.address
-          @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)
-          @attr.data.availableAddresses = data.shippingData.availableAddresses
-          @attr.data.selectedAddressId = data.shippingData.address?.addressId
-          @attr.data.canEditData = data.canEditData
-          @attr.data.loggedIn = data.loggedIn
-          @createAddressesSummaries()
+        return unless data.shippingData?
+        @attr.data.address = data.shippingData.address
+        @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)
+        @attr.data.availableAddresses = data.shippingData.availableAddresses
+        @attr.data.selectedAddressId = data.shippingData.address?.addressId
+        @attr.data.canEditData = data.canEditData
+        @attr.data.loggedIn = data.loggedIn
+        @createAddressesSummaries()
 
       # Bind events
       @after 'initialize', ->
         @on 'enable.vtex', @enable
         @on 'disable.vtex', @disable
-        @on window, 'localeSelected.vtex', @localeUpdate
-        @on window, 'orderFormUpdated.vtex', @orderFormUpdated
-        @on window, 'addressFormCanceled.vtex', @enable
         @on 'click',
           'createAddressSelector': @createAddress
           'addressItemSelector': @selectAddressHandler
           'editAddressSelector': @editAddress
 
-        if vtexjs?.checkout?.orderForm?
-          @orderFormUpdated null, vtexjs.checkout.orderForm
-
-    return defineComponent(AddressList, withi18n)
+    return defineComponent(AddressList, withi18n, withOrderForm)

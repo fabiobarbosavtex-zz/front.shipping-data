@@ -28,6 +28,9 @@ define [], () ->
       else
         @attr.locale = locale
 
-    @localeUpdate = (ev, locale) ->
+    @localeSelected = (ev, locale) ->
       @setLocale locale
-      @render(@attr.data)
+      @render()
+
+    @after 'initialize', ->
+      @on window, 'localeSelected.vtex', @localeSelected

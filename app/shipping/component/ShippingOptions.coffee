@@ -4,8 +4,9 @@ require = vtex.curl || window.require
 define ['flight/lib/component',
         'shipping/setup/extensions',
         'shipping/mixin/withi18n',
-        'shipping/mixin/withValidation'],
-  (defineComponent, extensions, withi18n, withValidation) ->
+        'shipping/mixin/withValidation',
+        'shipping/mixin/withOrderForm'],
+  (defineComponent, extensions, withi18n, withValidation, withOrderForm) ->
     ShippingOptions = ->
       @defaultAttrs
         API: null
@@ -404,8 +405,6 @@ define ['flight/lib/component',
       @after 'initialize', ->
         @on 'enable.vtex', @enable
         @on 'disable.vtex', @disable
-        @on window, 'localeSelected.vtex', @localeUpdate        
-        @on window, 'orderFormUpdated.vtex', @orderFormUpdated
         @on 'scheduleDateSelected.vtex', @scheduleDateSelected
         @on @$node.parent(), 'startLoadingShippingOptions.vtex', @startLoadingShippingOptions
         @on 'click',
@@ -416,7 +415,4 @@ define ['flight/lib/component',
           @validateShippingOptions
         ]
 
-        if vtexjs?.checkout?.orderForm?
-          @orderFormUpdated null, vtexjs.checkout.orderForm
-
-    return defineComponent(ShippingOptions, withi18n, withValidation)
+    return defineComponent(ShippingOptions, withi18n, withValidation, withOrderForm)
