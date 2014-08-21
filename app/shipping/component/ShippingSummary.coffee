@@ -27,11 +27,11 @@ define ['flight/lib/component',
       @render()
 
     @enable = (ev) ->
-      if ev then ev.stopPropagation()
+      ev?.stopPropagation()
       @render()
 
     @disable = (ev) ->
-      if ev then ev.stopPropagation()
+      ev?.stopPropagation()
       @$node.html('')
 
     # Bind events

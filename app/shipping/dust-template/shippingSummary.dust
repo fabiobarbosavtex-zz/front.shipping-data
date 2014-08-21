@@ -1,3 +1,4 @@
+{#address}
 <p class="address">
 	<span class="street">{address.street}</span>,
 	<span class="number"> {address.number}</span> - <span class="neighborhood">{address.neighborhood}</span>
@@ -10,3 +11,4 @@
 	<p><span class="text">Entrega:</span> <span class="sla">Entrega Agendada</span></p>
 </div>
 <a href="#/shipping" class="link-change-shipping" data-i18n="shippingData.chooseOtherShippingOption"></a>
+{/address}

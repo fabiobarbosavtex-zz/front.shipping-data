@@ -13,9 +13,9 @@ define [], () ->
       validationResults = []
       for validationFunction in validators
         valid = validationFunction.call(this) # preserve scope
-        if not valid
+        unless typeof valid is 'boolean' and valid is true
           # Add failure
-          validationResults.push validationFunction.toString()
+          validationResults.push(if valid instanceof Error then valid else new Error(valid))
       return validationResults
 
     triggerValidationEvent = (validationResults) ->

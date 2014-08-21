@@ -399,7 +399,8 @@ define ['flight/lib/component',
 
       @validateShippingOptions = ->
         logisticsInfo = @attr.data.logisticsInfo
-        return logisticsInfo?.length > 0 and logisticsInfo?[0].selectedSla isnt undefined
+        return "Logistics info must exist" if logisticsInfo?.length is 0
+        return "No selected SLA" if logisticsInfo?[0].selectedSla isnt undefined
 
       # Bind events
       @after 'initialize', ->

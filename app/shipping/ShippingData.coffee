@@ -23,8 +23,8 @@ define ['flight/lib/component',
           loading: false
 
         validationResults: # starts as invalid
-          addressForm: []
-          shippingOptions: []
+          addressForm: [new Error("not validated")]
+          shippingOptions: [new Error("not validated")]
 
         goToPaymentButtonSelector: '.btn-go-to-payment'
         editShippingDataSelector: '#edit-shipping-data'
@@ -110,10 +110,10 @@ define ['flight/lib/component',
         @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
 
       @validateAddress = ->
-        @attr.validationResults.addressForm.length is 0
+        @attr.validationResults.addressForm[0] ? true
 
       @validateShippingOptions = ->
-        @attr.validationResults.shippingOptions.length is 0
+        @attr.validationResults.shippingOptions[0] ? true
 
       @handleAddressValidation = (ev, results) ->
         ev?.stopPropagation()

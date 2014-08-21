@@ -30,53 +30,55 @@ define ->
       if 'city' in rules.requiredFields
         # Caso nao esteja preenchido
         if not @city
-          return false
+          return "City is required"
 
         # Caso tenha uma lista de cidades e nao esteja na lista
         if rules.cities and !(@city in rules.cities)
-          return false
+          return "City not in allowed cities list"
 
       # Complement
       if @validateField(rules, 'complement')
-        return false
+        return 'complement invalid'
 
       # Geocoordinates
       if 'geoCoordinates' in rules.requiredFields and @geoCoordinates.length isnt 2
-        return false
+        return 'geoCoordinates invalid'
 
       # Neighborhood
       if @validateField(rules, 'neighborhood')
-        return false
+        return 'neighborhood invalid'
 
       # Number
       if @validateField(rules, 'number')
-        return false
+        return 'number invalid'
 
       # Postal Code
       if 'postalCode' in rules.requiredFields
         if not @postalCode
-          return false
+          return 'postalCode is required'
 
         if not rules.regexes?.postalCode?.test(@postalCode)
-          return false
+          return 'postalCode invalid'
 
       # Receiver name
       if @validateField(rules, 'receiverName')
-        return false
+        return 'receiverName invalid'
 
       # Reference
       if @validateField(rules, 'reference')
-        return false
+        return 'reference invalid'
 
       # State
       if 'state' in rules.requiredFields
         if not @state
-          return false
+          return 'state required'
 
         # Caso tenha uma lista de estados e nao esteja na lista
         if rules.states and !(@state in rules.states)
-          return false
+          return 'state not in allowed states'
 
       # Street
       if @validateField(rules, 'street')
-        return false
+        return 'street invalid'
+
+      return true
