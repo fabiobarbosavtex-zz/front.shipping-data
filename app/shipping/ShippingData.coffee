@@ -23,8 +23,8 @@ define ['flight/lib/component',
           loading: false
 
         validationResults: # starts as invalid
-          addressForm: [false]
-          shippingOptions: [false]
+          addressForm: []
+          shippingOptions: []
 
         goToPaymentButtonSelector: '.btn-go-to-payment'
         editShippingDataSelector: '#edit-shipping-data'

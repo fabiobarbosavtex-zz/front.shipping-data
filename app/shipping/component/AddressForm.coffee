@@ -99,12 +99,8 @@ define ['flight/lib/component',
             errorTemplate: '<span class="help error"></span>'
 
           if not @attr.data.isSearchingAddress
-            @attr.parsley.subscribe 'parsley:field:validated', (fieldInstance) =>
-              formInstance = fieldInstance.parent
-              if formInstance.isValid()
-                @submitAddress(true)
-              else if @attr.data.address.isValid
-                @submitAddress(false)
+            @attr.parsley.subscribe 'parsley:field:validated', () =>
+              @validate()
 
       # Render this component according to the data object
       @render = ->
@@ -135,10 +131,15 @@ define ['flight/lib/component',
 
       @validateAddress = ->
         address = @attr.data.address
-        if address.validate(@getCountryRule())
-          @trigger('componentValidated.vtex', [[]])
+        if @select('addressFormSelector') and @attr.parsley
+          valid = @attr.parsley.isValid()
+          if valid
+            @submitAddress(true)
+          else if @attr.data.address.isValid
+            @submitAddress(false)
+          return valid
         else
-          @trigger('componentValidated.vtex', [false])
+          return address.validate(@getCountryRule())
 
       @clearAddressSearch = (ev) ->
         ev.preventDefault()
@@ -278,7 +279,6 @@ define ['flight/lib/component',
           @attr.currentResponseCoordinates = googleAddress.geometry.location
           @handleAddressSearch(address)
         else
-          console.log @attr.data.requiredGoogleFieldsNotFound
           @render()
 
       @createMap = (location) ->
