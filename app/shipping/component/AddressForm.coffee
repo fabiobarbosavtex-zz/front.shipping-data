@@ -197,6 +197,7 @@ define ['flight/lib/component',
           address: @attr.data.address,
           clearAddressIfPostalCodeNotFound: @getCountryRule()?.usePostalCode
         @trigger('startLoadingShippingOptions.vtex')
+        @attr.ignoreNextEnable = true
         @attr.API?.sendAttachment('shippingData', attachment)
 
       @handleAddressSearchError = ->
@@ -440,6 +441,10 @@ define ['flight/lib/component',
 
       @orderFormUpdated = (ev, data) ->
         return unless data.shippingData
+        if @attr.ignoreNextEnable
+          @attr.ignoreNextEnable = false
+          return
+
         @attr.data.availableAddresses = data.shippingData.availableAddresses ? []
         @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)
         @attr.data.address = new Address(data.shippingData.address, @attr.data.deliveryCountries)
@@ -456,6 +461,9 @@ define ['flight/lib/component',
       # Handle the initial view of this component
       @enable = (ev, address) ->
         ev?.stopPropagation()
+        if @attr.ignoreNextEnable
+          @attr.ignoreNextEnable = false
+          return
 
         @attr.data.isSearchingAddress = not address
         @attr.data.postalCodeQuery = null
