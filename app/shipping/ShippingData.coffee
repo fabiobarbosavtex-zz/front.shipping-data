@@ -79,6 +79,7 @@ define ['flight/lib/component',
         @updateComponentView()
 
       @disable = ->
+        @select('shippingSummarySelector').trigger('addressUpdated.vtex', @attr.orderForm.shippingData.address)
         @select('shippingSummarySelector').trigger('enable.vtex')
         @select('addressFormSelector').trigger('disable.vtex')
         @select('addressListSelector').trigger('disable.vtex')
@@ -99,14 +100,22 @@ define ['flight/lib/component',
       @orderFormUpdated = (ev, orderForm) ->
         @attr.orderForm = _.clone orderForm
         @updateView()
+        @updateComponentView()
 
       # When a new addresses is selected
       # Should call API to get delivery options
-      @addressSelected = (ev, addressObj) ->
-        @attr.orderForm.shippingData.address = addressObj
+      @addressSelected = (ev, address) ->
+        ev?.stopPropagation()
         @attr.orderForm.shippingData.logisticsInfo = null
-        @shippingDataSubmitHandler(@attr.orderForm.shippingData)
-        @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
+        @addressUpdated(ev, address)
+        if address.isValid
+          @shippingDataSubmitHandler(@attr.orderForm.shippingData)
+          @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
+
+      @addressUpdated = (ev, address) ->
+        ev.stopPropagation()
+        @attr.orderForm.shippingData.address = address
+        @updateView()
 
       @validateAddress = ->
         if @attr.validationResults.addressForm.length > 0
@@ -149,11 +158,6 @@ define ['flight/lib/component',
         @select('addressFormSelector').trigger('disable.vtex')
         @select('shippingOptionsSelector').trigger('enable.vtex')
 
-      @addressUpdated = (ev, address) ->
-        ev.stopPropagation()
-        @attr.orderForm.shippingData.address = address
-        @updateView()
-
       @shippingOptionsUpdated = (ev, logisticsInfo) ->
         ev.stopPropagation()
         @attr.orderForm.shippingData.logisticsInfo = logisticsInfo
@@ -177,9 +181,9 @@ define ['flight/lib/component',
             @on 'enable.vtex', @enable
             @on 'disable.vtex', @disable
             @on 'addressSelected.vtex', @addressSelected
+            @on 'addressUpdated.vtex', @addressUpdated
             @on 'showAddressList.vtex', @showAddressListAndShippingOption
             @on 'editAddress.vtex', @editAddress
-            @on 'currentAddress.vtex', @addressUpdated
             @on 'currentShippingOptions.vtex', @shippingOptionsUpdated
             @on 'clearSelectedAddress.vtex', @clearSelectedAddress
             @on @attr.addressFormSelector, 'componentValidated.vtex', @handleAddressValidation

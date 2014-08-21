@@ -22,7 +22,8 @@ define ['flight/lib/component',
     @orderFormUpdated = (ev, orderForm) ->
       @attr.data.address = orderForm.shippingData?.address
 
-    @addressSelected = (ev, data) ->
+    @addressUpdated = (ev, data) ->
+      ev?.stopPropagation()
       @attr.data.address = data
       @render()
 
@@ -38,6 +39,7 @@ define ['flight/lib/component',
     @after 'initialize', ->
       @on 'enable.vtex', @enable
       @on 'disable.vtex', @disable
-      @on @$node.parent(), 'addressSelected.vtex', @addressSelected
+      @on @$node.parent(), 'addressSelected.vtex', @addressUpdated
+      @on 'addressUpdated.vtex', @addressUpdated
 
   return defineComponent(ShippingSummary, withi18n, withOrderForm)

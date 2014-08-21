@@ -241,7 +241,7 @@ define ['flight/lib/component',
           delete @attr.data.address["addressSearch"]
 
         # Submit address object
-        @trigger('currentAddress.vtex', @attr.data.address)
+        @trigger('addressUpdated.vtex', @attr.data.address)
 
       # Select a delivery country
       # This will load the country's form and rules
