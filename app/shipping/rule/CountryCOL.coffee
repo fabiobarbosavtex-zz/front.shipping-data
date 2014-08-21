@@ -5,6 +5,7 @@ define ->
   class CountryCOL
     constructor: () ->
       @country = 'COL'
+      @abbr = 'CO'
       @states = []
       @cities = {}
       @map =

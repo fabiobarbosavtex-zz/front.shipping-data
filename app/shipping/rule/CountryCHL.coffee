@@ -5,6 +5,7 @@ define ->
   class CountryCHL
     constructor: () ->
       @country = 'CHL'
+      @abbr = 'CL'
       @states = []
       @cities = {}
       @map =

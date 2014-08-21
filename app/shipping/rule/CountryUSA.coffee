@@ -5,6 +5,7 @@ define ->
   class CountryUSA
     constructor: () ->
       @country = 'USA'
+      @abbr = 'US'
       @states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
                  'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
                  'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas',

@@ -5,6 +5,7 @@ define ->
   class CountryPER
     constructor: () ->
       @country = 'PER'
+      @abbr = 'PE'
       @cities = {}
       @states = [
         "Amazonas"
