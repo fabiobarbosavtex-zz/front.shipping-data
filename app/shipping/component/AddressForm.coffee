@@ -64,6 +64,12 @@ define ['flight/lib/component',
           output = $(output).i18n()
           @$node.html(output)
 
+          if not @attr.isGoogleMapsAPILoaded and @attr.data.showGeolocationSearch
+            @attr.data.loading = true
+
+          if @attr.data.showGeolocationSearch
+            @startGoogleAddressSearch()
+
           if data.loading
             $('input, select, .btn', @$node).attr('disabled', 'disabled')
 
@@ -79,9 +85,6 @@ define ['flight/lib/component',
               mask: rules.masks.postalCode
             if data.labelShippingFields
               @select('postalCodeSelector').addClass('success')
-
-          if @attr.data.showGeolocationSearch
-            @startGoogleAddressSearch()
 
           if @attr.currentResponseCoordinates
             @createMap(@attr.currentResponseCoordinates)
@@ -471,7 +474,8 @@ define ['flight/lib/component',
 
         # Called when google maps api is loaded
         window.vtex.googleMapsLoaded = =>
+          @attr.data.loading = false
           @attr.isGoogleMapsAPILoaded = true
-          @startGoogleAddressSearch()
+          @render()
 
     return defineComponent(AddressForm, withi18n, withValidation)
