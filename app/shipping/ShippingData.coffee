@@ -93,7 +93,6 @@ define ['flight/lib/component',
         API.sendAttachment(attachmentId, attachment)
 
       @orderFormUpdated = (ev, orderForm) ->
-        debugger
         @attr.orderForm = orderForm
         @updateView()
 

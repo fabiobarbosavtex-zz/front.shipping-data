@@ -81,7 +81,7 @@ module.exports = (grunt) ->
     less:
       main:
         files:
-          'build-raw/<%= relativePath %>/shipping/css/main.css': 'app/shipping/css/main.less'
+          'build-raw/<%= relativePath %>/shipping/css/shipping-data.css': 'app/shipping/css/shipping-data.less'
 
     uglify:
       options:

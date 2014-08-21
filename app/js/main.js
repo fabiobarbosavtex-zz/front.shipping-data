@@ -10,7 +10,7 @@ vtex.curl(vtex.curl.configuration,
   ['shipping/ShippingData',
    'example/CheckoutMock',
    'shipping/component/AddressForm',
-   'link!shipping/css/main'],
+   'link!shipping/css/shipping-data'],
   function(ShippingData,  CheckoutMock, AddressForm) {
 
     // Flags
