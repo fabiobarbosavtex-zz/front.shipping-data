@@ -41,6 +41,13 @@ define ['flight/lib/component',
       # It's best, then, to simply update the needed DOM.
       @updateView = ->
         require 'shipping/translation/' + @attr.locale, (translation) =>
+          if not @validateAddress()
+            @editAddress(null, @attr.orderForm.shippingData.address)
+            if @attr.orderForm.shippingData.logisticsInfo.length > 0
+              @select('shippingOptionsSelector').trigger('enable.vtex')
+          else
+            @showAddressListAndShippingOption()
+
           @extendTranslations(translation)
           if @attr.data.active
             @select('shippingStepSelector').addClass('active', 'visited')
@@ -67,17 +74,6 @@ define ['flight/lib/component',
         @attr.data.active = true
         @updateView()
 
-        if @attr.orderForm.shippingData?.availableAddresses?
-          @select('addressListSelector').trigger('enable.vtex')
-
-        if not @attr.orderForm.shippingData?.address?
-          @select('addressFormSelector').trigger('enable.vtex')
-          @select('shippingOptionsSelector').trigger('disable.vtex')
-        else if @attr.orderForm.shippingData.logisticsInfo.length > 0
-          @select('shippingOptionsSelector').trigger('enable.vtex')
-
-        @select('shippingSummarySelector').trigger('disable.vtex')
-
       @disable = ->
         @select('shippingSummarySelector').trigger('enable.vtex')
         @select('addressFormSelector').trigger('disable.vtex')
@@ -99,11 +95,6 @@ define ['flight/lib/component',
       @orderFormUpdated = (ev, orderForm) ->
         @attr.orderForm = orderForm
         @updateView()
-
-        if @attr.data.active and @attr.orderForm.shippingData.logisticsInfo.length > 0
-          @select('shippingOptionsSelector').trigger('enable.vtex')
-        else
-          @select('shippingSummarySelector').trigger('enable.vtex')
 
       # When a new addresses is selected
       # Should call API to get delivery options
@@ -134,14 +125,14 @@ define ['flight/lib/component',
         @select('shippingOptionsSelector').trigger('disable.vtex')
 
       @editAddress = (ev, data) ->
-        ev.stopPropagation()
+        ev?.stopPropagation()
         @select('shippingSummarySelector').trigger('disable.vtex')
         @select('addressListSelector').trigger('disable.vtex')
         @select('addressFormSelector').trigger('enable.vtex', data)
         @select('shippingOptionsSelector').trigger('disable.vtex')
 
       @showAddressListAndShippingOption = (ev) ->
-        ev.stopPropagation()
+        ev?.stopPropagation()
         @select('shippingSummarySelector').trigger('disable.vtex')
         @select('addressListSelector').trigger('enable.vtex')
         @select('addressFormSelector').trigger('disable.vtex')

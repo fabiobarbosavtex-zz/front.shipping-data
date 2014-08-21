@@ -162,7 +162,7 @@ define ['flight/lib/component',
           address.street isnt '' and address.street? and
           address.state isnt '' and address.state? and
           address.city isnt '' and address.city?
-        @attr.data.disableCityAndState = address.state isnt '' and address.city
+        @attr.data.disableCityAndState = address.state isnt '' and address.city isnt ''
         @attr.data.address = new Address(address, @attr.data.deliveryCountries)
         @render()
 
@@ -225,7 +225,7 @@ define ['flight/lib/component',
         ev?.preventDefault()
 
         @attr.data.address = @getCurrentAddress()
-        @attr.data.address.isValid = valid
+        @attr.data.address.isValid = isValid
 
         # limpa campo criado para busca do google
         if @attr.data.address.addressSearch is null
@@ -398,6 +398,14 @@ define ['flight/lib/component',
         @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)
         @attr.data.address = new Address(data.shippingData.address, @attr.data.deliveryCountries)
         @selectCountry(@attr.data.address.country).then @validate.bind(this)
+
+        address = @attr.data.address
+        if address.country is 'BRA'
+          @attr.data.labelShippingFields = address.neighborhood isnt '' and address.neighborhood? and
+            address.street isnt '' and address.street? and
+            address.state isnt '' and address.state? and
+            address.city isnt '' and address.city?
+          @attr.data.disableCityAndState = address.state isnt '' and address.city isnt ''
 
       # Handle the initial view of this component
       @enable = (ev, address) ->

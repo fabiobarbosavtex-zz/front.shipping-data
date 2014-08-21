@@ -68,6 +68,7 @@
                 {/shippingOptions.multipleSellers}
             </h4>
 
+            {#multipleSellers}
             <table class="product-list unstyled">
                 <tbody>
                     {#items}
@@ -86,6 +87,7 @@
                     {/items}
                 </tbody>
             </table>
+            {/multipleSellers}
 
             <div class="sla-items-list">
 
