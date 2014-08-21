@@ -57,7 +57,8 @@ define(function () {
         "workingDay_plural": 'Hasta __count__ días hábiles',
         "day": 'Hasta __count__ día',
         "day_plural": 'Hasta __count__ días',
-        "fromToHour": 'Desde las __from__ hasta las __to__'
+        "fromToHour": 'Desde las __from__ hasta las __to__',
+        "priceFrom": 'a partir de'
       }
     },
     "validation": {

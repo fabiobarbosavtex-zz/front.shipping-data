@@ -104,15 +104,22 @@
                     {#slas}
                     <label class="shipping-option-item label-vertical-group input btn {#isSelected}active{/isSelected}" for="{idAttr}" data-bind="css: {'focus': hasFocus}">
                         <input type="radio" tabindex="33{@idx}{.}{/idx}" id="{idAttr}" name="{nameAttr}" data-bind="hasfocus: hasFocus, disable: checkout.disableInputs()" value="{id}" {#isSelected}checked="checked"{/isSelected} data-shipping-option="{index}">
+                        {^isScheduled}
                         <span class="shipping-option-item-text-wrapper" title="{deliveryEstimateLabel}">
                             <span class="shipping-option-item-name">{name}</span>
                             <span class="shipping-option-item-sep"> - </span>
                             <span class="shipping-option-item-value">{valueLabel}</span>
-                            {^isScheduled}
                             <span class="shipping-option-item-sep"> - </span>
                             <span class="shipping-option-item-time delivery-estimate">{deliveryEstimateLabel}</span>
-                            {/isScheduled}
                         </span>
+                        {:else}
+                        <span class="shipping-option-item-text-wrapper" title="{deliveryEstimateLabel}">
+                            <span class="shipping-option-item-name">{name}</span>
+                            <span class="shipping-option-item-sep"> - </span>
+                            <span class="shipping-option-item-up-to" data-i18n="shipping.shippingOptions.priceFrom"></span> 
+                            <span class="shipping-option-item-value">{cheapestValueLabel}</span>
+                        </span>
+                        {/isScheduled}
                         {#isSelected}
                         <i class="icon-ok-circle"></i>
                         {:else}
