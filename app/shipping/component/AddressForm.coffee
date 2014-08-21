@@ -38,7 +38,8 @@ define ['flight/lib/component',
 
         isGoogleMapsAPILoaded: false
         addressFormSelector: '.address-form-new'
-        postalCodeSelector: '#ship-postal-code'
+        postalCodeQuerySelector: '.postal-code-query'
+        postalCodeSelector: '.postal-code'
         forceShippingFieldsSelector: '#force-shipping-fields'
         stateSelector: '#ship-state'
         citySelector: '#ship-city'
@@ -146,13 +147,27 @@ define ['flight/lib/component',
         else
           return address.validate(@getCountryRule())
 
-      @clearAddressSearch = (ev) ->
+      @clearAddressSearch = (ev, obj) ->
         ev.preventDefault()
+
+        if $(obj.el).hasClass('postal-code')
+          postalCodeQuery = obj.el.value.replace(/-|\_/g, '')
+          if postalCodeQuery is @attr.data.address.postalCode
+            return
+          else
+            @attr.data.labelShippingFields = false
+        # TODO - Afonso colocar caso do geolocation aqui
+        # else if ev.hasClass('map-sei-la')
+        #   ...
+
         @trigger('clearSelectedAddress.vtex')
-        @attr.data.address = new Address(null, @attr.data.deliveryCountries)
+        address = addressId: @attr.data.address.addressId
+        @attr.data.address = new Address(address, @attr.data.deliveryCountries)
         @attr.data.isSearchingAddress = true
-        @attr.data.postalCodeQuery = null
-        @render()
+        @attr.data.postalCodeQuery = postalCodeQuery ? ''
+        @render().then =>
+          if postalCodeQuery
+            @select('postalCodeQuerySelector').focus()
 
       # Call the postal code API
       @getPostalCode = (postalCode) ->
@@ -476,7 +491,6 @@ define ['flight/lib/component',
           'cancelAddressFormSelector': @cancelAddressForm
           'submitButtonSelector': @submitAddressHandler
           'addressSearchBtSelector': @searchAddress
-          'clearAddressSearchSelector': @clearAddressSearch
           'dontKnowPostalCodeSelector': @openGeolocationSearch
           'knowPostalCodeSelector': @openZipSearch
         @on 'change',
@@ -484,7 +498,8 @@ define ['flight/lib/component',
           'stateSelector': @onChangeState
           'citySelector': @changePostalCodeByCity
         @on 'keyup',
-          'postalCodeSelector': @validatePostalCode
+          'clearAddressSearchSelector': @clearAddressSearch
+          'postalCodeQuerySelector': @validatePostalCode
 
         @setValidators [
           @validateAddress

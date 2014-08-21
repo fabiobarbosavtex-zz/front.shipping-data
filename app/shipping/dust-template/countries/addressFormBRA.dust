@@ -38,7 +38,7 @@
           <span data-i18n="global.loading"></span>
         </i>
         {:else}
-        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small" value="{postalCodeQuery}" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-postalcode="true" name="postalCodeQuery">
+        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code-query postal-code postal-code-{country} input-small" value="{postalCodeQuery}" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-postalcode="true" name="postalCodeQuery">
         <small><a href="javascript:void(0);" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressForm.dontKnowPostalCode"></a></small>
         {/throttledLoading}
 
@@ -64,8 +64,7 @@
     {^isSearchingAddress}
     <p class="ship-postal-code required input text mask">
         <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
-        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small loading-postal-code" readonly="readonly" value="{postalCode}" name="postalCode" >
-        <button class="btn clear-address-search"><i class="icon icon-remove"></i></button>
+        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small clear-address-search" value="{postalCode}" name="postalCode"/>
     </p>
     <div class="box-delivery">
       {?labelShippingFields}
