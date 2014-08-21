@@ -398,7 +398,6 @@ define ['flight/lib/component',
 
       @validateShippingOptions = ->
         logisticsInfo = @attr.data.logisticsInfo
-        debugger
         if logisticsInfo?.length > 0 and logisticsInfo?[0].selectedSla isnt undefined
           @trigger('componentValidated.vtex', [[]])
         else
