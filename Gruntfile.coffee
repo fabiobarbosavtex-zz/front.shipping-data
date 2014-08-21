@@ -205,7 +205,7 @@ module.exports = (grunt) ->
                                 'copy:build', 'server', 'watch']
   # Dist - minifies files
   grunt.registerTask 'dist', ['clean', 'dust', 'copy:templates', 'copy:main',
-                              'coffee:main', 'min', 'copy:build', 'copy:pkg']
+                              'coffee:main', 'less', 'min', 'copy:build', 'copy:pkg']
 
   grunt.registerTask 'test', ->
   grunt.registerTask 'server', ['configureProxies:server', 'connect']
