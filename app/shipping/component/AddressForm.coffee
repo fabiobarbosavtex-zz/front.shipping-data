@@ -297,7 +297,7 @@ define ['flight/lib/component',
         if not @attr.isGoogleMapsAPILoaded
           script = document.createElement("script")
           script.type = "text/javascript"
-          script.src = "http://maps.googleapis.com/maps/api/js?sensor=false&callback=vtex.googleMapsLoaded"
+          script.src = "//maps.googleapis.com/maps/api/js?sensor=false&callback=vtex.googleMapsLoaded"
           document.body.appendChild(script)
           return
 
