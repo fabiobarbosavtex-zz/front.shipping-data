@@ -68,6 +68,8 @@ define ['flight/lib/component',
         if @attr.data.active
           if @attr.validationResults.addressForm.length > 0 # Address isnt valid
             @editAddress(null, @attr.orderForm.shippingData.address)
+            if @attr.validationResults.shippingOptions.length is 0 # Shipping options is valid
+              @select('shippingOptionsSelector').trigger('enable.vtex')
           else
             @showAddressListAndShippingOption()
 
@@ -97,7 +99,6 @@ define ['flight/lib/component',
       @orderFormUpdated = (ev, orderForm) ->
         @attr.orderForm = _.clone orderForm
         @updateView()
-        @updateComponentView()
 
       # When a new addresses is selected
       # Should call API to get delivery options
@@ -136,7 +137,10 @@ define ['flight/lib/component',
         @select('shippingSummarySelector').trigger('disable.vtex')
         @select('addressListSelector').trigger('disable.vtex')
         @select('addressFormSelector').trigger('enable.vtex', data)
-        @select('shippingOptionsSelector').trigger('disable.vtex')
+        if @attr.validationResults.addressForm.length > 0 # Address isnt valid
+          @select('shippingOptionsSelector').trigger('disable.vtex')
+        else
+          @select('shippingOptionsSelector').trigger('enable.vtex')
 
       @showAddressListAndShippingOption = (ev) ->
         ev?.stopPropagation()
