@@ -188,6 +188,7 @@ define ['flight/lib/component',
           address.state isnt '' and address.state? and
           address.city isnt '' and address.city?
         @attr.data.disableCityAndState = address.state isnt '' and address.city isnt ''
+        address.addressId = @attr.data.address.addressId
         @attr.data.address = new Address(address, @attr.data.deliveryCountries)
         @render()
 
