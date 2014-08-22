@@ -26,6 +26,24 @@ define ['flight/lib/component',
           addressForm: [new Error("not validated")]
           shippingOptions: [new Error("not validated")]
 
+        stateMachine: StateMachine.create
+          initial: 'empty',
+          events: [
+            name: 'orderForm',  from: 'empty',   to: 'summary'
+            name: 'enable',     from: 'empty',   to: 'search'
+            name: 'enable',     from: 'summary', to: 'list'
+            name: 'failSearch', from: 'search',  to: 'search'
+            name: 'doneSearch', from: 'search',  to: 'edit'
+            name: 'doneSLA',    from: 'edit',    to: 'editSLA'
+            name: 'submit',     from: 'editSLA', to: 'summary'
+            name: 'submit',     from: 'list',    to: 'summary'
+            name: 'select',     from: 'list',    to: 'list'
+            name: 'edit',       from: 'list',    to: 'editSLA'
+            name: 'cancelEdit', from: 'editSLA', to: 'list'
+            name: 'new',        from: 'list',    to: 'search'
+            name: 'cancelNew',  from: 'search',  to: 'list' # only if available addresses > 0
+          ]
+
         goToPaymentButtonSelector: '.btn-go-to-payment'
         editShippingDataSelector: '#edit-shipping-data'
         shippingTitleSelector: '.accordion-shipping-title'
