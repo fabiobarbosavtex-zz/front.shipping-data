@@ -342,11 +342,9 @@ define ['flight/lib/component',
 
       @startGoogleAddressSearch = ->
         if not @attr.isGoogleMapsAPILoaded
-          country = @getCountryRule().abbr
-
           script = document.createElement("script")
           script.type = "text/javascript"
-          script.src = "//maps.googleapis.com/maps/api/js?sensor=false&components=country:#{country}&language=#{@attr.locale}&callback=vtex.googleMapsLoaded"
+          script.src = "//maps.googleapis.com/maps/api/js?sensor=false&callback=vtex.googleMapsLoaded"
           document.body.appendChild(script)
           return
 
