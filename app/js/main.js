@@ -6,6 +6,10 @@ var paths = {
 
 _.extend(vtex.curl.configuration.paths, paths);
 
+window.console || (window.console = {
+  log: function() {}
+});
+
 vtex.curl(vtex.curl.configuration, 
   ['shipping/ShippingData',
    'example/CheckoutMock',
