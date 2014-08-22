@@ -101,8 +101,8 @@ define ['flight/lib/component',
           @attr.parsley = @select('addressFormSelector').parsley
             errorClass: 'error'
             successClass: 'success'
-            errorsWrapper: '<span class="help error-list"></span>'
-            errorTemplate: '<span class="help error"></span>'
+            errorsWrapper: '<span class="help error error-list"></span>'
+            errorTemplate: '<span class="error-description"></span>'
 
           if not @attr.data.isSearchingAddress
             @attr.parsley.subscribe 'parsley:field:validated', () =>
