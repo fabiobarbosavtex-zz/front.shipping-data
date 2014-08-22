@@ -71,7 +71,7 @@
       {?labelShippingFields}
       <p class="ship-filled-data">
         <span class="ship-street-text">
-          <span>{street}</span> <a class="btn btn-link link-edit" href="javascript:void(0);" id="force-shipping-fields" data-i18n="global.edit"></a>
+          <span>{street}</span> - <a class="link-edit" href="javascript:void(0);" id="force-shipping-fields" data-i18n="global.edit"></a>
         </span>
         <br>
         <span class="ship-info-text">
