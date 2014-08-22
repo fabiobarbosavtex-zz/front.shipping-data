@@ -14,6 +14,8 @@ define ['flight/lib/component',
         address: {}
         isActive: false
 
+      changeShippingSummarySelector: ".link-change-shipping"
+
     # Render this component according to the data object
     @render = ->
       dust.render template, @attr.data, (err, output) =>
@@ -31,6 +33,9 @@ define ['flight/lib/component',
       else
         @$node.html('')
 
+    @editAddress = ->
+      $("#shipping-data").trigger('enable.vtex')
+
     @enable = (ev) ->
       ev?.stopPropagation()
       @attr.data.isActive = true;
@@ -47,5 +52,7 @@ define ['flight/lib/component',
       @on 'disable.vtex', @disable
       @on @$node.parent(), 'addressSelected.vtex', @addressUpdated
       @on 'addressUpdated.vtex', @addressUpdated
+      @on 'click',
+        'changeShippingSummarySelector': @editAddress
 
   return defineComponent(ShippingSummary, withi18n, withOrderForm)
