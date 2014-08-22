@@ -4,7 +4,7 @@ require = vtex.curl || window.require;
 define(function () {
   return {
     "shipping": {
-      "title": 'Endereço de entrega',
+      "title": 'Entrega',
       "goToPayment": 'Ir para o Pagamento',
       "addressList": {
         "header": 'Escolha o endereço de entrega',
