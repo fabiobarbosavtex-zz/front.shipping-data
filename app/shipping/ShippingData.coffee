@@ -3,6 +3,7 @@ require = vtex.curl || window.require
 
 define ['flight/lib/component',
         'shipping/setup/extensions',
+        'shipping/libs/state-machine.js'
         'shipping/component/AddressForm',
         'shipping/component/AddressList',
         'shipping/component/ShippingOptions',
@@ -12,7 +13,7 @@ define ['flight/lib/component',
         'shipping/mixin/withOrderForm',
         'shipping/mixin/withValidation',
         'link!shipping/css/shipping-data'],
-  (defineComponent, extensions, AddressForm, AddressList, ShippingOptions, ShippingSummary, template, withi18n, withOrderForm, withValidation) ->
+  (defineComponent, extensions, FSM, AddressForm, AddressList, ShippingOptions, ShippingSummary, template, withi18n, withOrderForm, withValidation) ->
     ShippingData = ->
       @defaultAttrs
         API: null
@@ -27,23 +28,7 @@ define ['flight/lib/component',
           addressForm: [new Error("not validated")]
           shippingOptions: [new Error("not validated")]
 
-        # stateMachine: StateMachine.create
-        #   initial: 'empty',
-        #   events: [
-        #     name: 'orderForm',  from: 'empty',   to: 'summary'
-        #     name: 'enable',     from: 'empty',   to: 'search'
-        #     name: 'enable',     from: 'summary', to: 'list'
-        #     name: 'failSearch', from: 'search',  to: 'search'
-        #     name: 'doneSearch', from: 'search',  to: 'edit'
-        #     name: 'doneSLA',    from: 'edit',    to: 'editSLA'
-        #     name: 'submit',     from: 'editSLA', to: 'summary'
-        #     name: 'submit',     from: 'list',    to: 'summary'
-        #     name: 'select',     from: 'list',    to: 'list'
-        #     name: 'edit',       from: 'list',    to: 'editSLA'
-        #     name: 'cancelEdit', from: 'editSLA', to: 'list'
-        #     name: 'new',        from: 'list',    to: 'search'
-        #     name: 'cancelNew',  from: 'search',  to: 'list' # only if available addresses > 0
-        #   ]
+        stateMachine: false
 
         goToPaymentButtonSelector: '.btn-go-to-payment'
         editShippingDataSelector: '#edit-shipping-data'
@@ -95,7 +80,10 @@ define ['flight/lib/component',
       @enable = ->
         @attr.data.active = true
         @updateView()
-        @updateComponentView()
+        if (@attr.stateMachine.can('enable'))
+          @attr.stateMachine.enable()
+
+        #@updateComponentView()
 
       @disable = ->
         @select('shippingSummarySelector').trigger('addressUpdated.vtex', @attr.orderForm.shippingData.address)
@@ -118,8 +106,61 @@ define ['flight/lib/component',
 
       @orderFormUpdated = (ev, orderForm) ->
         @attr.orderForm = _.clone orderForm
-        @updateView()
-        @updateComponentView()
+        if @attr.orderForm.shippingData?.address? and @attr.stateMachine.can("orderform")
+          @attr.stateMachine.orderform()
+
+#        @updateView()
+#        @updateComponentView()
+
+      #
+      # Changed state events (FINITE STATE MACHINE)
+      #
+      @onOrderFormStateEnter = (event, from, to) ->
+        @select('shippingSummarySelector').trigger('enable.vtex')
+
+      @onEnableStateEnter = (event, from, to) ->
+        if (from is 'summary')
+          @select('shippingSummarySelector').trigger('disable.vtex')
+          @select('addressListSelector').trigger('enable.vtex')
+          @select('shippingOptionsSelector').trigger('enable.vtex')
+        if (from is 'empty')
+          @select('addressFormSelector').trigger('enable.vtex', null)
+
+      @onFailSearchStateEnter = (event, from, to) ->
+
+      @onDoneSearchStateEnter = (event, from, to) ->
+
+      @onDoneSLAStateEnter = (event, from, to) ->
+
+      @onSubmitStateEnter = (event, from, to) ->
+
+      @onSelectStateEnter = (event, from, to) ->
+        @shippingDataSubmitHandler(@attr.orderForm.shippingData)
+        @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
+        @select('shippingOptionsSelector').trigger('enable.vtex')
+
+      @onEditStateEnter = (event, from, to, data) ->
+        @select('addressListSelector').trigger('disable.vtex')
+        @select('addressFormSelector').trigger('enable.vtex', data)
+        if @attr.validationResults.addressForm.length > 0 # Address isnt valid
+          @select('shippingOptionsSelector').trigger('disable.vtex')
+        else
+          @select('shippingOptionsSelector').trigger('enable.vtex')
+
+      @onCancelEditStateEnter = (event, from, to) ->
+        @select('addressListSelector').trigger('enable.vtex')
+        @select('addressFormSelector').trigger('disbale.vtex')
+        @select('shippingOptionsSelector').trigger('enable.vtex')
+
+      @onNewStateEnter = (event, from, to) ->
+        @select('addressListSelector').trigger('disable.vtex')
+        @select('addressFormSelector').trigger('enable.vtex')
+        @select('shippingOptionsSelector').trigger('disable.vtex')
+
+      @onCancelNewStateEnter = (event, from, to) ->
+        @select('addressListSelector').trigger('enable.vtex')
+        @select('addressFormSelector').trigger('disable.vtex')
+        @select('shippingOptionsSelector').trigger('enable.vtex')
 
       # When a new addresses is selected
       # Should call API to get delivery options
@@ -127,9 +168,8 @@ define ['flight/lib/component',
         ev?.stopPropagation()
         @attr.orderForm.shippingData.logisticsInfo = null
         @addressUpdated(ev, address)
-        if address.isValid
-          @shippingDataSubmitHandler(@attr.orderForm.shippingData)
-          @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
+        if address.isValid and @attr.stateMachine.can('edit')
+          @attr.stateMachine.edit()
 
       @addressUpdated = (ev, address) ->
         ev.stopPropagation()
@@ -162,28 +202,57 @@ define ['flight/lib/component',
 
       @editAddress = (ev, data) ->
         ev?.stopPropagation()
-        @select('shippingSummarySelector').trigger('disable.vtex')
-        @select('addressListSelector').trigger('disable.vtex')
-        @select('addressFormSelector').trigger('enable.vtex', data)
-        if @attr.validationResults.addressForm.length > 0 # Address isnt valid
-          @select('shippingOptionsSelector').trigger('disable.vtex')
-        else
-          @select('shippingOptionsSelector').trigger('enable.vtex')
+        if (data and @attr.stateMachine.can('edit'))
+          @attr.stateMachine.edit()
+        else if @attr.stateMachine.can('new')
+          @attr.stateMachine.new()
 
       @showAddressListAndShippingOption = (ev) ->
         ev?.stopPropagation()
-        @select('shippingSummarySelector').trigger('disable.vtex')
-        @select('addressListSelector').trigger('enable.vtex')
-        @select('addressFormSelector').trigger('disable.vtex')
-        @select('shippingOptionsSelector').trigger('enable.vtex')
+        if @attr.stateMachine.can('cancelNew')
+          @attr.stateMachine.cancelNew()
+        if @attr.stateMachine.can('cancelEdit')
+          @attr.stateMachine.cancelEdit()
 
       @shippingOptionsUpdated = (ev, logisticsInfo) ->
         ev.stopPropagation()
         @attr.orderForm.shippingData.logisticsInfo = logisticsInfo
         @updateView()
 
+      @createStateMachine = ->
+        @attr.stateMachine = StateMachine.create
+          initial: 'empty',
+          events: [
+            { name: 'orderform',  from: 'empty',   to: 'summary'  }
+            { name: 'enable',     from: 'empty',   to: 'search'   }
+            { name: 'enable',     from: 'summary', to: 'list'     }
+            { name: 'failSearch', from: 'search',  to: 'search'   }
+            { name: 'doneSearch', from: 'search',  to: 'edit'     }
+            { name: 'doneSLA',    from: 'edit',    to: 'editSLA'  }
+            { name: 'submit',     from: 'editSLA', to: 'summary'  }
+            { name: 'submit',     from: 'list',    to: 'summary'  }
+            { name: 'select',     from: 'list',    to: 'list'     }
+            { name: 'edit',       from: 'list',    to: 'editSLA'  }
+            { name: 'cancelEdit', from: 'editSLA', to: 'list'     }
+            { name: 'new',        from: 'list',    to: 'search'   }
+            { name: 'cancelNew',  from: 'search',  to: 'list'     } # only if available addresses > 0
+          ],
+          callbacks:
+            onorderform: @onOrderFormStateEnter.bind(@)
+            onenable: @onEnableStateEnter.bind(@)
+            onfailSearch: @onFailSearchStateEnter.bind(@)
+            ondoneSearch: @onDoneSearchStateEnter.bind(@)
+            ondoneSLA: @onDoneSLAStateEnter.bind(@)
+            onsubmit: @onSubmitStateEnter.bind(@)
+            onselect: @onSelectStateEnter.bind(@)
+            onedit: @onEditStateEnter.bind(@)
+            oncancelEdit: @onCancelEditStateEnter.bind(@)
+            onnew: @onNewStateEnter.bind(@)
+            oncancelNew: @onCancelNewStateEnter.bind(@)
+
       # Bind events
       @after 'initialize', ->
+        @createStateMachine()
         require 'shipping/translation/' + @attr.locale, (translation) =>
           @extendTranslations(translation)
           dust.render template, @attr.data, (err, output) =>
@@ -204,7 +273,7 @@ define ['flight/lib/component',
             @on 'showAddressList.vtex', @showAddressListAndShippingOption
             @on 'editAddress.vtex', @editAddress
             @on 'currentShippingOptions.vtex', @shippingOptionsUpdated
-            @on 'clearSelectedAddress.vtex', @clearSelectedAddress
+#            @on 'clearSelectedAddress.vtex', @clearSelectedAddress
             @on @attr.addressFormSelector, 'componentValidated.vtex', @handleAddressValidation
             @on @attr.shippingOptionsSelector, 'componentValidated.vtex', @handleShippingOptionsValidation
             @on 'click',

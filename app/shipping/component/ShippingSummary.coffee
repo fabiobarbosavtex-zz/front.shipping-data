@@ -12,6 +12,7 @@ define ['flight/lib/component',
       API: null
       data:
         address: {}
+        isActive: false
 
     # Render this component according to the data object
     @render = ->
@@ -25,14 +26,19 @@ define ['flight/lib/component',
     @addressUpdated = (ev, data) ->
       ev?.stopPropagation()
       @attr.data.address = data
-      @render()
+      if @attr.data.isActive
+        @render()
+      else
+        @$node.html('')
 
     @enable = (ev) ->
       ev?.stopPropagation()
+      @attr.data.isActive = true;
       @render()
 
     @disable = (ev) ->
       ev?.stopPropagation()
+      @attr.data.isActive = false;
       @$node.html('')
 
     # Bind events
