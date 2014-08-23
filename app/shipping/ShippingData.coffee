@@ -241,17 +241,17 @@ define ['flight/lib/component',
             { name: 'cancelNew',  from: 'search',  to: 'list'     } # only if available addresses > 0
           ],
           callbacks:
-            onorderform: @onOrderFormStateEnter.bind(@)
-            onenable: @onEnableStateEnter.bind(@)
-            onfailSearch: @onFailSearchStateEnter.bind(@)
-            ondoneSearch: @onDoneSearchStateEnter.bind(@)
-            ondoneSLA: @onDoneSLAStateEnter.bind(@)
-            onsubmit: @onSubmitStateEnter.bind(@)
-            onselect: @onSelectStateEnter.bind(@)
-            onedit: @onEditStateEnter.bind(@)
-            oncancelEdit: @onCancelEditStateEnter.bind(@)
-            onnew: @onNewStateEnter.bind(@)
-            oncancelNew: @onCancelNewStateEnter.bind(@)
+            onorderform:    @onOrderFormStateEnter.bind(@)
+            onenable:       @onEnableStateEnter.bind(@)
+            onfailSearch:   @onFailSearchStateEnter.bind(@)
+            ondoneSearch:   @onDoneSearchStateEnter.bind(@)
+            ondoneSLA:      @onDoneSLAStateEnter.bind(@)
+            onsubmit:       @onSubmitStateEnter.bind(@)
+            onselect:       @onSelectStateEnter.bind(@)
+            onedit:         @onEditStateEnter.bind(@)
+            oncancelEdit:   @onCancelEditStateEnter.bind(@)
+            onnew:          @onNewStateEnter.bind(@)
+            oncancelNew:    @onCancelNewStateEnter.bind(@)
 
       # Bind events
       @after 'initialize', ->
