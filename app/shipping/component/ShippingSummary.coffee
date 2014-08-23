@@ -34,7 +34,7 @@ define ['flight/lib/component',
         @$node.html('')
 
     @editAddress = ->
-      $("#shipping-data").trigger('enable.vtex')
+      @trigger('closeShippingSummary.vtex')
 
     @enable = (ev) ->
       ev?.stopPropagation()

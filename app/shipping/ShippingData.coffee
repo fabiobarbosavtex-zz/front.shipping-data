@@ -62,6 +62,7 @@ define ['flight/lib/component',
             @select('editShippingDataSelector').show()
             @select('goToPaymentButtonSelector').hide()
             @select('shippingTitleSelector').removeClass('accordion-toggle-active')
+            @select('goToPaymentButtonSelector').hide()
             if @attr.orderForm.shippingData?.address
               @select('addressNotFilledSelector').hide()
             else
@@ -108,8 +109,7 @@ define ['flight/lib/component',
         @attr.orderForm = _.clone orderForm
         if @attr.orderForm.shippingData?.address? and @attr.stateMachine.can("orderform")
           @attr.stateMachine.orderform()
-
-#        @updateView()
+        @updateView()
 #        @updateComponentView()
 
       #
@@ -219,6 +219,9 @@ define ['flight/lib/component',
         @attr.orderForm.shippingData.logisticsInfo = logisticsInfo
         @updateView()
 
+      @closeShippingSummary = (ev) ->
+        ev.stopPropagation()
+
       @createStateMachine = ->
         @attr.stateMachine = StateMachine.create
           initial: 'empty',
@@ -272,6 +275,7 @@ define ['flight/lib/component',
             @on 'addressUpdated.vtex', @addressUpdated
             @on 'showAddressList.vtex', @showAddressListAndShippingOption
             @on 'editAddress.vtex', @editAddress
+            @on 'closeShippingSummary.vtex', @closeShippingSummary
             @on 'currentShippingOptions.vtex', @shippingOptionsUpdated
 #            @on 'clearSelectedAddress.vtex', @clearSelectedAddress
             @on @attr.addressFormSelector, 'componentValidated.vtex', @handleAddressValidation
