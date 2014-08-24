@@ -1,0 +1,45 @@
+<!-- BACK TO LIST BUTTON -->
+{#showBackButton}
+  <p style="display: block;" class="cancel-address-form">
+    <a href="javascript:void(0);" class="cancel-new-address" data-i18n="shipping.addressForm.cancelEditAddress">
+      Cancelar alterações e voltar para a lista de endereços
+    </a>
+  </p>
+{/showBackButton}
+<form class="address-form-new box-new address-form-{country}" data-parsley-validate="true" data-parsley-bind="true">
+  <fieldset class="address-data">
+      <p class="ship-postal-code required input text mask">
+        {^showGeolocationSearch}
+        <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
+
+        {?loading}
+        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small loading-postal-code" disabled="disabled" value="{postalCodeQuery}" name="postalCodeQuery" >
+
+        <i class="loading-inline icon-spinner icon-spin">
+          <span data-i18n="global.loading"></span>
+        </i>
+        {:else}
+        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code-query postal-code postal-code-{country} input-small" value="{postalCodeQuery}" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-postalcode="true" name="postalCodeQuery" data-parsley-errors-container=".postal-code-errors">
+        <small><a href="javascript:void(0);" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressForm.dontKnowPostalCode"></a></small>
+        <span class="postal-code-errors"></span>
+        {/loading}
+
+        {/showGeolocationSearch}
+
+        {?showGeolocationSearch}
+        <label for="addressSearch"><span>Buscar por endereço</span></label>
+        <input type="text" id="address-search" tabindex="221" class="input-large" value="{addressQuery}" name="addressSearch"/><br/>
+        <small><a href="javascript:void(0);" id="know-postal-code" target="_blank" data-i18n="shipping.addressForm.knowPostalCode"></a></small>
+        {@if cond="{requiredGoogleFieldsNotFound.length} > 0"}
+        <div class="well">
+          Faltaram os seguintes campos obrigatórios:
+          <br/><br/>
+          {#requiredGoogleFieldsNotFound}
+            <span data-i18n="shipping.addressForm.{.}">{.}</span> <br/>
+          {/requiredGoogleFieldsNotFound}
+        </div>
+        {/if}
+        {/showGeolocationSearch}
+      </p>
+  </fieldset>
+</form>

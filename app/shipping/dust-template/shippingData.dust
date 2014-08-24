@@ -20,6 +20,7 @@
 
         <!-- CONTAINER DOS COMPONENTES FILHOS -->
         <div class="box-step">
+            <div class="address-search-placeholder"></div>
             <div class="address-form-placeholder"></div>
             <div class="address-list-placeholder"></div>
             <div class="address-shipping-options"></div>
@@ -29,7 +30,7 @@
     </div>
 
     <!-- NEXT STEP BUTTON -->
-    <p class="submit btn-submit-wrapper">
+    <p class="submit btn-submit-wrapper" style="display: none">
         <button type="submit" class="submit btn btn-large btn-success btn-go-to-payment" data-i18n="shipping.goToPayment"
                 tabindex="350"></button>
     </p>
