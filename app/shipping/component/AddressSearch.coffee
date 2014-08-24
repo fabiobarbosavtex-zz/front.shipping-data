@@ -159,6 +159,29 @@ define ['flight/lib/component',
               item.formatted_address is address
             @addressMapper(addressObject)
 
+      @addressMapper = (googleAddress) ->
+        # Clean required google fields error and render
+        @attr.data.requiredGoogleFieldsNotFound = []
+        googleDataMap = @getCountryRule().googleDataMap
+        address = {
+          geoCoordinates: [
+            googleAddress.geometry.location.lng()
+            googleAddress.geometry.location.lat()
+          ]
+        }
+        _.each googleDataMap, (rule) =>
+          _.each googleAddress.address_components, (component) =>
+            if _.intersection(component.types, rule.types).length > 0
+              address[rule.value] = component[rule.length]
+          if rule.required and not address[rule.value]
+            @attr.data.requiredGoogleFieldsNotFound.push(rule.value)
+
+        if @attr.data.requiredGoogleFieldsNotFound.length is 0
+          @attr.currentResponseCoordinates = googleAddress.geometry.location
+          @handleAddressSearch(address)
+        else
+          @render()
+
       # Close the form
       @cancelAddressForm = ->
         @trigger('cancelAddressSearch.vtex')

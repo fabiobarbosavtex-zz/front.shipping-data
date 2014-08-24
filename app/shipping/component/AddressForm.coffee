@@ -38,7 +38,6 @@ define ['flight/lib/component',
 
         isGoogleMapsAPILoaded: false
         addressFormSelector: '.address-form-new'
-        postalCodeQuerySelector: '.postal-code-query'
         postalCodeSelector: '.postal-code'
         forceShippingFieldsSelector: '#force-shipping-fields'
         stateSelector: '#ship-state'
@@ -46,12 +45,8 @@ define ['flight/lib/component',
         deliveryCountrySelector: '#ship-country'
         cancelAddressFormSelector: '.cancel-address-form a'
         submitButtonSelector: '.submit .btn-success.address-save'
-        addressSearchBtSelector: '.address-search-bt'
-        addressSearchSelector: '#address-search'
         mapCanvasSelector: '#map-canvas'
         clearAddressSearchSelector: '.clear-address-search'
-        dontKnowPostalCodeSelector: '#dont-know-postal-code'
-        knowPostalCodeSelector: '#know-postal-code'
 
         # Google maps variables
         map = null
@@ -104,9 +99,8 @@ define ['flight/lib/component',
             errorsWrapper: '<span class="help error error-list"></span>'
             errorTemplate: '<span class="error-description"></span>'
 
-          if not @attr.data.isSearchingAddress
-            @attr.parsley.subscribe 'parsley:field:validated', () =>
-              @validate()
+          @attr.parsley.subscribe 'parsley:field:validated', () =>
+            @validate()
 
       # Render this component according to the data object
       @render = ->
@@ -121,99 +115,21 @@ define ['flight/lib/component',
       @getCountryRule = ->
         @attr.data.countryRules[@attr.data.address.country]
 
-      # Validate the postal code input
-      # If successful, this will call the postal code API
-      @validatePostalCode = (ev, data) ->
-        postalCode = data.el.value
-        rules = @getCountryRule()
-        if rules.regexes.postalCode.test(postalCode)
-          @attr.data.throttledLoading = true
-          @attr.data.postalCodeQuery = postalCode
-          @attr.data.address?.postalCode = postalCode
-          @attr.data.loading = true if rules.queryPostalCode
-          @render()
-          if rules.queryPostalCode
-            @getPostalCode postalCode
-
       @validateAddress = ->
         address = @attr.data.address
         if @select('addressFormSelector') and @attr.parsley
           valid = @attr.parsley.isValid()
           if valid
-            @submitAddress(true)
+            @updateAddress(true)
           else if @attr.data.address.isValid
-            @submitAddress(false)
+            @updateAddress(false)
           return valid
         else
           return address.validate(@getCountryRule())
 
       @clearAddressSearch = (ev, obj) ->
         ev.preventDefault()
-
-        if $(obj.el).hasClass('postal-code')
-          postalCodeQuery = obj.el.value.replace(/-|\_/g, '')
-          if postalCodeQuery is @attr.data.address.postalCode
-            return
-          else
-            @attr.data.labelShippingFields = false
-        # TODO - Afonso colocar caso do geolocation aqui
-        # else if ev.hasClass('map-sei-la')
-        #   ...
-
-        @trigger('clearSelectedAddress.vtex')
-        address = addressId: @attr.data.address.addressId
-        @attr.data.address = new Address(address, @attr.data.deliveryCountries)
-        @attr.data.isSearchingAddress = true
-        @attr.data.postalCodeQuery = postalCodeQuery ? ''
-        @render().then =>
-          if postalCodeQuery
-            @select('postalCodeQuerySelector').focus()
-
-      # Call the postal code API
-      @getPostalCode = (postalCode) ->
-        # Clear map postition
-        @attr.currentResponseCoordinates = null
-        @attr.API.getAddressInformation({
-          postalCode: postalCode.replace(/-/g, '')
-          country: @attr.data.country
-        }).then(@handleAddressSearch.bind(this), @handleAddressSearchError.bind(this))
-
-      @handleAddressSearch = (address) ->
-        @attr.data.throttledLoading = false
-        @attr.data.loading = false
-        @attr.data.showAddressForm = true
-        @attr.data.isSearchingAddress = false
-        @attr.data.labelShippingFields = address.neighborhood isnt '' and address.neighborhood? and
-          address.street isnt '' and address.street? and
-          address.state isnt '' and address.state? and
-          address.city isnt '' and address.city?
-        @attr.data.disableCityAndState = address.state isnt '' and address.city isnt ''
-        address.addressId = @attr.data.address.addressId
-        @attr.data.address = new Address(address, @attr.data.deliveryCountries)
-        @render()
-
-        # Montando dados para send attachment
-        attachment =
-          address: @attr.data.address,
-          clearAddressIfPostalCodeNotFound: @getCountryRule()?.usePostalCode
-        @trigger('startLoadingShippingOptions.vtex')
-        @attr.ignoreNextEnable = true
-        @attr.API?.sendAttachment('shippingData', attachment)
-
-      @handleAddressSearchError = ->
-        @attr.data.isSearchingAddress = false
-        @attr.data.throttledLoading = false
-        @attr.data.showAddressForm = true
-        @attr.data.labelShippingFields = false
-        @attr.data.disableCityAndState = false
-        @attr.data.loading = false
-        @render()
-
-        # Montando dados para send attachment
-        attachment =
-          address: @attr.data.address,
-          clearAddressIfPostalCodeNotFound: @getCountryRule()?.usePostalCode
-        @attr.API?.sendAttachment('shippingData', attachment)
+        @trigger('clearAddressSearch.vtex') # TODO receive cancel form event on parent
 
       # Able the user to edit the suggested fields
       # filled by the postal code service
@@ -244,11 +160,11 @@ define ['flight/lib/component',
 
         return addressObj
 
-      @submitAddressHandler = (ev) ->
-        @submitAddress(@attr.parsley.isValid())
+      @updateAddressHandler = (ev) ->
+        @updateAddress(@attr.parsley.isValid())
 
-      # Submit address to the server
-      @submitAddress = (isValid) ->
+      # Trigger address updated event
+      @updateAddress = (isValid) ->
         ev?.preventDefault()
 
         @attr.data.address = @getCurrentAddress()
@@ -279,29 +195,6 @@ define ['flight/lib/component',
           @attr.data.states = @attr.data.countryRules[country].states
           @attr.data.regexes = @attr.data.countryRules[country].regexes
           @attr.data.useGeolocation = @attr.data.countryRules[country].useGeolocation
-
-      @addressMapper = (googleAddress) ->
-        # Clean required google fields error and render
-        @attr.data.requiredGoogleFieldsNotFound = []
-        googleDataMap = @getCountryRule().googleDataMap
-        address = {
-          geoCoordinates: [
-            googleAddress.geometry.location.lng()
-            googleAddress.geometry.location.lat()
-          ]
-        }
-        _.each googleDataMap, (rule) =>
-          _.each googleAddress.address_components, (component) =>
-            if _.intersection(component.types, rule.types).length > 0
-              address[rule.value] = component[rule.length]
-          if rule.required and not address[rule.value]
-            @attr.data.requiredGoogleFieldsNotFound.push(rule.value)
-
-        if @attr.data.requiredGoogleFieldsNotFound.length is 0
-          @attr.currentResponseCoordinates = googleAddress.geometry.location
-          @handleAddressSearch(address)
-        else
-          @render()
 
       @createMap = (location) ->
         @select('mapCanvasSelector').css('display', 'block')
@@ -339,33 +232,6 @@ define ['flight/lib/component',
           @attr.circle = null
         @attr.circle = new google.maps.Circle(circleOptions)
         @attr.circle.setMap(@attr.map)
-
-      @startGoogleAddressSearch = ->
-        if not @attr.isGoogleMapsAPILoaded
-          script = document.createElement("script")
-          script.type = "text/javascript"
-          script.src = "//maps.googleapis.com/maps/api/js?sensor=false&callback=vtex.googleMapsLoaded"
-          document.body.appendChild(script)
-          return
-
-        addressListResponse = []
-        @select('addressSearchSelector').typeahead
-          minLength: 3,
-          matcher: -> true
-          source: (query, process) ->
-            geocoder = new google.maps.Geocoder()
-            geocoder.geocode address: query, (response, status) =>
-              if status is "OK" and response.length > 0
-                addressListResponse = response
-                itemsToDisplay = []
-                _.each response, (item) ->
-                  itemsToDisplay.push item.formatted_address
-                process(itemsToDisplay)
-
-          updater: (address) =>
-            addressObject = _.find addressListResponse, (item) ->
-              item.formatted_address is address
-            @addressMapper(addressObject)
 
       # Handle the selection event
       @selectedCountry = ->
@@ -461,12 +327,15 @@ define ['flight/lib/component',
       # Handle the initial view of this component
       @enable = (ev, address) ->
         ev?.stopPropagation()
-        if @attr.ignoreNextEnable
-          @attr.ignoreNextEnable = false
-          return
 
-        @attr.data.isSearchingAddress = not address
-        @attr.data.postalCodeQuery = null
+        if address
+          @attr.data.labelShippingFields = address.neighborhood isnt '' and address.neighborhood? and
+            address.street isnt '' and address.street? and
+            address.state isnt '' and address.state? and
+            address.city isnt '' and address.city?
+          @attr.data.disableCityAndState = address.state isnt '' and address.city isnt ''
+          address.addressId = @attr.data.address.addressId
+
         @attr.data.address = new Address(address, @attr.data.deliveryCountries)
 
         if @attr.data.deliveryCountries.length > 1 and @attr.data.isSearchingAddress
@@ -498,17 +367,13 @@ define ['flight/lib/component',
         @on 'click',
           'forceShippingFieldsSelector': @forceShippingFields
           'cancelAddressFormSelector': @cancelAddressForm
-          'submitButtonSelector': @submitAddressHandler
-          'addressSearchBtSelector': @searchAddress
-          'dontKnowPostalCodeSelector': @openGeolocationSearch
-          'knowPostalCodeSelector': @openZipSearch
+          'submitButtonSelector': @updateAddressHandler
         @on 'change',
           'deliveryCountrySelector': @selectedCountry
           'stateSelector': @onChangeState
           'citySelector': @changePostalCodeByCity
         @on 'keyup',
           'clearAddressSearchSelector': @clearAddressSearch
-          'postalCodeQuerySelector': @validatePostalCode
 
         @setValidators [
           @validateAddress
