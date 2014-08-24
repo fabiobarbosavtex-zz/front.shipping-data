@@ -97,12 +97,24 @@ define ['flight/lib/component',
 
       @orderFormUpdated = (ev, orderForm) ->
         @attr.orderForm = _.clone orderForm
-        if @attr.orderForm.shippingData?.address? and @attr.stateMachine.can("orderform")
+        shippingData = @attr.orderForm.shippingData
+        return unless shippingData?
+        if shippingData.address? and @attr.stateMachine.can("orderform")
           @attr.stateMachine.orderform()
+        if shippingData.logisticsInfo? and shippingData.logisticsInfo.length > 0 and @attr.stateMachine.can("doneSLA")
+          @attr.stateMachine.doneSLA(shippingData.logisticsInfo)
 
       @addressSearchResult = (ev, address) ->
         console.log "address result", address
         @attr.stateMachine.doneSearch(address)
+        console.log "Getting shipping options for address"
+
+        # Montando dados para send attachment
+        attachment =
+          address: address,
+          clearAddressIfPostalCodeNotFound: true # TODO @getCountryRule()?.usePostalCode
+
+        @attr.API?.sendAttachment('shippingData', attachment)
 
       # When a new addresses is selected
       # Should call API to get delivery options
@@ -191,19 +203,18 @@ define ['flight/lib/component',
             onleavesearch:  @onLeaveSearch.bind(this)
             onenterlist:    @onEnterList.bind(this)
             onenteredit:    @onEnterEdit.bind(this)
-            onfailSearch:   @onFailSearchStateEnter.bind(this)
-            ondoneSearch:   @onDoneSearchStateEnter.bind(this)
-            ondoneSLA:      @onDoneSLAStateEnter.bind(this)
-            onsubmit:       @onSubmitStateEnter.bind(this)
-            onselect:       @onSelectStateEnter.bind(this)
-            onedit:         @onEditStateEnter.bind(this)
-            oncancelEdit:   @onCancelEditStateEnter.bind(this)
-            onnew:          @onNewStateEnter.bind(this)
-            oncancelNew:    @onCancelNewStateEnter.bind(this)
+            onentereditSLA: @onEnterEditSLA.bind(this)
+            onenterstate:   @onEnterState.bind(this)
 
       #
       # Changed state events (FINITE STATE MACHINE)
       #
+      @onEnterState = ->
+        if @attr.data.active
+          @select('shippingStepSelector').addClass('active', 'visited')
+        else
+          @select('shippingStepSelector').removeClass('active')
+
       @onEnterEmpty = (event, from, to) ->
         console.log "Enter empty"
         @select('addressNotFilledSelector').show()
@@ -215,10 +226,16 @@ define ['flight/lib/component',
       @onEnterSummary = (event, from, to) ->
         console.log "Enter summary"
         @select('shippingSummarySelector').trigger('enable.vtex')
+        # Disable other components
+        @select('shippingOptionsSelector').trigger('disable.vtex')
+        # We can only enter summary if getting disabled
+        @attr.data.active = false
 
       @onLeaveSummary = (event, from, to) ->
         console.log "Leave summary"
         @select('shippingSummarySelector').trigger('disable.vtex')
+        # We can only leave summary if getting active
+        @attr.data.active = true
 
       @onEnterSearch = (event, from, to) ->
         @attr.data.active = true
@@ -239,6 +256,12 @@ define ['flight/lib/component',
       @onEnterEdit = (event, from, to, address) ->
         console.log "Enter edit", address
         @select('addressFormSelector').trigger('enable.vtex', address)
+        # When we start editing, we alwasy start looking for shipping options
+        @trigger('startLoadingShippingOptions.vtex')
+
+      @onEnterEditSLA = (event, from, to, logisticsInfo) ->
+        console.log "Enter edit SLA", logisticsInfo
+        @select('shippingOptionsSelector').trigger('enable.vtex', logisticsInfo)
 
       @onFailSearchStateEnter = (event, from, to) ->
 

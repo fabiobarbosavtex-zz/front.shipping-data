@@ -120,14 +120,6 @@ define ['flight/lib/component',
         @attr.data.loading = false
         @trigger('addressSearchResult.vtex', [address])
 
-        # Montando dados para send attachment
-        ###attachment =
-          address: @attr.data.address,
-          clearAddressIfPostalCodeNotFound: @getCountryRule()?.usePostalCode
-        @trigger('startLoadingShippingOptions.vtex')
-        @attr.ignoreNextEnable = true
-        @attr.API?.sendAttachment('shippingData', attachment)###
-
       @handleAddressSearchError = ->
         @attr.data.loading = false
         @render()
