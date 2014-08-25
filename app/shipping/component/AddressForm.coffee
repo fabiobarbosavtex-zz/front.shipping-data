@@ -5,9 +5,8 @@ define ['flight/lib/component',
         'shipping/setup/extensions',
         'shipping/models/Address',
         'shipping/mixin/withi18n',
-        'shipping/mixin/withValidation',
-        'shipping/template/selectCountry'],
-  (defineComponent, extensions, Address, withi18n, withValidation, selectCountryTemplate) ->
+        'shipping/mixin/withValidation'],
+  (defineComponent, extensions, Address, withi18n, withValidation) ->
     AddressForm = ->
       @defaultAttrs
         map: false
@@ -17,13 +16,9 @@ define ['flight/lib/component',
         data:
           address: null
           availableAddresses: []
-          country: false
-          deliveryCountries: []
           disableCityAndState: false
           labelShippingFields: false
           showPostalCode: false
-          showAddressForm: false
-          showSelectCountry: false
           addressSearchResults: {}
           countryRules: {}
           showGeolocationSearch: false
@@ -39,20 +34,10 @@ define ['flight/lib/component',
         forceShippingFieldsSelector: '#force-shipping-fields'
         stateSelector: '#ship-state'
         citySelector: '#ship-city'
-        deliveryCountrySelector: '#ship-country'
         cancelAddressFormSelector: '.cancel-address-form a'
         submitButtonSelector: '.submit .btn-success.address-save'
         mapCanvasSelector: '#map-canvas'
         clearAddressSearchSelector: '.clear-address-search'
-
-        # Google maps variables
-        map = null
-        marker = null
-
-      @renderSelectCountry = (data) ->
-        dust.render 'selectCountry', data, (err, output) =>
-          output = $(output).i18n()
-          @$node.html(output)
 
       @renderAddressForm = (data) ->
         dust.render @attr.templates.form.name, data, (err, output) =>
@@ -103,10 +88,7 @@ define ['flight/lib/component',
       @render = ->
         require 'shipping/translation/' + @attr.locale, (translation) =>
           @extendTranslations(translation)
-          if @attr.data.showSelectCountry
-            @renderSelectCountry(@attr.data)
-          else if @attr.data.showAddressForm
-            @renderAddressForm(@attr.data)
+          @renderAddressForm(@attr.data)
 
       # Helper function to get the current country's rules
       @getCountryRule = ->
@@ -173,11 +155,7 @@ define ['flight/lib/component',
 
       # Select a delivery country
       # This will load the country's form and rules
-      @selectCountry = (country) ->
-        @attr.data.country = country
-        @attr.data.showAddressForm = true
-        @attr.data.showSelectCountry = false
-
+      @loadCountryRulesAndTemplate = (country) ->
         @attr.templates.form.name = @attr.templates.form.baseName + country
         @attr.templates.form.template = 'shipping/template/' + @attr.templates.form.name
 
@@ -189,6 +167,7 @@ define ['flight/lib/component',
           @attr.data.states = @attr.data.countryRules[country].states
           @attr.data.regexes = @attr.data.countryRules[country].regexes
           @attr.data.useGeolocation = @attr.data.countryRules[country].useGeolocation
+          @render.bind(this)
 
       @createMap = (location) ->
         @select('mapCanvasSelector').css('display', 'block')
@@ -226,19 +205,6 @@ define ['flight/lib/component',
           @attr.circle = null
         @attr.circle = new google.maps.Circle(circleOptions)
         @attr.circle.setMap(@attr.map)
-
-      # Handle the selection event
-      @selectedCountry = ->
-        @clearAddressSearch()
-        country = @select('deliveryCountrySelector').val()
-
-        if country
-          @selectCountry(country).then(@render.bind(this), @handleCountrySelectError.bind(this))
-
-      @getDeliveryCountries = (logisticsInfo) =>
-        _.uniq(_.reduceRight(logisticsInfo, (memo, l) ->
-          return memo.concat(l.shipsTo)
-        , []))
 
       # Close the form
       @cancelAddressForm = ->
@@ -299,23 +265,27 @@ define ['flight/lib/component',
         @changeCities(ev, data)
         @changePostalCodeByState(ev, data)
 
-      # Handle the initial view of this component
-      @enable = (ev, address) ->
-        ev?.stopPropagation()
+      @updateData = (ev, data) ->
+        @attr.data.availableAddresses = data.shippingData.availableAddresses ? []
+        @attr.data.address = new Address(data.shippingData.address)
+        @selectCountry(@attr.data.address.country).then @validate.bind(this)
 
-        if address
+        address = @attr.data.address
+        if address.country is 'BRA'
           @attr.data.labelShippingFields = address.neighborhood isnt '' and address.neighborhood? and
             address.street isnt '' and address.street? and
             address.state isnt '' and address.state? and
             address.city isnt '' and address.city?
           @attr.data.disableCityAndState = address.state isnt '' and address.city isnt ''
 
-        @attr.data.address = new Address(address, @attr.data.deliveryCountries)
-
-        if @attr.data.deliveryCountries.length > 1 and @attr.data.isSearchingAddress
-          @attr.data.showSelectCountry = true
-
-        @selectCountry(@attr.data.address.country).then(@render.bind(this), @handleCountrySelectError.bind(this))
+      # Handle the initial view of this component
+      @enable = (ev, address) ->
+        ev?.stopPropagation()
+        @attr.data.address = new Address(address)
+        @loadCountryRulesAndTemplate(address.country)
+          .then( =>
+            @updateEnables(address)
+          , @handleCountrySelectError.bind(this))
 
       @handleCountrySelectError = (reason) ->
         console.error("Unable to load country dependencies", reason)
@@ -323,8 +293,19 @@ define ['flight/lib/component',
       @disable = (ev) ->
         ev?.stopPropagation()
         # Clear address on disable
-        @attr.data.address = new Address(null, @attr.data.deliveryCountries)
+        @attr.data.address = new Address(null)
         @$node.html('')
+
+      @updateEnables = () ->
+        @attr.data.labelShippingFields = @attr.data.address.neighborhood isnt '' and @attr.data.address.neighborhood? and
+          @attr.data.address.street isnt '' and @attr.data.address.street? and
+          @attr.data.address.state isnt '' and @attr.data.address.state? and
+          @attr.data.address.city isnt '' and @attr.data.address.city?
+        @attr.data.disableCityAndState = @attr.data.address.state isnt '' and @attr.data.address.city isnt ''
+        @render()
+
+      @handleCountrySelectError = ->
+        console.log "error on loading country rules"
 
       @openGeolocationSearch = ->
         @attr.data.showGeolocationSearch = true;
@@ -339,14 +320,11 @@ define ['flight/lib/component',
         @on 'enable.vtex', @enable
         @on 'disable.vtex', @disable
         @on 'loading.vtex', @loading
-        @on window, 'newCountryRule', @addCountryRule # TODO -> MELHORAR AQUI
         @on 'click',
           'forceShippingFieldsSelector': @forceShippingFields
           'cancelAddressFormSelector': @cancelAddressForm
-          'submitButtonSelector': @updateAddressHandler
         @on 'change',
           'postalCodeSelector': @clearAddressSearch
-          'deliveryCountrySelector': @selectedCountry
           'stateSelector': @onChangeState
           'citySelector': @changePostalCodeByCity
         @on 'keyup',
