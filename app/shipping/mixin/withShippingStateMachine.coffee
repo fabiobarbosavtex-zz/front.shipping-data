@@ -79,7 +79,7 @@ define [], () ->
     @onEnterSearch = (event, from, to, addressSearch) ->
       @attr.data.active = true
       console.log "Enter search"
-      @select('addressSearchSelector').trigger('enable.vtex', addressSearch)
+      @select('addressSearchSelector').trigger('enable.vtex', [addressSearch, @attr.data.countryRules[@attr.data.country]])
       @select('shippingOptionsSelector').trigger('disable.vtex')
       @select('goToPaymentButtonWrapperSelector').hide()
 
