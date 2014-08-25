@@ -12,9 +12,8 @@ window.console || (window.console = {
 
 vtex.curl(vtex.curl.configuration, 
   ['shipping/ShippingData',
-   'example/CheckoutMock',
-   'shipping/component/AddressForm'],
-  function(ShippingData,  CheckoutMock, AddressForm) {
+   'example/CheckoutMock'],
+  function(ShippingData,  CheckoutMock) {
 
     // Flags
     window.shippingUsingGeolocation = true;
