@@ -159,7 +159,7 @@ define ['flight/lib/component',
       #
 
       @validateAddress = ->
-        currentAddress = new Address(@attr.orderForm.shippingData.address, @attr.data.deliveryCountries)
+        currentAddress = new Address(@attr.orderForm.shippingData.address)
         return currentAddress.validate(@attr.data.countryRules[currentAddress.country])
 
       @validateShippingOptions = ->

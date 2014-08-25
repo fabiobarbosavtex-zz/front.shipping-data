@@ -3,12 +3,12 @@ require = vtex.curl || window.require
 
 define ->
   class Address
-    constructor: (data = {}, deliveryCountries = []) ->
+    constructor: (data = {}) ->
       @addressId = data.addressId ? (new Date().getTime() * -1).toString()
       @addressType = data.addressType ? "residential"
       @city = data.city
       @complement = data.complement
-      @country = data.country or deliveryCountries[0]
+      @country = data.country
       @geoCoordinates = data.geoCoordinates ? []
       @neighborhood = data.neighborhood
       @number = data.number
@@ -17,8 +17,6 @@ define ->
       @reference = data.reference
       @state = data.state
       @street = data.street
-
-      @deliveryCountries = deliveryCountries
 
     validateField: (rules, name) =>
       value = @[name]
