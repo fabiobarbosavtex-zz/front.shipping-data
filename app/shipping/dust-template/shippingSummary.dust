@@ -10,11 +10,12 @@
     {#address}
     <p class="address">
         <span class="street">{street}</span>,&nbsp;
-        {@if cond="'{country}' == 'USA'"}
-        <span class="complement">{complement}</span>
-        {:else}
-        <span class="number">{number}</span>
+        {@if cond="'{country}' !== 'USA'"}
+        <span class="number">{number}</span>, &nbsp;
         {/if}
+        {?complement}
+        <span class="complement">{complement}</span>
+        {/complement}
         {?neighborhood}
         &nbsp;- <span class="neighborhood">{neighborhood}</span>
         {/neighborhood}
