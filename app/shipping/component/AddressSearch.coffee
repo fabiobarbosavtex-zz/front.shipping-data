@@ -35,6 +35,7 @@ define ['flight/lib/component',
         clearAddressSearchSelector: '.clear-address-search'
         dontKnowPostalCodeSelector: '#dont-know-postal-code'
         knowPostalCodeSelector: '#know-postal-code'
+        countryRule: false
 
         # Google maps variables
         map = null
@@ -105,9 +106,10 @@ define ['flight/lib/component',
 
       @startGoogleAddressSearch = ->
         if not @attr.isGoogleMapsAPILoaded
+          country = @attr.countryRule.abbr
           script = document.createElement("script")
           script.type = "text/javascript"
-          script.src = "//maps.googleapis.com/maps/api/js?sensor=false&callback=vtex.googleMapsLoaded"
+          script.src = "//maps.googleapis.com/maps/api/js?sensor=false&components=country:#{country}&language=#{@attr.locale}&callback=vtex.googleMapsLoadedOnSearch"
           document.body.appendChild(script)
           return
 
@@ -166,6 +168,7 @@ define ['flight/lib/component',
       # Handle the initial view of this component
       @enable = (ev, addressSearch, countryRule) ->
         ev?.stopPropagation()
+        @attr.countryRule = countryRule;
         if addressSearch
           @attr.data.postalCodeQuery = addressSearch # TODO may be google search
         else
@@ -200,7 +203,7 @@ define ['flight/lib/component',
         ]
 
         # Called when google maps api is loaded
-        window.vtex.googleMapsLoaded = =>
+        window.vtex.googleMapsLoadedOnSearch = =>
           @attr.data.loading = false
           @attr.isGoogleMapsAPILoaded = true
           @render()
