@@ -90,7 +90,6 @@ define ['flight/lib/component',
       # Call the postal code API
       @getPostalCode = (postalCode) ->
         # Clear map postition
-        @attr.currentResponseCoordinates = null
         @attr.getAddressInformation({
           postalCode: postalCode.replace(/-/g, '')
           country: @attr.data.country
@@ -135,13 +134,14 @@ define ['flight/lib/component',
       @addressMapper = (googleAddress) ->
         # Clean required google fields error and render
         @attr.data.requiredGoogleFieldsNotFound = []
-        googleDataMap = @getCountryRule().googleDataMap
+        googleDataMap = @attr.countryRule.googleDataMap
         address = {
           geoCoordinates: [
             googleAddress.geometry.location.lng()
             googleAddress.geometry.location.lat()
           ]
         }
+        address.country = @attr.countryRule.country
         _.each googleDataMap, (rule) =>
           _.each googleAddress.address_components, (component) =>
             if _.intersection(component.types, rule.types).length > 0
@@ -150,7 +150,6 @@ define ['flight/lib/component',
             @attr.data.requiredGoogleFieldsNotFound.push(rule.value)
 
         if @attr.data.requiredGoogleFieldsNotFound.length is 0
-          @attr.currentResponseCoordinates = googleAddress.geometry.location
           @handleAddressSearch(address)
         else
           @render()
