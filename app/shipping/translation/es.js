@@ -59,6 +59,11 @@ define(function () {
         "day_plural": 'Hasta __count__ días',
         "fromToHour": 'Desde las __from__ hasta las __to__',
         "priceFrom": 'a partir de'
+      },
+      "shippingSummary": {
+        "shipping": 'Envio:',
+        "chooseOtherShippingOption": 'Eligir un nuevo tipo de envío',
+        "atAddressOf": 'A dirección de:'
       }
     },
     "validation": {

@@ -1,14 +1,65 @@
-{#address}
-<p class="address">
-	<span class="street">{address.street}</span>,
-	<span class="number"> {address.number}</span> - <span class="neighborhood">{address.neighborhood}</span>
-	<br>
-	<span class="city">{address.city}</span> -  <span class="state">{address.state}</span> -
-	<span class="postal-code"> {address.postalCode}</span> -
-	<span class="country" data-i18n="countries.{address.country}"></span>
+
+{?isGift}
+<p class="address" data-bind="visible: currentAddress() && currentAddress().isGift()">
+    <span>
+        <span data-i18n="shipping.shippingSummary.atAddressOf"></span>
+        <strong class="gift-list-name" data-bind="text: window.checkout.giftRegistryDescription"></strong>
+    </span>
 </p>
-<div class="shipping-options just-one">
-	<p><span class="text">Entrega:</span> <span class="sla">Entrega Agendada</span></p>
-</div>
-<a href="#/shipping" class="link-change-shipping" data-i18n="shippingData.chooseOtherShippingOption"></a>
-{/address}
+{:else}
+    {#address}
+    <p class="address">
+        <span class="street">{street}</span>,&nbsp;
+        <!-- ko if: deliveryCountry() == "USA" -->
+        <span class="complement">{complement}</span>
+        <!-- /ko -->
+        <!-- ko ifnot: deliveryCountry() == "USA" -->
+        <span class="number">{number}</span>
+        <!-- /ko -->
+        {?neighborhood}
+        &nbsp;- <span class="neighborhood">{neighborhood}</span>
+        {/neighborhood}
+        <!-- ko if: !checkout.canEditData() -->
+        <a data-i18n="[title]modal.maskedInfoHello" class="client-masked-info" href="javascript:void(0);" data-bind="click: function() { vtex.checkout.MessageUtils.showMaskedInfoMessage() }"><i class="icon-question-sign"></i></a>
+        <!-- /ko -->
+        <br>
+        {?city}
+        <span class="city">{city}</span> -&nbsp;
+        {/city}
+        <span class="state">{state}</span>
+        <!-- ko ifnot: isNotUsingPostalCode -->
+        &nbsp;- <span class="postal-code">{postalCode}</span>
+        <!-- /ko -->
+        <!-- ko if: isNotUsingPostalCode --> - <!-- /ko -->
+        <span class="country">{country}</span>
+    </p>
+    {/address}
+{/isGift}
+
+{#shippingOptions}
+    {#selectedSla}
+        <div class="shipping-options {^multipleSellers}just-one{/multipleSellers}">
+            <p>
+                <span class="text" data-i18n="shipping.shippingSummary.shipping"></span> 
+                <span class="sla">{name}</span>
+                {^isScheduled}
+                    <span> - </span><span class="estimate" data-bind="text: selectedSlaEstimate">{deliveryEstimateLabel}</span>
+                    <span> - </span><span class="sla-value" data-bind="text: selectedSlaPrice">{valueLabel}</span>
+                {/isScheduled}
+            </p>
+            <ul class="product-list muted unstyled">
+                {#items}
+                <li><i class="icon-caret-right"></i> <span>{name}</span></li>
+                {/items}
+            </ul>
+        </div>
+        {?isScheduled}
+        <p data-bind="if: selectedDeliveryDate">
+            <span data-bind="text: formatDate(selectedDeliveryDate())"></span> -
+            <span data-bind="text: deliveryWindow().label"></span>
+        </p>
+        {/isScheduled}
+    {/selectedSla}
+{/shippingOptions}
+<a href="#/shipping" id="change-other-shipping-option" class="link-change-shipping" data-i18n="shipping.shippingSummary.chooseOtherShippingOption"></a>
+

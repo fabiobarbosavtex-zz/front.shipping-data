@@ -11,7 +11,7 @@ define ['flight/lib/component',
     @defaultAttrs
       data:
         address: {}
-        isActive: false
+        multipleSellers: false
 
     # Render this component according to the data object
     @render = ->
@@ -19,29 +19,22 @@ define ['flight/lib/component',
         output = $(output).i18n()
         @$node.html(output)
 
-    @addressUpdated = (ev, address) ->
+    @enable = (ev, shippingData, items, sellers) ->
       ev?.stopPropagation()
-      @attr.data.address = address
 
-    @deliverySelected = (ev, logisticsInfo) ->
-      ev?.stopPropagation()
-      @attr.data.logisticsInfo = logisticsInfo
-
-    @enable = (ev) ->
-      ev?.stopPropagation()
-      @attr.data.isActive = true;
-      @render()
+      @attr.data.address = shippingData.address
+      @attr.data.logisticsInfo = shippingData.logisticsInfo
+      @attr.data.shippingOptions = @getShippingOptionsData(shippingData.logisticsInfo, items, sellers)
+      @updateShippingOptionsLabels(@attr.data.shippingOptions).then =>
+        @render()
 
     @disable = (ev) ->
       ev?.stopPropagation()
-      @attr.data.isActive = false;
       @$node.html('')
 
     # Bind events
     @after 'initialize', ->
       @on 'enable.vtex', @enable
       @on 'disable.vtex', @disable
-      @on 'addressUpdated.vtex', @addressUpdated
-      @on 'deliverySelected.vtex', @deliverySelected
 
   return defineComponent(ShippingSummary, withi18n, withLogisticsInfo)
