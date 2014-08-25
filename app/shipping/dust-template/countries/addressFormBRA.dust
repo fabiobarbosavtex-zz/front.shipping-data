@@ -72,6 +72,15 @@
       </p>
 
       {?labelShippingFields}
+      <p class="ship-city required input text hide">
+      {:else}
+      <p class="ship-city required input text">
+      {/labelShippingFields}
+        <label for="ship-city"><span data-i18n="shipping.addressForm.city"></span> <span class="item-required">*</span></label>
+        <input type="text" tabindex="227" id="ship-city" class="input-large" data-parsley-trigger="change blur" data-parsley-required="true" data-parsley-alphanumponc="true" value="{city}" name="city" {?disableCityAndState}disabled="disabled"{/disableCityAndState}>
+      </p>
+
+      {?labelShippingFields}
       <p class="ship-state required input text hide">
       {:else}
       <p class="ship-state required input text">
@@ -82,15 +91,6 @@
             <option value="{.}" {@eq key=. value="{state}"}selected="true"{/eq}>{.}</option>
           {/states}
         </select>
-      </p>
-
-      {?labelShippingFields}
-      <p class="ship-city required input text hide">
-      {:else}
-      <p class="ship-city required input text">
-      {/labelShippingFields}
-        <label for="ship-city"><span data-i18n="shipping.addressForm.city"></span> <span class="item-required">*</span></label>
-        <input type="text" tabindex="227" id="ship-city" class="input-large" data-parsley-trigger="change blur" data-parsley-required="true" data-parsley-alphanumponc="true" value="{city}" name="city" {?disableCityAndState}disabled="disabled"{/disableCityAndState}>
       </p>
 
       <p class="ship-commercial input checkbox hide">
