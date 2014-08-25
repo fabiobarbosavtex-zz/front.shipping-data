@@ -164,7 +164,7 @@ define ['flight/lib/component',
         @render()
 
       # Handle the initial view of this component
-      @enable = (ev, addressSearch) ->
+      @enable = (ev, addressSearch, countryRule) ->
         ev?.stopPropagation()
         if addressSearch
           @attr.data.postalCodeQuery = addressSearch # TODO may be google search
