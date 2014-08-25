@@ -10,12 +10,13 @@ define ['flight/lib/component',
         'shipping/component/AddressList',
         'shipping/component/ShippingOptions',
         'shipping/component/ShippingSummary',
+        'shipping/component/CountrySelect',
         'shipping/template/shippingData',
         'shipping/mixin/withi18n',
         'shipping/mixin/withValidation',
         'shipping/mixin/withShippingStateMachine',
         'link!shipping/css/shipping-data'],
-  (defineComponent, extensions, Address, FSM, AddressSearch, AddressForm, AddressList, ShippingOptions, ShippingSummary, template, withi18n, withValidation, withShippingStateMachine) ->
+  (defineComponent, extensions, Address, FSM, AddressSearch, AddressForm, AddressList, ShippingOptions, ShippingSummary, CountrySelect, template, withi18n, withValidation, withShippingStateMachine) ->
     ShippingData = ->
       @defaultAttrs
         API: null
@@ -27,6 +28,7 @@ define ['flight/lib/component',
           loading: false
           deliveryCountries: false
           countryRules: {}
+          country: false
 
         stateMachine: false
 
@@ -42,6 +44,7 @@ define ['flight/lib/component',
         addressSearchSelector: '.address-search-placeholder'
         addressListSelector: '.address-list-placeholder'
         shippingOptionsSelector: '.address-shipping-options'
+        countrySelectSelector: '.country-select-placeholder'
 
       #
       # Order form handler
@@ -53,6 +56,7 @@ define ['flight/lib/component',
         @attr.data.deliveryCountries = _.uniq(_.reduceRight(shippingData.logisticsInfo, ((memo, l) ->
           return memo.concat(l.shipsTo)), []))
         country = @attr.orderForm.shippingData.address?.country ? @attr.data.deliveryCountries[0]
+        @attr.data.country = country
         @countrySelected(null, country).then =>
           if shippingData.address? # If a current address exists
             # If we are editing and we received logistics info
@@ -179,6 +183,7 @@ define ['flight/lib/component',
 
             # Start the components
             ShippingSummary.attachTo(@attr.shippingSummarySelector)
+            CountrySelect.attachTo(@attr.countrySelectSelector)
             AddressSearch.attachTo(@attr.addressSearchSelector, { getAddressInformation: @attr.API.getAddressInformation })
             AddressForm.attachTo(@attr.addressFormSelector)
             AddressList.attachTo(@attr.addressListSelector)
