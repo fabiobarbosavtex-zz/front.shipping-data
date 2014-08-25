@@ -19,9 +19,10 @@ define ['flight/lib/component',
         output = $(output).i18n()
         @$node.html(output)
 
-    @enable = (ev, shippingData, items, sellers) ->
+    @enable = (ev, shippingData, items, sellers, rules) ->
       ev?.stopPropagation()
 
+      @attr.data.isUsingPostalCode = rules.usePostalCode
       @attr.data.address = shippingData.address
       @attr.data.logisticsInfo = shippingData.logisticsInfo
       @attr.data.shippingOptions = @getShippingOptionsData(shippingData.logisticsInfo, items, sellers)

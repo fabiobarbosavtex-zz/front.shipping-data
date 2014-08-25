@@ -10,28 +10,28 @@
     {#address}
     <p class="address">
         <span class="street">{street}</span>,&nbsp;
-        <!-- ko if: deliveryCountry() == "USA" -->
+        {@if cond="'{country}' == 'USA'"}
         <span class="complement">{complement}</span>
-        <!-- /ko -->
-        <!-- ko ifnot: deliveryCountry() == "USA" -->
+        {:else}
         <span class="number">{number}</span>
-        <!-- /ko -->
+        {/if}
         {?neighborhood}
         &nbsp;- <span class="neighborhood">{neighborhood}</span>
         {/neighborhood}
         <!-- ko if: !checkout.canEditData() -->
-        <a data-i18n="[title]modal.maskedInfoHello" class="client-masked-info" href="javascript:void(0);" data-bind="click: function() { vtex.checkout.MessageUtils.showMaskedInfoMessage() }"><i class="icon-question-sign"></i></a>
+        &nbsp;<a data-i18n="[title]modal.maskedInfoHello" class="client-masked-info" href="javascript:void(0);" data-bind="click: function() { vtex.checkout.MessageUtils.showMaskedInfoMessage() }"><i class="icon-question-sign"></i></a>
         <!-- /ko -->
         <br>
         {?city}
         <span class="city">{city}</span> -&nbsp;
         {/city}
         <span class="state">{state}</span>
-        <!-- ko ifnot: isNotUsingPostalCode -->
-        &nbsp;- <span class="postal-code">{postalCode}</span>
-        <!-- /ko -->
-        <!-- ko if: isNotUsingPostalCode --> - <!-- /ko -->
-        <span class="country">{country}</span>
+        {?isUsingPostalCode}
+        &nbsp;- <span class="postal-code">{postalCode}</span>&nbsp;
+        {:else}
+        &nbsp; -&nbsp;
+        {/isUsingPostalCode}
+        <span class="country" data-i18n="countries.{country}"></span>
     </p>
     {/address}
 {/isGift}

@@ -67,7 +67,7 @@ define ['flight/lib/component',
               @attr.stateMachine.invalidAddress(shippingData.address, shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
             else if @attr.stateMachine.can("orderform")
               # If it's valid, show it on summary
-              @attr.stateMachine.orderform(orderForm)
+              @attr.stateMachine.orderform(orderForm, @attr.data.countryRules[shippingData.address.country])
             else if @attr.stateMachine.current is 'summary'
               @select('shippingSummarySelector').trigger('enable.vtex', [shippingData, orderForm.items,
                                                                          orderForm.sellers, @attr.data.countryRules[shippingData.address.country]])
@@ -89,7 +89,8 @@ define ['flight/lib/component',
           @attr.data.active = false
           @trigger('componentDone.vtex')
           API.sendAttachment('shippingData', @attr.orderForm.shippingData)
-          @attr.stateMachine.submit(@attr.orderForm)
+          rules = @attr.data.countryRules[@attr.orderForm.shippingData.address?.country]
+          @attr.stateMachine.submit(@attr.orderForm, rules)
 
       #
       # Events from children components
