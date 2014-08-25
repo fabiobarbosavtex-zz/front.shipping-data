@@ -4,8 +4,9 @@ require = vtex.curl || window.require
 define ['flight/lib/component',
         'shipping/setup/extensions',
         'shipping/mixin/withi18n',
+        'shipping/mixin/withLogisticsInfo',
         'shipping/template/shippingSummary'],
-(defineComponent, extensions, withi18n, template) ->
+(defineComponent, extensions, withi18n, withLogisticsInfo, template) ->
   ShippingSummary = ->
     @defaultAttrs
       data:
@@ -43,4 +44,4 @@ define ['flight/lib/component',
       @on 'addressUpdated.vtex', @addressUpdated
       @on 'deliverySelected.vtex', @deliverySelected
 
-  return defineComponent(ShippingSummary, withi18n)
+  return defineComponent(ShippingSummary, withi18n, withLogisticsInfo)
