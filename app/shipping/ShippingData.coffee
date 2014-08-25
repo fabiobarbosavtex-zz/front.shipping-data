@@ -54,11 +54,18 @@ define ['flight/lib/component',
           return memo.concat(l.shipsTo)), []))
         country = @attr.orderForm.shippingData.address?.country ? @attr.data.deliveryCountries[0]
         @countrySelected(null, country).then =>
+          if shippingData.address? # If a current address exists
+            # If we are editing and we received logistics info
+            if (shippingData.logisticsInfo.length > 0) and @attr.stateMachine.can("doneSLA")
+              @attr.stateMachine.doneSLA(null, shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
+            else if @validateAddress() isnt true and @attr.stateMachine.can("invalidAddress")
+              # If it's invalid, stop here and edit it
+              @attr.stateMachine.invalidAddress(shippingData.address, shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
+            else if @attr.stateMachine.can("orderform")
+              # If it's valid, show it on summary
+              @attr.stateMachine.orderform(shippingData)
+
           @validate()
-          if shippingData.address? and @attr.stateMachine.can("orderform")
-            @attr.stateMachine.orderform(shippingData)
-          if shippingData.logisticsInfo? and shippingData.logisticsInfo.length > 0 and @attr.stateMachine.can("doneSLA")
-            @attr.stateMachine.doneSLA(shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
 
       #
       # External events handlers

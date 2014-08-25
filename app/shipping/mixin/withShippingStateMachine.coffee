@@ -8,6 +8,7 @@ define [], () ->
         events: [
           { name: 'start',       from: 'none',    to: 'empty'  }
           { name: 'orderform',   from: 'empty',   to: 'summary'  }
+          { name: 'invalidAddress',from: 'empty', to: 'editSLA'  }
           { name: 'enable',      from: 'empty',   to: 'search'   }
           { name: 'enable',      from: 'summary', to: 'list'     }
           { name: 'failSearch',  from: 'search',  to: 'search'   }
@@ -96,13 +97,12 @@ define [], () ->
     @onEnterEdit = (event, from, to, address) ->
       console.log "Enter edit", address
       @select('addressFormSelector').trigger('enable.vtex', address)
-      if address
+      if address and (address.postalCode or address.geoCoordinates.length is 2)
         # When we start editing, we always start looking for shipping options
-        console.log "Getting shipping options for address"
-        # Montando dados para send attachment
+        console.log "Getting shipping options for address", address
         attachment =
           address: address,
-          clearAddressIfPostalCodeNotFound: true # TODO @getCountryRule()?.usePostalCode
+          clearAddressIfPostalCodeNotFound: if address.country then @attr.data.countryRules[address.country].usePostalCode else true
         @attr.API?.sendAttachment('shippingData', attachment) # Handled by orderFormUpdated
         @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
 
@@ -110,8 +110,11 @@ define [], () ->
       return if to is 'editSLA' # No need to disable if we simply have new shipping options
       @select('addressFormSelector').trigger('disable.vtex')
 
-    @onEnterEditSLA = (event, from, to, logisticsInfo, items, sellers) ->
+    @onEnterEditSLA = (event, from, to, address, logisticsInfo, items, sellers) ->
       console.log "Enter edit SLA", logisticsInfo
+      if from isnt 'edit'
+        @select('addressFormSelector').trigger('enable.vtex', address)
+
       @select('shippingOptionsSelector').trigger('enable.vtex', [logisticsInfo, items, sellers])
       @select('goToPaymentButtonWrapperSelector').show()
 
