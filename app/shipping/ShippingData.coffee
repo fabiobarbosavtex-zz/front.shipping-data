@@ -68,7 +68,9 @@ define ['flight/lib/component',
             else if @attr.stateMachine.can("orderform")
               # If it's valid, show it on summary
               @attr.stateMachine.orderform(orderForm)
-
+            else if @attr.stateMachine.current is 'summary'
+              @select('shippingSummarySelector').trigger('enable.vtex', [shippingData, orderForm.items,
+                                                                         orderForm.sellers, @attr.data.countryRules[shippingData.address.country]])
           @validate()
 
       #
@@ -159,8 +161,11 @@ define ['flight/lib/component',
       #
 
       @validateAddress = ->
-        currentAddress = new Address(@attr.orderForm.shippingData.address)
-        return currentAddress.validate(@attr.data.countryRules[currentAddress.country])
+        if @attr.orderForm.canEditData
+          currentAddress = new Address(@attr.orderForm.shippingData.address)
+          return currentAddress.validate(@attr.data.countryRules[currentAddress.country])
+        else
+          return true
 
       @validateShippingOptions = ->
         logisticsInfo = @attr.orderForm.shippingData.logisticsInfo
