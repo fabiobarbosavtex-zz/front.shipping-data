@@ -28,7 +28,6 @@ define ['flight/lib/component',
 
         isGoogleMapsAPILoaded: false
         addressFormSelector: '.address-form-new'
-        postalCodeSelector: '.postal-code'
         postalCodeQuerySelector: '.postal-code-query'
         cancelAddressFormSelector: '.cancel-address-form a'
         addressSearchSelector: '#address-search'
@@ -56,8 +55,10 @@ define ['flight/lib/component',
           if data.loading #TODO botar dentro do template
             $('input, select, .btn', @$node).attr('disabled', 'disabled')
 
-          @select('postalCodeSelector').inputmask
+          @select('postalCodeQuerySelector').inputmask
             mask: @getCountryRule().masks.postalCode
+
+          @select('postalCodeQuerySelector').focus()
 
           window.ParsleyValidator.addValidator('postalcode',
             (val) =>
@@ -84,28 +85,6 @@ define ['flight/lib/component',
           @attr.data.loading = true
           @render()
           @getPostalCode postalCode
-
-      @clearAddressSearch = (ev, obj) ->
-        ev.preventDefault()
-
-        if $(obj.el).hasClass('postal-code')
-          postalCodeQuery = obj.el.value.replace(/-|\_/g, '')
-          if postalCodeQuery is @attr.data.address.postalCode
-            return
-          else
-            @attr.data.labelShippingFields = false
-        # TODO - Afonso colocar caso do geolocation aqui
-        # else if ev.hasClass('map-sei-la')
-        #   ...
-
-        @trigger('clearSelectedAddress.vtex')
-        address = addressId: @attr.data.address.addressId
-        @attr.data.address = new Address(address, @attr.data.deliveryCountries)
-        @attr.data.isSearchingAddress = true
-        @attr.data.postalCodeQuery = postalCodeQuery ? ''
-        @render().then =>
-          if postalCodeQuery
-            @select('postalCodeQuerySelector').focus()
 
       # Call the postal code API
       @getPostalCode = (postalCode) ->
@@ -185,8 +164,12 @@ define ['flight/lib/component',
         @render()
 
       # Handle the initial view of this component
-      @enable = (ev, address) ->
+      @enable = (ev, addressSearch) ->
         ev?.stopPropagation()
+        if addressSearch
+          @attr.data.postalCodeQuery = addressSearch # TODO may be google search
+        else
+          @attr.data.postalCodeQuery = null
         @render()
 
       @disable = (ev) ->
@@ -210,7 +193,6 @@ define ['flight/lib/component',
           'dontKnowPostalCodeSelector': @openGeolocationSearch
           'knowPostalCodeSelector': @openZipSearch
         @on 'keyup',
-          'clearAddressSearchSelector': @clearAddressSearch
           'postalCodeQuerySelector': @validatePostalCode
 
         @setValidators [

@@ -18,7 +18,6 @@ define ['flight/lib/component',
           address: null
           availableAddresses: []
           country: false
-          postalCode: ''
           deliveryCountries: []
           disableCityAndState: false
           labelShippingFields: false
@@ -123,7 +122,8 @@ define ['flight/lib/component',
 
       @clearAddressSearch = (ev) ->
         ev.preventDefault()
-        @trigger('clearAddressSearch.vtex')
+        postalCode = @select('postalCodeSelector').val()
+        @trigger('clearAddressSearch.vtex', [postalCode])
 
       # Able the user to edit the suggested fields
       # filled by the postal code service

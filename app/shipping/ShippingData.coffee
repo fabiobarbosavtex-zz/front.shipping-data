@@ -115,9 +115,10 @@ define ['flight/lib/component',
           @attr.stateMachine.new()
 
       # User cleared address search key and must search again
-      @clearAddressSearch = (ev) ->
+      # addressSearch may be, for example, a new postal code
+      @clearAddressSearch = (ev, addressSearch) ->
         if @attr.stateMachine.can('clearSearch')
-          @attr.stateMachine.clearSearch()
+          @attr.stateMachine.clearSearch(addressSearch)
 
       # User cancelled ongoing address edit
       @cancelAddressEdit = (ev) ->

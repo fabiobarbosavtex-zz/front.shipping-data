@@ -75,11 +75,12 @@ define [], () ->
       # We can only leave summary if getting active
       @attr.data.active = true
 
-    @onEnterSearch = (event, from, to) ->
+    @onEnterSearch = (event, from, to, addressSearch) ->
       @attr.data.active = true
       console.log "Enter search"
-      @select('addressSearchSelector').trigger('enable.vtex', null)
+      @select('addressSearchSelector').trigger('enable.vtex', addressSearch)
       @select('shippingOptionsSelector').trigger('disable.vtex')
+      @select('goToPaymentButtonWrapperSelector').hide()
 
     @onLeaveSearch = (event, from, to) ->
       @attr.data.active = true
