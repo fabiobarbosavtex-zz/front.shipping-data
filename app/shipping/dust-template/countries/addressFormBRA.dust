@@ -7,11 +7,6 @@
   </p>
 {/if}
 
-<!-- COUNTRIES SELECTOR -->
-{@if cond="{deliveryCountries.length} > 1"}
-  {>selectCountry /}
-{/if}
-
 <form class="address-form-new box-new address-form-{country}" data-parsley-validate="true" data-parsley-bind="true">
 
   {#address}
