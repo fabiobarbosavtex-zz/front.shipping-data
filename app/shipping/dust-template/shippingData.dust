@@ -20,6 +20,7 @@
 
         <!-- CONTAINER DOS COMPONENTES FILHOS -->
         <div class="box-step">
+            <div class="country-select-placeholder"></div>
             <div class="address-search-placeholder"></div>
             <div class="address-form-placeholder"></div>
             <div class="address-list-placeholder"></div>
