@@ -149,8 +149,8 @@ define ['flight/lib/component',
 
         # Atualizamos o modelo
         @attr.data.shippingOptions = @getShippingOptionsData(@attr.data.logisticsInfo, @attr.data.items, @attr.data.sellers)
-        @updateShippingOptionsLabels(@attr.data.shippingOptions)
-        @render()
+        @updateShippingOptionsLabels(@attr.data.shippingOptions).then =>
+          @render()
 
       @enable = (ev, logisticsInfo, items, sellers) ->
         ev?.stopPropagation()
@@ -163,8 +163,8 @@ define ['flight/lib/component',
         @attr.data.logisticsInfo = logisticsInfo
         @attr.data.sellers = sellers
         @attr.data.shippingOptions = @getShippingOptionsData(logisticsInfo, @attr.data.items, sellers)
-        @updateShippingOptionsLabels(@attr.data.shippingOptions)
-        @render()
+        @updateShippingOptionsLabels(@attr.data.shippingOptions).then =>
+          @render()
 
       @disable = (ev) ->
         ev?.stopPropagation()
