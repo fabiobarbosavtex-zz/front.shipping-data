@@ -36,23 +36,15 @@ define ['flight/lib/component',
       # Create a new address
       # Trigger an event to AddressForm component
       @createAddress = ->
-        if @attr.data.canEditData or @attr.data.loggedIn
-          @disable()
-          @trigger('editAddress.vtex')
-        else
-          # CALL VTEX ID
-          if window.vtexid? then window.vtexid.start(window.location.href)
+        @disable()
+        @trigger('editAddress.vtex')
 
       # Edit an existing address
       # Trigger an event to AddressForm component
       @editAddress = ->
-        if @attr.data.canEditData or @attr.data.loggedIn
-          @disable()
-          @attr.data.showDontKnowPostalCode = false
-          @trigger('editAddress.vtex', @attr.data.address)
-        else
-          # CALL VTEX ID
-          if window.vtexid? then window.vtexid.start(window.location.href)
+        @disable()
+        @attr.data.showDontKnowPostalCode = false
+        @trigger('editAddress.vtex', @attr.data.address)
 
       @getDeliveryCountries = (logisticsInfo) =>
         return _.uniq(_.reduceRight(logisticsInfo, (memo, l) ->

@@ -16,10 +16,11 @@ define [], () ->
           { name: 'submit',      from: 'editSLA', to: 'summary'  }
           { name: 'submit',      from: 'list',    to: 'summary'  }
           { name: 'select',      from: 'list',    to: 'list'     }
-          { name: 'edit',        from: 'list',    to: 'editSLA'  }
+          { name: 'edit',        from: 'list',    to: 'edit'  }
           { name: 'cancelEdit',  from: 'editSLA', to: 'list'     }
           { name: 'new',         from: 'list',    to: 'search'   }
           { name: 'cancelNew',   from: 'search',  to: 'list'     } # only if available addresses > 0
+          { name: 'clearSearch', from: ['edit', 'editSLA'], to: 'search'  }
           { name: 'cancelFirst', from: ['search', 'edit', 'editSLA'],  to: 'empty' } # only if available addresses == 0
         ],
         callbacks:
@@ -78,6 +79,7 @@ define [], () ->
       @attr.data.active = true
       console.log "Enter search"
       @select('addressSearchSelector').trigger('enable.vtex', null)
+      @select('shippingOptionsSelector').trigger('disable.vtex')
 
     @onLeaveSearch = (event, from, to) ->
       @attr.data.active = true
@@ -94,6 +96,12 @@ define [], () ->
       console.log "Enter edit", address
       @select('addressFormSelector').trigger('enable.vtex', address)
       # When we start editing, we always start looking for shipping options
+      console.log "Getting shipping options for address"
+      # Montando dados para send attachment
+      attachment =
+        address: address,
+        clearAddressIfPostalCodeNotFound: true # TODO @getCountryRule()?.usePostalCode
+      @attr.API?.sendAttachment('shippingData', attachment) # Handled by orderFormUpdated
       @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
 
     @onLeaveEdit = (event, from, to) ->

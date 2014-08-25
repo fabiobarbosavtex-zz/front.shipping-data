@@ -87,22 +87,12 @@ define ['flight/lib/component',
       @addressSearchResult = (ev, address) ->
         console.log "address result", address
         @attr.stateMachine.doneSearch(address)
-        console.log "Getting shipping options for address"
-
-        # Montando dados para send attachment
-        attachment =
-          address: address,
-          clearAddressIfPostalCodeNotFound: true # TODO @getCountryRule()?.usePostalCode
-
-        @attr.API?.sendAttachment('shippingData', attachment) # Handled by orderFormUpdated
 
       # When a new addresses is selected
       @addressSelected = (ev, address) ->
         ev?.stopPropagation()
         @attr.orderForm.shippingData.logisticsInfo = null
         @addressUpdated(ev, address)
-        if address.isValid and @attr.stateMachine.can('edit')
-          @attr.stateMachine.edit()
 
       # The current address was updated, either selected or in edit
       @addressUpdated = (ev, address) ->
@@ -115,12 +105,19 @@ define ['flight/lib/component',
           @select('goToPaymentButtonSelector').attr('disabled', 'disabled')
 
       # User wants to edit or create an address
-      @editAddress = (ev, data) ->
+      @editAddress = (ev, address) ->
+        return window.vtexid?.start(window.location.href) unless @attr.orderForm.canEditData
+
         ev?.stopPropagation()
-        if (data and @attr.stateMachine.can('edit'))
-          @attr.stateMachine.edit()
+        if (address and @attr.stateMachine.can('edit'))
+          @attr.stateMachine.edit(address)
         else if @attr.stateMachine.can('new')
           @attr.stateMachine.new()
+
+      # User cleared address search key and must search again
+      @clearAddressSearch = (ev) ->
+        if @attr.stateMachine.can('clearSearch')
+          @attr.stateMachine.clearSearch()
 
       # User cancelled ongoing address edit
       @cancelAddressEdit = (ev) ->
@@ -185,6 +182,7 @@ define ['flight/lib/component',
             @on 'addressSearchResult.vtex', @addressSearchResult
             @on 'addressSelected.vtex', @addressSelected
             @on 'addressUpdated.vtex', @addressUpdated
+            @on 'clearAddressSearch.vtex', @clearAddressSearch
             @on 'cancelAddressEdit.vtex', @cancelAddressEdit
             @on 'editAddress.vtex', @editAddress
             @on 'deliverySelected.vtex', @deliverySelected

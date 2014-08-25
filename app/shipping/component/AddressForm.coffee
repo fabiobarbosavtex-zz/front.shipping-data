@@ -121,9 +121,9 @@ define ['flight/lib/component',
           @updateAddress(false)
         return valid
 
-      @clearAddressSearch = (ev, obj) ->
+      @clearAddressSearch = (ev) ->
         ev.preventDefault()
-        @trigger('clearAddressSearch.vtex') # TODO receive cancel form event on parent
+        @trigger('clearAddressSearch.vtex')
 
       # Able the user to edit the suggested fields
       # filled by the postal code service
@@ -345,6 +345,7 @@ define ['flight/lib/component',
           'cancelAddressFormSelector': @cancelAddressForm
           'submitButtonSelector': @updateAddressHandler
         @on 'change',
+          'postalCodeSelector': @clearAddressSearch
           'deliveryCountrySelector': @selectedCountry
           'stateSelector': @onChangeState
           'citySelector': @changePostalCodeByCity
