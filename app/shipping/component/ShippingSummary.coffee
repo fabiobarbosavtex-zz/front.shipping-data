@@ -4,17 +4,13 @@ require = vtex.curl || window.require
 define ['flight/lib/component',
         'shipping/setup/extensions',
         'shipping/mixin/withi18n',
-        'shipping/mixin/withOrderForm',
         'shipping/template/shippingSummary'],
-(defineComponent, extensions, withi18n, withOrderForm, template) ->
+(defineComponent, extensions, withi18n, template) ->
   ShippingSummary = ->
     @defaultAttrs
-      API: null
       data:
         address: {}
         isActive: false
-
-      changeShippingSummarySelector: ".link-change-shipping"
 
     # Render this component according to the data object
     @render = ->
@@ -22,19 +18,9 @@ define ['flight/lib/component',
         output = $(output).i18n()
         @$node.html(output)
 
-    @orderFormUpdated = (ev, orderForm) ->
-      @attr.data.address = orderForm.shippingData?.address
-
     @addressUpdated = (ev, data) ->
       ev?.stopPropagation()
       @attr.data.address = data
-      if @attr.data.isActive
-        @render()
-      else
-        @$node.html('')
-
-    @editAddress = ->
-      @trigger('closeShippingSummary.vtex')
 
     @enable = (ev) ->
       ev?.stopPropagation()
@@ -52,7 +38,5 @@ define ['flight/lib/component',
       @on 'disable.vtex', @disable
       @on @$node.parent(), 'addressSelected.vtex', @addressUpdated
       @on 'addressUpdated.vtex', @addressUpdated
-      @on 'click',
-        'changeShippingSummarySelector': @editAddress
 
-  return defineComponent(ShippingSummary, withi18n, withOrderForm)
+  return defineComponent(ShippingSummary, withi18n)

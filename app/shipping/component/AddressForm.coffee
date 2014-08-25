@@ -6,12 +6,10 @@ define ['flight/lib/component',
         'shipping/models/Address',
         'shipping/mixin/withi18n',
         'shipping/mixin/withValidation',
-        'shipping/mixin/withOrderForm',
         'shipping/template/selectCountry'],
-  (defineComponent, extensions, Address, withi18n, withValidation, withOrderForm, selectCountryTemplate) ->
+  (defineComponent, extensions, Address, withi18n, withValidation, selectCountryTemplate) ->
     AddressForm = ->
       @defaultAttrs
-        API: null
         map: false
         marker: false
         circle: false
@@ -116,16 +114,12 @@ define ['flight/lib/component',
         @attr.data.countryRules[@attr.data.address.country]
 
       @validateAddress = ->
-        address = @attr.data.address
-        if @select('addressFormSelector') and @attr.parsley
-          valid = @attr.parsley.isValid()
-          if valid
-            @updateAddress(true)
-          else if @attr.data.address.isValid
-            @updateAddress(false)
-          return valid
-        else
-          return address.validate(@getCountryRule())
+        valid = @attr.parsley.isValid()
+        if valid
+          @updateAddress(true)
+        else if @attr.data.address.isValid
+          @updateAddress(false)
+        return valid
 
       @clearAddressSearch = (ev, obj) ->
         ev.preventDefault()
@@ -249,7 +243,7 @@ define ['flight/lib/component',
       # Close the form
       @cancelAddressForm = ->
         @disable()
-        @trigger('showAddressList.vtex')
+        @trigger('cancelAddressEdit.vtex')
 
       # Change the city select options when a state is selected
       # citiesBasedOnStateChange should be true in the country's rule
@@ -305,25 +299,6 @@ define ['flight/lib/component',
         @changeCities(ev, data)
         @changePostalCodeByState(ev, data)
 
-      @orderFormUpdated = (ev, data) ->
-        return unless data.shippingData
-        if @attr.ignoreNextEnable
-          @attr.ignoreNextEnable = false
-          return
-
-        @attr.data.availableAddresses = data.shippingData.availableAddresses ? []
-        @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)
-        @attr.data.address = new Address(data.shippingData.address, @attr.data.deliveryCountries)
-        @selectCountry(@attr.data.address.country).then @validate.bind(this)
-
-        address = @attr.data.address
-        if address.country is 'BRA'
-          @attr.data.labelShippingFields = address.neighborhood isnt '' and address.neighborhood? and
-            address.street isnt '' and address.street? and
-            address.state isnt '' and address.state? and
-            address.city isnt '' and address.city?
-          @attr.data.disableCityAndState = address.state isnt '' and address.city isnt ''
-
       # Handle the initial view of this component
       @enable = (ev, address) ->
         ev?.stopPropagation()
@@ -334,7 +309,6 @@ define ['flight/lib/component',
             address.state isnt '' and address.state? and
             address.city isnt '' and address.city?
           @attr.data.disableCityAndState = address.state isnt '' and address.city isnt ''
-          address.addressId = @attr.data.address.addressId
 
         @attr.data.address = new Address(address, @attr.data.deliveryCountries)
 
@@ -348,6 +322,8 @@ define ['flight/lib/component',
 
       @disable = (ev) ->
         ev?.stopPropagation()
+        # Clear address on disable
+        @attr.data.address = new Address(null, @attr.data.deliveryCountries)
         @$node.html('')
 
       @openGeolocationSearch = ->
@@ -385,4 +361,4 @@ define ['flight/lib/component',
           @attr.isGoogleMapsAPILoaded = true
           @render()
 
-    return defineComponent(AddressForm, withi18n, withValidation, withOrderForm)
+    return defineComponent(AddressForm, withi18n, withValidation)

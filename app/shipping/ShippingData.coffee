@@ -3,6 +3,7 @@ require = vtex.curl || window.require
 
 define ['flight/lib/component',
         'shipping/setup/extensions',
+        'shipping/models/Address',
         'shipping/libs/state-machine.js'
         'shipping/component/AddressSearch',
         'shipping/component/AddressForm',
@@ -11,10 +12,10 @@ define ['flight/lib/component',
         'shipping/component/ShippingSummary',
         'shipping/template/shippingData',
         'shipping/mixin/withi18n',
-        'shipping/mixin/withOrderForm',
         'shipping/mixin/withValidation',
+        'shipping/mixin/withShippingStateMachine',
         'link!shipping/css/shipping-data'],
-  (defineComponent, extensions, FSM, AddressSearch, AddressForm, AddressList, ShippingOptions, ShippingSummary, template, withi18n, withOrderForm, withValidation) ->
+  (defineComponent, extensions, Address, FSM, AddressSearch, AddressForm, AddressList, ShippingOptions, ShippingSummary, template, withi18n, withValidation, withShippingStateMachine) ->
     ShippingData = ->
       @defaultAttrs
         API: null
@@ -24,10 +25,8 @@ define ['flight/lib/component',
           active: false
           visited: false
           loading: false
-
-        validationResults: # starts as invalid
-          addressForm: [new Error("not validated")]
-          shippingOptions: [new Error("not validated")]
+          deliveryCountries: false
+          countryRules: {}
 
         stateMachine: false
 
@@ -43,67 +42,46 @@ define ['flight/lib/component',
         addressListSelector: '.address-list-placeholder'
         shippingOptionsSelector: '.address-shipping-options'
 
-      # Render would be a deceptive name because it does not replace the entire
-      # component DOM. Doing this would force us to re-render the child components.
-      # It's best, then, to simply update the needed DOM.
-      @updateView = ->
-        if @attr.data.active
-          @select('shippingStepSelector').addClass('active', 'visited')
-          @select('editShippingDataSelector').hide()
-          @select('shippingTitleSelector').addClass('accordion-toggle-active')
-          @select('addressNotFilledSelector').hide()
-          if @isValid()
-            @select('goToPaymentButtonSelector').show()
-          else
-            @select('goToPaymentButtonSelector').hide()
-        else
-          @select('shippingStepSelector').removeClass('active')
-          @select('editShippingDataSelector').show()
-          @select('goToPaymentButtonSelector').hide()
-          @select('shippingTitleSelector').removeClass('accordion-toggle-active')
-          @select('goToPaymentButtonSelector').hide()
-          if @attr.orderForm.shippingData?.address
-            @select('addressNotFilledSelector').hide()
-          else
-            @select('addressNotFilledSelector').show()
-
-      @updateComponentView = ->
-        if @attr.data.active
-          if @attr.validationResults.addressForm.length > 0 # Address isnt valid
-            @editAddress(null, @attr.orderForm.shippingData.address)
-            if @attr.validationResults.shippingOptions.length is 0 # Shipping options is valid
-              @select('shippingOptionsSelector').trigger('enable.vtex')
-          else
-            @showAddressListAndShippingOption()
-
-      @disable = ->
-        @select('shippingSummarySelector').trigger('addressUpdated.vtex', @attr.orderForm.shippingData.address)
-        @select('shippingSummarySelector').trigger('enable.vtex')
-        @select('addressFormSelector').trigger('disable.vtex')
-        @select('addressListSelector').trigger('disable.vtex')
-        @select('shippingOptionsSelector').trigger('disable.vtex')
-        @attr.data.active = false
-        @trigger('componentDone.vtex')
-        #@updateView()
-        if @isValid()
-          @shippingDataSubmitHandler(@attr.orderForm.shippingData)
-
-      # Handler do envio de ShippingData.
-      @shippingDataSubmitHandler = (shippingData) ->
-        # Montando dados para send attachment
-        attachmentId = 'shippingData'
-        attachment = shippingData
-        API.sendAttachment(attachmentId, attachment)
+      #
+      # Order form handler
+      #
 
       @orderFormUpdated = (ev, orderForm) ->
         @attr.orderForm = _.clone orderForm
-        shippingData = @attr.orderForm.shippingData
-        return unless shippingData?
-        if shippingData.address? and @attr.stateMachine.can("orderform")
-          @attr.stateMachine.orderform()
-        if shippingData.logisticsInfo? and shippingData.logisticsInfo.length > 0 and @attr.stateMachine.can("doneSLA")
-          @attr.stateMachine.doneSLA(shippingData.logisticsInfo)
+        shippingData = @attr.orderForm.shippingData ? {}
+        @attr.data.deliveryCountries = _.uniq(_.reduceRight(shippingData.logisticsInfo, ((memo, l) ->
+          return memo.concat(l.shipsTo)), []))
+        country = @attr.orderForm.shippingData.address?.country ? @attr.data.deliveryCountries[0]
+        @countrySelected(null, country).then =>
+          @validate()
+          if shippingData.address? and @attr.stateMachine.can("orderform")
+            @attr.stateMachine.orderform()
+          if shippingData.logisticsInfo? and shippingData.logisticsInfo.length > 0 and @attr.stateMachine.can("doneSLA")
+            @attr.stateMachine.doneSLA(shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
 
+      #
+      # External events handlers
+      #
+
+      @enable = ->
+        try
+          @attr.stateMachine.enable(@attr.orderForm)
+        catch e
+          console.log e
+
+      @disable = ->
+        # TODO Clear incomplete state, like editing address
+        if @attr.stateMachine.can('submit') and @isValid()
+          @attr.data.active = false
+          @trigger('componentDone.vtex')
+          API.sendAttachment('shippingData', @attr.orderForm.shippingData)
+
+      #
+      # Events from children components
+      #
+
+      # An address search has new results.
+      # Should call API to get delivery options
       @addressSearchResult = (ev, address) ->
         console.log "address result", address
         @attr.stateMachine.doneSearch(address)
@@ -114,10 +92,9 @@ define ['flight/lib/component',
           address: address,
           clearAddressIfPostalCodeNotFound: true # TODO @getCountryRule()?.usePostalCode
 
-        @attr.API?.sendAttachment('shippingData', attachment)
+        @attr.API?.sendAttachment('shippingData', attachment) # Handled by orderFormUpdated
 
       # When a new addresses is selected
-      # Should call API to get delivery options
       @addressSelected = (ev, address) ->
         ev?.stopPropagation()
         @attr.orderForm.shippingData.logisticsInfo = null
@@ -125,35 +102,17 @@ define ['flight/lib/component',
         if address.isValid and @attr.stateMachine.can('edit')
           @attr.stateMachine.edit()
 
+      # The current address was updated, either selected or in edit
       @addressUpdated = (ev, address) ->
         ev.stopPropagation()
         @attr.orderForm.shippingData.address = address
-        #@updateView()
+        if address.isValid
+          @select('goToPaymentButtonSelector').show()
+          @select('shippingSummarySelector').trigger('addressUpdated.vtex', address)
+        else
+          @select('goToPaymentButtonSelector').hide()
 
-      @validateAddress = ->
-        if @attr.validationResults.addressForm.length > 0
-          return "Address invalid"
-        return true
-
-      @validateShippingOptions = ->
-        if @attr.validationResults.shippingOptions.length >0
-          return "Shipping options invalid"
-        return true
-
-      @handleAddressValidation = (ev, results) ->
-        ev?.stopPropagation()
-        @attr.validationResults.addressForm = results
-        @validate()
-
-      @handleShippingOptionsValidation = (ev, results) ->
-        ev?.stopPropagation()
-        @attr.validationResults.shippingOptions = results
-        @validate()
-
-      @clearSelectedAddress = (ev) ->
-        ev.stopPropagation()
-        @select('shippingOptionsSelector').trigger('disable.vtex')
-
+      # User wants to edit or create an address
       @editAddress = (ev, data) ->
         ev?.stopPropagation()
         if (data and @attr.stateMachine.can('edit'))
@@ -161,147 +120,49 @@ define ['flight/lib/component',
         else if @attr.stateMachine.can('new')
           @attr.stateMachine.new()
 
-      @showAddressListAndShippingOption = (ev) ->
+      # User cancelled ongoing address edit
+      @cancelAddressEdit = (ev) ->
         ev?.stopPropagation()
         if @attr.stateMachine.can('cancelNew')
           @attr.stateMachine.cancelNew()
         if @attr.stateMachine.can('cancelEdit')
           @attr.stateMachine.cancelEdit()
 
-      @shippingOptionsUpdated = (ev, logisticsInfo) ->
+      # User chose shipping options
+      @logisticsInfoUpdated = (ev, logisticsInfo) ->
         ev.stopPropagation()
         @attr.orderForm.shippingData.logisticsInfo = logisticsInfo
-        #@updateView()
 
-      @closeShippingSummary = (ev) ->
-        ev.stopPropagation()
-
-      @createStateMachine = ->
-        @attr.stateMachine = StateMachine.create
-          events: [
-            { name: 'start',      from: 'none',    to: 'empty'  }
-            { name: 'orderform',  from: 'empty',   to: 'summary'  }
-            { name: 'enable',     from: 'empty',   to: 'search'   }
-            { name: 'enable',     from: 'summary', to: 'list'     }
-            { name: 'failSearch', from: 'search',  to: 'search'   }
-            { name: 'doneSearch', from: 'search',  to: 'edit'     }
-            { name: 'doneSLA',    from: 'edit',    to: 'editSLA'  }
-            { name: 'submit',     from: 'editSLA', to: 'summary'  }
-            { name: 'submit',     from: 'list',    to: 'summary'  }
-            { name: 'select',     from: 'list',    to: 'list'     }
-            { name: 'edit',       from: 'list',    to: 'editSLA'  }
-            { name: 'cancelEdit', from: 'editSLA', to: 'list'     }
-            { name: 'new',        from: 'list',    to: 'search'   }
-            { name: 'cancelNew',  from: 'search',  to: 'list'     } # only if available addresses > 0
-          ],
-          callbacks:
-            onenterempty:   @onEnterEmpty.bind(this)
-            onleaveempty:   @onLeaveEmpty.bind(this)
-            onentersummary: @onEnterSummary.bind(this)
-            onleavesummary: @onLeaveSummary.bind(this)
-            onentersearch:  @onEnterSearch.bind(this)
-            onleavesearch:  @onLeaveSearch.bind(this)
-            onenterlist:    @onEnterList.bind(this)
-            onenteredit:    @onEnterEdit.bind(this)
-            onentereditSLA: @onEnterEditSLA.bind(this)
-            onenterstate:   @onEnterState.bind(this)
+      @countrySelected = (ev, country) ->
+        require 'shipping/rule/Country'+country, (countryRule) =>
+          countryRules = @attr.data.countryRules
+          countryRules[country] = new countryRule()
+          @attr.data.states = countryRules[country].states
+          @attr.data.regexes = countryRules[country].regexes
+          @attr.data.useGeolocation = countryRules[country].useGeolocation
+          return countryRules[country]
 
       #
-      # Changed state events (FINITE STATE MACHINE)
+      # Validation
       #
-      @onEnterState = ->
-        if @attr.data.active
-          @select('shippingStepSelector').addClass('active', 'visited')
-        else
-          @select('shippingStepSelector').removeClass('active')
 
-      @onEnterEmpty = (event, from, to) ->
-        console.log "Enter empty"
-        @select('addressNotFilledSelector').show()
+      @validateAddress = ->
+        currentAddress = new Address(@attr.orderForm.shippingData.address, @attr.data.deliveryCountries)
+        return currentAddress.validate(@attr.data.countryRules[currentAddress.country])
 
-      @onLeaveEmpty = (event, from, to) ->
-        console.log "Leave empty"
-        @select('addressNotFilledSelector').hide()
+      @validateShippingOptions = ->
+        logisticsInfo = @attr.orderForm.shippingData.logisticsInfo
+        return "Logistics info must exist" if logisticsInfo?.length is 0
+        return "No selected SLA" if logisticsInfo?[0].selectedSla is undefined
+        return true
 
-      @onEnterSummary = (event, from, to) ->
-        console.log "Enter summary"
-        @select('shippingSummarySelector').trigger('enable.vtex')
-        # Disable other components
-        @select('shippingOptionsSelector').trigger('disable.vtex')
-        # We can only enter summary if getting disabled
-        @attr.data.active = false
+      #
+      # Initialization
+      #
 
-      @onLeaveSummary = (event, from, to) ->
-        console.log "Leave summary"
-        @select('shippingSummarySelector').trigger('disable.vtex')
-        # We can only leave summary if getting active
-        @attr.data.active = true
-
-      @onEnterSearch = (event, from, to) ->
-        @attr.data.active = true
-        console.log "Enter search"
-        @select('addressSearchSelector').trigger('enable.vtex', null)
-
-      @onLeaveSearch = (event, from, to) ->
-        @attr.data.active = true
-        console.log "Leave search"
-        @select('addressSearchSelector').trigger('disable.vtex', null)
-
-      @onEnterList = (event, from, to) ->
-        @attr.data.active = true
-        console.log "Enter list"
-        @select('addressListSelector').trigger('enable.vtex')
-        @select('shippingOptionsSelector').trigger('enable.vtex')
-
-      @onEnterEdit = (event, from, to, address) ->
-        console.log "Enter edit", address
-        @select('addressFormSelector').trigger('enable.vtex', address)
-        # When we start editing, we alwasy start looking for shipping options
-        @trigger('startLoadingShippingOptions.vtex')
-
-      @onEnterEditSLA = (event, from, to, logisticsInfo) ->
-        console.log "Enter edit SLA", logisticsInfo
-        @select('shippingOptionsSelector').trigger('enable.vtex', logisticsInfo)
-
-      @onFailSearchStateEnter = (event, from, to) ->
-
-      @onDoneSearchStateEnter = (event, from, to) ->
-
-      @onDoneSLAStateEnter = (event, from, to) ->
-
-      @onSubmitStateEnter = (event, from, to) ->
-
-      @onSelectStateEnter = (event, from, to) ->
-        @shippingDataSubmitHandler(@attr.orderForm.shippingData)
-        @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
-        @select('shippingOptionsSelector').trigger('enable.vtex')
-
-      @onEditStateEnter = (event, from, to, data) ->
-        @select('addressListSelector').trigger('disable.vtex')
-        @select('addressFormSelector').trigger('enable.vtex', data)
-        if @attr.validationResults.addressForm.length > 0 # Address isnt valid
-          @select('shippingOptionsSelector').trigger('disable.vtex')
-        else
-          @select('shippingOptionsSelector').trigger('enable.vtex')
-
-      @onCancelEditStateEnter = (event, from, to) ->
-        @select('addressListSelector').trigger('enable.vtex')
-        @select('addressFormSelector').trigger('disbale.vtex')
-        @select('shippingOptionsSelector').trigger('enable.vtex')
-
-      @onNewStateEnter = (event, from, to) ->
-        @select('addressListSelector').trigger('disable.vtex')
-        @select('addressFormSelector').trigger('enable.vtex')
-        @select('shippingOptionsSelector').trigger('disable.vtex')
-
-      @onCancelNewStateEnter = (event, from, to) ->
-        @select('addressListSelector').trigger('enable.vtex')
-        @select('addressFormSelector').trigger('disable.vtex')
-        @select('shippingOptionsSelector').trigger('enable.vtex')
-
-      # Bind events
       @after 'initialize', ->
-        @createStateMachine().start()
+        @attr.stateMachine = @createStateMachine() #from withShippingStateMachine
+        @attr.stateMachine.start()
         require 'shipping/translation/' + @attr.locale, (translation) =>
           @extendTranslations(translation)
           dust.render template, @attr.data, (err, output) =>
@@ -309,29 +170,22 @@ define ['flight/lib/component',
             @$node.html(translatedOutput)
 
             # Start the components
-            ShippingSummary.attachTo(@attr.shippingSummarySelector, { API: @attr.API })
-            AddressSearch.attachTo(@attr.addressSearchSelector, { API: @attr.API })
-            AddressForm.attachTo(@attr.addressFormSelector, { API: @attr.API })
-            AddressList.attachTo(@attr.addressListSelector, { API: @attr.API })
-            ShippingOptions.attachTo(@attr.shippingOptionsSelector, { API: @attr.API })
+            ShippingSummary.attachTo(@attr.shippingSummarySelector)
+            AddressSearch.attachTo(@attr.addressSearchSelector, { getAddressInformation: @attr.API.getAddressInformation })
+            AddressForm.attachTo(@attr.addressFormSelector)
+            AddressList.attachTo(@attr.addressListSelector)
+            ShippingOptions.attachTo(@attr.shippingOptionsSelector)
 
             # Start event listeners
-            @on 'enable.vtex', ->
-              try
-                @attr.stateMachine.enable()
-              catch e
-                console.log e
+            @on 'enable.vtex', @enable
             @on 'disable.vtex', @disable
             @on 'addressSearchResult.vtex', @addressSearchResult
             @on 'addressSelected.vtex', @addressSelected
             @on 'addressUpdated.vtex', @addressUpdated
-            @on 'showAddressList.vtex', @showAddressListAndShippingOption
+            @on 'cancelAddressEdit.vtex', @cancelAddressEdit
             @on 'editAddress.vtex', @editAddress
-            @on 'closeShippingSummary.vtex', @closeShippingSummary
-            @on 'currentShippingOptions.vtex', @shippingOptionsUpdated
-#            @on 'clearSelectedAddress.vtex', @clearSelectedAddress
-            @on @attr.addressFormSelector, 'componentValidated.vtex', @handleAddressValidation
-            @on @attr.shippingOptionsSelector, 'componentValidated.vtex', @handleShippingOptionsValidation
+            @on 'logisticsInfoUpdated.vtex', @logisticsInfoUpdated
+            @on 'countrySelected.vtex', @countrySelected
             @on 'click',
               'goToPaymentButtonSelector': @disable
               'editShippingDataSelector': @enable
@@ -341,4 +195,11 @@ define ['flight/lib/component',
               @validateShippingOptions
             ]
 
-    return defineComponent(ShippingData, withi18n, withValidation, withOrderForm)
+            # Set the listener for the orderFormUpdated event
+            @on window, 'orderFormUpdated.vtex', @orderFormUpdated
+
+            # If there is an orderform present, use it for initialization
+            if vtexjs?.checkout?.orderForm?
+              @orderFormUpdated null, vtexjs.checkout.orderForm
+
+    return defineComponent(ShippingData, withi18n, withValidation, withShippingStateMachine)

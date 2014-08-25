@@ -4,16 +4,13 @@ require = vtex.curl || window.require
 define ['flight/lib/component',
         'shipping/setup/extensions',
         'shipping/mixin/withi18n',
-        'shipping/mixin/withValidation',
-        'shipping/mixin/withOrderForm'],
-  (defineComponent, extensions, withi18n, withValidation, withOrderForm) ->
+        'shipping/template/shippingOptions',
+        'shipping/template/deliveryWindows'],
+  (defineComponent, extensions, withi18n, shippingOptionsTemplate, deliveryWindowsTemplate) ->
     ShippingOptions = ->
       @defaultAttrs
-        API: null
         data:
-          address: false
           shippingOptions: []
-          availableAddresses: []
           logisticsInfo: []
           loading: false
           multipleSellers: false
@@ -21,22 +18,12 @@ define ['flight/lib/component',
           sellers: []
           loadingShippingOptions: false
 
-        templates:
-          shippingOptions:
-            name: 'shippingOptions'
-            template: 'shipping/template/shippingOptions'
-          deliveryWindows:
-            name: 'deliveryWindows'
-            template: 'shipping/template/deliveryWindows'
-
         isScheduledDeliveryAvailable: false
         pickadateFiles: ['shipping/libs/pickadate/picker',
                          'shipping/libs/pickadate/picker-date',
                          'link!shipping/libs/pickadate/classic',
                          'link!shipping/libs/pickadate/classic-date']
 
-        addressFormSelector: '.address-form-new'
-        postalCodeSelector: '#ship-postal-code'
         shippingOptionSelector: '.shipping-option-item'
         pickadateSelector: '.datepicker'
         deliveryWindowsSelector: '.delivery-windows'
@@ -46,21 +33,17 @@ define ['flight/lib/component',
       @render = (options) ->
         data = @attr.data
 
-        requiredFiles = [@attr.templates.shippingOptions.template, @attr.templates.deliveryWindows.template]
-        if @attr.isScheduledDeliveryAvailable
-          requiredFiles = requiredFiles.concat(@attr.pickadateFiles)
-
+        requiredFiles = if @attr.isScheduledDeliveryAvailable then @attr.pickadateFiles else []
         require requiredFiles, =>
           if options and options.template is 'deliveryWindows'
             # Pega o sla em questão
-            currentAddress = @getCurrentAddress()
-            data = currentAddress.shippingOptions[options.index].selectedSla
+            data = @attr.data.shippingOptions[options.index].selectedSla
 
-            dust.render @attr.templates.deliveryWindows.name, data, (err, output) =>
+            dust.render deliveryWindowsTemplate, data, (err, output) =>
               output = $(output).i18n()
               @getDeliveryWindowsSelector(options.index).html(output)
           else
-            dust.render @attr.templates.shippingOptions.name, data, (err, output) =>
+            dust.render shippingOptionsTemplate, data, (err, output) =>
               output = $(output).i18n()
               @$node.html(output)
 
@@ -109,67 +92,23 @@ define ['flight/lib/component',
                     count: sla.shippingEstimateDays
                 sla.fullEstimateLabel = sla.name + ' - ' + sla.valueLabel + ' - ' + sla.deliveryEstimateLabel
 
-          @attr.data.shippingOptions = currentShippingOptions
-
-      @orderFormUpdated = (ev, data) ->
-        return unless data.shippingData
-        # Verifica se items ou endereços mudaram
-        addressesClone = $.map($.extend(true, {}, @attr.data.availableAddresses), (value) -> [value])
-        for add in addressesClone
-          delete add["logisticsInfo"]
-          delete add["shippingOptions"]
-          delete add["firstPart"]
-          delete add["secondPart"]
-
-        if (JSON.stringify(@attr.data.items) isnt JSON.stringify(data.items)) or
-           (JSON.stringify(addressesClone) isnt JSON.stringify(data.shippingData.availableAddresses))
-          @attr.data.items = _.map data.items, (item, i) ->
-            item.index = i
-            return item
-
-          @attr.data.availableAddresses = data.shippingData.availableAddresses
-          # Cria array de logistics info e shipping options para cada address
-          for address in @attr.data.availableAddresses
-            address.logisticsInfo = []
-            address.shippingOptions = []
-
-        @attr.data.logisticsInfo = data.shippingData.logisticsInfo
-        @attr.data.address = data.shippingData.address
-        @attr.data.sellers = data.sellers
-
-        # Povoa os dados do logistics info do endereço selecionado
-        currentAddress = @getCurrentAddress()
-
-        if currentAddress
-          currentAddress.logisticsInfo = data.shippingData.logisticsInfo
-          currentAddress.shippingOptions = @getShippingOptionsData()
-          @updateShippingOptionsLabels(currentAddress.shippingOptions)
-
-        @validate()
-
-      @getCurrentAddress = ->
-        _.find @attr.data.availableAddresses, (address) =>
-          address.addressId is @attr.data.address.addressId
-
-      @getShippingOptionsData = ->
-        logisticsInfo = []
-        currentAddress = @getCurrentAddress()
-
+      @getShippingOptionsData = (logisticsInfo, items, sellers) ->
+        updatedLogisticsInfo = []
         # Para cada item
-        for logisticItem in currentAddress.logisticsInfo
-          item = @attr.data.items[logisticItem.itemIndex]
+        for logisticItem in logisticsInfo
+          item = items[logisticItem.itemIndex]
 
           # Encontra o seller do item
-          seller = _.find @attr.data.sellers, (seller) ->
+          seller = _.find sellers, (seller) ->
             return String(seller.id) is String(item.seller)
 
           # Extende logistics info com o seller e os dados do item
           if seller
             newLogisticItem = _.extend({}, logisticItem, {seller:seller}, {item: item})
-            logisticsInfo.push(newLogisticItem)
+            updatedLogisticsInfo.push(newLogisticItem)
 
         # Agrupa os items de logistic info por seller
-        logisticsBySeller = _.groupBy logisticsInfo, (so) -> return so.seller.id
+        logisticsBySeller = _.groupBy updatedLogisticsInfo, (so) -> return so.seller.id
 
         # Vamos massagear todo o logistics info
         index = 0
@@ -270,10 +209,9 @@ define ['flight/lib/component',
       @dateAsString = (date) -> date.getUTCFullYear() + '/' + date.getUTCMonth() + '/' + date.getUTCDate()
       @dateHourMinLabel = (date) -> _.pad(date.getUTCHours(), 2) + ":" + _.pad(date.getUTCMinutes(),2) if date
 
-      @getCheapestDeliveryWindow = (index, date) ->
+      @getCheapestDeliveryWindow = (shippingOptions, date) ->
         # Pega o sla em questão
-        currentAddress = @getCurrentAddress()
-        sla = currentAddress.shippingOptions[index].selectedSla
+        sla = shippingOptions.selectedSla
 
         # Caso a função receba uma data pegamos a
         # delivery window mais barata deste dia
@@ -317,19 +255,17 @@ define ['flight/lib/component',
         # Reescreve label para entrega agendada
         sla.fullEstimateLabel = sla.name + ' - ' + sla.cheapestValueLabel + ' - ' + _.dateFormat(sla.cheapestEndDate)
 
-      @updateLogisticsInfoModel = (index, deliveryWindow) ->
-        currentAddress = @getCurrentAddress()
-        shippingOption = currentAddress.shippingOptions[index]
+      @updateLogisticsInfoModel = (shippingOptions, deliveryWindow) ->
+        shippingOption = shippingOptions
 
         # Atualiza o logisticsInfo
-        for li in currentAddress.logisticsInfo
+        for li in @attr.data.logisticsInfo
           # Caso os items do shipping option fale do logistic info em questão
           if _.find(shippingOption.items, (i) -> i.index is li.itemIndex)
             li.deliveryWindow = deliveryWindow
 
         @selectDeliveryWindow(shippingOption.selectedSla, deliveryWindow)
-        @trigger('currentShippingOptions.vtex', currentAddress.logisticsInfo)
-        @validate()
+        @trigger('logisticsInfoUpdated.vtex', @attr.data.logisticsInfo)
 
       @selectDeliveryWindow = (sla, deliveryWindow) ->
         sla.deliveryWindow = deliveryWindow
@@ -354,7 +290,8 @@ define ['flight/lib/component',
         date = @getPickadateSelector(index).pickadate('get', 'select')?.obj
 
         # Por default, pegamos a primeira delivery window para esta data
-        @updateLogisticsInfoModel(index, @getCheapestDeliveryWindow(index, new Date(date)))
+        shippingOptions = @attr.data.shippingOptions[index]
+        @updateLogisticsInfoModel(shippingOptions, @getCheapestDeliveryWindow(shippingOptions, new Date(date)))
 
         # Renderizamos as novas delivery windows para a data selecionada
         @render(template: 'deliveryWindows', index: index)
@@ -362,45 +299,50 @@ define ['flight/lib/component',
       @deliveryWindowSelected = (ev, data) ->
         # Pega o indice da delivery window
         deliveryWindowIndex = $(data.el).attr('value')
-        # Pega o indice da shipping option
+        # Pega shipping option
         shippingOptionIndex = $(data.el).data('shipping-option')
+        shippingOptions = @attr.data.shippingOptions[shippingOptionIndex]
 
         # Pega o sla em questão
-        currentAddress = @getCurrentAddress()
-        sla = currentAddress.shippingOptions[shippingOptionIndex].selectedSla
+        sla = shippingOptions.selectedSla
 
         # Pega a delivery window através do seu indíce
         deliveryWindow = sla.deliveryWindowsForDate[deliveryWindowIndex]
 
         # Atualizamos o modelo
-        @updateLogisticsInfoModel(shippingOptionIndex, deliveryWindow)
+        @updateLogisticsInfoModel(shippingOptions, deliveryWindow)
 
       @selectShippingOptionHandler = (ev, data) ->
         ev.preventDefault()
         selectedSla = $('input', data.el).attr('value')
         shippingOptionIndex = $('input', data.el).data('shipping-option')
-        @selectShippingOption(shippingOptionIndex, selectedSla)
+        shippingOptions = @attr.data.shippingOptions[shippingOptionIndex]
+        @selectShippingOption(shippingOptions, selectedSla)
 
-      @selectShippingOption = (shippingOptionIndex, selectedSla) ->
-        # Pega o shipping option
-        currentAddress = @getCurrentAddress()
-        shippingOption = currentAddress.shippingOptions[shippingOptionIndex]
-
+      @selectShippingOption = (shippingOptions, selectedSla) ->
         # Troca o selected sla
-        for li in currentAddress.logisticsInfo
+        for li in @attr.data.logisticsInfo
           # Caso os items do shipping option fale do logistic info em questão
-          if _.find(shippingOption.items, (i) -> i.index is li.itemIndex)
+          if _.find(shippingOptions.items, (i) -> i.index is li.itemIndex)
             li.selectedSla = selectedSla
 
         # Atualizamos o modelo
-        currentAddress.shippingOptions = @getShippingOptionsData()
-        # Renderizamos
-        @updateShippingOptionsLabels(currentAddress.shippingOptions)
+        @attr.data.shippingOptions = @getShippingOptionsData(@attr.data.logisticsInfo, @attr.data.items, @attr.data.sellers)
+        @updateShippingOptionsLabels(@attr.data.shippingOptions)
         @render()
 
-      @enable = (ev) ->
+      @enable = (ev, logisticsInfo, items, sellers) ->
         ev?.stopPropagation()
         @attr.data.loadingShippingOptions = false
+
+        @attr.data.items = _.map items, (item, i) ->
+          item.index = i
+          return item
+
+        @attr.data.logisticsInfo = logisticsInfo
+        @attr.data.sellers = sellers
+        @attr.data.shippingOptions = @getShippingOptionsData(logisticsInfo, @attr.data.items, sellers)
+        @updateShippingOptionsLabels(@attr.data.shippingOptions)
         @render()
 
       @disable = (ev) ->
@@ -413,12 +355,6 @@ define ['flight/lib/component',
         @attr.data.loadingShippingOptions = true
         @render()
 
-      @validateShippingOptions = ->
-        logisticsInfo = @attr.data.logisticsInfo
-        return "Logistics info must exist" if logisticsInfo?.length is 0
-        return "No selected SLA" if logisticsInfo?[0].selectedSla is undefined
-        return true
-
       # Bind events
       @after 'initialize', ->
         @on 'enable.vtex', @enable
@@ -429,8 +365,4 @@ define ['flight/lib/component',
           'shippingOptionSelector': @selectShippingOptionHandler
           'deliveryWindowSelector': @deliveryWindowSelected
 
-        @setValidators [
-          @validateShippingOptions
-        ]
-
-    return defineComponent(ShippingOptions, withi18n, withValidation, withOrderForm)
+    return defineComponent(ShippingOptions, withi18n)

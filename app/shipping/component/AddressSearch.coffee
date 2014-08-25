@@ -11,7 +11,7 @@ define ['flight/lib/component',
     AddressSearch = ->
       @defaultAttrs
         map: false
-        API: null
+        getAddressInformation: null
         data:
           showBackButton: false
           country: 'BRA'
@@ -111,7 +111,7 @@ define ['flight/lib/component',
       @getPostalCode = (postalCode) ->
         # Clear map postition
         @attr.currentResponseCoordinates = null
-        @attr.API.getAddressInformation({
+        @attr.getAddressInformation({
           postalCode: postalCode.replace(/-/g, '')
           country: @attr.data.country
         }).then(@handleAddressSearch.bind(this), @handleAddressSearchError.bind(this))

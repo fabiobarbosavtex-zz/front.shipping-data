@@ -4,12 +4,10 @@ require = vtex.curl || window.require
 define ['flight/lib/component',
         'shipping/setup/extensions',
         'shipping/mixin/withi18n',
-        'shipping/mixin/withOrderForm',
         'shipping/template/addressList'],
-  (defineComponent, extensions, withi18n, withOrderForm, template) ->
+  (defineComponent, extensions, withi18n, template) ->
     AddressList = ->
       @defaultAttrs
-        API: null
         data:
           address: {}
           availableAddresses: []
@@ -103,8 +101,13 @@ define ['flight/lib/component',
       @addCountryRule = (data) ->
         _.extend(@attr.data.countryRules, data)
 
-      @enable = (ev) ->
+      @enable = (ev, shippingData) ->
         if ev then ev.stopPropagation()
+        @attr.data.address = shippingData.address
+        @attr.data.deliveryCountries = @getDeliveryCountries(shippingData.logisticsInfo)
+        @attr.data.availableAddresses = shippingData.availableAddresses
+        @attr.data.selectedAddressId = shippingData.address?.addressId
+
         if @attr.data.availableAddresses.length > 0
           @createAddressesSummaries()
           @render()
@@ -112,16 +115,6 @@ define ['flight/lib/component',
       @disable = (ev) ->
         if ev then ev.stopPropagation()
         @$node.html('')
-
-      @orderFormUpdated = (ev, data) ->
-        return unless data.shippingData?
-        @attr.data.address = data.shippingData.address
-        @attr.data.deliveryCountries = @getDeliveryCountries(data.shippingData.logisticsInfo)
-        @attr.data.availableAddresses = data.shippingData.availableAddresses
-        @attr.data.selectedAddressId = data.shippingData.address?.addressId
-        @attr.data.canEditData = data.canEditData
-        @attr.data.loggedIn = data.loggedIn
-        @createAddressesSummaries()
 
       # Bind events
       @after 'initialize', ->
@@ -132,4 +125,4 @@ define ['flight/lib/component',
           'addressItemSelector': @selectAddressHandler
           'editAddressSelector': @editAddress
 
-    return defineComponent(AddressList, withi18n, withOrderForm)
+    return defineComponent(AddressList, withi18n)
