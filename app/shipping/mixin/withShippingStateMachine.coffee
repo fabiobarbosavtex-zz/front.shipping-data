@@ -26,7 +26,6 @@ define [], () ->
         ],
         callbacks:
           onafterevent:      @onAfterEvent.bind(this)
-          onbeforeorderform: @onBeforeOrderForm.bind(this)
           onenterempty:      @onEnterEmpty.bind(this)
           onleaveempty:      @onLeaveEmpty.bind(this)
           onentersummary:    @onEnterSummary.bind(this)
@@ -48,11 +47,6 @@ define [], () ->
       else
         @select('shippingStepSelector').removeClass('active')
 
-    @onBeforeOrderForm = (event, from, to, shippingData) ->
-      @select('shippingSummarySelector')
-        .trigger('addressUpdated.vtex', shippingData.address)
-        .trigger('deliverySelected.vtex', shippingData.logisticsInfo)
-
     @onEnterEmpty = (event, from, to) ->
       console.log "Enter empty"
       @select('addressNotFilledSelector').show()
@@ -61,9 +55,9 @@ define [], () ->
       console.log "Leave empty"
       @select('addressNotFilledSelector').hide()
 
-    @onEnterSummary = (event, from, to) ->
+    @onEnterSummary = (event, from, to, orderForm) ->
       console.log "Enter summary"
-      @select('shippingSummarySelector').trigger('enable.vtex')
+      @select('shippingSummarySelector').trigger('enable.vtex', [orderForm.shippingData, orderForm.items, orderForm.sellers])
       # Disable other components
       @select('shippingOptionsSelector').trigger('disable.vtex')
       # We can only enter summary if getting disabled

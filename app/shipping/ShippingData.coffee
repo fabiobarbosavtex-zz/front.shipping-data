@@ -67,7 +67,7 @@ define ['flight/lib/component',
               @attr.stateMachine.invalidAddress(shippingData.address, shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
             else if @attr.stateMachine.can("orderform")
               # If it's valid, show it on summary
-              @attr.stateMachine.orderform(shippingData)
+              @attr.stateMachine.orderform(orderForm)
 
           @validate()
 
@@ -87,7 +87,7 @@ define ['flight/lib/component',
           @attr.data.active = false
           @trigger('componentDone.vtex')
           API.sendAttachment('shippingData', @attr.orderForm.shippingData)
-          @attr.stateMachine.submit()
+          @attr.stateMachine.submit(@attr.orderForm)
 
       #
       # Events from children components
