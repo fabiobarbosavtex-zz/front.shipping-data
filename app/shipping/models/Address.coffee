@@ -26,6 +26,9 @@ define ->
       return regex.test(value)
 
     validate: (rules) =>
+      if not rules?
+        return "Address has no country"
+
       fieldsToValidate = ['postalCode', 'city', 'complement', 'neighborhood', 'number', 'receiverName', 'reference', 'street', 'state']
       for field in fieldsToValidate
         return "#{field} invalid (value: #{this[field]})" unless @validateField(rules, field)
