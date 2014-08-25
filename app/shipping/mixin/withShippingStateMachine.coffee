@@ -23,18 +23,19 @@ define [], () ->
           { name: 'cancelFirst', from: ['search', 'edit', 'editSLA'],  to: 'empty' } # only if available addresses == 0
         ],
         callbacks:
-          onafterevent:   @onAfterEvent.bind(this)
-          onenterempty:   @onEnterEmpty.bind(this)
-          onleaveempty:   @onLeaveEmpty.bind(this)
-          onentersummary: @onEnterSummary.bind(this)
-          onleavesummary: @onLeaveSummary.bind(this)
-          onentersearch:  @onEnterSearch.bind(this)
-          onleavesearch:  @onLeaveSearch.bind(this)
-          onenterlist:    @onEnterList.bind(this)
-          onenteredit:    @onEnterEdit.bind(this)
-          onentereditSLA: @onEnterEditSLA.bind(this)
-          onleaveedit:    @onLeaveEdit.bind(this)
-          onleaveeditSLA: @onLeaveEditSLA.bind(this)
+          onafterevent:      @onAfterEvent.bind(this)
+          onbeforeorderform: @onBeforeOrderForm.bind(this)
+          onenterempty:      @onEnterEmpty.bind(this)
+          onleaveempty:      @onLeaveEmpty.bind(this)
+          onentersummary:    @onEnterSummary.bind(this)
+          onleavesummary:    @onLeaveSummary.bind(this)
+          onentersearch:     @onEnterSearch.bind(this)
+          onleavesearch:     @onLeaveSearch.bind(this)
+          onenterlist:       @onEnterList.bind(this)
+          onenteredit:       @onEnterEdit.bind(this)
+          onentereditSLA:    @onEnterEditSLA.bind(this)
+          onleaveedit:       @onLeaveEdit.bind(this)
+          onleaveeditSLA:    @onLeaveEditSLA.bind(this)
 
     #
     # Changed state events (FINITE STATE MACHINE)
@@ -44,6 +45,11 @@ define [], () ->
         @select('shippingStepSelector').addClass('active', 'visited')
       else
         @select('shippingStepSelector').removeClass('active')
+
+    @onBeforeOrderForm = (event, from, to, shippingData) ->
+      @select('shippingSummarySelector')
+        .trigger('addressUpdated.vtex', shippingData.address)
+        .trigger('deliverySelected.vtex', shippingData.logisticsInfo)
 
     @onEnterEmpty = (event, from, to) ->
       console.log "Enter empty"

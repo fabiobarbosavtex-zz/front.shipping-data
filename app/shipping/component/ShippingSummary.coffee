@@ -18,9 +18,13 @@ define ['flight/lib/component',
         output = $(output).i18n()
         @$node.html(output)
 
-    @addressUpdated = (ev, data) ->
+    @addressUpdated = (ev, address) ->
       ev?.stopPropagation()
-      @attr.data.address = data
+      @attr.data.address = address
+
+    @deliverySelected = (ev, logisticsInfo) ->
+      ev?.stopPropagation()
+      @attr.data.logisticsInfo = logisticsInfo
 
     @enable = (ev) ->
       ev?.stopPropagation()
@@ -36,7 +40,7 @@ define ['flight/lib/component',
     @after 'initialize', ->
       @on 'enable.vtex', @enable
       @on 'disable.vtex', @disable
-      @on @$node.parent(), 'addressSelected.vtex', @addressUpdated
       @on 'addressUpdated.vtex', @addressUpdated
+      @on 'deliverySelected.vtex', @deliverySelected
 
   return defineComponent(ShippingSummary, withi18n)

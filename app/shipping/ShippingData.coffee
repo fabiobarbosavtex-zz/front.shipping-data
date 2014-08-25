@@ -56,7 +56,7 @@ define ['flight/lib/component',
         @countrySelected(null, country).then =>
           @validate()
           if shippingData.address? and @attr.stateMachine.can("orderform")
-            @attr.stateMachine.orderform()
+            @attr.stateMachine.orderform(shippingData)
           if shippingData.logisticsInfo? and shippingData.logisticsInfo.length > 0 and @attr.stateMachine.can("doneSLA")
             @attr.stateMachine.doneSLA(shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
 
@@ -76,6 +76,7 @@ define ['flight/lib/component',
           @attr.data.active = false
           @trigger('componentDone.vtex')
           API.sendAttachment('shippingData', @attr.orderForm.shippingData)
+          @attr.stateMachine.submit()
 
       #
       # Events from children components
@@ -130,9 +131,10 @@ define ['flight/lib/component',
           @attr.stateMachine.cancelEdit()
 
       # User chose shipping options
-      @logisticsInfoUpdated = (ev, logisticsInfo) ->
+      @deliverySelected = (ev, logisticsInfo) ->
         ev.stopPropagation()
         @attr.orderForm.shippingData.logisticsInfo = logisticsInfo
+        @select('shippingSummarySelector').trigger('deliverySelected.vtex', logisticsInfo)
 
       @countrySelected = (ev, country) ->
         require 'shipping/rule/Country'+country, (countryRule) =>
@@ -185,7 +187,7 @@ define ['flight/lib/component',
             @on 'addressUpdated.vtex', @addressUpdated
             @on 'cancelAddressEdit.vtex', @cancelAddressEdit
             @on 'editAddress.vtex', @editAddress
-            @on 'logisticsInfoUpdated.vtex', @logisticsInfoUpdated
+            @on 'deliverySelected.vtex', @deliverySelected
             @on 'countrySelected.vtex', @countrySelected
             @on 'click',
               'goToPaymentButtonSelector': @disable

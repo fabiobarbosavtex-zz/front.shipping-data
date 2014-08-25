@@ -265,7 +265,7 @@ define ['flight/lib/component',
             li.deliveryWindow = deliveryWindow
 
         @selectDeliveryWindow(shippingOption.selectedSla, deliveryWindow)
-        @trigger('logisticsInfoUpdated.vtex', @attr.data.logisticsInfo)
+        @trigger('deliverySelected.vtex', @attr.data.logisticsInfo)
 
       @selectDeliveryWindow = (sla, deliveryWindow) ->
         sla.deliveryWindow = deliveryWindow
