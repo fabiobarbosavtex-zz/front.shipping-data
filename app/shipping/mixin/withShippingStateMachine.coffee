@@ -95,14 +95,15 @@ define [], () ->
     @onEnterEdit = (event, from, to, address) ->
       console.log "Enter edit", address
       @select('addressFormSelector').trigger('enable.vtex', address)
-      # When we start editing, we always start looking for shipping options
-      console.log "Getting shipping options for address"
-      # Montando dados para send attachment
-      attachment =
-        address: address,
-        clearAddressIfPostalCodeNotFound: true # TODO @getCountryRule()?.usePostalCode
-      @attr.API?.sendAttachment('shippingData', attachment) # Handled by orderFormUpdated
-      @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
+      if address
+        # When we start editing, we always start looking for shipping options
+        console.log "Getting shipping options for address"
+        # Montando dados para send attachment
+        attachment =
+          address: address,
+          clearAddressIfPostalCodeNotFound: true # TODO @getCountryRule()?.usePostalCode
+        @attr.API?.sendAttachment('shippingData', attachment) # Handled by orderFormUpdated
+        @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
 
     @onLeaveEdit = (event, from, to) ->
       return if to is 'editSLA' # No need to disable if we simply have new shipping options
