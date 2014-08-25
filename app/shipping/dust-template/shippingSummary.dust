@@ -43,8 +43,8 @@
                 <span class="text" data-i18n="shipping.shippingSummary.shipping"></span> 
                 <span class="sla">{name}</span>
                 {^isScheduled}
-                    <span> - </span><span class="estimate" data-bind="text: selectedSlaEstimate">{deliveryEstimateLabel}</span>
-                    <span> - </span><span class="sla-value" data-bind="text: selectedSlaPrice">{valueLabel}</span>
+                    <span> - </span><span class="estimate">{deliveryEstimateLabel}</span>
+                    <span> - </span><span class="sla-value">{valueLabel}</span>
                 {/isScheduled}
             </p>
             <ul class="product-list muted unstyled">
