@@ -165,6 +165,8 @@ define [], () ->
             to: @dateHourMinLabel(dw.endDate)
           dw.label = i18n.t('shippingData.fromToHour', objTranslation) + ' ' + ' - ' + dw.valueLabel
           dw.timeLabel = i18n.t('shippingData.fromToHour', objTranslation)
+          dw.formattedDate = @formatDate(new Date(dw.startDateUtc))
+          dw.label = sla.name + ' - ' + dw.valueLabel
           # Guarda o menor preço de entrega agendada para "a partir de"
           if dw.price + sla.price < sla.cheapestValue
             sla.cheapestDeliveryWindow = dw
@@ -186,6 +188,11 @@ define [], () ->
             deliveryWindow.endDateUtc is dateWindow.endDateUtc
               # Marcamos-a como selecionada
               dateWindow.isWindowSelected = true
+
+              # Copiamos alguns atributos usados no shippingSummary
+              deliveryWindow.formattedDate = dateWindow.formattedDate
+              deliveryWindow.label = dateWindow.label
+
               # Guardamos a referencia para o array de delivery windows
               # desta data
               sla.deliveryWindowsForDate = dateAsArray

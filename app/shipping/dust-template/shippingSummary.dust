@@ -54,10 +54,12 @@
             </ul>
         </div>
         {?isScheduled}
-        <p data-bind="if: selectedDeliveryDate">
-            <span data-bind="text: formatDate(selectedDeliveryDate())"></span> -
-            <span data-bind="text: deliveryWindow().label"></span>
-        </p>
+            {#deliveryWindow}
+            <p>
+                <span>{formattedDate}</span> -&nbsp;
+                <span>{label}</span>
+            </p>
+            {/deliveryWindow}
         {/isScheduled}
     {/selectedSla}
 {/shippingOptions}
