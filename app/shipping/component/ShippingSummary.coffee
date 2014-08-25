@@ -13,15 +13,18 @@ define ['flight/lib/component',
         address: {}
         multipleSellers: false
 
+      maskedInfoSelector: '.client-masked-info'
+
     # Render this component according to the data object
     @render = ->
       dust.render template, @attr.data, (err, output) =>
         output = $(output).i18n()
         @$node.html(output)
 
-    @enable = (ev, shippingData, items, sellers, rules) ->
+    @enable = (ev, shippingData, items, sellers, rules, canEditData) ->
       ev?.stopPropagation()
 
+      @attr.data.canEditData = canEditData
       @attr.data.isUsingPostalCode = rules.usePostalCode
       @attr.data.address = shippingData.address
       @attr.data.logisticsInfo = shippingData.logisticsInfo
@@ -33,9 +36,15 @@ define ['flight/lib/component',
       ev?.stopPropagation()
       @$node.html('')
 
+    @showMaskedInfoMessage = (ev) ->
+      ev.preventDefault()
+      vtex.checkout?.MessageUtils?.showMaskedInfoMessage()
+
     # Bind events
     @after 'initialize', ->
       @on 'enable.vtex', @enable
       @on 'disable.vtex', @disable
+      @on 'click',
+        maskedInfoSelector: @showMaskedInfoMessage
 
   return defineComponent(ShippingSummary, withi18n, withLogisticsInfo)

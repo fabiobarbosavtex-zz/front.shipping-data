@@ -18,9 +18,9 @@
         {?neighborhood}
         &nbsp;- <span class="neighborhood">{neighborhood}</span>
         {/neighborhood}
-        <!-- ko if: !checkout.canEditData() -->
-        &nbsp;<a data-i18n="[title]modal.maskedInfoHello" class="client-masked-info" href="javascript:void(0);" data-bind="click: function() { vtex.checkout.MessageUtils.showMaskedInfoMessage() }"><i class="icon-question-sign"></i></a>
-        <!-- /ko -->
+        {^canEditData}
+        &nbsp;<a data-i18n="[title]modal.maskedInfoHello" class="client-masked-info" href="javascript:void(0);"><i class="icon-question-sign"></i></a>
+        {/canEditData}
         <br>
         {?city}
         <span class="city">{city}</span> -&nbsp;
