@@ -360,7 +360,7 @@ define ['flight/lib/component',
         @on 'enable.vtex', @enable
         @on 'disable.vtex', @disable
         @on 'scheduleDateSelected.vtex', @scheduleDateSelected
-        @on @$node.parent(), 'startLoadingShippingOptions.vtex', @startLoadingShippingOptions
+        @on 'startLoadingShippingOptions.vtex', @startLoadingShippingOptions
         @on 'click',
           'shippingOptionSelector': @selectShippingOptionHandler
           'deliveryWindowSelector': @deliveryWindowSelected

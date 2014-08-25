@@ -30,7 +30,7 @@
     </div>
 
     <!-- NEXT STEP BUTTON -->
-    <p class="submit btn-submit-wrapper">
+    <p class="submit btn-submit-wrapper btn-go-to-payment-wrapper">
         <button type="submit" class="submit btn btn-large btn-success btn-go-to-payment" data-i18n="shipping.goToPayment"
                 tabindex="350"></button>
     </p>

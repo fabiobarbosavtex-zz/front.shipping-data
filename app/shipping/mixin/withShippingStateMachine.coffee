@@ -60,6 +60,7 @@ define [], () ->
       @select('shippingOptionsSelector').trigger('disable.vtex')
       # We can only enter summary if getting disabled
       @attr.data.active = false
+      @select('goToPaymentButtonWrapperSelector').hide()
 
     @onLeaveSummary = (event, from, to) ->
       console.log "Leave summary"
@@ -86,8 +87,8 @@ define [], () ->
     @onEnterEdit = (event, from, to, address) ->
       console.log "Enter edit", address
       @select('addressFormSelector').trigger('enable.vtex', address)
-      # When we start editing, we alwasy start looking for shipping options
-      @trigger('startLoadingShippingOptions.vtex')
+      # When we start editing, we always start looking for shipping options
+      @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
 
     @onLeaveEdit = (event, from, to) ->
       return if to is 'editSLA' # No need to disable if we simply have new shipping options
@@ -96,7 +97,7 @@ define [], () ->
     @onEnterEditSLA = (event, from, to, logisticsInfo, items, sellers) ->
       console.log "Enter edit SLA", logisticsInfo
       @select('shippingOptionsSelector').trigger('enable.vtex', [logisticsInfo, items, sellers])
-      @select('goToPaymentButtonSelector').show()
+      @select('goToPaymentButtonWrapperSelector').show()
 
     @onLeaveEditSLA = (event, from, to) ->
       @select('addressFormSelector').trigger('disable.vtex')

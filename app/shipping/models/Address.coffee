@@ -22,63 +22,26 @@ define ->
 
     validateField: (rules, name) =>
       value = @[name]
-      regex = new RegExp(/^[A-Za-zÀ-ž0-9\/\\\-\.\,\s\(\)\'\#ªº]*$/)
-      return name in rules.requiredFields and (not value or regex.test(value))
+      regex = rules.regexes[name] ? new RegExp(/^[A-Za-zÀ-ž0-9\/\\\-\.\,\s\(\)\'\#ªº]*$/)
+      isRequired = name in rules.requiredFields
+      return false if isRequired and not value?
+      return regex.test(value)
 
     validate: (rules) =>
-      # City
-      if 'city' in rules.requiredFields
-        # Caso nao esteja preenchido
-        if not @city
-          return "City is required"
-
-        # Caso tenha uma lista de cidades e nao esteja na lista
-        if rules.cities and !(@city in rules.cities)
-          return "City not in allowed cities list"
-
-      # Complement
-      if @validateField(rules, 'complement')
-        return 'complement invalid'
+      fieldsToValidate = ['postalCode', 'city', 'complement', 'neighborhood', 'number', 'receiverName', 'reference', 'street', 'state']
+      for field in fieldsToValidate
+        return "#{field} invalid (value: #{this[field]})" unless @validateField(rules, field)
 
       # Geocoordinates
       if 'geoCoordinates' in rules.requiredFields and @geoCoordinates.length isnt 2
         return 'geoCoordinates invalid'
 
-      # Neighborhood
-      if @validateField(rules, 'neighborhood')
-        return 'neighborhood invalid'
+      # Caso tenha uma lista de cidades e nao esteja na lista
+      if rules.cities and !(@city in rules.cities)
+        return "City not in allowed cities list"
 
-      # Number
-      if @validateField(rules, 'number')
-        return 'number invalid'
-
-      # Postal Code
-      if 'postalCode' in rules.requiredFields
-        if not @postalCode
-          return 'postalCode is required'
-
-        if not rules.regexes?.postalCode?.test(@postalCode)
-          return 'postalCode invalid'
-
-      # Receiver name
-      if @validateField(rules, 'receiverName')
-        return 'receiverName invalid'
-
-      # Reference
-      if @validateField(rules, 'reference')
-        return 'reference invalid'
-
-      # State
-      if 'state' in rules.requiredFields
-        if not @state
-          return 'state required'
-
-        # Caso tenha uma lista de estados e nao esteja na lista
-        if rules.states and !(@state in rules.states)
-          return 'state not in allowed states'
-
-      # Street
-      if @validateField(rules, 'street')
-        return 'street invalid'
+      # Caso tenha uma lista de estados e nao esteja na lista
+      if rules.states and !(@state in rules.states)
+        return 'state not in allowed states'
 
       return true

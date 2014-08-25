@@ -31,6 +31,7 @@ define ['flight/lib/component',
         stateMachine: false
 
         goToPaymentButtonSelector: '.btn-go-to-payment'
+        goToPaymentButtonWrapperSelector: '.btn-go-to-payment-wrapper'
         editShippingDataSelector: '#edit-shipping-data'
         shippingTitleSelector: '.accordion-shipping-title'
         addressNotFilledSelector: '.address-not-filled-verification'
@@ -107,10 +108,10 @@ define ['flight/lib/component',
         ev.stopPropagation()
         @attr.orderForm.shippingData.address = address
         if address.isValid
-          @select('goToPaymentButtonSelector').show()
+          @select('goToPaymentButtonSelector').removeAttr('disabled')
           @select('shippingSummarySelector').trigger('addressUpdated.vtex', address)
         else
-          @select('goToPaymentButtonSelector').hide()
+          @select('goToPaymentButtonSelector').attr('disabled', 'disabled')
 
       # User wants to edit or create an address
       @editAddress = (ev, data) ->
