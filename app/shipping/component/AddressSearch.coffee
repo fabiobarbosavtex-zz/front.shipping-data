@@ -26,7 +26,6 @@ define ['flight/lib/component',
             regexes:
               postalCode: /^([\d]{5})\-?([\d]{3})$/
 
-        isGoogleMapsAPILoaded: false
         addressFormSelector: '.address-form-new'
         postalCodeQuerySelector: '.postal-code-query'
         cancelAddressFormSelector: '.cancel-address-form a'
@@ -47,7 +46,7 @@ define ['flight/lib/component',
           output = $(output).i18n()
           @$node.html(output)
 
-          if not @attr.isGoogleMapsAPILoaded and @attr.data.showGeolocationSearch
+          if not window.vtex.isGoogleMapsAPILoaded and @attr.data.showGeolocationSearch
             @attr.data.loading = true
 
           if @attr.data.showGeolocationSearch
@@ -104,7 +103,7 @@ define ['flight/lib/component',
         @render()
 
       @startGoogleAddressSearch = ->
-        if not @attr.isGoogleMapsAPILoaded
+        if not window.vtex.isGoogleMapsAPILoaded
           country = @attr.countryRule.abbr
           script = document.createElement("script")
           script.type = "text/javascript"
@@ -204,7 +203,7 @@ define ['flight/lib/component',
         # Called when google maps api is loaded
         window.vtex.googleMapsLoadedOnSearch = =>
           @attr.data.loading = false
-          @attr.isGoogleMapsAPILoaded = true
+          window.vtex.isGoogleMapsAPILoaded = true
           @render()
 
     return defineComponent(AddressSearch, withi18n, withValidation)

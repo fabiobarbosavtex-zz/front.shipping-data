@@ -28,7 +28,6 @@ define ['flight/lib/component',
           form:
             baseName: 'countries/addressForm'
 
-        isGoogleMapsAPILoaded: false
         addressFormSelector: '.address-form-new'
         postalCodeSelector: '.postal-code'
         forceShippingFieldsSelector: '#force-shipping-fields'
@@ -44,11 +43,13 @@ define ['flight/lib/component',
           output = $(output).i18n()
           @$node.html(output)
 
-          if not @attr.isGoogleMapsAPILoaded and @attr.data.showGeolocationSearch
+          if not window.vtex.isGoogleMapsAPILoaded and @attr.data.showGeolocationSearch
             @attr.data.loading = true
+            @loadGoogleMaps()
 
-          if @attr.data.showGeolocationSearch
-            @startGoogleAddressSearch()
+          if window.vtex.isGoogleMapsAPILoaded and @attr.data.showGeolocationSearch
+            @attr.data.loading = false
+            @createMap(new google.maps.LatLng(@attr.data.address.geoCoordinates[1], @attr.data.address.geoCoordinates[0]))
 
           if data.loading
             $('input, select, .btn', @$node).attr('disabled', 'disabled')
@@ -66,8 +67,6 @@ define ['flight/lib/component',
             if data.labelShippingFields
               @select('postalCodeSelector').addClass('success')
 
-          if @attr.currentResponseCoordinates
-            @createMap(@attr.currentResponseCoordinates)
 
           window.ParsleyValidator.addValidator('postalcode',
             (val) =>
@@ -93,6 +92,15 @@ define ['flight/lib/component',
       # Helper function to get the current country's rules
       @getCountryRule = ->
         @attr.data.countryRules[@attr.data.address.country]
+
+      @loadGoogleMaps = ->
+        if not window.vtex.isGoogleMapsAPILoaded
+          country = @getCountryRule.abbr
+          script = document.createElement("script")
+          script.type = "text/javascript"
+          script.src = "//maps.googleapis.com/maps/api/js?sensor=false&components=country:#{country}&language=#{@attr.locale}&callback=vtex.googleMapsLoadedOnAddressForm"
+          document.body.appendChild(script)
+          return
 
       @validateAddress = ->
         valid = @attr.parsley.isValid()
@@ -166,7 +174,6 @@ define ['flight/lib/component',
           @attr.data.countryRules[country] = new countryRule()
           @attr.data.states = @attr.data.countryRules[country].states
           @attr.data.regexes = @attr.data.countryRules[country].regexes
-          @attr.data.useGeolocation = @attr.data.countryRules[country].useGeolocation
           @render.bind(this)
 
       @createMap = (location) ->
@@ -282,9 +289,11 @@ define ['flight/lib/component',
       @enable = (ev, address) ->
         ev?.stopPropagation()
         @attr.data.address = new Address(address)
-        @loadCountryRulesAndTemplate(address.country)
+        @attr.data.showGeolocationSearch = @attr.data.address.geoCoordinates.length > 0
+
+        @loadCountryRulesAndTemplate(@attr.data.address.country)
           .then( =>
-            @updateEnables(address)
+            @updateEnables(@attr.data.address)
           , @handleCountrySelectError.bind(this))
 
       @handleCountrySelectError = (reason) ->
@@ -307,14 +316,6 @@ define ['flight/lib/component',
       @handleCountrySelectError = ->
         console.log "error on loading country rules"
 
-      @openGeolocationSearch = ->
-        @attr.data.showGeolocationSearch = true;
-        @render()
-
-      @openZipSearch = ->
-        @attr.data.showGeolocationSearch = false;
-        @render()
-
       # Bind events
       @after 'initialize', ->
         @on 'enable.vtex', @enable
@@ -335,9 +336,9 @@ define ['flight/lib/component',
         ]
 
         # Called when google maps api is loaded
-        window.vtex.googleMapsLoaded = =>
+        window.vtex.googleMapsLoadedOnAddressForm = =>
           @attr.data.loading = false
-          @attr.isGoogleMapsAPILoaded = true
+          window.vtex.isGoogleMapsAPILoaded = true
           @render()
 
     return defineComponent(AddressForm, withi18n, withValidation)
