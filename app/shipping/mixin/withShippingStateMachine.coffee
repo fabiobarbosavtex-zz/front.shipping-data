@@ -60,7 +60,7 @@ define [], () ->
 
     @onEnterSummary = (event, from, to, orderForm, rules) ->
       console.log "Enter summary"
-      @select('shippingSummarySelector').trigger('enable.vtex', [orderForm.shippingData, orderForm.items, orderForm.sellers, rules, orderForm.canEditData])
+      @select('shippingSummarySelector').trigger('enable.vtex', [orderForm.shippingData, orderForm.items, orderForm.sellers, rules, orderForm.canEditData, orderForm.giftRegistryData])
       # Disable other components
       @select('shippingOptionsSelector').trigger('disable.vtex')
       # We can only enter summary if getting disabled

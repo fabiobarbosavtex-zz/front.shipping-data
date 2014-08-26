@@ -26,6 +26,9 @@ define ->
       return regex.test(value)
 
     validate: (rules) =>
+      if @addressType is "giftRegistry"
+        return true
+
       if not rules?
         return "Address has no country"
 

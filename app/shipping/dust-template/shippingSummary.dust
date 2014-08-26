@@ -1,9 +1,9 @@
 
 {?isGift}
-<p class="address" data-bind="visible: currentAddress() && currentAddress().isGift()">
+<p class="address">
     <span>
-        <span data-i18n="shipping.shippingSummary.atAddressOf"></span>
-        <strong class="gift-list-name" data-bind="text: window.checkout.giftRegistryDescription"></strong>
+        <span data-i18n="shipping.shippingSummary.atAddressOf"></span>&nbsp;
+        <strong class="gift-list-name">{giftRegistryData.description}</strong>
     </span>
 </p>
 {:else}

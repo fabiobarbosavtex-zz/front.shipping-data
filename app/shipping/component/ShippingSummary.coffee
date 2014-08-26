@@ -22,15 +22,18 @@ define ['flight/lib/component',
         output = $(output).i18n()
         @$node.html(output)
 
-    @enable = (ev, shippingData, items, sellers, rules, canEditData) ->
+    @enable = (ev, shippingData, items, sellers, rules, canEditData, giftRegistryData) ->
       @attr.data.active = true
       ev?.stopPropagation()
 
       @attr.data.items = items
       @attr.data.sellers = sellers
       @attr.data.canEditData = canEditData
-      @attr.data.isUsingPostalCode = rules.usePostalCode
+      @attr.data.isUsingPostalCode = rules?.usePostalCode
       @attr.data.address = shippingData.address
+      if @attr.data.address?.addressType is "giftRegistry"
+        @attr.data.isGift = true
+      @attr.data.giftRegistryData = giftRegistryData
       @attr.data.logisticsInfo = shippingData.logisticsInfo
       @attr.data.shippingOptions = @getShippingOptionsData(shippingData.logisticsInfo, items, sellers)
       @updateShippingOptionsLabels(@attr.data.shippingOptions).then =>

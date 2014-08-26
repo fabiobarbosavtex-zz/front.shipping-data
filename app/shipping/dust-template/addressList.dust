@@ -9,7 +9,7 @@
             <label for="edit-delivery{addressId}" class="input">
               <span class="firstpart">{firstPart}</span>
               <br>              
-              <span class="secondpart">{secondPart}</span>              
+              <span class="secondpart">{secondPart}</span>
             </label>
           </p>
           <span class="text-box-selected hide" data-i18n="shipping.addressList.selected"></span>&nbsp;
