@@ -145,7 +145,12 @@ define ['flight/lib/component',
 
       # User wants to edit or create an address
       @editAddress = (ev, address) ->
-        return window.vtexid?.start(window.location.href) unless @attr.orderForm.canEditData
+        if not @attr.orderForm.canEditData
+          vtexIdOptions =
+            returnUrl: window.location.href
+            userEmail: vtexjs?.checkout?.orderForm?.clientProfileData?.email
+            locale: @attr.locale
+          return window.vtexid?.start(vtexIdOptions)
 
         ev?.stopPropagation()
         if (address and @attr.stateMachine.can('edit'))

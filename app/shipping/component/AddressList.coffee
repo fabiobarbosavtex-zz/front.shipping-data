@@ -36,13 +36,11 @@ define ['flight/lib/component',
       # Create a new address
       # Trigger an event to AddressForm component
       @createAddress = ->
-        @disable()
         @trigger('editAddress.vtex')
 
       # Edit an existing address
       # Trigger an event to AddressForm component
       @editAddress = ->
-        @disable()
         @attr.data.showDontKnowPostalCode = false
         @trigger('editAddress.vtex', @attr.data.address)
 
