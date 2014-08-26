@@ -222,7 +222,7 @@ define ['flight/lib/component',
           fillColor: '#2cb6d6'
           fillOpacity: 0.3
           strokeColor: '#ff6661'
-          strokeOpacity: 0.8
+          strokeOpacity: 0.3
           strokeWeight: 2
           radius: 500
 
