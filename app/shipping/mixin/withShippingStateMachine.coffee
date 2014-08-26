@@ -6,7 +6,7 @@ define [], () ->
     @createStateMachine = ->
       StateMachine.create
         events: [
-          { name: 'start',       from: 'none',    to: 'empty'  }
+          { name: 'start',       from: 'none',    to: 'empty'    }
           { name: 'orderform',   from: 'empty',   to: 'summary'  }
           { name: 'invalidAddress',from: 'empty', to: 'editSLA'  }
           { name: 'enable',      from: 'empty',   to: 'search'   }
@@ -17,7 +17,8 @@ define [], () ->
           { name: 'submit',      from: 'editSLA', to: 'summary'  }
           { name: 'submit',      from: 'list',    to: 'summary'  }
           { name: 'select',      from: 'list',    to: 'list'     }
-          { name: 'edit',        from: 'list',    to: 'edit'  }
+          { name: 'edit',        from: 'list',    to: 'edit'     }
+          { name: 'editSLA',     from: 'list',    to: 'editSLA'  }
           { name: 'cancelEdit',  from: 'editSLA', to: 'list'     }
           { name: 'new',         from: 'list',    to: 'search'   }
           { name: 'cancelNew',   from: 'search',  to: 'list'     } # only if available addresses > 0

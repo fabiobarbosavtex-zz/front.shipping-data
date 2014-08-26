@@ -122,7 +122,7 @@ define ['flight/lib/component',
           @select('goToPaymentButtonSelector').attr('disabled', 'disabled')
 
       @addressKeysUpdated = (ev, addressKeyMap) ->
-        if addressKeyMap.postalCode and addressKeyMap.postalCode.valid
+        if addressKeyMap.postalCode and addressKeyMap.postalCode.valid and @attr.stateMachine.current isnt 'editSLA'
           # When we start editing, we always start looking for shipping options
           console.log "Getting shipping options for address key", addressKeyMap.postalCode.value
           @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
@@ -159,7 +159,13 @@ define ['flight/lib/component',
           return window.vtexid?.start(vtexIdOptions)
 
         ev?.stopPropagation()
-        if (address and @attr.stateMachine.can('edit'))
+        if address and
+            @attr.orderForm.shippingData.address?.addressId is address.addressId and
+            @attr.stateMachine.can('editSLA')
+          # Estamos editanto o endereço atual, use o seu logistics info
+          @attr.stateMachine.editSLA(address, @attr.orderForm.shippingData.logisticsInfo,
+            @attr.orderForm.items, @attr.orderForm.sellers)
+        if address and @attr.stateMachine.can('edit')
           @attr.stateMachine.edit(address)
         else if @attr.stateMachine.can('new')
           @attr.stateMachine.new()
