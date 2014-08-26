@@ -112,9 +112,11 @@ define ['flight/lib/component',
       @addressUpdated = (ev, address) ->
         ev.stopPropagation()
         @attr.orderForm.shippingData.address = address
+        orderForm = @attr.orderForm
         if address.isValid
           @select('goToPaymentButtonSelector').removeAttr('disabled')
-          @select('shippingSummarySelector').trigger('addressUpdated.vtex', address)
+          @select('shippingSummarySelector').trigger('enable.vtex', [orderForm.shippingData, orderForm.items,
+                                                                     orderForm.sellers, @attr.data.countryRules[orderForm.shippingData.address.country]])
         else
           @select('goToPaymentButtonSelector').attr('disabled', 'disabled')
 
