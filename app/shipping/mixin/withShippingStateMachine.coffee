@@ -69,6 +69,7 @@ define [], () ->
       @select('shippingSummarySelector').trigger('disable.vtex')
       # We can only leave summary if getting active
       @attr.data.active = true
+      @select('goToPaymentButtonWrapperSelector').show()
 
     @onEnterSearch = (event, from, to, addressSearch) ->
       @attr.data.active = true
