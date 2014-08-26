@@ -48,11 +48,13 @@
                     <span> - </span><span class="sla-value">{valueLabel}</span>
                 {/isScheduled}
             </p>
+            {?multipleSellers}
             <ul class="product-list muted unstyled">
                 {#items}
                 <li><i class="icon-caret-right"></i> <span>{name}</span></li>
                 {/items}
             </ul>
+            {/multipleSellers}
         </div>
         {?isScheduled}
             {#deliveryWindow}
