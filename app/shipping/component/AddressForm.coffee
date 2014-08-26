@@ -47,11 +47,10 @@ define ['flight/lib/component',
             output = $(output).i18n()
             @$node.html(output)
 
-            if not window.vtex.isGoogleMapsAPILoaded and @attr.data.showGeolocationSearch
-              @attr.data.loading = true
+            if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading and @attr.data.showGeolocationSearch
               @loadGoogleMaps()
 
-            if window.vtex.isGoogleMapsAPILoaded and @attr.data.showGeolocationSearch
+            if window.vtex.maps.isGoogleMapsAPILoaded and @attr.data.showGeolocationSearch
               @attr.data.loading = false
               @createMap(new google.maps.LatLng(@attr.data.address.geoCoordinates[1], @attr.data.address.geoCoordinates[0]))
 
@@ -93,11 +92,13 @@ define ['flight/lib/component',
         @attr.data.countryRules[@attr.data.address.country]
 
       @loadGoogleMaps = ->
-        if not window.vtex.isGoogleMapsAPILoaded
+        if not window.vtex.maps.isGoogleMapsAPILoaded
+          window.vtex.maps.isGoogleMapsAPILoading = true
+          @loading()
           country = @getCountryRule.abbr
           script = document.createElement("script")
           script.type = "text/javascript"
-          script.src = "//maps.googleapis.com/maps/api/js?sensor=false&components=country:#{country}&language=#{@attr.locale}&callback=vtex.googleMapsLoadedOnAddressForm"
+          script.src = "//maps.googleapis.com/maps/api/js?sensor=false&components=country:#{country}&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsLoadedOnAddressForm"
           document.body.appendChild(script)
           return
 
@@ -210,11 +211,11 @@ define ['flight/lib/component',
           @attr.map = null
         @attr.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
 
-        if @attr.marker
+        ### if @attr.marker
           @attr.marker.setMap(null)
           @attr.marker = null
         @attr.marker = new google.maps.Marker(position: location)
-        @attr.marker.setMap(@attr.map)
+        @attr.marker.setMap(@attr.map) ###
 
         circleOptions =
           center: location
@@ -222,8 +223,8 @@ define ['flight/lib/component',
           fillOpacity: 0.3
           strokeColor: '#ff6661'
           strokeOpacity: 0.8
-          strokeWeight: 4
-          radius: 600
+          strokeWeight: 2
+          radius: 500
 
         if @attr.circle
           @attr.circle.setMap(null)
@@ -357,10 +358,13 @@ define ['flight/lib/component',
           @validateAddress
         ]
 
+        window.vtex.maps = window.vtex.maps or {}
+
         # Called when google maps api is loaded
-        window.vtex.googleMapsLoadedOnAddressForm = =>
+        window.vtex.maps.googleMapsLoadedOnAddressForm = =>
           @attr.data.loading = false
-          window.vtex.isGoogleMapsAPILoaded = true
+          window.vtex.maps.isGoogleMapsAPILoaded = true
+          window.vtex.maps.isGoogleMapsAPILoading = false
           @render()
 
     return defineComponent(AddressForm, withi18n, withValidation)

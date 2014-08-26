@@ -46,9 +46,6 @@ define ['flight/lib/component',
           output = $(output).i18n()
           @$node.html(output)
 
-          if not window.vtex.isGoogleMapsAPILoaded and @attr.data.showGeolocationSearch
-            @attr.data.loading = true
-
           if @attr.data.showGeolocationSearch
             @startGoogleAddressSearch()
 
@@ -103,11 +100,13 @@ define ['flight/lib/component',
         @render()
 
       @startGoogleAddressSearch = ->
-        if not window.vtex.isGoogleMapsAPILoaded
+        if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading
+          window.vtex.maps.isGoogleMapsAPILoading = true
+          @loading()
           country = @attr.countryRule.abbr
           script = document.createElement("script")
           script.type = "text/javascript"
-          script.src = "//maps.googleapis.com/maps/api/js?sensor=false&components=country:#{country}&language=#{@attr.locale}&callback=vtex.googleMapsLoadedOnSearch"
+          script.src = "//maps.googleapis.com/maps/api/js?sensor=false&components=country:#{country}&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsLoadedOnSearch"
           document.body.appendChild(script)
           return
 
@@ -200,10 +199,13 @@ define ['flight/lib/component',
           @validateAddress
         ]
 
+        window.vtex.maps = window.vtex.maps or {}
+
         # Called when google maps api is loaded
-        window.vtex.googleMapsLoadedOnSearch = =>
+        window.vtex.maps.googleMapsLoadedOnSearch = =>
           @attr.data.loading = false
-          window.vtex.isGoogleMapsAPILoaded = true
+          window.vtex.maps.isGoogleMapsAPILoaded = true
+          window.vtex.maps.isGoogleMapsAPILoading = false
           @render()
 
     return defineComponent(AddressSearch, withi18n, withValidation)
