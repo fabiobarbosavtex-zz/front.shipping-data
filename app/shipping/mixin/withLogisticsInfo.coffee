@@ -124,11 +124,11 @@ define [], () ->
       year = date.getFullYear()
       month = date.getMonth()
       day = date.getDate()
-      month = ("0"+month) if (month < 10)
-      if @attr.locale is "en-US"
-        return month + "/" + day + "/" + year
+      month = ('0'+month) if (parseInt(month) < 10)
+      if @attr.locale is 'en-US'
+        return month + '/' + day + '/' + year
       else
-        return day + "/" + month + "/" + year
+        return day + '/' + month + '/' + year
 
     @updateShippingOptionsLabels = (currentShippingOptions) ->
       # Verifica se existem multiplo sellers
@@ -163,10 +163,9 @@ define [], () ->
           objTranslation =
             from: @dateHourMinLabel(dw.startDate)
             to: @dateHourMinLabel(dw.endDate)
-          dw.label = i18n.t('shippingData.fromToHour', objTranslation) + ' ' + ' - ' + dw.valueLabel
+          dw.label = i18n.t('shippingData.fromToHour', objTranslation) + ' - ' + dw.valueLabel
           dw.timeLabel = i18n.t('shippingData.fromToHour', objTranslation)
           dw.formattedDate = @formatDate(new Date(dw.startDateUtc))
-          dw.label = sla.name + ' - ' + dw.valueLabel
           # Guarda o menor preço de entrega agendada para "a partir de"
           if dw.price + sla.price < sla.cheapestValue
             sla.cheapestDeliveryWindow = dw
