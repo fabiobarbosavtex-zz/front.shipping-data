@@ -9,7 +9,7 @@ require.config({
   baseUrl: '/base',
 
   paths: {
-    'shipping': 'build/shipui/shipping',
+    'shipping': 'build/front.shipping-data/shipping',
     'flight': 'bower_components/flight'
   },
 
@@ -17,10 +17,6 @@ require.config({
   deps: tests,
 
   // start test run, once Require.js is done
-  callback: function(){
-    setTimeout(function(){
-      window.__karma__.start();
-    }, 3000);
-  }
+  callback: window.__karma__.start
 
 });

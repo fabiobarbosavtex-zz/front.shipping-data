@@ -5,12 +5,12 @@
     "es5-shim": "2.3.0",
     "jquery.inputmask": "~2.4.0",
     "i18next": "~1.7.2",
-    "parsleyjs": "~1.2.4",
-    "front-i18n": "vtex/front.i18n#0.4.1"
+    "parsleyjs": "brenoc/Parsley.js#~2.0.4",
+    "front-i18n": "vtex/front.i18n#0.6.2"
   },
   "devDependencies": {
     "flight": "~1.1.4",
-    "curl": "~0.8.4",
+    "curl": "~0.8.10",
     "jquery": "1.8.3",
     "bootstrap": "2.3.2",
     "dustjs-linkedin": "~2.2.2",
@@ -19,5 +19,9 @@
     "font-awesome": "3.2.1",
     "jasmine-flight": "~2.2.0",
     "jasmine-jquery": "*"
+  },
+  "resolutions": {
+    "jquery": "1.8.3",
+    "es5-shim": "2.3.0"
   }
 }

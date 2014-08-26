@@ -15,10 +15,7 @@
     "karma-jasmine": "~0.1.0",
     "karma-requirejs": "~0.2.0",
     "karma-chrome-launcher": "~0.1.0",
-    "karma-ie-launcher": "~0.1.1",
-    "karma-firefox-launcher": "~0.1.0",
     "karma-phantomjs-launcher": "~0.1.0",
-    "karma-safari-launcher": "~0.1.1",
     "karma-coffee-preprocessor": "~0.1.2",
     "grunt": "~0.4.1",
     "grunt-contrib-watch": "~0.5.1",
@@ -40,7 +37,7 @@
     "grunt-string-replace": "~0.2.7"
   },
   "scripts": {
-    "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"
+    "test": "./node_modules/karma/bin/karma start --single-run --browsers Chrome"
   },
   "repository": {
     "type": "git",

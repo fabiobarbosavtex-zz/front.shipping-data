@@ -15,26 +15,24 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       // loaded without require
-      'bower_components/jquery/dist/jquery.js',
+      'bower_components/jquery/jquery.js',
+      'bower_components/jasmine-jquery/lib/jasmine-jquery.js',
+      'bower_components/jasmine-flight/lib/jasmine-flight.js',
+
       'bower_components/underscore/underscore.js',
       'bower_components/dustjs-linkedin/dist/dust-core-2.2.2.js',
       'bower_components/dustjs-linkedin-helpers/dist/dust-helpers-1.1.1.js',
       'bower_components/jquery.inputmask/dist/jquery.inputmask.bundle.min.js',
-      'bower_components/jasmine-jquery/lib/jasmine-jquery.js',
-      'bower_components/jasmine-flight/lib/jasmine-flight.js',
       'bower_components/i18next/i18next.js',
-      'bower_components/parsleyjs/parsley.js',
+      'bower_components/parsleyjs/dist/parsley.js',
       'bower_components/front-i18n/dist/vtex-i18n.js',
-
-      // hack to load RequireJS after the shim libs
-      'node_modules/karma-requirejs/lib/require.js',
-      'node_modules/karma-requirejs/lib/adapter.js',
 
       // loaded with require
       {pattern: 'bower_components/flight/**/*.js', included: false},
       {pattern: 'build/front.shipping-data/shipping/**/*', included: false},
       {pattern: 'test/spec/**/*.spec.coffee', included: false},
 
+      // test config
       'test/test-main.js'
     ],
 
