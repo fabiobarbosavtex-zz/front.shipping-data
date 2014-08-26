@@ -56,13 +56,9 @@ define ['flight/lib/component',
         @attr.data.deliveryCountries = _.uniq(_.reduceRight(shippingData.logisticsInfo, ((memo, l) ->
           return memo.concat(l.shipsTo)), []))
         country = @attr.orderForm.shippingData.address?.country ? @attr.data.deliveryCountries[0]
-        @attr.data.country = country
         @countrySelected(null, country).then =>
           if shippingData.address? # If a current address exists
-            # If we are editing and we received logistics info
-            if (shippingData.logisticsInfo.length > 0) and @attr.stateMachine.can("doneSLA")
-              @attr.stateMachine.doneSLA(null, shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
-            else if @validateAddress() isnt true and @attr.stateMachine.can("invalidAddress")
+            if @validateAddress() isnt true and @attr.stateMachine.can("invalidAddress")
               # If it's invalid, stop here and edit it
               @attr.stateMachine.invalidAddress(shippingData.address, shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
             else if @attr.stateMachine.can("orderform")
@@ -112,13 +108,39 @@ define ['flight/lib/component',
       @addressUpdated = (ev, address) ->
         ev.stopPropagation()
         @attr.orderForm.shippingData.address = address
-        orderForm = @attr.orderForm
         if address.isValid
           @select('goToPaymentButtonSelector').removeAttr('disabled')
-          @select('shippingSummarySelector').trigger('enable.vtex', [orderForm.shippingData, orderForm.items,
-                                                                     orderForm.sellers, @attr.data.countryRules[orderForm.shippingData.address.country]])
+          @select('shippingSummarySelector').trigger('addressSelected.vtex', [address])
         else
           @select('goToPaymentButtonSelector').attr('disabled', 'disabled')
+
+      @addressKeysUpdated = (ev, addressKeyMap) ->
+        if addressKeyMap.postalCode and addressKeyMap.postalCode.valid
+          # When we start editing, we always start looking for shipping options
+          console.log "Getting shipping options for address key", addressKeyMap.postalCode.value
+          @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
+          items = @attr.orderForm.items
+          postalCode = addressKeyMap.postalCode.value
+          country = @attr.orderForm.shippingData.address?.country ? @attr.data.country
+          @attr.API?.simulateShipping(items, postalCode, country)
+            .done( (simulation) =>
+              # If we are editing and we received logistics info
+              if @attr.stateMachine.can("doneSLA")
+                @attr.stateMachine.doneSLA(null, simulation.logisticsInfo, @attr.orderForm.items, @attr.orderForm.sellers)
+            )
+            .fail( (reason) ->
+              # TODO: handle simulation failure
+              throw reason
+            )
+        else if addressKeyMap.geoCoordinates
+          # TODO implementar com geoCoordinates
+          console.log addressKeyMap, "Geo coordinates not implemented!"
+
+      # User cleared address search key and must search again
+      # addressSearch may be, for example, a new postal code
+      @addressKeysInvalidated = (ev, addressKeyMap) ->
+        if @attr.stateMachine.can('clearSearch')
+          @attr.stateMachine.clearSearch(addressKeyMap.postalCode?.value)
 
       # User wants to edit or create an address
       @editAddress = (ev, address) ->
@@ -129,12 +151,6 @@ define ['flight/lib/component',
           @attr.stateMachine.edit(address)
         else if @attr.stateMachine.can('new')
           @attr.stateMachine.new()
-
-      # User cleared address search key and must search again
-      # addressSearch may be, for example, a new postal code
-      @clearAddressSearch = (ev, addressSearch) ->
-        if @attr.stateMachine.can('clearSearch')
-          @attr.stateMachine.clearSearch(addressSearch)
 
       # User cancelled ongoing address edit
       @cancelAddressEdit = (ev) ->
@@ -151,6 +167,7 @@ define ['flight/lib/component',
         @select('shippingSummarySelector').trigger('deliverySelected.vtex', logisticsInfo)
 
       @countrySelected = (ev, country) ->
+        @attr.data.country = country
         require 'shipping/rule/Country'+country, (countryRule) =>
           countryRules = @attr.data.countryRules
           countryRules[country] = new countryRule()
@@ -203,7 +220,8 @@ define ['flight/lib/component',
             @on 'addressSearchResult.vtex', @addressSearchResult
             @on 'addressSelected.vtex', @addressSelected
             @on 'addressUpdated.vtex', @addressUpdated
-            @on 'clearAddressSearch.vtex', @clearAddressSearch
+            @on 'addressKeysUpdated.vtex', @addressKeysUpdated
+            @on 'addressKeysInvalidated.vtex', @addressKeysInvalidated
             @on 'cancelAddressEdit.vtex', @cancelAddressEdit
             @on 'editAddress.vtex', @editAddress
             @on 'deliverySelected.vtex', @deliverySelected

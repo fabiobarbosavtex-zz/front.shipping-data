@@ -23,7 +23,9 @@
 
     <p class="ship-postal-code required input text mask">
         <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
-        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221" class="ship-postal-code postal-code postal-code-{country} input-small clear-address-search" value="{postalCode}" name="postalCode"/>
+        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221"
+               data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-postalcode="true"
+               class="ship-postal-code postal-code postal-code-{country} input-small clear-address-search" value="{postalCode}" name="postalCode"/>
     </p>
     <div class="box-delivery">
       {?labelShippingFields}

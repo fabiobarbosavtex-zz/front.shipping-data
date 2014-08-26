@@ -13,7 +13,7 @@ define [], () ->
           { name: 'enable',      from: 'summary', to: 'list'     }
           { name: 'failSearch',  from: 'search',  to: 'search'   }
           { name: 'doneSearch',  from: 'search',  to: 'edit'     }
-          { name: 'doneSLA',     from: 'edit',    to: 'editSLA'  }
+          { name: 'doneSLA',     from: ['edit','editSLA'],   to: 'editSLA'  }
           { name: 'submit',      from: 'editSLA', to: 'summary'  }
           { name: 'submit',      from: 'list',    to: 'summary'  }
           { name: 'select',      from: 'list',    to: 'list'     }
@@ -91,14 +91,6 @@ define [], () ->
     @onEnterEdit = (event, from, to, address) ->
       console.log "Enter edit", address
       @select('addressFormSelector').trigger('enable.vtex', address)
-      if address and (address.postalCode or address.geoCoordinates.length is 2)
-        # When we start editing, we always start looking for shipping options
-        console.log "Getting shipping options for address", address
-        attachment =
-          address: address,
-          clearAddressIfPostalCodeNotFound: if address.country then @attr.data.countryRules[address.country].usePostalCode else true
-        @attr.API?.sendAttachment('shippingData', attachment) # Handled by orderFormUpdated
-        @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
 
     @onLeaveEdit = (event, from, to) ->
       return if to is 'editSLA' # No need to disable if we simply have new shipping options

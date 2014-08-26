@@ -13,6 +13,7 @@ define ['flight/lib/component',
         marker: false
         circle: false
         currentResponseCoordinates: false
+        addressKeyMap: {}
         data:
           address: null
           availableAddresses: []
@@ -36,58 +37,56 @@ define ['flight/lib/component',
         cancelAddressFormSelector: '.cancel-address-form a'
         submitButtonSelector: '.submit .btn-success.address-save'
         mapCanvasSelector: '#map-canvas'
-        clearAddressSearchSelector: '.clear-address-search'
-
-      @renderAddressForm = (data) ->
-        dust.render @attr.templates.form.name, data, (err, output) =>
-          output = $(output).i18n()
-          @$node.html(output)
-
-          if not window.vtex.isGoogleMapsAPILoaded and @attr.data.showGeolocationSearch
-            @attr.data.loading = true
-            @loadGoogleMaps()
-
-          if window.vtex.isGoogleMapsAPILoaded and @attr.data.showGeolocationSearch
-            @attr.data.loading = false
-            @createMap(new google.maps.LatLng(@attr.data.address.geoCoordinates[1], @attr.data.address.geoCoordinates[0]))
-
-          if data.loading
-            $('input, select, .btn', @$node).attr('disabled', 'disabled')
-
-          rules = @getCountryRule()
-
-          if rules.citiesBasedOnStateChange
-            @changeCities()
-            if data.address.city
-              @select('citySelector').val(data.address.city)
-
-          if rules.usePostalCode
-            @select('postalCodeSelector').inputmask
-              mask: rules.masks.postalCode
-            if data.labelShippingFields
-              @select('postalCodeSelector').addClass('success')
-
-
-          window.ParsleyValidator.addValidator('postalcode',
-            (val) =>
-                rules = @getCountryRule()
-                return rules.regexes.postalCode.test(val)
-            , 32)
-
-          @attr.parsley = @select('addressFormSelector').parsley
-            errorClass: 'error'
-            successClass: 'success'
-            errorsWrapper: '<span class="help error error-list"></span>'
-            errorTemplate: '<span class="error-description"></span>'
-
-          @attr.parsley.subscribe 'parsley:field:validated', () =>
-            @validate()
 
       # Render this component according to the data object
       @render = ->
         require 'shipping/translation/' + @attr.locale, (translation) =>
           @extendTranslations(translation)
-          @renderAddressForm(@attr.data)
+          data = @attr.data
+          dust.render @attr.templates.form.name, data, (err, output) =>
+            output = $(output).i18n()
+            @$node.html(output)
+
+            if not window.vtex.isGoogleMapsAPILoaded and @attr.data.showGeolocationSearch
+              @attr.data.loading = true
+              @loadGoogleMaps()
+
+            if window.vtex.isGoogleMapsAPILoaded and @attr.data.showGeolocationSearch
+              @attr.data.loading = false
+              @createMap(new google.maps.LatLng(@attr.data.address.geoCoordinates[1], @attr.data.address.geoCoordinates[0]))
+
+            if data.loading
+              $('input, select, .btn', @$node).attr('disabled', 'disabled')
+
+            rules = @getCountryRule()
+
+            if rules.citiesBasedOnStateChange
+              @changeCities()
+              if data.address.city
+                @select('citySelector').val(data.address.city)
+
+            if rules.usePostalCode
+              @select('postalCodeSelector').inputmask
+                mask: rules.masks.postalCode
+              if data.labelShippingFields
+                @select('postalCodeSelector').addClass('success')
+
+            window.ParsleyValidator.addValidator('postalcode',
+            (val) =>
+              rules = @getCountryRule()
+              return rules.regexes.postalCode.test(val)
+            , 32)
+
+            @attr.parsley = @select('addressFormSelector').parsley
+              errorClass: 'error'
+              successClass: 'success'
+              errorsWrapper: '<span class="help error error-list"></span>'
+              errorTemplate: '<span class="error-description"></span>'
+
+            @attr.parsley.subscribe 'parsley:field:validated', () =>
+              @validate()
+
+            @addressKeysUpdated() # Trigger key updated with initial values
 
       # Helper function to get the current country's rules
       @getCountryRule = ->
@@ -110,10 +109,29 @@ define ['flight/lib/component',
           @updateAddress(false)
         return valid
 
-      @clearAddressSearch = (ev) ->
-        ev.preventDefault()
+      @addressKeysUpdated = (ev) ->
+        ev?.preventDefault()
         postalCode = @select('postalCodeSelector').val()
-        @trigger('clearAddressSearch.vtex', [postalCode])
+        postalCodeIsValid = @select('postalCodeSelector').parsley().isValid()
+        geoCoordinates = @attr.data.address?.geoCoordinates or []
+        geoCoordinatesIsValid = geoCoordinates.length is 2
+
+        addressKeyMap =
+          postalCode:
+            value: postalCode
+            valid: postalCodeIsValid
+          geoCoordinates:
+            value: geoCoordinates
+            valid: geoCoordinatesIsValid
+
+        # TODO implementar geocode
+        # from valid to invalid
+        if @attr.addressKeyMap.postalCode?.valid and not postalCodeIsValid
+          @trigger('addressKeysInvalidated.vtex', [addressKeyMap])
+        else if postalCodeIsValid # new postal code is valid
+          @trigger('addressKeysUpdated.vtex', [addressKeyMap])
+
+        @attr.addressKeyMap = addressKeyMap
 
       # Able the user to edit the suggested fields
       # filled by the postal code service
@@ -291,10 +309,15 @@ define ['flight/lib/component',
         @attr.data.address = new Address(address)
         @attr.data.showGeolocationSearch = @attr.data.address.geoCoordinates.length > 0
 
+        handleLoadSuccess = =>
+          @updateEnables(@attr.data.address)
+          @render()
+
+        handleLoadFailure = (reason) ->
+          throw reason
+
         @loadCountryRulesAndTemplate(@attr.data.address.country)
-          .then( =>
-            @updateEnables(@attr.data.address)
-          , @handleCountrySelectError.bind(this))
+          .then(handleLoadSuccess, handleLoadFailure)
 
       @handleCountrySelectError = (reason) ->
         console.error("Unable to load country dependencies", reason)
@@ -305,7 +328,7 @@ define ['flight/lib/component',
         @attr.data.address = new Address(null)
         @$node.html('')
 
-      @updateEnables = () ->
+      @updateEnables = ->
         @attr.data.labelShippingFields = @attr.data.address.neighborhood isnt '' and @attr.data.address.neighborhood? and
           @attr.data.address.street isnt '' and @attr.data.address.street? and
           @attr.data.address.state isnt '' and @attr.data.address.state? and
@@ -325,11 +348,10 @@ define ['flight/lib/component',
           'forceShippingFieldsSelector': @forceShippingFields
           'cancelAddressFormSelector': @cancelAddressForm
         @on 'change',
-          'postalCodeSelector': @clearAddressSearch
           'stateSelector': @onChangeState
           'citySelector': @changePostalCodeByCity
         @on 'keyup',
-          'clearAddressSearchSelector': @clearAddressSearch
+          'postalCodeSelector': @addressKeysUpdated
 
         @setValidators [
           @validateAddress
