@@ -41,7 +41,11 @@ define(function () {
         "type": 'Address type',
         "receiver": 'Receiver',
         "deliveryCountry": 'Delivery country',
-        "cancelEditAddress": 'Back to address list'
+        "cancelEditAddress": 'Cancel and go back to the address list'
+      },
+      "countrySelect": {
+        "chooseDeliveryCountry": 'Choose the delivery country',
+        "cancelEditAddress": 'Cancel and go back to the address list'
       },
       "shippingOptions": {
         "shippingOptions": 'Choose the delivery options',

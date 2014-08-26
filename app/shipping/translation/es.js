@@ -40,8 +40,12 @@ define(function () {
         "province": "Provincia",
         "type": 'Tipo de dirección',
         "receiver": 'Nombre de la persona que va a recibir',
-        "deliveryCountry": 'Elija el país de entrega',
-        "backToAddressList": 'Volver a las direcciones ya registradas'
+        "deliveryCountry": 'País de entrega',
+        "cancelEditAddress": 'Cancelar alterações e voltar para a lista de endereços'
+      },
+      "countrySelect": {
+        "chooseDeliveryCountry": 'Elija el país de entrega',
+        "cancelEditAddress": 'Cancelar alterações e voltar para a lista de endereços'
       },
       "shippingOptions": {
         "shippingOptions": 'Elija las opciones de envío',

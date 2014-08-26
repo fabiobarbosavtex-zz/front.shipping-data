@@ -43,6 +43,10 @@ define(function () {
         "deliveryCountry": 'País de entrega',
         "cancelEditAddress": 'Cancelar alterações e voltar para a lista de endereços'
       },
+      "countrySelect": {
+        "chooseDeliveryCountry": 'Escolha o país de entrega',
+        "cancelEditAddress": 'Cancelar alterações e voltar para a lista de endereços'
+      },
       "shippingOptions": {
         "shippingOptions": 'Escolha as opções de entrega',
         "chooseShippingOption": 'Escolha o tipo da entrega',

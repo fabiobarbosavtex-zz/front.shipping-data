@@ -18,7 +18,7 @@
 
     <!-- COUNTRY NAME -->
     <p class="ship-international input one-delivery-country">
-      País: {{country}}
+      <span data-i18n="shipping.addressForm.deliveryCountry"></span> {country}
     </p>
 
     <p class="ship-postal-code required input text mask">
