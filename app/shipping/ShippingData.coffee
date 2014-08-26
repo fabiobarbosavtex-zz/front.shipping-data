@@ -83,14 +83,16 @@ define ['flight/lib/component',
         # TODO Clear incomplete state, like editing address
         if @attr.stateMachine.can('submit') and @isValid()
           @attr.data.active = false
-          @trigger('componentDone.vtex')
-          API.sendAttachment('shippingData', @attr.orderForm.shippingData)
+          @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData)
           rules = @attr.data.countryRules[@attr.orderForm.shippingData.address?.country]
           @attr.stateMachine.submit(@attr.orderForm, rules)
 
       #
       # Events from children components
       #
+
+      @done = ->
+        @trigger('componentDone.vtex')
 
       # An address search has new results.
       # Should call API to get delivery options
@@ -101,7 +103,6 @@ define ['flight/lib/component',
       # When a new addresses is selected
       @addressSelected = (ev, address) ->
         ev?.stopPropagation()
-        @attr.orderForm.shippingData.logisticsInfo = null
         @addressUpdated(ev, address)
 
       # The current address was updated, either selected or in edit
@@ -162,9 +163,8 @@ define ['flight/lib/component',
 
       # User chose shipping options
       @deliverySelected = (ev, logisticsInfo) ->
-        ev.stopPropagation()
         @attr.orderForm.shippingData.logisticsInfo = logisticsInfo
-        @select('shippingSummarySelector').trigger('deliverySelected.vtex', logisticsInfo)
+        @select('shippingSummarySelector').trigger('deliverySelected.vtex', [logisticsInfo, @attr.orderForm.items, @attr.orderForm.sellers])
 
       @countrySelected = (ev, country) ->
         @attr.data.country = country
@@ -227,7 +227,7 @@ define ['flight/lib/component',
             @on 'deliverySelected.vtex', @deliverySelected
             @on 'countrySelected.vtex', @countrySelected
             @on 'click',
-              'goToPaymentButtonSelector': @disable
+              'goToPaymentButtonSelector': @done
               'editShippingDataSelector': @enable
 
             @setValidators [

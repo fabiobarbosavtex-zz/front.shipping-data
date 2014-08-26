@@ -94,7 +94,7 @@ define ['flight/lib/component',
         else
           sla.cheapestDeliveryWindow
 
-      @updateLogisticsInfoModel = (shippingOptions, deliveryWindow) ->
+      @updateLogisticsInfoModel = (shippingOptions, selectedSla, deliveryWindow) ->
         shippingOption = shippingOptions
 
         # Atualiza o logisticsInfo
@@ -102,9 +102,11 @@ define ['flight/lib/component',
           # Caso os items do shipping option fale do logistic info em questão
           if _.find(shippingOption.items, (i) -> i.index is li.itemIndex)
             li.deliveryWindow = deliveryWindow
+            li.selectedSla = selectedSla
 
-        @selectDeliveryWindow(shippingOption.selectedSla, deliveryWindow)
-        @trigger('deliverySelected.vtex', @attr.data.logisticsInfo)
+        if deliveryWindow
+          @selectDeliveryWindow(shippingOption.selectedSla, deliveryWindow)
+        @trigger('deliverySelected.vtex', [@attr.data.logisticsInfo])
 
       @scheduleDateSelected = (ev, index) ->
         # Pega a data seleciona no pickadate
@@ -112,7 +114,7 @@ define ['flight/lib/component',
 
         # Por default, pegamos a primeira delivery window para esta data
         shippingOptions = @attr.data.shippingOptions[index]
-        @updateLogisticsInfoModel(shippingOptions, @getCheapestDeliveryWindow(shippingOptions, new Date(date)))
+        @updateLogisticsInfoModel(shippingOptions, shippingOptions.selectedSla.id, @getCheapestDeliveryWindow(shippingOptions, new Date(date)))
 
         # Renderizamos as novas delivery windows para a data selecionada
         @render(template: 'deliveryWindows', index: index)
@@ -131,7 +133,7 @@ define ['flight/lib/component',
         deliveryWindow = sla.deliveryWindowsForDate[deliveryWindowIndex]
 
         # Atualizamos o modelo
-        @updateLogisticsInfoModel(shippingOptions, deliveryWindow)
+        @updateLogisticsInfoModel(shippingOptions, sla.id, deliveryWindow)
 
       @selectShippingOptionHandler = (ev, data) ->
         ev.preventDefault()
@@ -141,11 +143,7 @@ define ['flight/lib/component',
         @selectShippingOption(shippingOptions, selectedSla)
 
       @selectShippingOption = (shippingOptions, selectedSla) ->
-        # Troca o selected sla
-        for li in @attr.data.logisticsInfo
-          # Caso os items do shipping option fale do logistic info em questão
-          if _.find(shippingOptions.items, (i) -> i.index is li.itemIndex)
-            li.selectedSla = selectedSla
+        @updateLogisticsInfoModel(shippingOptions, selectedSla)
 
         # Atualizamos o modelo
         @attr.data.shippingOptions = @getShippingOptionsData(@attr.data.logisticsInfo, @attr.data.items, @attr.data.sellers)

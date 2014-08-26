@@ -46,10 +46,10 @@ define ['flight/lib/component',
       @attr.data.address = address
       @render() if @attr.data.active
 
-    @deliverySelected = (ev, logisticsInfo) ->
+    @deliverySelected = (ev, logisticsInfo, items, sellers) ->
       ev?.stopPropagation()
       @attr.data.logisticsInfo = logisticsInfo
-      @attr.data.shippingOptions = @getShippingOptionsData(logisticsInfo, @attr.data.items, @attr.data.sellers)
+      @attr.data.shippingOptions = @getShippingOptionsData(logisticsInfo, items, sellers)
       @render() if @attr.data.active
 
     @showMaskedInfoMessage = (ev) ->
