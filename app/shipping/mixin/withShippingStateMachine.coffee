@@ -33,6 +33,7 @@ define [], () ->
           onentersearch:     @onEnterSearch.bind(this)
           onleavesearch:     @onLeaveSearch.bind(this)
           onenterlist:       @onEnterList.bind(this)
+          onleavelist:       @onLeaveList.bind(this)
           onenteredit:       @onEnterEdit.bind(this)
           onentereditSLA:    @onEnterEditSLA.bind(this)
           onleaveedit:       @onLeaveEdit.bind(this)
@@ -88,6 +89,10 @@ define [], () ->
       console.log "Enter list"
       @select('addressListSelector').trigger('enable.vtex', orderForm.shippingData)
       @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
+
+    @onLeaveList = (event, from, to) ->
+      @select('addressListSelector').trigger('disable.vtex')
+      @select('shippingOptionsSelector').trigger('disable.vtex')
 
     @onEnterEdit = (event, from, to, address) ->
       console.log "Enter edit", address
