@@ -75,39 +75,6 @@ define ['flight/lib/component',
       @getPickadateSelector = (shippingOptionIndex) ->
         $('.shipping-option-'+shippingOptionIndex + ' ' + @attr.pickadateSelector)
 
-      @getCheapestDeliveryWindow = (shippingOptions, date) ->
-        # Pega o sla em questão
-        sla = shippingOptions.selectedSla
-
-        # Caso a função receba uma data pegamos a
-        # delivery window mais barata deste dia
-        if date
-          dateAsString = @dateAsString(new Date(date))
-          deliveryWindows = sla.deliveryWindows[dateAsString]
-          cheapestValue = Number.MAX_VALUE
-          cheapestDw = null
-          for dw in deliveryWindows
-            if dw.price + sla.price < cheapestValue
-              cheapestValue = dw.price + sla.price
-              cheapestDw = dw
-          return cheapestDw
-        else
-          sla.cheapestDeliveryWindow
-
-      @updateLogisticsInfoModel = (shippingOptions, selectedSla, deliveryWindow) ->
-        shippingOption = shippingOptions
-
-        # Atualiza o logisticsInfo
-        for li in @attr.data.logisticsInfo
-          # Caso os items do shipping option fale do logistic info em questão
-          if _.find(shippingOption.items, (i) -> i.index is li.itemIndex)
-            li.deliveryWindow = deliveryWindow
-            li.selectedSla = selectedSla
-
-        if deliveryWindow
-          @selectDeliveryWindow(shippingOption.selectedSla, deliveryWindow)
-        @trigger('deliverySelected.vtex', [@attr.data.logisticsInfo])
-
       @scheduleDateSelected = (ev, index) ->
         # Pega a data seleciona no pickadate
         date = @getPickadateSelector(index).pickadate('get', 'select')?.obj

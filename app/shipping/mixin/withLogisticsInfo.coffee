@@ -114,6 +114,8 @@ define [], () ->
             # Marcamos a delivery window como selecionada
             @selectDeliveryWindow(sla, deliveryWindow)
 
+      @setCheapestSlaIfNull(logisticsInfoArray)
+
       return logisticsInfoArray
 
     @dateAsArray = (date) -> [date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()]
@@ -198,3 +200,50 @@ define [], () ->
           else
             # Devemos sempre deixar a flag de todas as outras como false
             dateWindow.isWindowSelected = false
+
+    @updateLogisticsInfoModel = (shippingOption, selectedSla, deliveryWindow) ->
+      # Atualiza o logisticsInfo
+      for li in @attr.data.logisticsInfo
+        # Caso os items do shipping option fale do logistic info em questão
+        if _.find(shippingOption.items, (i) -> i.index is li.itemIndex)
+          li.deliveryWindow = deliveryWindow
+          li.selectedSla = selectedSla
+
+      if deliveryWindow
+        @selectDeliveryWindow(shippingOption.selectedSla, deliveryWindow)
+      @trigger('deliverySelected.vtex', [@attr.data.logisticsInfo])
+
+    @getCheapestDeliveryWindow = (shippingOptions, date) ->
+      # Pega o sla em questão
+      sla = shippingOptions.selectedSla
+
+      # Caso a função receba uma data pegamos a
+      # delivery window mais barata deste dia
+      if date
+        dateAsString = @dateAsString(new Date(date))
+        deliveryWindows = sla.deliveryWindows[dateAsString]
+        cheapestValue = Number.MAX_VALUE
+        cheapestDw = null
+        for dw in deliveryWindows
+          if dw.price + sla.price < cheapestValue
+            cheapestValue = dw.price + sla.price
+            cheapestDw = dw
+        return cheapestDw
+      else
+        sla.cheapestDeliveryWindow
+
+    @getCheapestSla = (so) ->
+      cheapestValue = Number.MAX_VALUE
+      cheapestSla = null
+      for sla in so.slas
+        if sla.price < cheapestValue
+          cheapestSla = sla
+          cheapestValue = sla.price
+
+      return cheapestSla
+
+    @setCheapestSlaIfNull = (shippingOptions) ->
+      for so in shippingOptions
+        if not so.selectedSla?
+          so.selectedSla = @getCheapestSla(so)
+          @updateLogisticsInfoModel(so, so.selectedSla.id)
