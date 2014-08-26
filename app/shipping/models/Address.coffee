@@ -22,7 +22,7 @@ define ->
       value = @[name]
       regex = rules.regexes[name] ? new RegExp(/^[A-Za-zÀ-ž0-9\/\\\-\.\,\s\(\)\'\#ªº]*$/)
       isRequired = name in rules.requiredFields
-      return false if isRequired and not value?
+      return false if isRequired and (not value? or value is "")
       return regex.test(value)
 
     validate: (rules) =>

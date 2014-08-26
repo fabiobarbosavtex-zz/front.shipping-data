@@ -8,7 +8,7 @@ define [], () ->
         events: [
           { name: 'start',       from: 'none',    to: 'empty'    }
           { name: 'orderform',   from: 'empty',   to: 'summary'  }
-          { name: 'invalidAddress',from: 'empty', to: 'editSLA'  }
+          { name: 'invalidAddress',from: ['empty', 'list'], to: 'editSLA'  }
           { name: 'enable',      from: 'empty',   to: 'search'   }
           { name: 'enable',      from: 'summary', to: 'list'     }
           { name: 'failSearch',  from: 'search',  to: 'search'   }
@@ -34,7 +34,7 @@ define [], () ->
           onentersearch:     @onEnterSearch.bind(this)
           onleavesearch:     @onLeaveSearch.bind(this)
           onenterlist:       @onEnterList.bind(this)
-          onafterselect:     @onAfterSelect.bind(this)
+          onbeforeselect:    @onBeforeSelect.bind(this)
           onleavelist:       @onLeaveList.bind(this)
           onenteredit:       @onEnterEdit.bind(this)
           onentereditSLA:    @onEnterEditSLA.bind(this)
@@ -92,13 +92,14 @@ define [], () ->
       @select('addressListSelector').trigger('enable.vtex', orderForm.shippingData)
       @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
 
-    @onAfterSelect = (event, from, to, orderForm) ->
+    @onBeforeSelect = (event, from, to, orderForm) ->
       @attr.data.active = true
-      console.log "Enter list"
-      @select('addressListSelector').trigger('enable.vtex', orderForm.shippingData)
-      @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
+      console.log "After select"
+      if to is 'list'
+        @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
 
     @onLeaveList = (event, from, to) ->
+      console.log "Leave list"
       @select('addressListSelector').trigger('disable.vtex')
       @select('shippingOptionsSelector').trigger('disable.vtex')
 
