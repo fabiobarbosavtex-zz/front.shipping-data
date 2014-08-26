@@ -103,7 +103,13 @@ define ['flight/lib/component',
       # When a new addresses is selected
       @addressSelected = (ev, address) ->
         ev?.stopPropagation()
+        address.isValid = true # se foi selecionado da lista, está válido
         @addressUpdated(ev, address)
+        if @attr.stateMachine.current is 'list'
+          @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
+          @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData).done (orderForm) =>
+            if @attr.stateMachine.can("select")
+              @attr.stateMachine.select(orderForm)
 
       # The current address was updated, either selected or in edit
       @addressUpdated = (ev, address) ->
