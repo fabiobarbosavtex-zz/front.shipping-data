@@ -9,6 +9,7 @@
 <form class="address-form-new box-new address-form-{country}" data-parsley-validate="true" data-parsley-bind="true">
   <fieldset class="address-data">
       <p class="ship-postal-code required input text mask">
+
         {^showGeolocationSearch}
         <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
 
@@ -18,19 +19,26 @@
         data-parsley-required="true" data-parsley-trigger="change blur"
         data-parsley-postalcode="true" data-parsley-errors-container=".postal-code-errors">
 
-        {?loading}
-        <i class="loading-inline icon-spinner icon-spin">
-          <span data-i18n="global.loading"></span>
-        </i>
-        {/loading}
+          {?loading}
+          <i class="loading-inline icon-spinner icon-spin">
+            <span data-i18n="global.loading"></span>
+          </i>
+          {/loading}
+
         <small><a href="javascript:void(0);" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressForm.dontKnowPostalCode"></a></small>
         <span class="postal-code-errors"></span>
-
         {/showGeolocationSearch}
 
         {?showGeolocationSearch}
         <label for="addressSearch"><span>Buscar por endereço</span></label>
         <input type="text" id="address-search" tabindex="221" class="input-large" value="{addressQuery}" name="addressSearch"/><br/>
+
+          {?loading}
+            <i class="loading-inline icon-spinner icon-spin">
+              <span data-i18n="global.loading"></span>
+            </i>
+          {/loading}
+
         <small><a href="javascript:void(0);" id="know-postal-code" target="_blank" data-i18n="shipping.addressForm.knowPostalCode"></a></small>
         {@if cond="{requiredGoogleFieldsNotFound.length} > 0"}
         <div class="well">
