@@ -113,10 +113,21 @@ define ['flight/lib/component',
         addressListResponse = []
         @select('addressSearchSelector').typeahead
           minLength: 3,
-          matcher: -> true
-          source: (query, process) ->
+          matcher: (address) ->
+            hasPostalCode = false
+            isPostalCodePrefix = false
+            addressObject = _.find addressListResponse, (item) ->
+              item.formatted_address is address
+            _.each addressObject.address_components, (component) ->
+              _.each component.types, (type) ->
+                if type is "postal_code"
+                  hasPostalCode = true
+                if type is 'postal_code_prefix'
+                  isPostalCodePrefix = true
+            return hasPostalCode and not isPostalCodePrefix
+          source: (query, process) =>
             geocoder = new google.maps.Geocoder()
-            geocoder.geocode address: query, (response, status) =>
+            geocoder.geocode address: query + " , " + @attr.data.country, (response, status) =>
               if status is "OK" and response.length > 0
                 addressListResponse = response
                 itemsToDisplay = []
