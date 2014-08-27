@@ -65,12 +65,8 @@ define ['flight/lib/component',
               @attr.stateMachine.unavailable(shippingData.address)
               @trigger 'componentValidated.vtex', [[new Error("SLA array is empty")]]
               @done()
-            else if @attr.stateMachine.can("orderform")
-              @attr.stateMachine.orderform(orderForm, @attr.data.countryRules[shippingData.address.country])
-            else if @attr.stateMachine.current is 'summary'
-              @select('shippingSummarySelector').trigger('enable.vtex', [shippingData, orderForm.items,
-                                                                         orderForm.sellers, @attr.data.countryRules[shippingData.address.country],
-                                                                         orderForm.canEditData, orderForm.giftRegistryData])
+            else if @attr.stateMachine.can('orderform')
+              @attr.stateMachine.orderform(@attr.locale, orderForm, @attr.data.countryRules[shippingData.address.country])
           @validate()
 
       #

@@ -10,12 +10,14 @@ define [], () ->
           { name: 'orderform',   from: 'empty',   to: 'summary'  }
           { name: 'invalidAddress',from: ['empty', 'list', 'summary'], to: 'editSLA'  }
           { name: 'search',      from: 'empty',   to: 'search'   }
+          { name: 'edit',        from: 'empty',   to: 'edit'     }
           { name: 'list',        from: 'summary', to: 'list'     }
+          { name: 'apiError',    from: 'summary', to: 'editSLA'  }
+          { name: 'orderform',   from: 'summary', to: 'summary'  }
           { name: 'failSearch',  from: 'search',  to: 'search'   }
           { name: 'doneSearch',  from: 'search',  to: 'edit'     }
           { name: 'doneSLA',     from: ['edit','editSLA'],   to: 'editSLA'  }
           { name: 'unavailable',    from: ['empty', 'summary'], to: 'edit'  }
-          { name: 'apiError',    from: 'summary', to: 'editSLA'  }
           { name: 'submit',      from: 'editSLA', to: 'summary'  }
           { name: 'submit',      from: 'list',    to: 'summary'  }
           { name: 'select',      from: 'list',    to: 'list'     }
