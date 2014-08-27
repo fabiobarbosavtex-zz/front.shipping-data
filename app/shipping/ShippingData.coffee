@@ -72,14 +72,13 @@ define ['flight/lib/component',
 
       @enable = ->
         try
-          if @validateAddress() is true
-            if @attr.orderForm.shippingData?.availableAddresses?.length > 0
-              @attr.stateMachine.list(@attr.orderForm)
-            else
-              @attr.stateMachine.search(@attr.orderForm)
-          else
+          if @attr.orderForm.shippingData?.address is null
+            @attr.stateMachine.search(@attr.orderForm)
+          else if @validateAddress() isnt true
             orderForm = @attr.orderForm
             @attr.stateMachine.invalidAddress(orderForm.shippingData.address, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
+          else
+            @attr.stateMachine.list(@attr.orderForm)
         catch e
           console.log e
 
