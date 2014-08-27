@@ -1,7 +1,9 @@
 {
   "name": "front.shipping-data",
-  "version": "2.0.11-beta",
-  "paths": ["/front.shipping-data"],
+  "version": "2.0.12-beta",
+  "paths": [
+    "/front.shipping-data"
+  ],
   "hosts": [
     "*.vtexcommerce.com.br",
     "*.vtexcommercebeta.com.br",
