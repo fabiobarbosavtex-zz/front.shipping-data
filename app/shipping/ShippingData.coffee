@@ -140,9 +140,10 @@ define ['flight/lib/component',
               if @attr.stateMachine.can("doneSLA")
                 @attr.stateMachine.doneSLA(null, orderForm.shippingData.logisticsInfo, @attr.orderForm.items, @attr.orderForm.sellers)
             )
-            .fail( (reason) ->
-              # TODO: handle simulation failure
-              throw reason
+            .fail( (reason) =>
+              console.log reason
+              if @attr.stateMachine.can('clearSearch')
+                @attr.stateMachine.clearSearch(addressKeyMap.postalCode?.value)
             )
         else if addressKeyMap.geoCoordinates
           # TODO implementar com geoCoordinates
