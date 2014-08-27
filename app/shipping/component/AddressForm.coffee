@@ -22,8 +22,8 @@ define ['flight/lib/component',
           showPostalCode: false
           addressSearchResults: {}
           countryRules: {}
-          showGeolocationSearch: false
-          requiredGoogleFieldsNotFound: []
+          hasGeolocationData: false
+          addressQuery: false
 
         templates:
           form:
@@ -48,10 +48,10 @@ define ['flight/lib/component',
             output = $(output).i18n()
             @$node.html(output)
 
-            if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading and @attr.data.showGeolocationSearch
+            if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading and @attr.data.hasGeolocationData
               @loadGoogleMaps()
 
-            if window.vtex.maps.isGoogleMapsAPILoaded and @attr.data.showGeolocationSearch
+            if window.vtex.maps.isGoogleMapsAPILoaded and @attr.data.hasGeolocationData
               @attr.data.loading = false
               @createMap(new google.maps.LatLng(@attr.data.address.geoCoordinates[1], @attr.data.address.geoCoordinates[0]))
 
@@ -166,7 +166,7 @@ define ['flight/lib/component',
         else
           addressObj.addressType = 'residential'
 
-        addressObj.geoCoordinates = @attr.data.geoCoordinates
+        addressObj.geoCoordinates = @attr.data.address.geoCoordinates
 
         return addressObj
 
@@ -315,7 +315,8 @@ define ['flight/lib/component',
       @enable = (ev, address) ->
         ev?.stopPropagation()
         @attr.data.address = new Address(address)
-        @attr.data.showGeolocationSearch = @attr.data.address.geoCoordinates.length > 0
+        @attr.data.addressQuery = address.addressQuery
+        @attr.data.hasGeolocationData = @attr.data.address.geoCoordinates.length > 0
 
         handleLoadSuccess = =>
           @updateEnables(@attr.data.address)

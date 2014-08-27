@@ -140,6 +140,7 @@ define ['flight/lib/component',
           ]
         }
         address.country = @attr.countryRule.country
+        address.addressQuery = googleAddress.formatted_address
         _.each googleDataMap, (rule) =>
           _.each googleAddress.address_components, (component) =>
             if _.intersection(component.types, rule.types).length > 0
