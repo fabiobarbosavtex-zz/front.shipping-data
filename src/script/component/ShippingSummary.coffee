@@ -19,6 +19,7 @@ define ['flight/lib/component',
     # Render this component according to the data object
     @render = ->
       dust.render template, @attr.data, (err, output) =>
+        return unless @attr.data.active
         output = $(output).i18n()
         @$node.html(output)
 
@@ -37,7 +38,7 @@ define ['flight/lib/component',
       @attr.data.logisticsInfo = shippingData.logisticsInfo
       @attr.data.shippingOptions = @getShippingOptionsData(shippingData.logisticsInfo, items, sellers)
       @updateShippingOptionsLabels(@attr.data.shippingOptions).then =>
-        @render()
+        @render() if @attr.data.active
 
     @disable = (ev) ->
       @attr.data.active = false
