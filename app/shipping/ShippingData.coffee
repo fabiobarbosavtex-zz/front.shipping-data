@@ -58,11 +58,7 @@ define ['flight/lib/component',
         country = @attr.orderForm.shippingData.address?.country ? @attr.data.deliveryCountries[0]
         @countrySelected(null, country).then =>
           if shippingData.address? # If a current address exists
-            if @validateAddress() isnt true and @attr.stateMachine.can("invalidAddress")
-              # If it's invalid, stop here and edit it
-              @attr.stateMachine.invalidAddress(shippingData.address, shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
-            else if @attr.stateMachine.can("orderform")
-              # If it's valid, show it on summary
+            if @attr.stateMachine.can("orderform")
               @attr.stateMachine.orderform(orderForm, @attr.data.countryRules[shippingData.address.country])
             else if @attr.stateMachine.current is 'summary'
               @select('shippingSummarySelector').trigger('enable.vtex', [shippingData, orderForm.items,
@@ -76,7 +72,14 @@ define ['flight/lib/component',
 
       @enable = ->
         try
-          @attr.stateMachine.enable(@attr.orderForm)
+          if @validateAddress() is true
+            if @attr.orderForm.shippingData?.availableAddresses?.length > 0
+              @attr.stateMachine.list(@attr.orderForm)
+            else
+              @attr.stateMachine.search(@attr.orderForm)
+          else
+            orderForm = @attr.orderForm
+            @attr.stateMachine.invalidAddress(orderForm.shippingData.address, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
         catch e
           console.log e
 
@@ -114,7 +117,10 @@ define ['flight/lib/component',
         if @attr.stateMachine.current is 'list'
           @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
           @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData).done (orderForm) =>
-            if @attr.stateMachine.can("select")
+            if @validateAddress() isnt true and @attr.stateMachine.can("invalidAddress")
+              # If it's invalid, stop here and edit it
+              @attr.stateMachine.invalidAddress(orderForm.shippingData.address, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
+            else if @attr.stateMachine.can("select")
               @attr.stateMachine.select(orderForm)
 
       # The current address was updated, either selected or in edit

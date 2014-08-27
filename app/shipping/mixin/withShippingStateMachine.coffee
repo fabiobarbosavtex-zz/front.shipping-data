@@ -8,9 +8,9 @@ define [], () ->
         events: [
           { name: 'start',       from: 'none',    to: 'empty'    }
           { name: 'orderform',   from: 'empty',   to: 'summary'  }
-          { name: 'invalidAddress',from: ['empty', 'list'], to: 'editSLA'  }
-          { name: 'enable',      from: 'empty',   to: 'search'   }
-          { name: 'enable',      from: 'summary', to: 'list'     }
+          { name: 'invalidAddress',from: ['empty', 'list', 'summary'], to: 'editSLA'  }
+          { name: 'search',      from: 'empty',   to: 'search'   }
+          { name: 'list',        from: 'summary', to: 'list'     }
           { name: 'failSearch',  from: 'search',  to: 'search'   }
           { name: 'doneSearch',  from: 'search',  to: 'edit'     }
           { name: 'doneSLA',     from: ['edit','editSLA'],   to: 'editSLA'  }
