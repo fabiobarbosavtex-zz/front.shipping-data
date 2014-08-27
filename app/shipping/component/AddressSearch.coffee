@@ -29,11 +29,11 @@ define ['flight/lib/component',
         addressFormSelector: '.address-form-new'
         postalCodeQuerySelector: '.postal-code-query'
         cancelAddressFormSelector: '.cancel-address-form a'
-        addressSearchSelector: '#address-search'
+        addressSearchSelector: '#ship-address-search'
         mapCanvasSelector: '#map-canvas'
         clearAddressSearchSelector: '.clear-address-search'
         dontKnowPostalCodeSelector: '#dont-know-postal-code'
-        knowPostalCodeSelector: '#know-postal-code'
+        knowPostalCodeSelector: '.know-postal-code'
         countryRule: false
 
         # Google maps variables

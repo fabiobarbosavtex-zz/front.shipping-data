@@ -21,6 +21,15 @@
       <span data-i18n="shipping.addressForm.deliveryCountry"></span> {country}
     </p>
 
+    {?showGeolocationSearch}
+    <p class="ship-search required input text mask">
+      <label for="ship-address-search"><span data-i18n="">Endereço</span> <span class="item-required">*</span></label>
+      <input type="text" id="ship-address-search" tabindex="221" class="ship-address-search input-xlarge" value="{addressQuery}" name="addressSearch" placeholder="Ex: Av Paulista, 125 São Paulo">
+    </p>
+    {/showGeolocationSearch}
+
+    <div id="map-canvas" class="map-canvas"></div>
+
     <p class="ship-postal-code required input text mask">
         <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
         <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221"
@@ -79,7 +88,7 @@
       <p class="ship-city required input text">
       {/labelShippingFields}
         <label for="ship-city"><span data-i18n="shipping.addressForm.city"></span> <span class="item-required">*</span></label>
-        <input type="text" tabindex="227" id="ship-city" class="input-large" data-parsley-trigger="change blur" data-parsley-required="true" data-parsley-alphanumponc="true" value="{city}" name="city" {?disableCityAndState}disabled="disabled"{/disableCityAndState}>
+          <input type="text" tabindex="227" id="ship-city" class="ship-city input-large" data-parsley-trigger="change blur" data-parsley-required="true" data-parsley-alphanumponc="true" value="{city}" name="city">
       </p>
 
       {?labelShippingFields}
@@ -88,7 +97,7 @@
       <p class="ship-state required input text">
       {/labelShippingFields}
         <label for="ship-state"><span data-i18n="shipping.addressForm.state"></span> <span class="item-required">*</span></label>
-        <select id="ship-state" tabindex="228" class="input-mini" data-parsley-trigger="change blur" data-parsley-required="true" name="state" {?disableCityAndState}disabled="disabled"{/disableCityAndState}>
+        <select id="ship-state" tabindex="228" class="ship-state input-mini" data-parsley-trigger="change blur" data-parsley-required="true" name="state">
           {#states}
             <option value="{.}" {@eq key=. value="{state}"}selected="true"{/eq}>{.}</option>
           {/states}
@@ -106,8 +115,6 @@
         <label for="ship-name"><span data-i18n="shipping.addressForm.receiver"></span>  <span class="item-required">*</span></label>
         <input type="text" tabindex="229" id="ship-name" class="input-xlarge" data-parsley-trigger="change blur" data-parsley-required="true" data-parsley-alphanumponc="true" name="receiverName" value="{receiverName}">
       </p>
-
-      <div id="map-canvas"></div>
     </div>
     <p class="submit btn-submit-wrapper pull-left hide" data-bind="fadeVisible: showContinueButton">
       <button type="submit" class="submit btn btn-large btn-success address-save" data-bind="attr: { 'disabled': disableContinueButton }" tabindex="350" data-i18n="global.save"></button>
