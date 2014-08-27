@@ -23,15 +23,12 @@
 
     {?hasGeolocationData}
       {?addressQuery}
-      <p class="ship-search required input text mask">
-        <label for="ship-address-search"><span data-i18n="">Endereço Buscado</span></label>
-        <input type="text" id="ship-address-search" tabindex="221" class="ship-address-search input-xlarge" value="{addressQuery}" name="addressSearch">
-      </p>
+        <p>Encontramos seu CEP. Verifique se seu endereço está correto.</p>
       {/addressQuery}
     {/hasGeolocationData}
 
     {?hasGeolocationData}
-      <div id="map-canvas" class="map-canvas"></div>
+      <div id="map-canvas" class="map-canvas hide"></div>
     {/hasGeolocationData}
 
     <p class="ship-postal-code required input text mask">
