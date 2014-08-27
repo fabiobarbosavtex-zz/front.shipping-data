@@ -55,6 +55,8 @@ define ['flight/lib/component',
         shippingData = @attr.orderForm.shippingData ? {}
         @attr.data.deliveryCountries = _.uniq(_.reduceRight(shippingData.logisticsInfo, ((memo, l) ->
           return memo.concat(l.shipsTo)), []))
+        if @attr.data.deliveryCountries.length is 0
+          @attr.data.deliveryCountries = [orderForm.storePreferencesData?.countryCode]
         country = @attr.orderForm.shippingData.address?.country ? @attr.data.deliveryCountries[0]
         @countrySelected(null, country).then =>
           if shippingData.address? # If a current address exists
