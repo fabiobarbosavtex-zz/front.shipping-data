@@ -23,10 +23,11 @@ define ['flight/lib/component',
         output = $(output).i18n()
         @$node.html(output)
 
-    @enable = (ev, shippingData, items, sellers, rules, canEditData, giftRegistryData) ->
-      @attr.data.active = true
+    @enable = (ev, locale, shippingData, items, sellers, rules, canEditData, giftRegistryData) ->
       ev?.stopPropagation()
+      @attr.data.active = true
 
+      @setLocale(locale)
       @attr.data.items = items
       @attr.data.sellers = sellers
       @attr.data.canEditData = canEditData

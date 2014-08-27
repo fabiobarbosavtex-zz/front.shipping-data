@@ -60,9 +60,9 @@ define [], () ->
       console.log "Leave empty"
       @select('addressNotFilledSelector').hide()
 
-    @onEnterSummary = (event, from, to, orderForm, rules) ->
+    @onEnterSummary = (event, from, to, locale, orderForm, rules) ->
       console.log "Enter summary"
-      @select('shippingSummarySelector').trigger('enable.vtex', [orderForm.shippingData, orderForm.items, orderForm.sellers, rules, orderForm.canEditData, orderForm.giftRegistryData])
+      @select('shippingSummarySelector').trigger('enable.vtex', [locale, orderForm.shippingData, orderForm.items, orderForm.sellers, rules, orderForm.canEditData, orderForm.giftRegistryData])
       # Disable other components
       @select('shippingOptionsSelector').trigger('disable.vtex')
       # We can only enter summary if getting disabled

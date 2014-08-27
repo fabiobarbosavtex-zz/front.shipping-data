@@ -52,6 +52,7 @@ define ['flight/lib/component',
 
       @orderFormUpdated = (ev, orderForm) ->
         @attr.orderForm = _.clone orderForm
+        @setLocale(orderForm.clientPreferencesData?.locale)
         shippingData = @attr.orderForm.shippingData ? {}
         @attr.data.deliveryCountries = _.uniq(_.reduceRight(shippingData.logisticsInfo, ((memo, l) ->
           return memo.concat(l.shipsTo)), []))
@@ -92,7 +93,7 @@ define ['flight/lib/component',
         if @attr.stateMachine.can('submit') and @isValid()
           @attr.data.active = false
           rules = @attr.data.countryRules[@attr.orderForm.shippingData.address?.country]
-          @attr.stateMachine.submit(@attr.orderForm, rules)
+          @attr.stateMachine.submit(@attr.locale, @attr.orderForm, rules)
           @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData)
             .fail (reason) =>
               orderForm = @attr.orderForm
