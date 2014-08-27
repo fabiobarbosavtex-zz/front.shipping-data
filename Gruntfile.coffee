@@ -2,8 +2,13 @@ GruntVTEX = require 'grunt-vtex'
 
 module.exports = (grunt) ->
   pkg = grunt.file.readJSON 'package.json'
+  r = {}
+  # Parts of the index we wish to replace on deploy
+  r[pkg.paths[0] + '/'] = "//io.vtex.com.br/#{pkg.name}/#{pkg.version}/"
 
-  config = GruntVTEX.generateConfig grunt, pkg
+  config = GruntVTEX.generateConfig grunt, pkg,
+    replaceMap: r
+    replaceGlob: "build/**/front-shipping-data.js"
 
   config.dust =
     files:
