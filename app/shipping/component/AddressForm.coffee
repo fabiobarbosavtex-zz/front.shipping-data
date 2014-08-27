@@ -37,6 +37,7 @@ define ['flight/lib/component',
         cancelAddressFormSelector: '.cancel-address-form a'
         submitButtonSelector: '.submit .btn-success.address-save'
         mapCanvasSelector: '#map-canvas'
+        addressInputsSelector: '.box-delivery input'
 
       # Render this component according to the data object
       @render = ->
@@ -86,6 +87,11 @@ define ['flight/lib/component',
               @validate()
 
             @addressKeysUpdated() # Trigger key updated with initial values
+
+            @select('addressInputsSelector').each ->
+              if @value is ''
+                @focus()
+                return false
 
       # Helper function to get the current country's rules
       @getCountryRule = ->

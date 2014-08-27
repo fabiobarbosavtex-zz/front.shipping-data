@@ -108,8 +108,8 @@ define [], () ->
       @select('addressFormSelector').trigger('enable.vtex', address)
 
     @onLeaveEdit = (event, from, to) ->
-      return if to is 'editSLA' # No need to disable if we simply have new shipping options
-      @select('addressFormSelector').trigger('disable.vtex')
+      if to isnt 'editSLA' # No need to disable if we simply have new shipping options
+        @select('addressFormSelector').trigger('disable.vtex')
 
     @onEnterEditSLA = (event, from, to, address, logisticsInfo, items, sellers) ->
       console.log "Enter edit SLA", logisticsInfo
