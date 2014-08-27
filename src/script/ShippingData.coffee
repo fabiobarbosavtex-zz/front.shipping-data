@@ -86,6 +86,7 @@ define ['flight/lib/component',
               @attr.stateMachine.edit(@attr.orderForm.shippingData?.address)
           else if @validateAddress() isnt true
             orderForm = @attr.orderForm
+            orderForm.shippingData.address = @setProfileNameIfNull(orderForm.shippingData.address)
             @attr.stateMachine.invalidAddress(orderForm.shippingData.address, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
           else
             @attr.stateMachine.list(@attr.orderForm)
@@ -113,15 +114,19 @@ define ['flight/lib/component',
         @validate()
         @trigger('componentDone.vtex')
 
+      @setProfileNameIfNull = (address) ->
+        # Tries to auto fill receiver name from client profile data
+        profile = @attr.orderForm.clientProfileData
+        if profile?.firstName and (address.receiverName is '' or not address.receiverName)
+          address.receiverName = profile.firstName + ' ' + profile.lastName
+        return address
+
       # An address search has new results.
       # Should call API to get delivery options
       @addressSearchResult = (ev, address) ->
         console.log "address result", address
 
-        # Tries to auto fill receiver name from client profile data
-        profile = @attr.orderForm.clientProfileData
-        if profile?.firstName and (address.receiverName is '' or not address.receiverName)
-          address.receiverName = profile.firstName + ' ' + profile.lastName
+        address = @setProfileNameIfNull(address)
 
         @attr.stateMachine.doneSearch(address)
 
@@ -135,6 +140,7 @@ define ['flight/lib/component',
           @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData).done (orderForm) =>
             if @validateAddress() isnt true and @attr.stateMachine.can("invalidAddress")
               # If it's invalid, stop here and edit it
+              orderForm.shippingData.address = @setProfileNameIfNull(orderForm.shippingData.address)
               @attr.stateMachine.invalidAddress(orderForm.shippingData.address, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
             else if @attr.stateMachine.can("select")
               @attr.stateMachine.select(orderForm)
@@ -198,6 +204,7 @@ define ['flight/lib/component',
           @attr.stateMachine.editSLA(address, @attr.orderForm.shippingData.logisticsInfo,
             @attr.orderForm.items, @attr.orderForm.sellers)
         if address and @attr.stateMachine.can('edit')
+          address = @setProfileNameIfNull(address)
           @attr.stateMachine.edit(address)
         else if @attr.stateMachine.can('new')
           @attr.stateMachine.new()
