@@ -108,6 +108,12 @@ define ['flight/lib/component',
       # Should call API to get delivery options
       @addressSearchResult = (ev, address) ->
         console.log "address result", address
+
+        # Tries to auto fill receiver name from client profile data
+        profile = @attr.orderForm.clientProfileData
+        if profile?.firstName and (address.receiverName is '' or not address.receiverName)
+          address.receiverName = profile.firstName + ' ' + profile.lastName
+
         @attr.stateMachine.doneSearch(address)
 
       # When a new addresses is selected
