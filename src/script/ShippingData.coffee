@@ -102,6 +102,7 @@ define ['flight/lib/component',
       #
 
       @done = ->
+        @validate()
         @trigger('componentDone.vtex')
 
       # An address search has new results.
@@ -139,6 +140,10 @@ define ['flight/lib/component',
           @select('shippingSummarySelector').trigger('addressSelected.vtex', [address])
         else
           @select('goToPaymentButtonSelector').attr('disabled', 'disabled')
+
+      @addressFormValidated = (ev, results) ->
+        ev?.stopPropagation()
+        @validate()
 
       @addressKeysUpdated = (ev, addressKeyMap) ->
         if addressKeyMap.postalCode and addressKeyMap.postalCode.valid and @attr.stateMachine.current isnt 'editSLA'
@@ -262,6 +267,7 @@ define ['flight/lib/component',
             @on 'editAddress.vtex', @editAddress
             @on 'deliverySelected.vtex', @deliverySelected
             @on 'countrySelected.vtex', @countrySelected
+            @on 'addressFormSelector', 'componentValidated.vtex', @addressFormValidated
             @on 'click',
               'goToPaymentButtonSelector': @done
               'editShippingDataSelector': @enable
