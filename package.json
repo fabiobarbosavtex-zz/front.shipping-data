@@ -28,6 +28,7 @@
     "grunt-dust": "~0.6.4",
     "grunt-karma": "~0.6.1",
     "grunt-usemin": "2.0.2",
+    "grunt-shell": "^0.7.0",
     "grunt-vtex": "^0.8.0",
     "karma": "~0.10.0",
     "karma-chrome-launcher": "~0.1.0",
