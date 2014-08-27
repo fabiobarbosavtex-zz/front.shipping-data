@@ -9,3 +9,4 @@ test/spec/*
 !test/spec/coffee/
 npm-debug.log
 .idea/
+deploy/

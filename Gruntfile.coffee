@@ -1,211 +1,46 @@
+GruntVTEX = require 'grunt-vtex'
+
 module.exports = (grunt) ->
-  pkg = grunt.file.readJSON('package.json')
+  pkg = grunt.file.readJSON 'package.json'
+
+  config = GruntVTEX.generateConfig grunt, pkg
+
+  config.dust =
+    files:
+      expand: true
+      cwd: 'src/templates/'
+      src: ['**/*.dust']
+      dest: 'build/<%= relativePath %>/templates/'
+      ext: '.js'
+    options:
+      relative: true
+      runtime: false
+      wrapper: 'amd'
+      wrapperOptions:
+        packageName: null
+        deps: false
+
+  config.watch.dust =
+    files: ['src/templates/**/*.dust']
+    tasks: ['dust']
+
+  tasks =
+  # Building block tasks
+    build: ['clean', 'copy:main', 'copy:pkg', 'coffee', 'less', 'dust']
+  # Deploy tasks
+    dist: ['build', 'copy:deploy'] # Dist - minifies files
+    test: []
+    vtex_deploy: ['shell:cp']
+  # Development tasks
+    dev: ['nolr', 'build', 'watch']
+    default: ['build', 'connect', 'watch']
+    devmin: ['build', 'min', 'connect:http:keepalive'] # Minifies files and serve
 
   # Project configuration.
-  grunt.initConfig
-    relativePath: 'front.shipping-data'
-    appName: pkg.name
-
-  # Tasks
-    clean:
-      main: ['build', 'build-raw', 'tmp-deploy']
-
-    copy:
-      main:
-        files: [
-          expand: true
-          cwd: 'app/'
-          src: ['**', '!**/*.coffee', '!**/*.less', '!**/*.dust']
-          dest: 'build-raw/<%= relativePath %>'
-        ,
-          src: ['app/index.html']
-          dest: 'build-raw/<%= relativePath %>/index.debug.html'
-        ]
-      build:
-        expand: true
-        cwd: 'build-raw/'
-        src: '**/*.*'
-        dest: 'build/'
-      pkg:
-        files: [
-          src: ['package.json']
-          dest: "build/<%= relativePath %>/package.json"
-        ]
-      templates:
-        expand: true
-        cwd: 'app/shipping/'
-        src: ['template/**/*.*']
-        dest: 'app/shipping/'
-        options:
-          process: (content) ->
-            prepend = '(function() {\n' \
-              + 'var define = window.vtex.define || window.define;\n'
-            content = '' + prepend + content
-            content = content + '\n}).call(this);'
-            return content
-
-    coffee:
-      main:
-        files: [
-            expand: true
-            cwd: 'app/shipping'
-            src: ['**/*.coffee']
-            dest: 'build-raw/<%= relativePath %>/shipping/'
-            ext: '.js'
-        ]
-      example:
-        files: [
-          expand: true
-          cwd: 'app/coffee'
-          src: ['**/*.coffee']
-          dest: 'build-raw/<%= relativePath %>/js/'
-          ext: '.js'
-        ]
-      lean:
-        files: [
-            expand: true
-            cwd: 'app/shipping'
-            src: ['**/*.coffee', '!rule/**']
-            dest: 'build-raw/<%= relativePath %>/shipping/'
-            ext: '.js'
-        ]
-      rules:
-        files: [
-            expand: true
-            cwd: 'app/shipping'
-            src: ['rule/**/*.coffee']
-            dest: 'build-raw/<%= relativePath %>/shipping/'
-            ext: '.js'
-        ]
-
-    less:
-      main:
-        files:
-          'build-raw/<%= relativePath %>/shipping/css/shipping-data.css': 'app/shipping/css/shipping-data.less'
-
-    uglify:
-      options:
-        mangle: false
-
-    useminPrepare:
-      html: 'build-raw/<%= relativePath %>/index.html'
-      options:
-        dest: 'build-raw/'
-        root: 'build-raw/'
-
-    usemin:
-      html: 'build-raw/<%= relativePath %>/index.html'
-
-    karma:
-      options:
-        configFile: 'karma.conf.js'
-        browsers: ['Chrome']
-      unit:
-        background: true
-      single:
-        singleRun: true
-
-    watch:
-      options:
-        livereload: true
-      coffee:
-        files: ['app/shipping/**/*.coffee', '!app/shipping/rule/**']
-        tasks: ['coffee:lean', 'copy:build']
-      coffeeRules:
-        files: ['app/shipping/rule/**/*.coffee']
-        tasks: ['coffee:rules', 'copy:build']
-      coffeeExample:
-        files: ['app/coffee/**/*.coffee']
-        tasks: ['coffee:example', 'copy:build']
-      main:
-        files: ['app/js/main.js', 'app/shipping/js/front-shipping-data.js',
-                'app/index.html']
-        tasks: ['copy:main', 'copy:build']
-      less:
-        files: ['app/shipping/css/**/*.less']
-        tasks: ['less', 'copy:build']
-      dust:
-        files: ['app/**/*.dust']
-        tasks: ['dust', 'copy:templates', 'copy:main', 'copy:build']
-      test:
-        files: ['app/shipping/**/*.coffee', 'test/spec/**/*.coffee']
-        tasks: []
-
-    dust:
-      files:
-        expand: true
-        cwd: 'app/shipping/dust-template'
-        src: ['**/*.dust']
-        dest: 'app/shipping/template/'
-        ext: '.js'
-      options:
-        relative: true
-        runtime: false
-        wrapper: 'amd'
-        wrapperOptions:
-          packageName: null
-          deps: false
-
-    connect:
-      server:
-        options:
-          livereload: true
-          hostname: "*"
-          port: 80
-          middleware: (connect, options) ->
-            proxy = require("grunt-connect-proxy/lib/utils").proxyRequest
-            [proxy, connect.static('./build/')]
-        proxies: [
-          context: ['/', '!/<%= relativePath %>']
-          host: 'portal.vtexcommerce.com.br'
-          headers: {
-            "X-VTEX-Router-Backend-EnvironmentType": "beta"
-          }
-        ]
-
-    vtex_deploy:
-      main:
-        cwd: "build/<%= relativePath %>/"
-        publish: true
-        upload:
-          version:
-            "/": "**"
-
-        transform:
-          replace:
-            "/front.shipping-data/": "//io.vtex.com.br/<%= appName %>/{{version}}/"
-            VERSION_NUMBER: "{{version}}"
-
-          files: ["index.html", "index.debug.html",
-                  "/shipping/setup/front-shipping-data.js"]
-
-  grunt.loadNpmTasks name for name of pkg.devDependencies \
-    when name[0..5] is 'grunt-'
-
+  grunt.initConfig config
+  grunt.loadNpmTasks name for name of pkg.devDependencies when name[0..5] is 'grunt-' and name isnt 'grunt-vtex'
   grunt.registerTask 'nolr', ->
     # Turn off LiveReload in development mode
     grunt.config 'watch.options.livereload', false
     return true
-
-  grunt.registerTask 'base', ['clean', 'dust', 'copy:templates',
-                              'copy:main', 'coffee:main', 'coffee:example',
-                              'less', 'copy:build']
-
-  grunt.registerTask 'default', ['base', 'server', 'watch']
-
-  # Does not run server
-  grunt.registerTask 'dev', ['nolr', 'base', 'watch']
-
-  # minifies files
-  grunt.registerTask 'min', ['useminPrepare', 'concat', 'uglify', 'usemin']
-
-  # Dev - minifies files
-  grunt.registerTask 'devmin', ['clean', 'dust', 'copy:templates',
-                                'copy:main', 'coffee:main', 'min',
-                                'copy:build', 'server', 'watch']
-  # Dist - minifies files
-  grunt.registerTask 'dist', ['clean', 'dust', 'copy:templates', 'copy:main',
-                              'coffee:main', 'less', 'min', 'copy:build', 'copy:pkg']
-
-  grunt.registerTask 'test', ->
-  grunt.registerTask 'server', ['configureProxies:server', 'connect']
+  grunt.registerTask taskName, taskArray for taskName, taskArray of tasks
