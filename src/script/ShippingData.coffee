@@ -60,7 +60,11 @@ define ['flight/lib/component',
         country = @attr.orderForm.shippingData.address?.country ? @attr.data.deliveryCountries[0]
         @countrySelected(null, country).then =>
           if shippingData.address? # If a current address exists
-            if @attr.stateMachine.can("orderform")
+            if shippingData.logisticsInfo[0].slas.length == 0
+              @attr.stateMachine.unavailable(shippingData.address)
+              @trigger 'componentValidated.vtex', [[new Error("SLA array is empty")]]
+              @done()
+            else if @attr.stateMachine.can("orderform")
               @attr.stateMachine.orderform(orderForm, @attr.data.countryRules[shippingData.address.country])
             else if @attr.stateMachine.current is 'summary'
               @select('shippingSummarySelector').trigger('enable.vtex', [shippingData, orderForm.items,
