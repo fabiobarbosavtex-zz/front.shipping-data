@@ -89,7 +89,7 @@ define ['flight/lib/component',
             orderForm.shippingData.address = @setProfileNameIfNull(orderForm.shippingData.address)
             @attr.stateMachine.invalidAddress(orderForm.shippingData.address, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
           else
-            @attr.stateMachine.list(@attr.orderForm)
+            @attr.stateMachine.list(@attr.data.deliveryCountries, @attr.orderForm)
         catch e
           console.log e
 
@@ -143,7 +143,7 @@ define ['flight/lib/component',
               orderForm.shippingData.address = @setProfileNameIfNull(orderForm.shippingData.address)
               @attr.stateMachine.invalidAddress(orderForm.shippingData.address, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
             else if @attr.stateMachine.can("select")
-              @attr.stateMachine.select(orderForm)
+              @attr.stateMachine.select(@attr.data.deliveryCountries, orderForm)
 
       # The current address was updated, either selected or in edit
       @addressUpdated = (ev, address) ->
@@ -213,9 +213,9 @@ define ['flight/lib/component',
       @cancelAddressEdit = (ev) ->
         ev?.stopPropagation()
         if @attr.stateMachine.can('cancelNew')
-          @attr.stateMachine.cancelNew()
+          @attr.stateMachine.cancelNew(@attr.data.deliveryCountries, @attr.orderForm)
         if @attr.stateMachine.can('cancelEdit')
-          @attr.stateMachine.cancelEdit()
+          @attr.stateMachine.cancelEdit(@attr.data.deliveryCountries, @attr.orderForm)
 
       # User chose shipping options
       @deliverySelected = (ev, logisticsInfo) ->

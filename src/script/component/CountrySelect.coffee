@@ -48,11 +48,6 @@ define ['flight/lib/component',
       if country
         @selectCountry(country).then(@render.bind(this), @handleCountrySelectError.bind(this))
 
-    @getDeliveryCountries = (logisticsInfo) =>
-      _.uniq(_.reduceRight(logisticsInfo, (memo, l) ->
-        return memo.concat(l.shipsTo)
-      , []))
-
     # Set to a loading state
     # This will disable all fields
     @loading = (ev, data) ->
@@ -60,8 +55,9 @@ define ['flight/lib/component',
       @render()
 
     # Handle the initial view of this component
-    @enable = (ev, address) ->
+    @enable = (ev, deliveryCountries, address) ->
       ev?.stopPropagation()
+      @attr.data.deliveryCountries = deliveryCountries
 
       if @attr.data.deliveryCountries.length > 1 and @attr.data.isSearchingAddress
         @attr.data.showSelectCountry = true

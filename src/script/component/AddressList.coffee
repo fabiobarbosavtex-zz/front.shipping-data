@@ -44,11 +44,6 @@ define ['flight/lib/component',
         @attr.data.showDontKnowPostalCode = false
         @trigger('editAddress.vtex', @attr.data.address)
 
-      @getDeliveryCountries = (logisticsInfo) =>
-        return _.uniq(_.reduceRight(logisticsInfo, (memo, l) ->
-          return memo.concat(l.shipsTo)
-        , []))
-
       @createAddressesSummaries = ->
         countriesUsedRequire = _.map @attr.data.deliveryCountries, (c) ->
           return 'shipping/script/rule/Country'+c
@@ -91,10 +86,10 @@ define ['flight/lib/component',
       @addCountryRule = (data) ->
         _.extend(@attr.data.countryRules, data)
 
-      @enable = (ev, shippingData) ->
+      @enable = (ev, deliveryCountries, shippingData) ->
         if ev then ev.stopPropagation()
+        @attr.data.deliveryCountries = deliveryCountries
         @attr.data.address = shippingData.address
-        @attr.data.deliveryCountries = @getDeliveryCountries(shippingData.logisticsInfo)
         @attr.data.availableAddresses = shippingData.availableAddresses
         @attr.data.selectedAddressId = shippingData.address?.addressId
 

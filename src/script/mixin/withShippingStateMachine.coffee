@@ -90,10 +90,10 @@ define [], () ->
       console.log "Leave search"
       @select('addressSearchSelector').trigger('disable.vtex', null)
 
-    @onEnterList = (event, from, to, orderForm) ->
+    @onEnterList = (event, from, to, deliveryCountries, orderForm) ->
       @attr.data.active = true
       console.log "Enter list"
-      @select('addressListSelector').trigger('enable.vtex', orderForm.shippingData)
+      @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData])
       @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
 
     @onBeforeSelect = (event, from, to, orderForm) ->
