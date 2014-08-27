@@ -5,8 +5,7 @@ define ['flight/lib/component',
         'shipping/script/setup/extensions',
         'shipping/script/models/Address',
         'shipping/script/mixin/withi18n',
-        'shipping/script/mixin/withValidation',
-        'shipping/templates/addressSearch'],
+        'shipping/script/mixin/withValidation'],
   (defineComponent, extensions, Address, withi18n, withValidation, template) ->
     AddressSearch = ->
       @defaultAttrs
@@ -14,18 +13,13 @@ define ['flight/lib/component',
         getAddressInformation: null
         data:
           showBackButton: false
-          country: 'BRA'
           postalCodeQuery: null
           addressQuery: null
           showGeolocationSearch: false
           requiredGoogleFieldsNotFound: []
           numberOfValidAddressResults: false
 
-          countryRules:
-            masks:
-              postalCode: '99999-999'
-            regexes:
-              postalCode: /^([\d]{5})\-?([\d]{3})$/
+          countryRules: {}
 
         addressFormSelector: '.address-form-new'
         postalCodeQuerySelector: '.postal-code-query'
@@ -41,43 +35,42 @@ define ['flight/lib/component',
         map = null
         marker = null
 
-      @render = (data = @attr.data) -> require 'shipping/script/translation/' + @attr.locale, (translation) =>
-        @extendTranslations(translation)
-        dust.render template, data, (err, output) =>
-          output = $(output).i18n()
-          @$node.html(output)
+      @render = () ->
+        deps = ['shipping/templates/countries/addressSearch' + @attr.countryRules.country,
+                'shipping/script/translation/' + @attr.locale]
+        require deps, (template, translation) =>
+          @extendTranslations(translation)
+          dust.render template, @attr.data, (err, output) =>
+            output = $(output).i18n()
+            @$node.html(output)
 
-          if @attr.data.showGeolocationSearch
-            @startGoogleAddressSearch()
+            if @attr.data.showGeolocationSearch
+              @startGoogleAddressSearch()
 
-          if data.loading #TODO botar dentro do template
-            $('input, select, .btn', @$node).attr('disabled', 'disabled')
+            if data.loading #TODO botar dentro do template
+              $('input, select, .btn', @$node).attr('disabled', 'disabled')
 
-          @select('postalCodeQuerySelector').inputmask
-            mask: @getCountryRule().masks.postalCode
+            @select('postalCodeQuerySelector').inputmask
+              mask: @attr.countryRules.masks.postalCode
 
-          @select('postalCodeQuerySelector').focus()
+            @select('postalCodeQuerySelector').focus()
 
-          window.ParsleyValidator.addValidator('postalcode',
-            (val) =>
-                return @getCountryRule().regexes.postalCode.test(val)
-            , 32)
+            window.ParsleyValidator.addValidator('postalcode',
+              (val) =>
+                  return @attr.countryRules.regexes.postalCode.test(val)
+              , 32)
 
-          @attr.parsley = @select('addressFormSelector').parsley
-            errorClass: 'error'
-            successClass: 'success'
-            errorsWrapper: '<span class="help error error-list"></span>'
-            errorTemplate: '<span class="error-description"></span>'
-
-      # Helper function to get the current country's rules
-      @getCountryRule = ->
-        @attr.data.countryRules
+            @attr.parsley = @select('addressFormSelector').parsley
+              errorClass: 'error'
+              successClass: 'success'
+              errorsWrapper: '<span class="help error error-list"></span>'
+              errorTemplate: '<span class="error-description"></span>'
 
       # Validate the postal code input
       # If successful, this will call the postal code API
       @validatePostalCode = (ev, data) ->
         postalCode = data.el.value
-        rules = @getCountryRule()
+        rules = @attr.countryRules
         if rules.regexes.postalCode.test(postalCode)
           @attr.data.postalCodeQuery = postalCode
           @attr.data.loading = true
@@ -179,14 +172,13 @@ define ['flight/lib/component',
         @render()
 
       # Handle the initial view of this component
-      @enable = (ev, addressSearch, countryRule, usePostalCodeSearch) ->
+      @enable = (ev, orderForm, countryRule, usePostalCodeSearch) ->
         ev?.stopPropagation()
-        @attr.data.showGeolocationSearch = !usePostalCodeSearch;
-        @attr.countryRule = countryRule;
-        if addressSearch
-          @attr.data.postalCodeQuery = addressSearch # TODO may be google search
-        else
-          @attr.data.postalCodeQuery = null
+        @attr.data.showGeolocationSearch = !usePostalCodeSearch
+        @attr.countryRules = countryRule
+        @attr.data.country = countryRule.country
+        @attr.orderForm = orderForm
+        @attr.data.postalCodeQuery = orderForm.address?.postalCode ? '' # TODO may be google search
         @render()
 
       @disable = (ev) ->

@@ -75,8 +75,15 @@ define ['flight/lib/component',
 
       @enable = ->
         try
+          country = @attr.orderForm.shippingData.address?.country ? @attr.data.deliveryCountries[0]
+          rules = @attr.data.countryRules[country]
           if @attr.orderForm.shippingData?.address is null
-            @attr.stateMachine.search(@attr.orderForm)
+            if rules.queryPostalCode
+              @attr.stateMachine.search(@attr.orderForm, rules)
+            else
+              @attr.orderForm.shippingData?.address = {country: country}
+              @attr.orderForm.shippingData?.address = @setProfileNameIfNull(@attr.orderForm.shippingData?.address)
+              @attr.stateMachine.edit(@attr.orderForm.shippingData?.address)
           else if @validateAddress() isnt true
             orderForm = @attr.orderForm
             @attr.stateMachine.invalidAddress(orderForm.shippingData.address, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
