@@ -48,12 +48,16 @@ define ['flight/lib/component',
             output = $(output).i18n()
             @$node.html(output)
 
+            ###
+
             if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading and @attr.data.hasGeolocationData
               @loadGoogleMaps()
 
             if window.vtex.maps.isGoogleMapsAPILoaded and @attr.data.hasGeolocationData
               @attr.data.loading = false
               @createMap(new google.maps.LatLng(@attr.data.address.geoCoordinates[1], @attr.data.address.geoCoordinates[0]))
+
+            ###
 
             if data.loading
               $('input, select, .btn', @$node).attr('disabled', 'disabled')
