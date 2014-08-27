@@ -132,14 +132,13 @@ define ['flight/lib/component',
           # When we start editing, we always start looking for shipping options
           console.log "Getting shipping options for address key", addressKeyMap.postalCode.value
           @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
-          items = @attr.orderForm.items
           postalCode = addressKeyMap.postalCode.value
           country = @attr.orderForm.shippingData.address?.country ? @attr.data.country
-          @attr.API?.simulateShipping(items, postalCode, country)
-            .done( (simulation) =>
+          @attr.API?.sendAttachment('shippingData', {address: {addressId: addressKeyMap.addressId, postalCode: postalCode, country: country}})
+            .done( (orderForm) =>
               # If we are editing and we received logistics info
               if @attr.stateMachine.can("doneSLA")
-                @attr.stateMachine.doneSLA(null, simulation.logisticsInfo, @attr.orderForm.items, @attr.orderForm.sellers)
+                @attr.stateMachine.doneSLA(null, orderForm.shippingData.logisticsInfo, @attr.orderForm.items, @attr.orderForm.sellers)
             )
             .fail( (reason) ->
               # TODO: handle simulation failure

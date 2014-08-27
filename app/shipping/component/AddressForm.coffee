@@ -124,6 +124,7 @@ define ['flight/lib/component',
         geoCoordinatesIsValid = geoCoordinates.length is 2
 
         addressKeyMap =
+          addressId: @attr.data.address?.addressId
           postalCode:
             value: postalCode
             valid: postalCodeIsValid
@@ -341,7 +342,6 @@ define ['flight/lib/component',
           @attr.data.address.state isnt '' and @attr.data.address.state? and
           @attr.data.address.city isnt '' and @attr.data.address.city?
         @attr.data.disableCityAndState = @attr.data.address.state isnt '' and @attr.data.address.city isnt ''
-        @render()
 
       @handleCountrySelectError = ->
         console.log "error on loading country rules"
