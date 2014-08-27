@@ -81,12 +81,17 @@ define ['flight/lib/component',
           console.log e
 
       @disable = ->
-        # TODO Clear incomplete state, like editing address
         if @attr.stateMachine.can('submit') and @isValid()
           @attr.data.active = false
-          @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData)
           rules = @attr.data.countryRules[@attr.orderForm.shippingData.address?.country]
           @attr.stateMachine.submit(@attr.orderForm, rules)
+          @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData)
+            .fail (reason) =>
+              orderForm = @attr.orderForm
+              console.log "Could not send shipping data", reason
+              @attr.stateMachine.apiError(orderForm.shippingData.address, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
+              @trigger 'componentValidated.vtex', [[reason]]
+              @done()
 
       #
       # Events from children components

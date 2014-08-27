@@ -14,6 +14,7 @@ define [], () ->
           { name: 'failSearch',  from: 'search',  to: 'search'   }
           { name: 'doneSearch',  from: 'search',  to: 'edit'     }
           { name: 'doneSLA',     from: ['edit','editSLA'],   to: 'editSLA'  }
+          { name: 'apiError',    from: 'summary', to: 'editSLA'  }
           { name: 'submit',      from: 'editSLA', to: 'summary'  }
           { name: 'submit',      from: 'list',    to: 'summary'  }
           { name: 'select',      from: 'list',    to: 'list'     }
