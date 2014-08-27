@@ -63,7 +63,7 @@ define ['flight/lib/component',
             else if @attr.stateMachine.current is 'summary'
               @select('shippingSummarySelector').trigger('enable.vtex', [shippingData, orderForm.items,
                                                                          orderForm.sellers, @attr.data.countryRules[shippingData.address.country],
-                                                                         orderForm.giftRegistryData])
+                                                                         orderForm.canEditData, orderForm.giftRegistryData])
           @validate()
 
       #
