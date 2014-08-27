@@ -19,6 +19,7 @@ define ['flight/lib/component',
           addressQuery: null
           showGeolocationSearch: false
           requiredGoogleFieldsNotFound: []
+          numberOfValidAddressResults: false
 
           countryRules:
             masks:
@@ -113,7 +114,7 @@ define ['flight/lib/component',
         addressListResponse = []
         @select('addressSearchSelector').typeahead
           minLength: 3,
-          matcher: (address) ->
+          matcher: (address) =>
             hasPostalCode = false
             isPostalCodePrefix = false
             addressObject = _.find addressListResponse, (item) ->
@@ -124,10 +125,13 @@ define ['flight/lib/component',
                   hasPostalCode = true
                 if type is 'postal_code_prefix'
                   isPostalCodePrefix = true
-            return hasPostalCode and not isPostalCodePrefix
+            if hasPostalCode and not isPostalCodePrefix
+              @attr.data.numberOfValidAddressResults++
+              true
           source: (query, process) =>
             geocoder = new google.maps.Geocoder()
             geocoder.geocode address: query + " , " + @attr.data.country, (response, status) =>
+              @attr.data.numberOfValidAddressResults = 0
               if status is "OK" and response.length > 0
                 addressListResponse = response
                 itemsToDisplay = []

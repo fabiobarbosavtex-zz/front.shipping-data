@@ -41,6 +41,19 @@
             {/loading}
         </p>
         <small class="text-know-postal-code"><a href="javascript:void(0);" class="know-postal-code" target="_blank" data-i18n="shipping.addressForm.knowPostalCode"></a></small>
+
+        <div class="hide">
+          {@if cond="{numberOfValidAddressResults} == 0"}
+            <p>Ainda não encotramos seu CEP. Informe mais alguns dados do seu endereço.</p>
+          {/if}
+          {@if cond="{numberOfValidAddressResults} == 1"}
+            <p>Verifique se este é o seu endereço.</p>
+          {/if}
+          {@if cond="{numberOfValidAddressResults} > 1"}
+            <p>Verifique se algum destes endereços é o seu.</p>
+          {/if}
+        </div>
+
         {@if cond="{requiredGoogleFieldsNotFound.length} > 0"}
         <div class="well">
           Faltaram os seguintes campos obrigatórios:
