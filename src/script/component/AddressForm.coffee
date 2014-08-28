@@ -49,15 +49,12 @@ define ['flight/lib/component',
             output = $(output).i18n()
             @$node.html(output)
 
-            ###
-
             if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading and @attr.data.hasGeolocationData
               @loadGoogleMaps()
 
             if window.vtex.maps.isGoogleMapsAPILoaded and @attr.data.hasGeolocationData
               @attr.data.loading = false
               @createMap(new google.maps.LatLng(@attr.data.address.geoCoordinates[1], @attr.data.address.geoCoordinates[0]))
-            ###
 
             if data.loading
               $('input, select, .btn', @$node).attr('disabled', 'disabled')
@@ -252,11 +249,11 @@ define ['flight/lib/component',
           @attr.map = null
         @attr.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
 
-        ### if @attr.marker
+        if @attr.marker
           @attr.marker.setMap(null)
           @attr.marker = null
         @attr.marker = new google.maps.Marker(position: location)
-        @attr.marker.setMap(@attr.map) ###
+        @attr.marker.setMap(@attr.map)
 
         circleOptions =
           center: location
