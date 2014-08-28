@@ -22,6 +22,7 @@ define ['flight/lib/component',
           addressSearchResults: {}
           countryRules: {}
           hasGeolocationData: false
+          contractedShippingFieldsForGeolocation: false
           addressQuery: false
 
         templates:
@@ -169,7 +170,16 @@ define ['flight/lib/component',
         @attr.data.labelShippingFields = false
         @attr.data.hasGeolocationData = false
         @attr.data.addressQuery = false
+        @clearGeolocationContractedFields()
         @render()
+
+      @clearGeolocationContractedFields = ->
+        @attr.data.contractedShippingFieldsForGeolocation.street = false
+        @attr.data.contractedShippingFieldsForGeolocation.number = false
+        @attr.data.contractedShippingFieldsForGeolocation.neighborhood = false
+        @attr.data.contractedShippingFieldsForGeolocation.city = false
+        @attr.data.contractedShippingFieldsForGeolocation.state = false
+        @attr.data.contractedShippingFieldsForGeolocation.postalCode = false
 
       # Get the current address typed in the form
       @getCurrentAddress = ->
@@ -339,10 +349,12 @@ define ['flight/lib/component',
       @enable = (ev, address) ->
         ev?.stopPropagation()
         @attr.data.address = new Address(address)
-        @attr.data.addressQuery = address.addressQuery
+        # when the address has an addres query, the address was searched witg geolocation
+        @attr.data.addressQuery = if address.addressQuery? then address.addressQuery else false
         @attr.data.hasGeolocationData = @attr.data.address.geoCoordinates.length > 0
 
         handleLoadSuccess = =>
+          @clearGeolocationContractedFields()
           @updateEnables(@attr.data.address)
           @render()
 
@@ -357,10 +369,19 @@ define ['flight/lib/component',
         @$node.html('')
 
       @updateEnables = ->
+        @attr.data.contractedShippingFieldsForGeolocation =
+          neighborhood: @attr.data.address.neighborhood isnt '' and @attr.data.address.neighborhood?
+          street: @attr.data.address.street isnt '' and @attr.data.address.street?
+          city: @attr.data.address.city isnt '' and @attr.data.address.city?
+          state: @attr.data.address.state isnt '' and @attr.data.address.state?
+          number: @attr.data.address.number isnt '' and @attr.data.address.number?
+          postalCode: @attr.data.address.postalCode isnt '' and @attr.data.address.postalCode? and @attr.data.addressQuery
+
         @attr.data.labelShippingFields = @attr.data.address.neighborhood isnt '' and @attr.data.address.neighborhood? and
           @attr.data.address.street isnt '' and @attr.data.address.street? and
           @attr.data.address.state isnt '' and @attr.data.address.state? and
           @attr.data.address.city isnt '' and @attr.data.address.city?
+
         @attr.data.disableCityAndState = @attr.data.address.state isnt '' and @attr.data.address.city isnt ''
 
       # Bind events
