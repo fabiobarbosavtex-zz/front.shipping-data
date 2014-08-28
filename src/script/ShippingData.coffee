@@ -145,7 +145,7 @@ define ['flight/lib/component',
               orderForm.shippingData.address = @setProfileNameIfNull(orderForm.shippingData.address)
               @attr.stateMachine.invalidAddress(orderForm.shippingData.address, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
             else if @attr.stateMachine.can("select")
-              @attr.stateMachine.select(@attr.data.deliveryCountries, orderForm)
+              @attr.stateMachine.select(orderForm)
 
       # The current address was updated, either selected or in edit
       @addressUpdated = (ev, address) ->
