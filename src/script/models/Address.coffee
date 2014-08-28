@@ -40,12 +40,16 @@ define ->
       if 'geoCoordinates' in rules.requiredFields and @geoCoordinates.length isnt 2
         return 'geoCoordinates invalid'
 
-      # Caso tenha uma lista de cidades e nao esteja na lista
-      if rules.cities and !(@city in rules.cities)
-        return "City not in allowed cities list"
-
       # Caso tenha uma lista de estados e nao esteja na lista
       if rules.states and !(@state in rules.states)
         return 'state not in allowed states'
+
+      # Caso tenha uma lista de cidades e nao esteja na lista
+      if rules.cities
+        for state, cities of rules.cities
+          for city in cities
+            if city is @city
+              return true
+        return "City not in allowed cities list"
 
       return true
