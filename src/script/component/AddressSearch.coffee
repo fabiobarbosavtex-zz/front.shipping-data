@@ -5,7 +5,8 @@ define ['flight/lib/component',
         'shipping/script/setup/extensions',
         'shipping/script/models/Address',
         'shipping/script/mixin/withi18n',
-        'shipping/script/mixin/withValidation'],
+        'shipping/script/mixin/withValidation',
+        'shipping/templates/addressSearch'],
   (defineComponent, extensions, Address, withi18n, withValidation, template) ->
     AddressSearch = ->
       @defaultAttrs
@@ -34,9 +35,7 @@ define ['flight/lib/component',
         marker = null
 
       @render = () ->
-        deps = ['shipping/templates/countries/addressSearch' + @attr.countryRules.country,
-                'shipping/script/translation/' + @attr.locale]
-        require deps, (template, translation) =>
+        require ['shipping/script/translation/' + @attr.locale], (translation) =>
           @extendTranslations(translation)
           dust.render template, @attr.data, (err, output) =>
             output = $(output).i18n()
