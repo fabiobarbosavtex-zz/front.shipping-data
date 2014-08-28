@@ -51,7 +51,6 @@ define ['flight/lib/component',
               mask: @attr.countryRules.masks.postalCode
 
             @select('postalCodeQuerySelector').focus()
-            @select('addressSearchSelector').focus()
 
             window.ParsleyValidator.addValidator('postalcode',
               (val) =>
@@ -95,10 +94,9 @@ define ['flight/lib/component',
         if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading
           window.vtex.maps.isGoogleMapsAPILoading = true
           @loading()
-          country = @attr.countryRules.abbr
           script = document.createElement("script")
           script.type = "text/javascript"
-          script.src = "//maps.googleapis.com/maps/api/js?sensor=false&components=country:#{country}&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsLoadedOnSearch"
+          script.src = "//maps.googleapis.com/maps/api/js?sensor=true&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsLoadedOnSearch"
           document.body.appendChild(script)
           return
 
@@ -121,14 +119,18 @@ define ['flight/lib/component',
               true
           source: (query, process) =>
             geocoder = new google.maps.Geocoder()
-            geocoder.geocode address: query + " , " + @attr.data.country, (response, status) =>
-              @attr.data.numberOfValidAddressResults = 0
-              if status is "OK" and response.length > 0
-                addressListResponse = response
-                itemsToDisplay = []
-                _.each response, (item) ->
-                  itemsToDisplay.push item.formatted_address
-                process(itemsToDisplay)
+            geoCodeRequest =
+              address: query
+              componentRestrictions:
+                country: @attr.countryRules.abbr
+            geocoder.geocode geoCodeRequest, (response, status) =>
+                @attr.data.numberOfValidAddressResults = 0
+                if status is "OK" and response.length > 0
+                  addressListResponse = response
+                  itemsToDisplay = []
+                  _.each response, (item) ->
+                    itemsToDisplay.push item.formatted_address
+                  process(itemsToDisplay)
 
           updater: (address) =>
             addressObject = _.find addressListResponse, (item) ->
