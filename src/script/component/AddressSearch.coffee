@@ -45,7 +45,7 @@ define ['flight/lib/component',
             if @attr.data.showGeolocationSearch
               @startGoogleAddressSearch()
 
-            if data.loading #TODO botar dentro do template
+            if @attr.data.loading #TODO botar dentro do template
               $('input, select, .btn', @$node).attr('disabled', 'disabled')
 
             @select('postalCodeQuerySelector').inputmask
