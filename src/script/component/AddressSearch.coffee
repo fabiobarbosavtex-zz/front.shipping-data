@@ -51,6 +51,7 @@ define ['flight/lib/component',
               mask: @attr.countryRules.masks.postalCode
 
             @select('postalCodeQuerySelector').focus()
+            @select('addressSearchSelector').focus()
 
             window.ParsleyValidator.addValidator('postalcode',
               (val) =>
