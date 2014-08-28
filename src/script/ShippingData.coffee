@@ -152,10 +152,7 @@ define ['flight/lib/component',
         ev.stopPropagation()
         @attr.orderForm.shippingData.address = address
         if address.isValid
-          @select('goToPaymentButtonSelector').removeAttr('disabled')
           @select('shippingSummarySelector').trigger('addressSelected.vtex', [address])
-        else
-          @select('goToPaymentButtonSelector').attr('disabled', 'disabled')
 
       @addressFormValidated = (ev, results) ->
         ev?.stopPropagation()
@@ -184,7 +181,6 @@ define ['flight/lib/component',
           console.log addressKeyMap, "Geo coordinates not implemented!"
 
       # User cleared address search key and must search again
-      # addressSearch may be, for example, a new postal code
       @addressKeysInvalidated = (ev, addressKeyMap) ->
         if @attr.stateMachine.can('clearSearch')
           @attr.stateMachine.clearSearch(addressKeyMap.postalCode?.value, addressKeyMap.useGeolocationSearch)

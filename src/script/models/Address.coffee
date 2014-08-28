@@ -30,7 +30,7 @@ define ->
         return true
 
       if not rules?
-        return "Address has no country"
+        return "Country rules are required for validation"
 
       fieldsToValidate = ['postalCode', 'city', 'complement', 'neighborhood', 'number', 'receiverName', 'reference', 'street', 'state']
       for field in fieldsToValidate

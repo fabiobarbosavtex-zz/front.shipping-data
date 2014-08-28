@@ -91,10 +91,16 @@ define ['flight/lib/component',
 
             @addressKeysUpdated() # Trigger key updated with initial values
 
-            @select('addressInputsSelector').each ->
-              if @value is ''
-                @focus()
-                return false
+            rules = @getCountryRule()
+            if (@attr.data.address.validate(rules) is true)
+              @attr.parsley.validate()
+            else
+              @select('addressInputsSelector').each ->
+                if @value is ''
+                  @focus()
+                  return false
+                else
+                  @blur()
 
       # Helper function to get the current country's rules
       @getCountryRule = ->
