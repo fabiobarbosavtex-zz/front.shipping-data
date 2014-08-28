@@ -235,7 +235,7 @@ define ['flight/lib/component',
       @createMap = (location) ->
         @select('mapCanvasSelector').css('display', 'block')
         mapOptions =
-          zoom: 14
+          zoom: 15
           center: location
           streetViewControl: false
           mapTypeControl: false
