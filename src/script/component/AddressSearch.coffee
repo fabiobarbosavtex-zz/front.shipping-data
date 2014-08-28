@@ -19,8 +19,6 @@ define ['flight/lib/component',
           requiredGoogleFieldsNotFound: []
           numberOfValidAddressResults: false
 
-          countryRules: {}
-
         addressFormSelector: '.address-form-new'
         postalCodeQuerySelector: '.postal-code-query'
         cancelAddressFormSelector: '.cancel-address-form a'
@@ -29,7 +27,7 @@ define ['flight/lib/component',
         clearAddressSearchSelector: '.clear-address-search'
         dontKnowPostalCodeSelector: '#dont-know-postal-code'
         knowPostalCodeSelector: '.know-postal-code'
-        countryRule: false
+        countryRules: false
 
         # Google maps variables
         map = null
@@ -97,7 +95,7 @@ define ['flight/lib/component',
         if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading
           window.vtex.maps.isGoogleMapsAPILoading = true
           @loading()
-          country = @attr.countryRule.abbr
+          country = @attr.countryRules.abbr
           script = document.createElement("script")
           script.type = "text/javascript"
           script.src = "//maps.googleapis.com/maps/api/js?sensor=false&components=country:#{country}&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsLoadedOnSearch"
@@ -140,14 +138,14 @@ define ['flight/lib/component',
       @addressMapper = (googleAddress) ->
         # Clean required google fields error and render
         @attr.data.requiredGoogleFieldsNotFound = []
-        googleDataMap = @attr.countryRule.googleDataMap
+        googleDataMap = @attr.countryRules.googleDataMap
         address = {
           geoCoordinates: [
             googleAddress.geometry.location.lng()
             googleAddress.geometry.location.lat()
           ]
         }
-        address.country = @attr.countryRule.country
+        address.country = @attr.countryRules.country
         address.addressQuery = googleAddress.formatted_address
         _.each googleDataMap, (rule) =>
           _.each googleAddress.address_components, (component) =>
@@ -178,7 +176,7 @@ define ['flight/lib/component',
         @attr.countryRules = countryRule
         @attr.data.country = countryRule.country
         @attr.orderForm = orderForm
-        @attr.data.postalCodeQuery = orderForm.address?.postalCode ? '' # TODO may be google search
+        @attr.data.postalCodeQuery = orderForm?.shippingData?.address?.postalCode ? '' # TODO may be google search
         @render()
 
       @disable = (ev) ->

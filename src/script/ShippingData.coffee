@@ -75,11 +75,11 @@ define ['flight/lib/component',
 
       @enable = ->
         try
-          country = @attr.orderForm.shippingData.address?.country ? @attr.data.deliveryCountries[0]
+          country = @attr.data.country
           rules = @attr.data.countryRules[country]
           if @attr.orderForm.shippingData?.address is null
             if rules.queryPostalCode
-              @attr.stateMachine.search(@attr.orderForm, rules)
+              @attr.stateMachine.search(@attr.orderForm)
             else
               @attr.orderForm.shippingData?.address = {country: country}
               @attr.orderForm.shippingData?.address = @setProfileNameIfNull(@attr.orderForm.shippingData?.address)
@@ -127,6 +127,7 @@ define ['flight/lib/component',
         console.log "address result", address
 
         address = @setProfileNameIfNull(address)
+        address.country = address?.country ? @attr.data.country
 
         @attr.stateMachine.doneSearch(address)
 
@@ -175,7 +176,7 @@ define ['flight/lib/component',
             .fail( (reason) =>
               console.log reason
               if @attr.stateMachine.can('clearSearch')
-                @attr.stateMachine.clearSearch(addressKeyMap.postalCode?.value)
+                @attr.stateMachine.clearSearch(@attr.orderForm)
             )
         else if addressKeyMap.geoCoordinates
           # TODO implementar com geoCoordinates
@@ -185,7 +186,7 @@ define ['flight/lib/component',
       # addressSearch may be, for example, a new postal code
       @addressKeysInvalidated = (ev, addressKeyMap) ->
         if @attr.stateMachine.can('clearSearch')
-          @attr.stateMachine.clearSearch(addressKeyMap.postalCode?.value, if addressKeyMap.usePostalCodeSearch? then addressKeyMap.usePostalCodeSearch else true)
+          @attr.stateMachine.clearSearch(@attr.orderform, if addressKeyMap.usePostalCodeSearch? then addressKeyMap.usePostalCodeSearch else true)
 
       # User wants to edit or create an address
       @editAddress = (ev, address) ->
@@ -207,7 +208,7 @@ define ['flight/lib/component',
           address = @setProfileNameIfNull(address)
           @attr.stateMachine.edit(address)
         else if @attr.stateMachine.can('new')
-          @attr.stateMachine.new()
+          @attr.stateMachine.new(@attr.orderForm)
 
       # User cancelled ongoing address edit
       @cancelAddressEdit = (ev) ->
