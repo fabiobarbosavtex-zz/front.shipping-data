@@ -10,7 +10,6 @@ define ['flight/lib/component',
   (defineComponent, extensions, Address, withi18n, withValidation, template) ->
     AddressSearch = ->
       @defaultAttrs
-        map: false
         getAddressInformation: null
         data:
           showBackButton: false
@@ -29,10 +28,6 @@ define ['flight/lib/component',
         dontKnowPostalCodeSelector: '#dont-know-postal-code'
         knowPostalCodeSelector: '.know-postal-code'
         countryRules: false
-
-        # Google maps variables
-        map = null
-        marker = null
 
       @render = () ->
         require ['shipping/script/translation/' + @attr.locale], (translation) =>
@@ -114,7 +109,7 @@ define ['flight/lib/component',
                   hasPostalCode = true
                 if type is 'postal_code_prefix'
                   isPostalCodePrefix = true
-            if hasPostalCode and not isPostalCodePrefix
+            if hasPostalCode or isPostalCodePrefix
               @attr.data.numberOfValidAddressResults++
               true
           source: (query, process) =>
@@ -145,7 +140,8 @@ define ['flight/lib/component',
           geoCoordinates: [
             googleAddress.geometry.location.lng()
             googleAddress.geometry.location.lat()
-          ]
+          ],
+          geometry: googleAddress.geometry
         }
         address.country = @attr.countryRules.country
         address.addressQuery = googleAddress.formatted_address

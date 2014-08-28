@@ -10,6 +10,7 @@ define ->
       @complement = data.complement
       @country = data.country
       @geoCoordinates = data.geoCoordinates ? []
+      @geometry = data.geometry
       @neighborhood = data.neighborhood
       @number = data.number
       @postalCode = data.postalCode

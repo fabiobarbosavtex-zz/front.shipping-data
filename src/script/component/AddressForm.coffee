@@ -11,6 +11,7 @@ define ['flight/lib/component',
       @defaultAttrs
         map: false
         marker: false
+        rectangle: false
         circle: false
         currentResponseCoordinates: false
         addressKeyMap: {}
@@ -53,7 +54,7 @@ define ['flight/lib/component',
 
             if window.vtex.maps.isGoogleMapsAPILoaded and @attr.data.hasGeolocationData
               @attr.data.loading = false
-              @createMap(new google.maps.LatLng(@attr.data.address.geoCoordinates[1], @attr.data.address.geoCoordinates[0]))
+              @createMap()
 
             if data.loading
               $('input, select, .btn', @$node).attr('disabled', 'disabled')
@@ -232,7 +233,8 @@ define ['flight/lib/component',
           @attr.data.regexes = @attr.data.countryRules[country].regexes
           @render.bind(this)
 
-      @createMap = (location) ->
+      @createMap = () ->
+        location = new google.maps.LatLng(@attr.data.address.geoCoordinates[1], @attr.data.address.geoCoordinates[0])
         @select('mapCanvasSelector').css('display', 'block')
         mapOptions =
           zoom: 15
@@ -248,26 +250,42 @@ define ['flight/lib/component',
           @attr.map = null
         @attr.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
 
-        if @attr.marker
-          @attr.marker.setMap(null)
-          @attr.marker = null
-        @attr.marker = new google.maps.Marker(position: location)
-        @attr.marker.setMap(@attr.map)
+        if @attr.data.address.geometry?.location_type is "ROOFTOP"
+          if @attr.marker
+            @attr.marker.setMap(null)
+            @attr.marker = null
+          @attr.marker = new google.maps.Marker(position: location)
+          @attr.marker.setMap(@attr.map)
+        else if @attr.data.address.geometry?.location_type is "GEOMETRIC_CENTER" and @attr.data.address.geometry?.bounds
+          rectangleOptions =
+            bounds: @attr.data.address.geometry.bounds
+            fillColor: '#2cb6d6'
+            fillOpacity: 0.1
+            strokeColor: '#ff6661'
+            strokeOpacity: 0.2
+            strokeWeight: 2
+            map: @attr.map
 
-        circleOptions =
-          center: location
-          fillColor: '#2cb6d6'
-          fillOpacity: 0.1
-          strokeColor: '#ff6661'
-          strokeOpacity: 0.2
-          strokeWeight: 2
-          radius: 350
+          if @attr.rectangle
+            @attr.rectangle.setMap(null)
+            @attr.rectangle = null
+          @attr.rectangle = new google.maps.Rectangle(rectangleOptions)
+        else
+         circleOptions =
+            center: location
+            fillColor: '#2cb6d6'
+            fillOpacity: 0.1
+            strokeColor: '#ff6661'
+            strokeOpacity: 0.2
+            strokeWeight: 2
+            radius: 350
 
-        if @attr.circle
-          @attr.circle.setMap(null)
-          @attr.circle = null
-        @attr.circle = new google.maps.Circle(circleOptions)
-        @attr.circle.setMap(@attr.map)
+          if @attr.circle
+            @attr.circle.setMap(null)
+            @attr.circle = null
+          @attr.circle = new google.maps.Circle(circleOptions)
+          @attr.circle.setMap(@attr.map)
+
 
       # Close the form
       @cancelAddressForm = ->
