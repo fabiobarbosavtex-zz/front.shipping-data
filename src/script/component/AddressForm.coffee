@@ -48,7 +48,6 @@ define ['flight/lib/component',
           dust.render @attr.templates.form.name, data, (err, output) =>
             output = $(output).i18n()
             @$node.html(output)
-
             if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading and @attr.data.hasGeolocationData
               @loadGoogleMaps()
 
@@ -258,11 +257,11 @@ define ['flight/lib/component',
         circleOptions =
           center: location
           fillColor: '#2cb6d6'
-          fillOpacity: 0.3
+          fillOpacity: 0.1
           strokeColor: '#ff6661'
-          strokeOpacity: 0.3
+          strokeOpacity: 0.2
           strokeWeight: 2
-          radius: 500
+          radius: 350
 
         if @attr.circle
           @attr.circle.setMap(null)

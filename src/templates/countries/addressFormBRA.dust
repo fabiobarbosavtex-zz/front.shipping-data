@@ -24,13 +24,6 @@
     </p>
 
     {?hasGeolocationData}
-      {?addressQuery}
-        <p>Encontramos seu CEP. Verifique se o endereço está correto.</p>
-        <p><a href="javascript:void(0);" class="find-a-postal-code-for-another-address">Encontrar CEP de outro endereço</a></p>
-      {/addressQuery}
-    {/hasGeolocationData}
-
-    {?hasGeolocationData}
       <div id="map-canvas" class="map-canvas"></div>
     {/hasGeolocationData}
 
@@ -72,6 +65,13 @@
               {/contractedShippingFieldsForGeolocation.number}
               <span> - </span>
               <a class="link-edit" href="javascript:void(0);" id="force-shipping-fields" data-i18n="global.edit"></a>
+
+              {?hasGeolocationData}
+                {?addressQuery}
+                  &nbsp;- <a href="javascript:void(0);" class="find-a-postal-code-for-another-address">trocar CEP</a>
+                {/addressQuery}
+              {/hasGeolocationData}
+
             </span>
              <br>
 
@@ -95,7 +95,7 @@
             </span>
              <br>
             <!-- POSTAL CODE -->
-            <span>
+            <span class="hide">
               {?contractedShippingFieldsForGeolocation.postalCode}
                 <span>CEP: {postalCode}</span>
               {/contractedShippingFieldsForGeolocation.postalCode}
