@@ -170,13 +170,13 @@ define ['flight/lib/component',
         @render()
 
       # Handle the initial view of this component
-      @enable = (ev, orderForm, countryRule, useGeolocationSearch) ->
+      @enable = (ev, countryRule, postalCodeQuery, useGeolocationSearch) ->
         ev?.stopPropagation()
         @attr.data.showGeolocationSearch = if useGeolocationSearch? then useGeolocationSearch else false
         @attr.countryRules = countryRule
         @attr.data.country = countryRule.country
-        @attr.orderForm = orderForm
-        @attr.data.postalCodeQuery = orderForm?.shippingData?.address?.postalCode ? '' # TODO may be google search
+        # TODO may be google search
+        @attr.data.postalCodeQuery = postalCodeQuery ? ''
         @render()
 
       @disable = (ev) ->

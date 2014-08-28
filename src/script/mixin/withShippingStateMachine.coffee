@@ -14,7 +14,6 @@ define [], () ->
           { name: 'list',        from: 'summary', to: 'list'     }
           { name: 'apiError',    from: 'summary', to: 'editSLA'  }
           { name: 'orderform',   from: 'summary', to: 'summary'  }
-          { name: 'failSearch',  from: 'search',  to: 'search'   }
           { name: 'doneSearch',  from: 'search',  to: 'edit'     }
           { name: 'doneSLA',     from: ['edit','editSLA'],   to: 'editSLA'  }
           { name: 'unavailable',    from: ['empty', 'summary'], to: 'edit'  }
@@ -78,10 +77,10 @@ define [], () ->
       @attr.data.active = true
       @select('goToPaymentButtonWrapperSelector').show()
 
-    @onEnterSearch = (event, from, to, orderForm, useGeolocationSearch) ->
+    @onEnterSearch = (event, from, to, postalCodeQuery, useGeolocationSearch) ->
       @attr.data.active = true
       console.log "Enter search"
-      @select('addressSearchSelector').trigger('enable.vtex', [orderForm, @attr.data.countryRules[@attr.data.country], if useGeolocationSearch? then useGeolocationSearch else false])
+      @select('addressSearchSelector').trigger('enable.vtex', [@attr.data.countryRules[@attr.data.country], postalCodeQuery, if useGeolocationSearch? then useGeolocationSearch else false])
       @select('shippingOptionsSelector').trigger('disable.vtex')
       @select('goToPaymentButtonWrapperSelector').hide()
 

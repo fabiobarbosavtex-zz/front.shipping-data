@@ -177,7 +177,7 @@ define ['flight/lib/component',
             .fail( (reason) =>
               console.log reason
               if @attr.stateMachine.can('clearSearch')
-                @attr.stateMachine.clearSearch(@attr.orderForm)
+                @attr.stateMachine.clearSearch(postalCode)
             )
         else if addressKeyMap.geoCoordinates
           # TODO implementar com geoCoordinates
@@ -187,7 +187,7 @@ define ['flight/lib/component',
       # addressSearch may be, for example, a new postal code
       @addressKeysInvalidated = (ev, addressKeyMap) ->
         if @attr.stateMachine.can('clearSearch')
-          @attr.stateMachine.clearSearch(@attr.orderform, addressKeyMap.useGeolocationSearch)
+          @attr.stateMachine.clearSearch(addressKeyMap.postalCode?.value, addressKeyMap.useGeolocationSearch)
 
       # User wants to edit or create an address
       @editAddress = (ev, address) ->
@@ -209,7 +209,7 @@ define ['flight/lib/component',
           address = @setProfileNameIfNull(address)
           @attr.stateMachine.edit(address)
         else if @attr.stateMachine.can('new')
-          @attr.stateMachine.new(@attr.orderForm)
+          @attr.stateMachine.new()
 
       # User cancelled ongoing address edit
       @cancelAddressEdit = (ev) ->
