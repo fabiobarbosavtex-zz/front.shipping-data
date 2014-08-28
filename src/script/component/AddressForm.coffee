@@ -19,7 +19,6 @@ define ['flight/lib/component',
           availableAddresses: []
           disableCityAndState: false
           labelShippingFields: false
-          showPostalCode: false
           addressSearchResults: {}
           countryRules: {}
           hasGeolocationData: false
