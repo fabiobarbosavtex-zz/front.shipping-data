@@ -170,9 +170,9 @@ define ['flight/lib/component',
         @render()
 
       # Handle the initial view of this component
-      @enable = (ev, orderForm, countryRule, usePostalCodeSearch) ->
+      @enable = (ev, orderForm, countryRule, useGeolocationSearch) ->
         ev?.stopPropagation()
-        @attr.data.showGeolocationSearch = !usePostalCodeSearch
+        @attr.data.showGeolocationSearch = if useGeolocationSearch? then useGeolocationSearch else false
         @attr.countryRules = countryRule
         @attr.data.country = countryRule.country
         @attr.orderForm = orderForm

@@ -128,7 +128,7 @@ define ['flight/lib/component',
 
         addressKeyMap =
           addressId: @attr.data.address?.addressId
-          usePostalCodeSearch: true # force use of postal code on future search
+          useGeolocationSearch: false # force use of postal code on future search
           postalCode:
             value: postalCode
             valid: postalCodeIsValid
@@ -144,6 +144,18 @@ define ['flight/lib/component',
           @trigger('addressKeysUpdated.vtex', [addressKeyMap])
 
         @attr.addressKeyMap = addressKeyMap
+
+      @findAnotherPostalCode = ->
+        addressKeyMap =
+          addressId: @attr.data.address?.addressId
+          useGeolocationSearch: true # force to not use of postal code on future search
+          postalCode:
+            value: null
+            valid: false
+          geoCoordinates:
+            value: []
+            valid: false
+        @trigger('addressKeysInvalidated.vtex', [addressKeyMap])
 
       # Able the user to edit the suggested fields
       # filled by the postal code service
@@ -334,9 +346,6 @@ define ['flight/lib/component',
         @loadCountryRulesAndTemplate(@attr.data.address.country)
           .then(handleLoadSuccess, handleLoadFailure)
 
-      @handleCountrySelectError = (reason) ->
-        console.error("Unable to load country dependencies", reason)
-
       @disable = (ev) ->
         ev?.stopPropagation()
         # Clear address on disable
@@ -349,21 +358,6 @@ define ['flight/lib/component',
           @attr.data.address.state isnt '' and @attr.data.address.state? and
           @attr.data.address.city isnt '' and @attr.data.address.city?
         @attr.data.disableCityAndState = @attr.data.address.state isnt '' and @attr.data.address.city isnt ''
-
-      @handleCountrySelectError = ->
-        console.log "error on loading country rules"
-
-      @findAnotherPostalCode = ->
-        addressKeyMap =
-          addressId: @attr.data.address?.addressId
-          usePostalCodeSearch: false # force to not use of postal code on future search
-          postalCode:
-            value: null
-            valid: false
-          geoCoordinates:
-            value: []
-            valid: false
-        @trigger('addressKeysInvalidated.vtex', [addressKeyMap])
 
       # Bind events
       @after 'initialize', ->
