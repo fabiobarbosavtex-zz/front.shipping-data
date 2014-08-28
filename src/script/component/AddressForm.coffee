@@ -348,8 +348,6 @@ define ['flight/lib/component',
 
       @disable = (ev) ->
         ev?.stopPropagation()
-        # Clear address on disable
-        @attr.data.address = new Address(null)
         @$node.html('')
 
       @updateEnables = ->
