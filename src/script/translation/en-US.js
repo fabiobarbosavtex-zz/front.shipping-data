@@ -17,6 +17,8 @@ define(function () {
         "header": 'New address',
         "dontKnowPostalCode": 'I don\'t know my postal code',
         "knowPostalCode": 'Use my postal code',
+        "searchAnotherAddress": 'Find postal code of another address',
+        "postalCodeVerify": 'We found your postal code. Please make sure your address is correct.',
         "postalCodeBRA": 'CEP',
         "postalCodeUSA": 'ZIP',
         "postalCodeARG": 'Código Postal (CP)',
@@ -43,6 +45,18 @@ define(function () {
         "receiver": 'Receiver',
         "deliveryCountry": 'Delivery country',
         "cancelEditAddress": 'Cancel and go back to the address list'
+      },
+      "addressSearch": {
+        "address": 'Address',
+        "addressExampleARG": 'Eg: Cerrito, 1350, Buenos Aires',
+        "addressExampleBRA": 'Eg: Av. Dr. Cardoso de Melo, 1750, São Paulo',
+        "addressExampleCHL": 'Eg: Apoquindo, 3039, Santiago',
+        "addressExampleCOL": 'Eg: Calle 93 # 14-20, Bogotá',
+        "addressExampleECU": 'Eg: Av Amazonas River, N 37-61, Quito',
+        "addressExamplePER": 'Eg: Av. José Pardo, 850, Miraflores, Lima',
+        "addressExamplePRY": 'Eg: Avenida Eusebio Ayala, 100, Assunção',
+        "addressExampleURY": 'Eg: Bulevar Artigas, 1394, Montevidéu',
+        "addressExampleUSA": 'Eg: 225 East 41st Street, New York'
       },
       "countrySelect": {
         "chooseDeliveryCountry": 'Choose the delivery country',
