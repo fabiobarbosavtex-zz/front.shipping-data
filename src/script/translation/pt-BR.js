@@ -19,6 +19,7 @@ define(function () {
         "knowPostalCode": 'Buscar pelo meu CEP',
         "postalCodeBRA": 'CEP',
         "postalCodeUSA": 'ZIP',
+        "postalCodeARG": 'Código Postal (CP)',
         "postalCode": 'Código Postal',
         "street": 'Endereço',
         "addressLine1": 'Linha 1 do Endereço',
@@ -125,7 +126,7 @@ define(function () {
       "edit": 'Alterar',
       "save": 'Salvar',
       "waiting": 'Aguardando o preenchimento dos dados',
-      "optional": 'Opcional'
+      "notRequired": 'Opcional'
     }
   }
 });

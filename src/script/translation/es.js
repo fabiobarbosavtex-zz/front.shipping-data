@@ -15,10 +15,11 @@ define(function () {
       },
       "addressForm": {
         "header": 'Registrar nueva dirección',
-        "dontKnowPostalCode": 'Não sei meu CEP',
-        "knowPostalCode": 'Buscar pelo meu CEP',
+        "dontKnowPostalCode": 'No conozco mi Código Postal (CP)',
+        "knowPostalCode": 'Buscar pelo mi Código Postal (CP)',
         "postalCodeBRA": 'CEP',
         "postalCodeUSA": 'ZIP',
+        "postalCodeARG": 'Código Postal (CP)',
         "postalCode": 'Código Postal (CP)',
         "street": 'Calle',
         "addressLine1": 'Dirección Línea 1',
@@ -125,7 +126,7 @@ define(function () {
       "edit": 'Cambiar',
       "save": 'Guardar',
       "waiting": 'Aún falta llenar con los datos',
-      "optional": 'Opcional'
+      "notRequired": 'Opcional'
     }
   }
 });
