@@ -175,7 +175,7 @@ define ['flight/lib/component',
       # addressSearch may be, for example, a new postal code
       @addressKeysInvalidated = (ev, addressKeyMap) ->
         if @attr.stateMachine.can('clearSearch')
-          @attr.stateMachine.clearSearch(addressKeyMap.postalCode?.value)
+          @attr.stateMachine.clearSearch(addressKeyMap.postalCode?.value, if addressKeyMap.usePostalCodeSearch? then addressKeyMap.usePostalCodeSearch else true)
 
       # User wants to edit or create an address
       @editAddress = (ev, address) ->

@@ -76,10 +76,10 @@ define [], () ->
       @attr.data.active = true
       @select('goToPaymentButtonWrapperSelector').show()
 
-    @onEnterSearch = (event, from, to, addressSearch) ->
+    @onEnterSearch = (event, from, to, addressSearch, usePostalCodeSearch) ->
       @attr.data.active = true
       console.log "Enter search"
-      @select('addressSearchSelector').trigger('enable.vtex', [addressSearch, @attr.data.countryRules[@attr.data.country]])
+      @select('addressSearchSelector').trigger('enable.vtex', [addressSearch, @attr.data.countryRules[@attr.data.country], if usePostalCodeSearch? then usePostalCodeSearch or true])
       @select('shippingOptionsSelector').trigger('disable.vtex')
       @select('goToPaymentButtonWrapperSelector').hide()
 

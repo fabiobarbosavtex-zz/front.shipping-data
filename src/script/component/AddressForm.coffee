@@ -38,6 +38,7 @@ define ['flight/lib/component',
         submitButtonSelector: '.submit .btn-success.address-save'
         mapCanvasSelector: '#map-canvas'
         addressInputsSelector: '.box-delivery input'
+        findAPostalCodeForAnotherAddressSelector: '.find-a-postal-code-for-another-address'
 
       # Render this component according to the data object
       @render = ->
@@ -56,7 +57,6 @@ define ['flight/lib/component',
             if window.vtex.maps.isGoogleMapsAPILoaded and @attr.data.hasGeolocationData
               @attr.data.loading = false
               @createMap(new google.maps.LatLng(@attr.data.address.geoCoordinates[1], @attr.data.address.geoCoordinates[0]))
-
             ###
 
             if data.loading
@@ -129,6 +129,7 @@ define ['flight/lib/component',
 
         addressKeyMap =
           addressId: @attr.data.address?.addressId
+          usePostalCodeSearch: true # force use of postal code on future search
           postalCode:
             value: postalCode
             valid: postalCodeIsValid
@@ -149,6 +150,8 @@ define ['flight/lib/component',
       # filled by the postal code service
       @forceShippingFields = ->
         @attr.data.labelShippingFields = false
+        @attr.data.hasGeolocationData = false
+        @attr.data.addressQuery = false
         @render()
 
       # Get the current address typed in the form
@@ -351,6 +354,18 @@ define ['flight/lib/component',
       @handleCountrySelectError = ->
         console.log "error on loading country rules"
 
+      @findAnotherPostalCode = ->
+        addressKeyMap =
+          addressId: @attr.data.address?.addressId
+          usePostalCodeSearch: false # force to not use of postal code on future search
+          postalCode:
+            value: null
+            valid: false
+          geoCoordinates:
+            value: []
+            valid: false
+        @trigger('addressKeysInvalidated.vtex', [addressKeyMap])
+
       # Bind events
       @after 'initialize', ->
         @on 'enable.vtex', @enable
@@ -359,6 +374,7 @@ define ['flight/lib/component',
         @on 'click',
           'forceShippingFieldsSelector': @forceShippingFields
           'cancelAddressFormSelector': @cancelAddressForm
+          'findAPostalCodeForAnotherAddressSelector': @findAnotherPostalCode
         @on 'change',
           'stateSelector': @onChangeState
           'citySelector': @changePostalCodeByCity

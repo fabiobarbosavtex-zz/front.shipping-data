@@ -179,8 +179,9 @@ define ['flight/lib/component',
         @render()
 
       # Handle the initial view of this component
-      @enable = (ev, addressSearch, countryRule) ->
+      @enable = (ev, addressSearch, countryRule, usePostalCodeSearch) ->
         ev?.stopPropagation()
+        @attr.data.showGeolocationSearch = !usePostalCodeSearch;
         @attr.countryRule = countryRule;
         if addressSearch
           @attr.data.postalCodeQuery = addressSearch # TODO may be google search
