@@ -53,12 +53,13 @@ define ['flight/lib/component',
       @orderFormUpdated = (ev, orderForm) ->
         @attr.orderForm = _.clone orderForm
         @setLocale(orderForm.clientPreferencesData?.locale)
-        shippingData = @attr.orderForm.shippingData ? {}
+        shippingData = @attr.orderForm.shippingData
+        return unless shippingData?
         @attr.data.deliveryCountries = _.uniq(_.reduceRight(shippingData.logisticsInfo, ((memo, l) ->
           return memo.concat(l.shipsTo)), []))
         if @attr.data.deliveryCountries.length is 0
           @attr.data.deliveryCountries = [orderForm.storePreferencesData?.countryCode]
-        country = @attr.orderForm.shippingData.address?.country ? @attr.data.deliveryCountries[0]
+        country = shippingData.address?.country ? @attr.data.deliveryCountries[0]
         @countrySelected(null, country).then =>
           if shippingData.address? # If a current address exists
             if shippingData.logisticsInfo[0].slas.length == 0
