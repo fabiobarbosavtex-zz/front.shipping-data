@@ -99,6 +99,33 @@ define ['flight/lib/component',
         addressListResponse = []
         @select('addressSearchSelector').typeahead
           minLength: 3,
+
+          highlighter: (addressParam) =>
+            address = {}
+            googleDataMap = @attr.countryRules.googleDataMap
+            googleAddress = _.find addressListResponse, (item) ->
+              item.formatted_address is addressParam
+            _.each googleDataMap, (rule) =>
+              _.each googleAddress.address_components, (component) =>
+                if _.intersection(component.types, rule.types).length > 0
+                  address[rule.value] = component[rule.length]
+
+            console.log googleAddress
+            console.log address
+
+            formattedAddress = "<span class='search-result-item-street'>" + if address.street then address.street
+            if address.street and address.number then formattedAddress += ", "
+            if address.number then formattedAddress += address.number
+            formattedAddress += "</span>&nbsp;"
+            formattedAddress += "<small class='muted'>"
+            if address.neighborhood then formattedAddress += address.neighborhood
+            if address.neighborhood and address.city then formattedAddress += " - "
+            if address.city then formattedAddress += address.city
+            if address.city and address.state then formattedAddress += " - "
+            if address.state then formattedAddress += address.state
+            formattedAddress += "</small>"
+
+
           matcher: (address) =>
             hasPostalCode = false
             isPostalCodePrefix = false
@@ -113,6 +140,7 @@ define ['flight/lib/component',
             if hasPostalCode and !isPostalCodePrefix
               @attr.data.numberOfValidAddressResults++
               true
+
           source: (query, process) =>
             if @attr.geoSearchTimer
               window.clearTimeout(@attr.geoSearchTimer)
