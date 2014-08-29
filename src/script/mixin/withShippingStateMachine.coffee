@@ -69,6 +69,7 @@ define [], () ->
       # We can only enter summary if getting disabled
       @attr.data.active = false
       @select('goToPaymentButtonWrapperSelector').hide()
+      @select('editShippingDataSelector').show()
 
     @onLeaveSummary = (event, from, to) ->
       console.log "Leave summary"
@@ -76,6 +77,7 @@ define [], () ->
       # We can only leave summary if getting active
       @attr.data.active = true
       @select('goToPaymentButtonWrapperSelector').show()
+      @select('editShippingDataSelector').hide()
 
     @onEnterSearch = (event, from, to, postalCodeQuery, useGeolocationSearch) ->
       @attr.data.active = true

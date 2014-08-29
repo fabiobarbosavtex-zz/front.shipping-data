@@ -3,7 +3,7 @@
     <div class="accordion-heading">
     <span class="accordion-toggle collapsed accordion-shipping-title">
         <i class="icon-home"></i> <span data-i18n="shipping.title"></span>
-        <a href="#/shipping" id="edit-shipping-data" class="link-box-edit btn btn-small" data-i18n="[title]global.edit">
+        <a href="#/shipping" id="edit-shipping-data" class="link-box-edit btn btn-small hide" data-i18n="[title]global.edit">
             <i class="icon-edit"></i>
         </a>
     </span>
