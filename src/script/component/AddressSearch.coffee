@@ -123,7 +123,9 @@ define ['flight/lib/component',
                 if status is "OK" and response.length > 0
                   addressListResponse = response
                   itemsToDisplay = []
-                  _.each response, (item) ->
+                  _.each response, (item) =>
+                    if @attr.locale is "pt-BR"
+                      item.formatted_address = item.formatted_address.replace("República Federativa do Brasil", "Brasil")
                     itemsToDisplay.push item.formatted_address
                   process(itemsToDisplay)
 
