@@ -271,7 +271,7 @@ define ['flight/lib/component',
             @attr.rectangle = null
           @attr.rectangle = new google.maps.Rectangle(rectangleOptions)
         else
-         circleOptions =
+          circleOptions =
             center: location
             fillColor: '#2cb6d6'
             fillOpacity: 0.1
