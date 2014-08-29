@@ -64,8 +64,8 @@ define ['flight/lib/component',
           if shippingData.address? # If a current address exists
             hasDeliveries = shippingData.logisticsInfo[0].slas.length > 0
             if not hasDeliveries
-              $(window).trigger('showMessage.vtex', ['unavailable'])
               if @attr.stateMachine.can("unavailable")
+                $(window).trigger('showMessage.vtex', ['unavailable'])
                 @attr.stateMachine.unavailable(shippingData.address)
                 @trigger 'componentValidated.vtex', [[new Error("SLA array is empty")]]
                 @done()
@@ -176,8 +176,8 @@ define ['flight/lib/component',
                 if @attr.stateMachine.can('doneSLA')
                   @attr.stateMachine.doneSLA(null, orderForm.shippingData.logisticsInfo, @attr.orderForm.items, @attr.orderForm.sellers)
               else
-                $(window).trigger('showMessage.vtex', ['unavailable'])
                 if @attr.stateMachine.can('clearSearch')
+                  $(window).trigger('showMessage.vtex', ['unavailable'])
                   @attr.stateMachine.clearSearch(postalCode)
             )
             .fail( (reason) =>
