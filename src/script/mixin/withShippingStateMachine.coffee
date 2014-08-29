@@ -27,6 +27,7 @@ define [], () ->
           { name: 'cancelNew',   from: 'search',  to: 'list'     } # only if available addresses > 0
           { name: 'clearSearch', from: ['edit', 'editSLA'], to: 'search'  }
           { name: 'cancelFirst', from: ['search', 'edit', 'editSLA'],  to: 'empty' } # only if available addresses == 0
+          { name: 'cancelOther', from: ['search', 'edit', 'editSLA'],  to: 'summary' } # only if available addresses == 0
         ],
         callbacks:
           onafterevent:      @onAfterEvent.bind(this)

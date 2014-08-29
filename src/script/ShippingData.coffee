@@ -109,8 +109,11 @@ define ['flight/lib/component',
               @attr.stateMachine.apiError(orderForm.shippingData.address, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
               @trigger 'componentValidated.vtex', [[reason]]
               @done()
-        else if @attr.stateMachine.can('cancelFirst')
-          @attr.stateMachine.cancelFirst()
+        else if @attr.orderForm.shippingData?.availableAddresses.length is 0
+          if @attr.stateMachine.can('cancelFirst')
+            @attr.stateMachine.cancelFirst()
+        else if @attr.stateMachine.can('cancelOther')
+            @attr.stateMachine.cancelOther(@attr.locale, @attr.orderForm, @attr.data.countryRules[@attr.data.country])
 
       #
       # Events from children components
