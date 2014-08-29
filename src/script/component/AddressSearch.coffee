@@ -125,7 +125,7 @@ define ['flight/lib/component',
                   itemsToDisplay = []
                   _.each response, (item) =>
                     if @attr.locale is "pt-BR"
-                      item.formatted_address = item.formatted_address.replace("República Federativa do Brasil", "Brasil")
+                      item.formatted_address = item.formatted_address.replace(", República Federativa do Brasil", "")
                     itemsToDisplay.push item.formatted_address
                   process(itemsToDisplay)
 
