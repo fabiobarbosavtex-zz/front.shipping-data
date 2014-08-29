@@ -26,10 +26,14 @@
     {/hasGeolocationData}
 
     <p class="ship-postal-code required input text mask {?contractedShippingFieldsForGeolocation.postalCode}hide{/contractedShippingFieldsForGeolocation.postalCode}">
-        <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
-        <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221"
+      <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
+      <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221"
                class="ship-postal-code postal-code postal-code-{country} input-small clear-address-search" value="{postalCode}" name="postalCode"
                data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-postalcode="true"/>
+
+      {?comeFromGeoSearch}
+        <small><a href="javascript:void(0);" class="find-a-postal-code-for-another-address" data-i18n="shipping.addressForm.dontKnowPostalCode"></a></small>
+      {/comeFromGeoSearch}
     </p>
 
     <div class="box-delivery">
@@ -63,13 +67,6 @@
               {/contractedShippingFieldsForGeolocation.number}
               <span> - </span>
               <a class="link-edit" href="javascript:void(0);" id="force-shipping-fields" data-i18n="global.edit"></a>
-
-              {?hasGeolocationData}
-                {?addressQuery}
-                  &nbsp;- <a href="javascript:void(0);" class="find-a-postal-code-for-another-address">trocar CEP</a>
-                {/addressQuery}
-              {/hasGeolocationData}
-
             </span>
              <br>
 

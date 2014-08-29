@@ -25,6 +25,7 @@ define ['flight/lib/component',
           hasGeolocationData: false
           contractedShippingFieldsForGeolocation: false
           addressQuery: false
+          comeFromGeoSearch: false
 
         templates:
           form:
@@ -366,6 +367,7 @@ define ['flight/lib/component',
         # when the address has an addres query, the address was searched witg geolocation
         @attr.data.addressQuery = if address.addressQuery? then address.addressQuery else false
         @attr.data.hasGeolocationData = @attr.data.address.geoCoordinates.length > 0
+        @attr.data.comeFromGeoSearch = address.addressQuery?
 
         handleLoadSuccess = =>
           @clearGeolocationContractedFields()
