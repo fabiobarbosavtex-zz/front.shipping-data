@@ -26,21 +26,17 @@ module.exports = (grunt) ->
         deps: false
 
   config.copy.templates =
-      expand: true
-      cwd: 'build/<%= relativePath %>/'
-      src: ['templates/**/*.*']
-      dest: 'build/<%= relativePath %>/'
-      options:
-        process: (content) ->
-          prepend = '(function() {\n' \
-            + 'var define = window.vtex.define || window.define;\n'
-          content = '' + prepend + content
-          content = content + '\n}).call(this);'
-          return content
+    expand: true
+    cwd: 'build/<%= relativePath %>/'
+    src: ['templates/**/*.*']
+    dest: 'build/<%= relativePath %>/'
+    options:
+      process: (content) ->
+        "(function(){var define=window.vtex.define||window.define;#{content}})()"
 
   config.watch.dust =
     files: ['src/templates/**/*.dust']
-    tasks: ['dust']
+    tasks: ['dust', 'copy:templates']
 
   tasks =
   # Building block tasks
