@@ -109,6 +109,8 @@ define ['flight/lib/component',
               @attr.stateMachine.apiError(orderForm.shippingData.address, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
               @trigger 'componentValidated.vtex', [[reason]]
               @done()
+        else if @attr.stateMachine.can('cancelFirst')
+          @attr.stateMachine.cancelFirst()
 
       #
       # Events from children components
