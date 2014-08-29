@@ -16,7 +16,7 @@ define [], () ->
           { name: 'orderform',   from: 'summary', to: 'summary'  }
           { name: 'doneSearch',  from: 'search',  to: 'edit'     }
           { name: 'doneSLA',     from: ['edit','editSLA'],   to: 'editSLA'  }
-          { name: 'unavailable',    from: ['empty', 'summary'], to: 'edit'  }
+          { name: 'unavailable', from: ['empty', 'summary'], to: 'edit'  }
           { name: 'submit',      from: 'editSLA', to: 'summary'  }
           { name: 'submit',      from: 'list',    to: 'summary'  }
           { name: 'select',      from: 'list',    to: 'list'     }

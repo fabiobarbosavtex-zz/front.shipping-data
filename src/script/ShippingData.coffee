@@ -62,10 +62,13 @@ define ['flight/lib/component',
         country = shippingData.address?.country ? @attr.data.deliveryCountries[0]
         @countrySelected(null, country).then =>
           if shippingData.address? # If a current address exists
-            if shippingData.logisticsInfo[0].slas.length == 0
-              @attr.stateMachine.unavailable(shippingData.address)
-              @trigger 'componentValidated.vtex', [[new Error("SLA array is empty")]]
-              @done()
+            hasDeliveries = shippingData.logisticsInfo[0].slas.length > 0
+            if not hasDeliveries
+              $(window).trigger('showMessage.vtex', ['unavailable'])
+              if @attr.stateMachine.can("unavailable")
+                @attr.stateMachine.unavailable(shippingData.address)
+                @trigger 'componentValidated.vtex', [[new Error("SLA array is empty")]]
+                @done()
             else if @attr.stateMachine.can('orderform')
               @attr.stateMachine.orderform(@attr.locale, orderForm, @attr.data.countryRules[shippingData.address.country])
           @validate()
@@ -167,9 +170,15 @@ define ['flight/lib/component',
           country = @attr.orderForm.shippingData.address?.country ? @attr.data.country
           @attr.API?.sendAttachment('shippingData', {address: {addressId: addressKeyMap.addressId, postalCode: postalCode, country: country}})
             .done( (orderForm) =>
+              hasDeliveries = orderForm.shippingData.logisticsInfo[0].slas.length > 0
               # If we are editing and we received logistics info
-              if @attr.stateMachine.can("doneSLA")
-                @attr.stateMachine.doneSLA(null, orderForm.shippingData.logisticsInfo, @attr.orderForm.items, @attr.orderForm.sellers)
+              if hasDeliveries
+                if @attr.stateMachine.can('doneSLA')
+                  @attr.stateMachine.doneSLA(null, orderForm.shippingData.logisticsInfo, @attr.orderForm.items, @attr.orderForm.sellers)
+              else
+                $(window).trigger('showMessage.vtex', ['unavailable'])
+                if @attr.stateMachine.can('clearSearch')
+                  @attr.stateMachine.clearSearch(postalCode)
             )
             .fail( (reason) =>
               console.log reason
