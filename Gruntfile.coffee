@@ -9,6 +9,7 @@ module.exports = (grunt) ->
   config = GruntVTEX.generateConfig grunt, pkg,
     replaceMap: r
     replaceGlob: "build/**/front-shipping-data.js"
+    open: 'http://basedevmkp.vtexlocal.com.br/front.shipping-data/app/'
 
   config.dust =
     files:
@@ -37,6 +38,12 @@ module.exports = (grunt) ->
   config.watch.dust =
     files: ['src/templates/**/*.dust']
     tasks: ['dust', 'copy:templates']
+
+  # Add app files to coffe compilation and watch
+  config.watch.coffee.files.push 'src/app/**/*.coffee'
+  config.watch.main.files.push 'src/app/**/*.html'
+  config.coffee.main.files[0].cwd = 'src/'
+  config.coffee.main.files[0].dest = 'build/<%= relativePath %>/'
 
   tasks =
   # Building block tasks
