@@ -58,8 +58,8 @@ define ['flight/lib/component',
       @render() if @attr.data.active
 
     @showMaskedInfoMessage = (ev) ->
-      ev.preventDefault()
-      vtex.checkout?.MessageUtils?.showMaskedInfoMessage()
+      ev?.preventDefault()
+      $(window).trigger('showMessage.vtex', ['maskedInfo'])
 
     # Bind events
     @after 'initialize', ->
