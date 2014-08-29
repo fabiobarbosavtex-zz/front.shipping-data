@@ -30,7 +30,7 @@
         {?showGeolocationSearch}
         <p class="ship-search input text mask">
           <label for="ship-address-search"><span data-i18n="shipping.addressSearch.address"></span> <span class="item-required">*</span></label>
-          <input type="text" id="ship-address-search" tabindex="221" class="ship-address-search input-xlarge" value="{addressQuery}" name="addressSearch" data-i18n="[placeholder]shipping.addressSearch.addressExample{country}">
+          <input type="text" autocomplete="off" autocorrect="off" id="ship-address-search" tabindex="221" class="ship-address-search input-xlarge" value="{addressQuery}" name="addressSearch" data-i18n="[placeholder]shipping.addressSearch.addressExample{country}">
 
             {?loading}
               <i class="loading-inline icon-spinner icon-spin">

@@ -109,7 +109,7 @@ define ['flight/lib/component',
                   hasPostalCode = true
                 if type is 'postal_code_prefix'
                   isPostalCodePrefix = true
-            if hasPostalCode or isPostalCodePrefix
+            if hasPostalCode and !isPostalCodePrefix
               @attr.data.numberOfValidAddressResults++
               true
           source: (query, process) =>
