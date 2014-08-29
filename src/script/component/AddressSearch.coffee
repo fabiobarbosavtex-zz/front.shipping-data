@@ -28,6 +28,7 @@ define ['flight/lib/component',
         dontKnowPostalCodeSelector: '#dont-know-postal-code'
         knowPostalCodeSelector: '.know-postal-code'
         countryRules: false
+        geoSearchTimer = false
 
       @render = () ->
         require ['shipping/script/translation/' + @attr.locale], (translation) =>
@@ -113,12 +114,15 @@ define ['flight/lib/component',
               @attr.data.numberOfValidAddressResults++
               true
           source: (query, process) =>
-            geocoder = new google.maps.Geocoder()
-            geoCodeRequest =
-              address: query
-              componentRestrictions:
-                country: @attr.countryRules.abbr
-            geocoder.geocode geoCodeRequest, (response, status) =>
+            if @attr.geoSearchTimer
+              window.clearTimeout(@attr.geoSearchTimer)
+            @attr.geoSearchTimer = window.setTimeout(=>
+              geocoder = new google.maps.Geocoder()
+              geoCodeRequest =
+                address: query
+                componentRestrictions:
+                  country: @attr.countryRules.abbr
+              geocoder.geocode geoCodeRequest, (response, status) =>
                 @attr.data.numberOfValidAddressResults = 0
                 if status is "OK" and response.length > 0
                   addressListResponse = response
@@ -128,6 +132,7 @@ define ['flight/lib/component',
                       item.formatted_address = item.formatted_address.replace(", República Federativa do Brasil", "")
                     itemsToDisplay.push item.formatted_address
                   process(itemsToDisplay)
+            , 300);
 
           updater: (address) =>
             addressObject = _.find addressListResponse, (item) ->
