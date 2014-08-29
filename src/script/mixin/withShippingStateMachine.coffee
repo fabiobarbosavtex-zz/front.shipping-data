@@ -3,32 +3,34 @@ require = vtex.curl || window.require
 
 define [], () ->
   ->
+    stateMachineEvents = [
+      { name: 'start',       from: 'none',    to: 'empty'    }
+      { name: 'orderform',   from: 'empty',   to: 'summary'  }
+      { name: 'invalidAddress',from: ['empty', 'list', 'summary'], to: 'editSLA'  }
+      { name: 'search',      from: 'empty',   to: 'search'   }
+      { name: 'edit',        from: 'empty',   to: 'edit'     }
+      { name: 'list',        from: 'summary', to: 'list'     }
+      { name: 'apiError',    from: 'summary', to: 'editSLA'  }
+      { name: 'orderform',   from: 'summary', to: 'summary'  }
+      { name: 'doneSearch',  from: 'search',  to: 'edit'     }
+      { name: 'doneSLA',     from: ['edit','editSLA'],   to: 'editSLA'  }
+      { name: 'unavailable', from: ['empty', 'summary'], to: 'edit'  }
+      { name: 'submit',      from: 'editSLA', to: 'summary'  }
+      { name: 'submit',      from: 'list',    to: 'summary'  }
+      { name: 'select',      from: 'list',    to: 'list'     }
+      { name: 'edit',        from: 'list',    to: 'edit'     }
+      { name: 'editSLA',     from: 'list',    to: 'editSLA'  }
+      { name: 'cancelEdit',  from: 'editSLA', to: 'list'     }
+      { name: 'new',         from: 'list',    to: 'search'   }
+      { name: 'cancelNew',   from: 'search',  to: 'list'     } # only if available addresses > 0
+      { name: 'clearSearch', from: ['edit', 'editSLA'], to: 'search'  }
+      { name: 'cancelFirst', from: ['search', 'edit', 'editSLA'],  to: 'empty' } # only if available addresses == 0
+      { name: 'cancelOther', from: ['search', 'edit', 'editSLA'],  to: 'summary' } # only if available addresses == 0
+    ]
+
     @createStateMachine = ->
       StateMachine.create
-        events: [
-          { name: 'start',       from: 'none',    to: 'empty'    }
-          { name: 'orderform',   from: 'empty',   to: 'summary'  }
-          { name: 'invalidAddress',from: ['empty', 'list', 'summary'], to: 'editSLA'  }
-          { name: 'search',      from: 'empty',   to: 'search'   }
-          { name: 'edit',        from: 'empty',   to: 'edit'     }
-          { name: 'list',        from: 'summary', to: 'list'     }
-          { name: 'apiError',    from: 'summary', to: 'editSLA'  }
-          { name: 'orderform',   from: 'summary', to: 'summary'  }
-          { name: 'doneSearch',  from: 'search',  to: 'edit'     }
-          { name: 'doneSLA',     from: ['edit','editSLA'],   to: 'editSLA'  }
-          { name: 'unavailable', from: ['empty', 'summary'], to: 'edit'  }
-          { name: 'submit',      from: 'editSLA', to: 'summary'  }
-          { name: 'submit',      from: 'list',    to: 'summary'  }
-          { name: 'select',      from: 'list',    to: 'list'     }
-          { name: 'edit',        from: 'list',    to: 'edit'     }
-          { name: 'editSLA',     from: 'list',    to: 'editSLA'  }
-          { name: 'cancelEdit',  from: 'editSLA', to: 'list'     }
-          { name: 'new',         from: 'list',    to: 'search'   }
-          { name: 'cancelNew',   from: 'search',  to: 'list'     } # only if available addresses > 0
-          { name: 'clearSearch', from: ['edit', 'editSLA'], to: 'search'  }
-          { name: 'cancelFirst', from: ['search', 'edit', 'editSLA'],  to: 'empty' } # only if available addresses == 0
-          { name: 'cancelOther', from: ['search', 'edit', 'editSLA'],  to: 'summary' } # only if available addresses == 0
-        ],
+        events: stateMachineEvents,
         callbacks:
           onafterevent:      @onAfterEvent.bind(this)
           onenterempty:      @onEnterEmpty.bind(this)
@@ -127,3 +129,5 @@ define [], () ->
 
     @onLeaveEditSLA = (event, from, to) ->
       @select('addressFormSelector').trigger('disable.vtex')
+
+    return stateMachineEvents

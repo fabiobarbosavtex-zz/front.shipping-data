@@ -1,90 +1,99 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<title>front.shipping-data</title>
-	<meta name="description" content="">
-	<meta name="viewport" content="width=device-width">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>front.shipping-data</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width">
 
-	<link rel="stylesheet" href="//io.vtex.com.br/front-libs/bootstrap/2.3.2/css/bootstrap.min.css">
-	<link rel="stylesheet" href="//io.vtex.com.br/front-libs/bootstrap/2.3.2/css/bootstrap-responsive.min.css"/>
-	<link rel="stylesheet" href="//io.vtex.com.br/front-libs/font-awesome/3.2.1/css/font-awesome.min.css">
+  <link rel="stylesheet" href="//io.vtex.com.br/front-libs/bootstrap/2.3.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//io.vtex.com.br/front-libs/bootstrap/2.3.2/css/bootstrap-responsive.min.css"/>
+  <link rel="stylesheet" href="//io.vtex.com.br/front-libs/font-awesome/3.2.1/css/font-awesome.min.css">
   <style>
     @media (min-width: 980px) {
       .row-fluid .orderform-template-holder {
         width: 70%;
       }
+
       .row-fluid .mini-cart {
         width: 27%;
       }
+
       .mini-cart .cart {
         max-height: 200px;
         overflow: auto;
       }
 
-      .full-cart .summary-totalizers { width: 36%; }
+      .full-cart .summary-totalizers {
+        width: 36%;
+      }
     }
   </style>
 
-	<script src="http://localhost:35729/livereload.js"></script>
+  <script src="http://localhost:35729/livereload.js"></script>
 </head>
 <body style="margin-top: 50px;">
 
-	<div class="container container-main container-order-form">
-		<div class="checkout-container row-fluid orderform-active">
-			<div class="row-fluid orderform-template span12 active">
-				<div class="orderform-template-holder span8">
-					<div class="row-fluid">
-						<!-- PLACEHOLDER FOR THE ADDRESS BOOK COMPONENT -->
-						<div class="span6 pull-right shipping-data" id="shipping-data"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="container container-main container-order-form">
+  <div class="checkout-container row-fluid orderform-active">
+    <div class="row-fluid span12 active">
+      <div class="span12" style="min-height: 500px" id="state-machine"></div>
+    </div>
+    <div class="row-fluid orderform-template span12 active">
+      <div class="orderform-template-holder span12">
+        <div class="row-fluid">
+          <!-- PLACEHOLDER FOR THE ADDRESS BOOK COMPONENT -->
+          <div class="span6 pull-right shipping-data" id="shipping-data"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-	<!-- Dependencies -->
-		<!--[if lt IE 9]>
-		<script src="//io.vtex.com.br/front-libs/es5-shim/2.1.0/es5-shim.min.js"></script>
-		<script src="//io.vtex.com.br/front-libs/es5-shim/2.1.0/es5-sham.min.js"></script>
-		<script src="/shipui/shipping/libs/pickadate/legacy.js"></script>
-		<![endif]-->
+<!-- Dependencies -->
+<!--[if lt IE 9]>
+<script src="//io.vtex.com.br/front-libs/es5-shim/2.1.0/es5-shim.min.js"></script>
+<script src="//io.vtex.com.br/front-libs/es5-shim/2.1.0/es5-sham.min.js"></script>
+<script src="/shipui/shipping/libs/pickadate/legacy.js"></script>
+<![endif]-->
 
-		<script src="//io.vtex.com.br/front-libs/jquery/1.8.3/jquery-1.8.3.min.js"></script>
-		<script src="https://vtexid.vtex.com.br/api/vtexid/pub/authentication/vtexid-jquery.min.js"></script>
-		<script src="//io.vtex.com.br/front-libs/bootstrap/2.3.2/js/bootstrap.min.js"></script>
-		<script src="//io.vtex.com.br/front-libs/underscore/1.5.2-gentle/underscore-min.js"></script> 
-		<script src="//io.vtex.com.br/front-libs/dustjs-linkedin/2.2.2/dust-core-2.2.2.min.js"></script>
-		<script src="//io.vtex.com.br/front-libs/dustjs-linkedin-helpers/1.1.1/dust-helpers-1.1.1.js"></script>
-		<script src="//io.vtex.com.br/front-libs/curl/0.8.11-vtex/curl.js"></script>
-		
-		<!-- This component dependencies -->
-		<script src="//io.vtex.com.br/front-libs/front-utils/1.2.0/vtex-utils.min.js"></script>
-		<script src="//io.vtex.com.br/front-libs/i18next/1.7.2/i18next.min.js"></script>
-		<script src="//io.vtex.com.br/front-libs/jquery.inputmask/2.4.0/jquery.inputmask.bundle.min.js"></script>
-    <script src="//io.vtex.com.br/front-libs/state-machine/2.3.2/state-machine.min.js"></script>
-    <script src="//io.vtex.com.br/front-libs/parsley/2.0.3/parsley.min.js"></script>
-		<script src="//io.vtex.com.br/vtex.js/1.0.0/extended-ajax.min.js"></script>
-		<script src="//io.vtex.com.br/vtex.js/1.0.0/checkout.js?clearcache=01072014"></script>
-	<!-- end dependencies -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/cytoscape/2.2.12/cytoscape.min.js"></script>
+<script src="//io.vtex.com.br/front-libs/jquery/1.8.3/jquery-1.8.3.min.js"></script>
+<script src="https://vtexid.vtex.com.br/api/vtexid/pub/authentication/vtexid-jquery.min.js"></script>
+<script src="//io.vtex.com.br/front-libs/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script src="//io.vtex.com.br/front-libs/underscore/1.5.2-gentle/underscore-min.js"></script>
+<script src="//io.vtex.com.br/front-libs/dustjs-linkedin/2.2.2/dust-core-2.2.2.min.js"></script>
+<script src="//io.vtex.com.br/front-libs/dustjs-linkedin-helpers/1.1.1/dust-helpers-1.1.1.js"></script>
+<script src="//io.vtex.com.br/front-libs/curl/0.8.11-vtex/curl.js"></script>
 
-	<!-- build:js /front.shipping-data/shipping/setup/front-shipping-data.min.js -->
-	<script src="/front.shipping-data/script/setup/front-shipping-data.js"></script>
-	<!-- endbuild -->
+<!-- This component dependencies -->
+<script src="//io.vtex.com.br/front-libs/front-utils/1.2.0/vtex-utils.min.js"></script>
+<script src="//io.vtex.com.br/front-libs/i18next/1.7.2/i18next.min.js"></script>
+<script src="//io.vtex.com.br/front-libs/jquery.inputmask/2.4.0/jquery.inputmask.bundle.min.js"></script>
+<script src="//io.vtex.com.br/front-libs/state-machine/2.3.2/state-machine.min.js"></script>
+<script src="//io.vtex.com.br/front-libs/parsley/2.0.3/parsley.min.js"></script>
+<script src="//io.vtex.com.br/vtex.js/1.0.0/extended-ajax.min.js"></script>
+<script src="//io.vtex.com.br/vtex.js/1.0.0/checkout.js?clearcache=01072014"></script>
+<!-- end dependencies -->
 
-	<script src="//io.vtex.com.br/front-libs/front-i18n/0.6.2/vtex-i18n.js"></script>
-	<script src="//io.vtex.com.br/front-libs/front-i18n/0.6.2/vtex-locale-selector.js"></script>
+<!-- build:js /front.shipping-data/shipping/setup/front-shipping-data.min.js -->
+<script src="/front.shipping-data/script/setup/front-shipping-data.js"></script>
+<!-- endbuild -->
 
-  <!-- Script de cliente que costuma quebrar com uso de AMD -->
-  <!--<script src="https://rihappy.vtexcommercebeta.com.br/arquivos/extb_plugins.js"></script>-->
+<script src="//io.vtex.com.br/front-libs/front-i18n/0.6.2/vtex-i18n.js"></script>
+<script src="//io.vtex.com.br/front-libs/front-i18n/0.6.2/vtex-locale-selector.js"></script>
 
-	<!-- GOOGLE MAPS API -->
-	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+<!-- Script de cliente que costuma quebrar com uso de AMD -->
+<!--<script src="https://rihappy.vtexcommercebeta.com.br/arquivos/extb_plugins.js"></script>-->
 
-	<!-- Script exemplo de implementação -->
-	<script src="/front.shipping-data/app/main.js"></script>
-	<!-- end exemplo -->
+<!-- GOOGLE MAPS API -->
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+
+<!-- Script exemplo de implementação -->
+<script src="/front.shipping-data/app/main.js"></script>
+<script src="/front.shipping-data/app/state-machine-graph.js"></script>
+<!-- end exemplo -->
 
 </body>
 </html>
