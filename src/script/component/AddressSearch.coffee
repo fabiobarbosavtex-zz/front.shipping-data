@@ -223,6 +223,9 @@ define ['flight/lib/component',
         @attr.data.showGeolocationSearch = false;
         @render()
 
+      @stopSubmit = (ev) ->
+        ev.preventDefault()
+
       # Bind events
       @after 'initialize', ->
         @on 'enable.vtex', @enable
@@ -233,6 +236,9 @@ define ['flight/lib/component',
           'knowPostalCodeSelector': @openZipSearch
         @on 'keyup',
           'postalCodeQuerySelector': @validatePostalCode
+        @on 'submit',
+          'addressFormSelector': @stopSubmit
+
 
         @setValidators [
           @validateAddress
