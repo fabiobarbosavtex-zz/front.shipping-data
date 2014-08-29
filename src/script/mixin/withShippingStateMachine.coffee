@@ -23,6 +23,7 @@ define [], () ->
       { name: 'cancelEdit',  from: 'editSLA', to: 'list'     }
       { name: 'new',         from: 'list',    to: 'search'   }
       { name: 'cancelNew',   from: 'search',  to: 'list'     } # only if available addresses > 0
+      { name: 'edit',        from: 'edit',    to: 'edit'     }
       { name: 'clearSearch', from: ['edit', 'editSLA'], to: 'search'  }
       { name: 'cancelFirst', from: ['search', 'edit', 'editSLA'],  to: 'empty' } # only if available addresses == 0
       { name: 'cancelOther', from: ['search', 'edit', 'editSLA'],  to: 'summary' } # only if available addresses == 0
@@ -129,5 +130,3 @@ define [], () ->
 
     @onLeaveEditSLA = (event, from, to) ->
       @select('addressFormSelector').trigger('disable.vtex')
-
-    return stateMachineEvents

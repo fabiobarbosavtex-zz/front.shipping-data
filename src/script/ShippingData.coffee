@@ -181,14 +181,19 @@ define ['flight/lib/component',
                 if @attr.stateMachine.can('doneSLA')
                   @attr.stateMachine.doneSLA(null, orderForm.shippingData.logisticsInfo, @attr.orderForm.items, @attr.orderForm.sellers)
               else
-                if @attr.stateMachine.can('clearSearch')
-                  $(window).trigger('showMessage.vtex', ['unavailable'])
+                if @attr.data.countryRules[@attr.data.country].queryPostalCode and @attr.stateMachine.can('clearSearch')
                   @attr.stateMachine.clearSearch(postalCode)
+                else
+                  @attr.stateMachine.edit(orderForm.shippingData?.address)
+                $(window).trigger('showMessage.vtex', ['unavailable'])
+
             )
             .fail( (reason) =>
               console.log reason
-              if @attr.stateMachine.can('clearSearch')
+              if @attr.data.countryRules[@attr.data.country].queryPostalCode and @attr.stateMachine.can('clearSearch')
                 @attr.stateMachine.clearSearch(postalCode)
+              else
+                @attr.stateMachine.edit(orderForm.shippingData?.address)
             )
         else if addressKeyMap.geoCoordinates
           # TODO implementar com geoCoordinates

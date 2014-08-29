@@ -127,7 +127,10 @@ define ['flight/lib/component',
       @addressKeysUpdated = (ev) ->
         ev?.preventDefault()
         postalCode = @select('postalCodeSelector').val()
-        postalCodeIsValid = @select('postalCodeSelector').parsley().isValid()
+        if @getCountryRule().usePostalCode
+          postalCodeIsValid = @select('postalCodeSelector').parsley().isValid()
+        else
+          postalCodeIsValid = true
         geoCoordinates = @attr.data.address?.geoCoordinates or []
         geoCoordinatesIsValid = geoCoordinates.length is 2
 
@@ -317,7 +320,7 @@ define ['flight/lib/component',
           break
 
         @select('postalCodeSelector').val(postalCode)
-        @trigger('postalCode.vtex', postalCode)
+        @addressKeysUpdated()
 
       # Change postal code according to the city selected
       # postalCodeByCity should be true in the country's rule
@@ -330,7 +333,7 @@ define ['flight/lib/component',
         postalCode = rules.map[state][city]
 
         @select('postalCodeSelector').val(postalCode)
-        @trigger('postalCode.vtex', @getCurrentAddress())
+        @addressKeysUpdated()
 
       # Set to a loading state
       # This will disable all fields
@@ -338,12 +341,8 @@ define ['flight/lib/component',
         @attr.data.loading = true
         @render()
 
-      # Store new country rules in the data object
-      @addCountryRule = (ev, data) ->
-        _.extend(@attr.data.countryRules, data)
-
       # Call two functions for the same event
-      @onChangeState = (ev, data) ->
+      @changeState = (ev, data) ->
         @changeCities(ev, data)
         @changePostalCodeByState(ev, data)
 
@@ -410,7 +409,7 @@ define ['flight/lib/component',
           'cancelAddressFormSelector': @cancelAddressForm
           'findAPostalCodeForAnotherAddressSelector': @findAnotherPostalCode
         @on 'change',
-          'stateSelector': @onChangeState
+          'stateSelector': @changeState
           'citySelector': @changePostalCodeByCity
         @on 'keyup',
           'postalCodeSelector': @addressKeysUpdated
