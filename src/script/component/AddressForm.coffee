@@ -237,7 +237,6 @@ define ['flight/lib/component',
           @attr.data.countryRules[country] = new countryRule()
           @attr.data.states = @attr.data.countryRules[country].states
           @attr.data.regexes = @attr.data.countryRules[country].regexes
-          @render.bind(this)
 
       @createMap = () ->
         location = new google.maps.LatLng(@attr.data.address.geoCoordinates[1], @attr.data.address.geoCoordinates[0])
