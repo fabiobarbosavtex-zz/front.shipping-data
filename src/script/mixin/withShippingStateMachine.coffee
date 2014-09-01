@@ -120,6 +120,7 @@ define [], () ->
       console.log "Enter edit with no SLA", address
       if event is 'loadSLA' then return
       @select('addressFormSelector').trigger('enable.vtex', [address])
+      @select('shippingOptionsSelector').trigger('disable.vtex')
 
     @onLeaveEditNoSLA = (event, from, to) ->
       if to isnt 'editWithSLA' # No need to disable if we simply have new shipping options
