@@ -101,17 +101,10 @@ define ['flight/lib/component',
           minLength: 3,
 
           highlighter: (addressParam) =>
-            address = {}
             googleDataMap = @attr.countryRules.googleDataMap
             googleAddress = _.find addressListResponse, (item) ->
               item.formatted_address is addressParam
-            _.each googleDataMap, (rule) =>
-              _.each googleAddress.address_components, (component) =>
-                if _.intersection(component.types, rule.types).length > 0
-                  address[rule.value] = component[rule.length]
-
-            console.log googleAddress
-            console.log address
+            address = @getAddressFromGoogle(googleAddress, googleDataMap)
 
             formattedAddress = "<span class='search-result-item-street'>" + if address.street then address.street
             if address.street and address.number then formattedAddress += ", "
@@ -124,7 +117,6 @@ define ['flight/lib/component',
             if address.city and address.state then formattedAddress += " - "
             if address.state then formattedAddress += address.state
             formattedAddress += "</small>"
-
 
           matcher: (address) =>
             hasPostalCode = false
@@ -180,10 +172,9 @@ define ['flight/lib/component',
         }
         address.country = @attr.countryRules.country
         address.addressQuery = googleAddress.formatted_address
+        address = _.extend(address, @getAddressFromGoogle(googleAddress, googleDataMap))
+
         _.each googleDataMap, (rule) =>
-          _.each googleAddress.address_components, (component) =>
-            if _.intersection(component.types, rule.types).length > 0
-              address[rule.value] = component[rule.length]
           if rule.required and not address[rule.value]
             @attr.data.requiredGoogleFieldsNotFound.push(rule.value)
 
@@ -191,6 +182,14 @@ define ['flight/lib/component',
           @handleAddressSearch(address)
         else
           @render()
+
+      @getAddressFromGoogle = (googleAddress, googleDataMap) ->
+        address = {}
+        _.each googleDataMap, (rule) =>
+          _.each googleAddress.address_components, (component) =>
+            if _.intersection(component.types, rule.types).length > 0
+              address[rule.value] = component[rule.length]
+        return address
 
       # Close the form
       @cancelAddressForm = ->
