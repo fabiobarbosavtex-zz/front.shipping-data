@@ -60,6 +60,7 @@ define [], () ->
     @onEnterEmpty = (event, from, to) ->
       console.log "Enter empty"
       @select('addressNotFilledSelector').show()
+      @select('addressFormSelector').trigger('disable.vtex')
 
     @onLeaveEmpty = (event, from, to) ->
       console.log "Leave empty"
@@ -67,11 +68,12 @@ define [], () ->
 
     @onEnterSummary = (event, from, to, locale, orderForm, rules) ->
       console.log "Enter summary"
-      @select('shippingSummarySelector').trigger('enable.vtex', [locale, orderForm.shippingData, orderForm.items, orderForm.sellers, rules, orderForm.canEditData, orderForm.giftRegistryData])
       # Disable other components
       @select('shippingOptionsSelector').trigger('disable.vtex')
+      @select('addressFormSelector').trigger('disable.vtex')
       # We can only enter summary if getting disabled
       @attr.data.active = false
+      @select('shippingSummarySelector').trigger('enable.vtex', [locale, orderForm.shippingData, orderForm.items, orderForm.sellers, rules, orderForm.canEditData, orderForm.giftRegistryData])
       @select('goToPaymentButtonWrapperSelector').hide()
       @select('editShippingDataSelector').show()
 
@@ -86,8 +88,9 @@ define [], () ->
     @onEnterSearch = (event, from, to, postalCodeQuery, useGeolocationSearch) ->
       @attr.data.active = true
       console.log "Enter search"
-      @select('addressSearchSelector').trigger('enable.vtex', [@attr.data.countryRules[@attr.data.country], postalCodeQuery, if useGeolocationSearch? then useGeolocationSearch else false])
+      @select('addressFormSelector').trigger('disable.vtex')
       @select('shippingOptionsSelector').trigger('disable.vtex')
+      @select('addressSearchSelector').trigger('enable.vtex', [@attr.data.countryRules[@attr.data.country], postalCodeQuery, if useGeolocationSearch? then useGeolocationSearch else false])
       @select('goToPaymentButtonWrapperSelector').hide()
 
     @onLeaveSearch = (event, from, to) ->
@@ -98,8 +101,14 @@ define [], () ->
     @onEnterList = (event, from, to, deliveryCountries, orderForm) ->
       @attr.data.active = true
       console.log "Enter list"
+      @select('addressFormSelector').trigger('disable.vtex')
       @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData])
       @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
+
+    @onLeaveList = (event, from, to) ->
+      console.log "Leave list"
+      @select('addressListSelector').trigger('disable.vtex')
+      @select('shippingOptionsSelector').trigger('disable.vtex')
 
     @onBeforeSelect = (event, from, to, orderForm) ->
       @attr.data.active = true
@@ -107,13 +116,9 @@ define [], () ->
       if to is 'list'
         @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
 
-    @onLeaveList = (event, from, to) ->
-      console.log "Leave list"
-      @select('addressListSelector').trigger('disable.vtex')
-      @select('shippingOptionsSelector').trigger('disable.vtex')
-
-    @onEnterEdit = (event, from, to, address) ->
-      console.log "Enter edit", address
+    @onEnterEditNoSLA = (event, from, to, address) ->
+      console.log "Enter edit with no SLA", address
+      if event is 'loadSLA' then return
       @select('addressFormSelector').trigger('enable.vtex', [address])
 
     @onLeaveEditNoSLA = (event, from, to) ->
@@ -127,6 +132,3 @@ define [], () ->
 
       @select('shippingOptionsSelector').trigger('enable.vtex', [logisticsInfo, items, sellers])
       @select('goToPaymentButtonWrapperSelector').show()
-
-    @onLeaveEditSLA = (event, from, to) ->
-      @select('addressFormSelector').trigger('disable.vtex')
