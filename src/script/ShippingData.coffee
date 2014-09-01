@@ -210,7 +210,7 @@ define ['flight/lib/component',
               if @attr.data.countryRules[@attr.data.country].queryPostalCode and @attr.stateMachine.can('clearSearch')
                 @attr.stateMachine.clearSearch(postalCode)
               else
-                @attr.stateMachine.editNoSLA(orderForm.shippingData?.address)
+                @attr.stateMachine.editNoSLA(@attr.orderForm.shippingData?.address)
             )
         else if addressKeyMap.geoCoordinates
           # TODO implementar com geoCoordinates
