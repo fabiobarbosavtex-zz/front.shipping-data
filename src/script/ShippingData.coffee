@@ -183,7 +183,15 @@ define ['flight/lib/component',
           @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
           postalCode = addressKeyMap.postalCode.value
           country = @attr.orderForm.shippingData.address?.country ? @attr.data.country
-          @attr.API?.sendAttachment('shippingData', {address: {addressId: addressKeyMap.addressId, postalCode: postalCode, country: country}})
+          @attr.API?.sendAttachment 'shippingData',
+                address:
+                  addressId: addressKeyMap.addressId
+                  postalCode: postalCode
+                  country: country
+                  state: addressKeyMap.state
+                  city: addressKeyMap.city
+                  neighborhood: addressKeyMap.neighborhood
+                clearAddressIfPostalCodeNotFound: @attr.data.countryRules[country].usePostalCode ? true
             .done( (orderForm) =>
               hasDeliveries = orderForm.shippingData.logisticsInfo[0].slas.length > 0
               # If we are editing and we received logistics info

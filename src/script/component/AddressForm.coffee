@@ -129,6 +129,9 @@ define ['flight/lib/component',
           postalCodeIsValid = @select('postalCodeSelector').parsley().isValid()
         else
           postalCodeIsValid = true
+          state = @select('stateSelector').val()
+          city = @select('citySelector').val()
+          neighborhood = @select('neighborhoodSelector').val()
         geoCoordinates = @attr.data.address?.geoCoordinates or []
         geoCoordinatesIsValid = geoCoordinates.length is 2
 
@@ -142,6 +145,9 @@ define ['flight/lib/component',
             value: geoCoordinates
             valid: geoCoordinatesIsValid
           country: @attr.data.address.country
+          city: city
+          state: state
+          neighborhood: neighborhood
 
         # TODO implementar geocode
         # from valid to invalid
