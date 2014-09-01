@@ -30,7 +30,7 @@
         {?isUsingPostalCode}
         &nbsp;- <span class="postal-code">{postalCode}</span>&nbsp;
         {:else}
-        &nbsp; -&nbsp;
+        &nbsp;-&nbsp;
         {/isUsingPostalCode}
         <span class="country" data-i18n="countries.{country}"></span>
     </p>
