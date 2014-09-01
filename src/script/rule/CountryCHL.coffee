@@ -31,9 +31,10 @@ define ->
       @citiesBasedOnStateChange = true
       @postalCodeByState = false
       @postalCodeByCity = true
+      @swapNeighborhoodWithCity = true
 
       @regexes =
-        postalCode: new RegExp(/^([\d]{6})$/)
+        postalCode: new RegExp(/^([\d]{7})$/)
 
       @masks =
         postalCode: '999999'

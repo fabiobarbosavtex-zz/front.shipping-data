@@ -49,7 +49,9 @@ define ->
       if rules.cities
         for state, cities of rules.cities
           for city in cities
-            if city is @city
+            if rules.swapNeighborhoodWithCity and city is @neighborhood
+              return true
+            else if city is @city
               return true
         return "City not in allowed cities list"
 

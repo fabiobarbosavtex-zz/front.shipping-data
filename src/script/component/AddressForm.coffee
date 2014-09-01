@@ -36,6 +36,8 @@ define ['flight/lib/component',
         forceShippingFieldsSelector: '#force-shipping-fields'
         stateSelector: '#ship-state'
         citySelector: '#ship-city'
+        neighborhoodSelector: '#ship-neighborhood'
+        changePostalCodeByCN: 'select[data-postal-code-change="true"]'
         cancelAddressFormSelector: '.cancel-address-form a'
         submitButtonSelector: '.submit .btn-success.address-save'
         mapCanvasSelector: '#map-canvas'
@@ -61,11 +63,6 @@ define ['flight/lib/component',
               $('input, select, .btn', @$node).attr('disabled', 'disabled')
 
             rules = @getCountryRule()
-
-            if rules.citiesBasedOnStateChange
-              @changeCities()
-              if data.address.city
-                @select('citySelector').val(data.address.city)
 
             if rules.usePostalCode
               @select('postalCodeSelector').inputmask
@@ -303,16 +300,18 @@ define ['flight/lib/component',
 
       # Change the city select options when a state is selected
       # citiesBasedOnStateChange should be true in the country's rule
-      @changeCities = (ev, data) ->
+      @changeCities = (state) ->
         rules = @getCountryRule()
-        return if not rules.citiesBasedOnStateChange
+        if not rules.citiesBasedOnStateChange then return
 
-        state = @select('stateSelector').val()
-        @select('citySelector').find('option').remove().end()
+        state = state ? rules.states[0]
+        @attr.data.cities = rules.cities[state]
 
-        for city of rules.map[state]
-          elem = '<option value="'+city+'">'+city+'</option>'
-          @select('citySelector').append(elem)
+        @select('changePostalCodeByCN').find('option').remove().end()
+
+        for value of rules.map[state]
+          elem = '<option value="'+value+'">'+value+'</option>'
+          @select('changePostalCodeByCN').append(elem)
 
       # Change postal code according to the state selected
       # postalCodeByState should be true in the country's rule
@@ -334,8 +333,8 @@ define ['flight/lib/component',
         return if not rules.postalCodeByCity
 
         state = @select('stateSelector').val()
-        city = @select('citySelector').val()
-        postalCode = rules.map[state][city]
+        value = @select('changePostalCodeByCN').val()
+        postalCode = rules.map[state][value]
 
         @select('postalCodeSelector').val(postalCode)
         @addressKeysUpdated()
@@ -347,9 +346,10 @@ define ['flight/lib/component',
         @render()
 
       # Call two functions for the same event
-      @changeState = (ev, data) ->
-        @changeCities(ev, data)
-        @changePostalCodeByState(ev, data)
+      @changeState = (ev, state) ->
+        state = state?.el?.value ? null
+        @changeCities(state)
+        @changePostalCodeByState()
 
       @updateData = (ev, data) ->
         @attr.data.availableAddresses = data.shippingData.availableAddresses ? []
@@ -376,6 +376,7 @@ define ['flight/lib/component',
         handleLoadSuccess = =>
           @clearGeolocationContractedFields()
           @updateEnables(@attr.data.address)
+          @changeCities(@attr.data.address.state)
           @render().then =>
             # For the countries that use postal code, we must trigger
             # an addressKeysUpdated, so it can search for the SLAs
@@ -419,7 +420,7 @@ define ['flight/lib/component',
           'findAPostalCodeForAnotherAddressSelector': @findAnotherPostalCode
         @on 'change',
           'stateSelector': @changeState
-          'citySelector': @changePostalCodeByCity
+          'changePostalCodeByCN': @changePostalCodeByCity
         @on 'keyup',
           'postalCodeSelector': @addressKeysUpdated
 
