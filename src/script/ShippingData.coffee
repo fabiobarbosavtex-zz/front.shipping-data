@@ -202,7 +202,7 @@ define ['flight/lib/component',
                 if @attr.data.countryRules[@attr.data.country].queryPostalCode and @attr.stateMachine.can('clearSearch')
                   @attr.stateMachine.clearSearch(postalCode)
                 else
-                  @attr.stateMachine.editNoSLA(orderForm.shippingData?.address)
+                  @select('shippingOptionsSelector').trigger('disable.vtex')
                 $(window).trigger('showMessage.vtex', ['unavailable'])
             )
             .fail( (reason) =>
