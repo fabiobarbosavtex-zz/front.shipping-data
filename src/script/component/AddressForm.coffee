@@ -88,8 +88,6 @@ define ['flight/lib/component',
             @attr.parsley.subscribe 'parsley:field:validated', () =>
               @validate()
 
-            @addressKeysUpdated() # Trigger key updated with initial values
-
             rules = @getCountryRule()
             if (@attr.data.address.validate(rules) is true)
               @attr.parsley.validate()
@@ -143,6 +141,7 @@ define ['flight/lib/component',
           geoCoordinates:
             value: geoCoordinates
             valid: geoCoordinatesIsValid
+          country: @attr.data.address.country
 
         # TODO implementar geocode
         # from valid to invalid
@@ -363,7 +362,7 @@ define ['flight/lib/component',
       @enable = (ev, address) ->
         ev?.stopPropagation()
         @attr.data.address = new Address(address)
-        # when the address has an addres query, the address was searched witg geolocation
+        # when the address has an address query, the address was searched with geolocation
         @attr.data.addressQuery = if address.addressQuery? then address.addressQuery else false
         @attr.data.hasGeolocationData = @attr.data.address.geoCoordinates.length > 0
         @attr.data.comeFromGeoSearch = address.addressQuery?
@@ -371,7 +370,11 @@ define ['flight/lib/component',
         handleLoadSuccess = =>
           @clearGeolocationContractedFields()
           @updateEnables(@attr.data.address)
-          @render()
+          @render().then =>
+            # For the countries that use postal code, we must trigger
+            # an addressKeysUpdated, so it can search for the SLAs
+            if @getCountryRule().queryPostalCode
+              @addressKeysUpdated()
 
         handleLoadFailure = (reason) ->
           throw reason

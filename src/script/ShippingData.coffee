@@ -87,7 +87,7 @@ define ['flight/lib/component',
             else
               @attr.orderForm.shippingData?.address = {country: country}
               @attr.orderForm.shippingData?.address = @setProfileNameIfNull(@attr.orderForm.shippingData?.address)
-              @attr.stateMachine.edit(@attr.orderForm.shippingData?.address)
+              @attr.stateMachine.editNoSLA(@attr.orderForm.shippingData?.address)
           else if @validateAddress() isnt true
             orderForm = @attr.orderForm
             orderForm.shippingData.address = @setProfileNameIfNull(orderForm.shippingData.address)
@@ -167,7 +167,17 @@ define ['flight/lib/component',
         @validate()
 
       @addressKeysUpdated = (ev, addressKeyMap) ->
-        if addressKeyMap.postalCode and addressKeyMap.postalCode.valid and @attr.stateMachine.current isnt 'editSLA'
+        # In case it's an address that we already know its logistics info, return
+        return if addressKeyMap.addressId is @attr.orderForm.shippingData?.address?.addressId and
+          addressKeyMap.postalCode?.value is @attr.orderForm.shippingData?.address?.postalCode and
+          @attr.orderForm.shippingData?.logisticsInfo?
+
+        if addressKeyMap.postalCode and addressKeyMap.postalCode.valid
+          # If the country doesn't query for postal code, the postal code is changes are
+          # triggered by the changes made in the address' state or city
+          if not @attr.data.countryRules[addressKeyMap.country].queryPostalCode
+            @attr.stateMachine.loadSLA()
+
           # When we start editing, we always start looking for shipping options
           console.log "Getting shipping options for address key", addressKeyMap.postalCode.value
           @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
@@ -184,16 +194,15 @@ define ['flight/lib/component',
                 if @attr.data.countryRules[@attr.data.country].queryPostalCode and @attr.stateMachine.can('clearSearch')
                   @attr.stateMachine.clearSearch(postalCode)
                 else
-                  @attr.stateMachine.edit(orderForm.shippingData?.address)
+                  @attr.stateMachine.editNoSLA(orderForm.shippingData?.address)
                 $(window).trigger('showMessage.vtex', ['unavailable'])
-
             )
             .fail( (reason) =>
               console.log reason
               if @attr.data.countryRules[@attr.data.country].queryPostalCode and @attr.stateMachine.can('clearSearch')
                 @attr.stateMachine.clearSearch(postalCode)
               else
-                @attr.stateMachine.edit(orderForm.shippingData?.address)
+                @attr.stateMachine.editNoSLA(orderForm.shippingData?.address)
             )
         else if addressKeyMap.geoCoordinates
           # TODO implementar com geoCoordinates
@@ -216,13 +225,13 @@ define ['flight/lib/component',
         ev?.stopPropagation()
         if address and
             @attr.orderForm.shippingData.address?.addressId is address.addressId and
-            @attr.stateMachine.can('editSLA')
+            @attr.stateMachine.can('editWithSLA')
           # Estamos editanto o endereço atual, use o seu logistics info
-          @attr.stateMachine.editSLA(address, @attr.orderForm.shippingData.logisticsInfo,
+          @attr.stateMachine.editWithSLA(address, @attr.orderForm.shippingData.logisticsInfo,
             @attr.orderForm.items, @attr.orderForm.sellers)
-        if address and @attr.stateMachine.can('edit')
+        if address and @attr.stateMachine.can('editNoSLA')
           address = @setProfileNameIfNull(address)
-          @attr.stateMachine.edit(address)
+          @attr.stateMachine.editNoSLA(address)
         else if @attr.stateMachine.can('new')
           @attr.stateMachine.new()
 
