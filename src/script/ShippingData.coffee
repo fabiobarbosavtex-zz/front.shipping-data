@@ -183,7 +183,9 @@ define ['flight/lib/component',
           @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
           postalCode = addressKeyMap.postalCode.value
           country = @attr.orderForm.shippingData.address?.country ? @attr.data.country
-          @attr.API?.sendAttachment 'shippingData',
+          # Abort previous call
+          if @attr.requestAddressKeys then @attr.requestAddressKeys.abort()
+          @attr.requestAddressKeys = @attr.API?.sendAttachment 'shippingData',
                 address:
                   addressId: addressKeyMap.addressId
                   postalCode: postalCode
@@ -206,6 +208,7 @@ define ['flight/lib/component',
                 $(window).trigger('showMessage.vtex', ['unavailable'])
             )
             .fail( (reason) =>
+              return if reason.statusText is 'abort'
               console.log reason
               if @attr.data.countryRules[@attr.data.country].queryPostalCode and @attr.stateMachine.can('clearSearch')
                 @attr.stateMachine.clearSearch(postalCode)
