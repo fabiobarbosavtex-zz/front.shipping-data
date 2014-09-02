@@ -22,6 +22,7 @@ define [], () ->
       { name: 'editWithSLA', from: 'list',    to: 'editWithSLA'  }
       { name: 'cancelEdit',  from: 'editWithSLA', to: 'list'     }
       { name: 'loadSLA',     from: 'editWithSLA', to: 'editNoSLA'}
+      { name: 'loadSLA',     from: 'editNoSLA',   to: 'editNoSLA'}
       { name: 'new',         from: 'list',    to: 'search'       }
       { name: 'cancelNew',   from: 'search',  to: 'list'         } # only if available addresses > 0
       { name: 'editNoSLA',   from: 'editNoSLA',   to: 'editNoSLA'}
