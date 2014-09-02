@@ -154,7 +154,9 @@ define ['flight/lib/component',
                 if address.state then formattedAddress += address.state
                 return formattedAddress += "</small>"
               empty: () ->
-                return "Unable to find these stuff !!!"
+                return "<div class='search-result-empty'>" +
+                  "<span class='search-result-empty-title'>Ainda não encontramos seu endereço :(</span>" +
+                  "<div class='search-result-empty-tip'><small class='muted'>Que tal dar mais informações?</small></div></div>"
 
           .on "typeahead:selected", (e, addressObject) =>
             console.log addressObject
