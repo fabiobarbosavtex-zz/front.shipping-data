@@ -297,6 +297,20 @@ define ['flight/lib/component',
         @disable()
         @trigger('cancelAddressEdit.vtex')
 
+      # Fill the cities array for the selected state
+      @getCitiesData = () ->
+        rules = @getCountryRule()
+        if not rules.cities then return
+
+        state = @attr.data.address?.state ? rules.states[0]
+        @attr.data.cities = rules.cities[state]
+
+      # Call two functions for the same event
+      @changeState = (ev, state) ->
+        state = state?.el?.value ? null
+        @changeCities(state)
+        @changePostalCodeByState()
+
       # Change the city select options when a state is selected
       # citiesBasedOnStateChange should be true in the country's rule
       @changeCities = (state) ->
@@ -304,13 +318,17 @@ define ['flight/lib/component',
         if not rules.citiesBasedOnStateChange then return
 
         state = state ? rules.states[0]
-        @attr.data.cities = rules.cities[state]
 
         @select('changePostalCodeByCN').find('option').remove().end()
-
+        first = null
         for value of rules.map[state]
+          if not first then first = value
           elem = '<option value="'+value+'">'+value+'</option>'
           @select('changePostalCodeByCN').append(elem)
+
+        @select('changePostalCodeByCN').val(first)
+
+        @changePostalCodeByCity()
 
       # Change postal code according to the state selected
       # postalCodeByState should be true in the country's rule
@@ -342,13 +360,8 @@ define ['flight/lib/component',
       # This will disable all fields
       @loading = (ev, data) ->
         @attr.data.loading = true
+        @getCitiesData()
         @render()
-
-      # Call two functions for the same event
-      @changeState = (ev, state) ->
-        state = state?.el?.value ? null
-        @changeCities(state)
-        @changePostalCodeByState()
 
       @updateData = (ev, data) ->
         @attr.data.availableAddresses = data.shippingData.availableAddresses ? []
@@ -375,7 +388,7 @@ define ['flight/lib/component',
         handleLoadSuccess = =>
           @clearGeolocationContractedFields()
           @updateEnables(@attr.data.address)
-          @changeCities(@attr.data.address.state)
+          @getCitiesData()
           @render().then =>
             # For the countries that use postal code, we must trigger
             # an addressKeysUpdated, so it can search for the SLAs
@@ -434,6 +447,7 @@ define ['flight/lib/component',
           @attr.data.loading = false
           window.vtex.maps.isGoogleMapsAPILoaded = true
           window.vtex.maps.isGoogleMapsAPILoading = false
+          @getCitiesData()
           @render()
 
     return defineComponent(AddressForm, withi18n, withValidation)
