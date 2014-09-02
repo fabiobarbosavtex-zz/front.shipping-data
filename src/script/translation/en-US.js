@@ -22,6 +22,7 @@ define(function () {
         "postalCodeBRA": 'CEP',
         "postalCodeUSA": 'ZIP',
         "postalCodeARG": 'Código Postal (CP)',
+        "postalCodeURY": 'Código Postal (CP)',
         "postalCode": 'Postal Code',
         "street": 'Street',
         "addressLine1": 'Address Line 1',
