@@ -6,63 +6,63 @@
 {/showBackButton}
 <form class="address-form-new box-new address-form-{country}" data-parsley-validate="true" data-parsley-bind="true">
   <fieldset class="address-data">
-        {^showGeolocationSearch}
-        <p class="ship-postal-code required input text mask">
-          <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
 
-          <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221"
-          class="ship-postal-code postal-code postal-code-{country} input-small {?loading}loading-postal-code{:else}postal-code-query{/loading}"
-          value="{postalCodeQuery}" name="postalCodeQuery" {?loading}disabled="disabled"{/loading}
-          data-parsley-required="true" data-parsley-trigger="change"
-          data-parsley-postalcode="true" data-parsley-errors-container=".postal-code-errors">
+        {^showGeolocationSearch}
+          <p class="ship-postal-code required input text mask">
+            <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
+
+            <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221"
+            class="ship-postal-code postal-code postal-code-{country} input-small {?loading}loading-postal-code{:else}postal-code-query{/loading}"
+            value="{postalCodeQuery}" name="postalCodeQuery" {?loading}disabled="disabled"{/loading}
+            data-parsley-required="true" data-parsley-trigger="change"
+            data-parsley-postalcode="true" data-parsley-errors-container=".postal-code-errors">
+
+              {?loading}
+              <i class="loading-inline icon-spinner icon-spin">
+                <span data-i18n="global.loading"></span>
+              </i>
+              {/loading}
+
+            <small><a href="javascript:void(0);" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressForm.dontKnowPostalCode"></a></small>
+            <span class="postal-code-errors"></span>
+          </p>
+        {:else}
+          <p class="ship-search input text mask">
+            <label for="ship-address-search"><span data-i18n="shipping.addressSearch.address"></span> <span class="item-required">*</span></label>
+            <input type="text" autocomplete="off" autocorrect="off" id="ship-address-search" tabindex="221" class="ship-address-search input-xlarge" value="{addressQuery}" name="addressSearch" data-i18n="[placeholder]shipping.addressSearch.addressExample{country}" data-parsley-errors-container=".ship-address-search-errors">
 
             {?loading}
-            <i class="loading-inline icon-spinner icon-spin">
-              <span data-i18n="global.loading"></span>
-            </i>
+              <i class="loading-inline icon-spinner icon-spin">
+                <span data-i18n="global.loading"></span>
+              </i>
             {/loading}
+          </p>
+          <small class="text-know-postal-code"><a href="javascript:void(0);" class="know-postal-code" target="_blank" data-i18n="shipping.addressForm.knowPostalCode"></a></small>
+          <span class="ship-address-search-errors"></span>
 
-          <small><a href="javascript:void(0);" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressForm.dontKnowPostalCode"></a></small>
-          <span class="postal-code-errors"></span>
-        </p>
+          <div class="hide">
+            {@if cond="{numberOfValidAddressResults} == 0"}
+              <p data-i18n="shipping.addressSearch.postalCodeNotFound"></p>
+            {/if}
+            {@if cond="{numberOfValidAddressResults} == 1"}
+              <p>Verifique se este é o seu endereço.</p>
+            {/if}
+            {@if cond="{numberOfValidAddressResults} > 1"}
+              <p>Verifique se algum destes endereços é o seu.</p>
+            {/if}
+          </div>
+
+          {@if cond="{requiredGoogleFieldsNotFound.length} > 0"}
+            <div class="well">
+              Faltaram os seguintes campos obrigatórios:
+              <br/><br/>
+              {#requiredGoogleFieldsNotFound}
+                <span data-i18n="shipping.addressForm.{.}">{.}</span> <br/>
+              {/requiredGoogleFieldsNotFound}
+            </div>
+          {/if}
         {/showGeolocationSearch}
 
-        {?showGeolocationSearch}
-        <p class="ship-search input text mask">
-          <label for="ship-address-search"><span data-i18n="shipping.addressSearch.address"></span> <span class="item-required">*</span></label>
-          <input type="text" autocomplete="off" autocorrect="off" id="ship-address-search" tabindex="221" class="ship-address-search input-xlarge" value="{addressQuery}" name="addressSearch" data-i18n="[placeholder]shipping.addressSearch.addressExample{country}" data-parsley-errors-container=".ship-address-search-errors">
-
-          {?loading}
-            <i class="loading-inline icon-spinner icon-spin">
-              <span data-i18n="global.loading"></span>
-            </i>
-          {/loading}
-        </p>
-        <small class="text-know-postal-code"><a href="javascript:void(0);" class="know-postal-code" target="_blank" data-i18n="shipping.addressForm.knowPostalCode"></a></small>
-        <span class="ship-address-search-errors"></span>
-
-        <div class="hide">
-          {@if cond="{numberOfValidAddressResults} == 0"}
-            <p data-i18n="shipping.addressSearch.postalCodeNotFound"></p>
-          {/if}
-          {@if cond="{numberOfValidAddressResults} == 1"}
-            <p>Verifique se este é o seu endereço.</p>
-          {/if}
-          {@if cond="{numberOfValidAddressResults} > 1"}
-            <p>Verifique se algum destes endereços é o seu.</p>
-          {/if}
-        </div>
-
-        {@if cond="{requiredGoogleFieldsNotFound.length} > 0"}
-        <div class="well">
-          Faltaram os seguintes campos obrigatórios:
-          <br/><br/>
-          {#requiredGoogleFieldsNotFound}
-            <span data-i18n="shipping.addressForm.{.}">{.}</span> <br/>
-          {/requiredGoogleFieldsNotFound}
-        </div>
-        {/if}
-        {/showGeolocationSearch}
-      </p>
   </fieldset>
+
 </form>
