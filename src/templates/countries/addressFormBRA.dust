@@ -156,6 +156,7 @@
     <p class="submit btn-submit-wrapper pull-left hide">
       <button type="submit" class="submit btn btn-large btn-success address-save" tabindex="350" data-i18n="global.save"></button>
     </p>
+
   </fieldset>
   {/address}
 </form>
