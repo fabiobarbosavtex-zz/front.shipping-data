@@ -245,5 +245,7 @@ define [], () ->
     @setCheapestSlaIfNull = (shippingOptions) ->
       for so in shippingOptions
         if not so.selectedSla?
-          so.selectedSla = @getCheapestSla(so)
+          cheapestSla = @getCheapestSla(so)
+          if not cheapestSla then return
+          so.selectedSla = cheapestSla
           @updateLogisticsInfoModel(so, so.selectedSla.id)
