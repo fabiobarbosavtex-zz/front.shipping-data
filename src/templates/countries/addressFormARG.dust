@@ -104,4 +104,4 @@
 
   </fieldset>
   {/address}
-</div>
+</form>
