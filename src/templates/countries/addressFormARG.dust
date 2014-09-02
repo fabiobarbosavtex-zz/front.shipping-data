@@ -41,12 +41,12 @@
 
     <div class="box-delivery">
 
-      <p class="ship-street input text">
+      <p class="ship-street required input text">
         <label for="ship-street"><span data-i18n="shipping.addressForm.street"></span> <span class="item-required">*</span></label>
         <input type="text" tabindex="222" id="ship-street" class="input-xlarge" value="{street}" name="street" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
       </p>
 
-      <p class="ship-number input text">
+      <p class="ship-number required input text">
         <label for="ship-number"><span data-i18n="shipping.addressForm.number"></span> <span class="item-required">*</span></label>
         <input type="text" tabindex="223" id="ship-number" class="input-mini" value="{number}" name="number" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
       </p>
