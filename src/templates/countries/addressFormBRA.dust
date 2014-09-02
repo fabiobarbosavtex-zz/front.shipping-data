@@ -5,9 +5,7 @@
   </p>
 {/if}
 
-<form class="address-form-new box-new address-form-{country}"
-      data-parsley-bind="true"
-      data-parsley-focus="first">
+<form class="address-form-new box-new address-form-{country}" data-parsley-bind="true" data-parsley-focus="first">
 
   {#address}
   <fieldset class="address-data">

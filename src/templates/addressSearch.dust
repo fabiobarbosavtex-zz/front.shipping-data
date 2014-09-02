@@ -4,7 +4,8 @@
     <a href="javascript:void(0);" class="cancel-new-address" data-i18n="shipping.addressForm.cancelEditAddress"></a>
   </p>
 {/showBackButton}
-<form class="address-form-new box-new address-form-{country}" data-parsley-validate="true" data-parsley-bind="true">
+<form class="address-form-new box-new address-form-{country}" data-parsley-bind="true" data-parsley-focus="first">
+
   <fieldset class="address-data">
 
         {^showGeolocationSearch}
