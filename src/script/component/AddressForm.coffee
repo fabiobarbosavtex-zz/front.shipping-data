@@ -414,12 +414,13 @@ define ['flight/lib/component',
           number: @attr.data.address.number isnt '' and @attr.data.address.number?
           postalCode: @attr.data.address.postalCode isnt '' and @attr.data.address.postalCode? and @attr.data.addressQuery
 
-        @attr.data.labelShippingFields = @attr.data.address.neighborhood isnt '' and @attr.data.address.neighborhood? and
-          @attr.data.address.street isnt '' and @attr.data.address.street? and
-          @attr.data.address.state isnt '' and @attr.data.address.state? and
-          @attr.data.address.city isnt '' and @attr.data.address.city?
+        if @getCountryRule().queryPostalCode
+          @attr.data.labelShippingFields = @attr.data.address.neighborhood isnt '' and @attr.data.address.neighborhood? and
+            @attr.data.address.street isnt '' and @attr.data.address.street? and
+            @attr.data.address.state isnt '' and @attr.data.address.state? and
+            @attr.data.address.city isnt '' and @attr.data.address.city?
 
-        @attr.data.disableCityAndState = @attr.data.address.state isnt '' and @attr.data.address.city isnt ''
+          @attr.data.disableCityAndState = @attr.data.address.state isnt '' and @attr.data.address.city isnt ''
 
       # Bind events
       @after 'initialize', ->
