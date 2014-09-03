@@ -54,45 +54,45 @@
 
       <!-- LABEL SHIPING FIELDS FOR GEOLOCATION SEARCH -->
       {?addressQuery}
-        {?contractedShippingFieldsForGeolocation}
+        {#contractedShippingFieldsForGeolocation}
           <p class="ship-filled-data">
             <!-- STREET, NUMBER, AND EDIT -->
             <span class="ship-street-text">
-              {?contractedShippingFieldsForGeolocation.street}
-                <span>{street}</span>
-              {/contractedShippingFieldsForGeolocation.street}
-              {?contractedShippingFieldsForGeolocation.number}
-                <span>, {number}</span>
-              {/contractedShippingFieldsForGeolocation.number}
+              {?street}
+                <span>{address.street}</span>
+              {/street}
+              {?number}
+                <span>, {address.number}</span>
+              {/number}
               <span> - </span>
               <a class="link-edit" href="javascript:void(0);" id="force-shipping-fields" data-i18n="global.edit"></a>
             </span>
-             <br>
+            <br>
 
             <!-- NEIGHBORHOOD, CITY, STATE,  AND EDIT -->
             <span class="ship-info-text">
-              {?contractedShippingFieldsForGeolocation.neighborhood}
-                <span>{neighborhood}</span>
-              {/contractedShippingFieldsForGeolocation.neighborhood}
-              {?contractedShippingFieldsForGeolocation.city}
-                {?contractedShippingFieldsForGeolocation.neighborhood}
+              {?neighborhood}
+                <span>{address.neighborhood}</span>
+              {/neighborhood}
+              {?city}
+                {?neighborhood}
                 <span> - </span>
-                {/contractedShippingFieldsForGeolocation.neighborhood}
-                <span>{city}</span>
-              {/contractedShippingFieldsForGeolocation.city}
-              {?contractedShippingFieldsForGeolocation.state}
-                {?contractedShippingFieldsForGeolocation.city}
+                {/neighborhood}
+                <span>{address.city}</span>
+              {/city}
+              {?state}
+                {?city}
                   <span> - </span>
-                {/contractedShippingFieldsForGeolocation.city}
-                <span>{state}</span>
-              {/contractedShippingFieldsForGeolocation.state}
+                {/city}
+                <span>{address.state}</span>
+              {/state}
             </span>
              <br>
             <!-- POSTAL CODE -->
-            <span class="hide">
-              {?contractedShippingFieldsForGeolocation.postalCode}
-                <span>CEP: {postalCode}</span>
-              {/contractedShippingFieldsForGeolocation.postalCode}
+            <span class="filled-postal-code hide">
+              {?postalCode}
+                <span class="postal-code-label"><span data-i18n="shipping.addressForm.postalCode{address.country}"></span>:</span> <span class="postal-code-value">{address.postalCode}</span>
+              {/postalCode}
             </span>
           </p>
         {/contractedShippingFieldsForGeolocation}
