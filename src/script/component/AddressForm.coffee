@@ -420,7 +420,7 @@ define ['flight/lib/component',
             @attr.data.address.state isnt '' and @attr.data.address.state? and
             @attr.data.address.city isnt '' and @attr.data.address.city?
 
-          @attr.data.disableCityAndState = @attr.data.address.state isnt '' and @attr.data.address.city isnt ''
+          @attr.data.disableCityAndState = @attr.data.address.state and @attr.data.address.city
 
       # Bind events
       @after 'initialize', ->
