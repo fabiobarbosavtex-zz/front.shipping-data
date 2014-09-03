@@ -125,12 +125,12 @@
 
       <p class="ship-city required input text {?contractedShippingFieldsForGeolocation.city}hide{/contractedShippingFieldsForGeolocation.city}">
         <label for="ship-city"><span data-i18n="shipping.addressForm.city"></span> <span class="item-required">*</span></label>
-        <input type="text" tabindex="227" id="ship-city" class="ship-city input-large" data-parsley-trigger="change blur" value="{city}" name="city" data-parsley-required="true" data-parsley-alphanumponc="true">
+        <input type="text" tabindex="227" id="ship-city" class="ship-city input-large" data-parsley-trigger="change blur" value="{city}" name="city" data-parsley-required="true" data-parsley-alphanumponc="true" {?disableCityAndState}disabled{/disableCityAndState}>
       </p>
 
       <p class="ship-state required input text {?contractedShippingFieldsForGeolocation.state}hide{/contractedShippingFieldsForGeolocation.state}">
         <label for="ship-state"><span data-i18n="shipping.addressForm.state"></span> <span class="item-required">*</span></label>
-        <select id="ship-state" tabindex="228" class="ship-state input-mini" data-parsley-trigger="change blur" data-parsley-required="true" name="state">
+        <select id="ship-state" tabindex="228" class="ship-state input-mini" data-parsley-trigger="change blur" data-parsley-required="true" name="state" {?disableCityAndState}disabled{/disableCityAndState}>
           {#states}
             <option value="{.}" {@eq key=. value="{state}"}selected="true"{/eq}>{.}</option>
           {/states}
