@@ -50,7 +50,7 @@ define(function () {
       "addressSearch": {
         "address": 'Endereço',
         "addressExampleARG": 'Ex: Cerrito, 1350, Buenos Aires',
-        "addressExampleBRA": 'Ex: Dr Cardoso de Melo, 1750, São Paulo',
+        "addressExampleBRA": 'Ex: Av Dr Cardoso de Melo, 1750, São Paulo',
         "addressExampleCHL": 'Ex: Apoquindo, 3039, Santiago',
         "addressExampleCOL": 'Ex: Calle 93 # 14-20, Bogotá',
         "addressExampleECU": 'Ex: Av Amazonas River, N 37-61, Quito',
