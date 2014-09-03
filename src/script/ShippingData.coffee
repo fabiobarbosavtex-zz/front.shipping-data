@@ -176,9 +176,11 @@ define ['flight/lib/component',
 
       @addressKeysUpdated = (ev, addressKeyMap) ->
         # In case it's an address that we already know its logistics info, return
-        return if addressKeyMap.addressId is @attr.orderForm.shippingData?.address?.addressId and
-          addressKeyMap.postalCode?.value is @attr.orderForm.shippingData?.address?.postalCode and
-          @attr.orderForm.shippingData?.logisticsInfo?
+        knownAddress = _.find @attr.orderForm.shippingData?.availableAddresses, (a) ->
+            a.addressId is addressKeyMap.addressId and a.postalCode is addressKeyMap.postalCode?.value and
+            a.geoCoordinates?[0] is addressKeyMap.geoCoordinates?.value?[0] and
+            a.geoCoordinates?[1] is addressKeyMap.geoCoordinates?.value?[1]
+        if knownAddress then return
 
         if addressKeyMap.postalCode and addressKeyMap.postalCode.valid
           # If the country doesn't query for postal code, the postal code is changes are
