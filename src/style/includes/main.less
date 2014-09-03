@@ -196,21 +196,44 @@
   display: none;
 }
 
+.ship-search .loading-inline {
+  margin-top: 0;
+  top: 4px;
+}
+
 
 // address search results
 // -----------------------------------------------
-.typeahead li {
-  &.active a {
+
+.twitter-typeahead {
+  display: block;
+  width: 100%;
+}
+
+.tt-dropdown-menu {
+  width: 380px;
+  margin-top: 6px;
+  padding: 6px 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+  -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+  box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+.tt-suggestion,
+.search-result-empty {
+  display: block;
+  padding: 4px 15px;
+  p { margin: 0; }
+  &.tt-cursor {
     background: #ebf2fe;
     color: #333;
-    &:hover {
-      background: #ebf2fe;
-      color: #333;
-    }
-  }
-  > a:hover {
-    background: #ebf2fe;
-    color: #333;
+    cursor: pointer;
   }
 }
 

@@ -6,7 +6,9 @@ define ['flight/lib/component',
         'shipping/script/models/Address',
         'shipping/script/mixin/withi18n',
         'shipping/script/mixin/withValidation',
-        'shipping/templates/addressSearch'],
+        'shipping/templates/addressSearch',
+        'shipping/script/libs/typeahead/typeahead.jquery'
+        ],
   (defineComponent, extensions, Address, withi18n, withValidation, template) ->
     AddressSearch = ->
       @defaultAttrs
@@ -17,7 +19,6 @@ define ['flight/lib/component',
           addressQuery: null
           showGeolocationSearch: false
           requiredGoogleFieldsNotFound: []
-          numberOfValidAddressResults: false
 
         addressFormSelector: '.address-form-new'
         postalCodeQuerySelector: '.postal-code-query'
@@ -96,67 +97,69 @@ define ['flight/lib/component',
           document.body.appendChild(script)
           return
 
-        addressListResponse = []
         @select('addressSearchSelector').typeahead
-          minLength: 3,
+            minLength: 3
+          ,
+            displayKey: (address) ->
+              formattedAddress = if address.street then address.street
+              if address.street and address.number then formattedAddress += ", "
+              if address.number then formattedAddress += address.number
+              formattedAddress += " - "
+              if address.neighborhood then formattedAddress += address.neighborhood
+              if address.neighborhood and address.city then formattedAddress += " - "
+              if address.city then formattedAddress += address.city
+              if address.city and address.state then formattedAddress += " - "
+              if address.state then formattedAddress += address.state
+              return formattedAddress
 
-          highlighter: (addressParam) =>
-            googleDataMap = @attr.countryRules.googleDataMap
-            googleAddress = _.find addressListResponse, (item) ->
-              item.formatted_address is addressParam
-            address = @getAddressFromGoogle(googleAddress, googleDataMap)
+            source: (query, process) =>
+              googleDataMap = @attr.countryRules.googleDataMap
+              if @attr.geoSearchTimer
+                window.clearTimeout(@attr.geoSearchTimer)
+              @attr.geoSearchTimer = window.setTimeout(=>
+                geocoder = new google.maps.Geocoder()
+                geoCodeRequest =
+                  address: query
+                  componentRestrictions:
+                    country: @attr.countryRules.abbr
+                geocoder.geocode geoCodeRequest, (response, status) =>
+                  if status is "OK" and response.length > 0
+                    itemsToDisplay = []
+                    _.each response, (item) =>
+                      hasPostalCode = false
+                      isPostalCodePrefix = false
+                      _.each item.address_components, (component) =>
+                        _.each component.types, (type) ->
+                          if type is "postal_code"
+                            hasPostalCode = true
+                          if type is 'postal_code_prefix'
+                            isPostalCodePrefix = true
+                      item = _.extend(item, @getAddressFromGoogle(item, googleDataMap))
+                      if hasPostalCode and !isPostalCodePrefix
+                        itemsToDisplay.push item
+                    process(itemsToDisplay)
+              , 300)
 
-            formattedAddress = "<span class='search-result-item-street'>" + if address.street then address.street
-            if address.street and address.number then formattedAddress += ", "
-            if address.number then formattedAddress += address.number
-            formattedAddress += "</span>&nbsp;"
-            formattedAddress += "<small class='muted'>"
-            if address.neighborhood then formattedAddress += address.neighborhood
-            if address.neighborhood and address.city then formattedAddress += " - "
-            if address.city then formattedAddress += address.city
-            if address.city and address.state then formattedAddress += " - "
-            if address.state then formattedAddress += address.state
-            formattedAddress += "</small>"
+            templates:
+              suggestion: (address) ->
+                formattedAddress = "<span class='search-result-item-street'>" + if address.street then address.street
+                if address.street and address.number then formattedAddress += ", "
+                if address.number then formattedAddress += address.number
+                formattedAddress += "</span>&nbsp;"
+                formattedAddress += "<small class='muted'>"
+                if address.neighborhood then formattedAddress += address.neighborhood
+                if address.neighborhood and address.city then formattedAddress += " - "
+                if address.city then formattedAddress += address.city
+                if address.city and address.state then formattedAddress += " - "
+                if address.state then formattedAddress += address.state
+                return formattedAddress += "</small>"
+              empty: () ->
+                return "<div class='search-result-empty'>" +
+                  "<span class='search-result-empty-title'>Ainda não encontramos seu endereço :(</span>" +
+                  "<div class='search-result-empty-tip'><small class='muted'>Que tal dar mais informações?</small></div></div>"
 
-          matcher: (address) =>
-            hasPostalCode = false
-            isPostalCodePrefix = false
-            addressObject = _.find addressListResponse, (item) ->
-              item.formatted_address is address
-            _.each addressObject.address_components, (component) ->
-              _.each component.types, (type) ->
-                if type is "postal_code"
-                  hasPostalCode = true
-                if type is 'postal_code_prefix'
-                  isPostalCodePrefix = true
-            if hasPostalCode and !isPostalCodePrefix
-              @attr.data.numberOfValidAddressResults++
-              true
-
-          source: (query, process) =>
-            if @attr.geoSearchTimer
-              window.clearTimeout(@attr.geoSearchTimer)
-            @attr.geoSearchTimer = window.setTimeout(=>
-              geocoder = new google.maps.Geocoder()
-              geoCodeRequest =
-                address: query
-                componentRestrictions:
-                  country: @attr.countryRules.abbr
-              geocoder.geocode geoCodeRequest, (response, status) =>
-                @attr.data.numberOfValidAddressResults = 0
-                if status is "OK" and response.length > 0
-                  addressListResponse = response
-                  itemsToDisplay = []
-                  _.each response, (item) =>
-                    if @attr.locale is "pt-BR"
-                      item.formatted_address = item.formatted_address.replace(", República Federativa do Brasil", "")
-                    itemsToDisplay.push item.formatted_address
-                  process(itemsToDisplay)
-            , 300);
-
-          updater: (address) =>
-            addressObject = _.find addressListResponse, (item) ->
-              item.formatted_address is address
+          .on "typeahead:selected", (e, addressObject) =>
+            console.log addressObject
             @addressMapper(addressObject)
 
       @addressMapper = (googleAddress) ->
