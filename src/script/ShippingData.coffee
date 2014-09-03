@@ -70,7 +70,15 @@ define ['flight/lib/component',
                 @trigger 'componentValidated.vtex', [[new Error("SLA array is empty")]]
                 @done()
             else if @attr.stateMachine.can('orderform')
-              @attr.stateMachine.orderform(@attr.locale, orderForm, @attr.data.countryRules[shippingData.address.country])
+              rules = @attr.data.countryRules[shippingData.address.country]
+              # If we call the event 'orderForm' and it is already on the state
+              # 'summary', nothing will happen, because it will try to change to the
+              # same state, so it doesn't do anything. We must trigger the 'enable'
+              # event directly to the component, so it can update with the new orderform
+              if @attr.stateMachine.current is 'summary'
+                @select('shippingSummarySelector').trigger('enable.vtex', [@attr.locale, orderForm.shippingData, orderForm.items, orderForm.sellers, rules, orderForm.canEditData, orderForm.giftRegistryData])
+              else
+                @attr.stateMachine.orderform(@attr.locale, orderForm, rules)
           @validate()
 
       #
