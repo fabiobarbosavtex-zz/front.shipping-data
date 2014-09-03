@@ -135,7 +135,7 @@
                 {@if cond="{isScheduled} && {isSelected}"}
                 <div class="scheduled-sla shipping-option-{index}">
                     <p><span data-i18n="shipping.shippingOptions.deliveryDate"></span>:</p>
-                    <input class="datepicker" type="text"
+                    <input class="datepicker input input-xlarge" type="text"
                            data-bind="disable: checkout.disableInputs()"
                            data-i18n="[placeholder]shipping.shippingOptions.chooseScheduledDate" style="cursor: pointer;">
                     <p class="scheduled-sla-time" data-bind="fadeVisible: selectedDeliveryDate() != undefined">

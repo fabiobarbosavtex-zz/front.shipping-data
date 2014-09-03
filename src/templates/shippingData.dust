@@ -18,21 +18,22 @@
         <div class="box-step box-info shipping-summary-placeholder"></div>
         <!-- FIM DO RESUMO DE SHIPPING DATA -->
 
-        <!-- CONTAINER DOS COMPONENTES FILHOS -->
         <div class="box-step">
+            <!-- CONTAINER DOS COMPONENTES FILHOS -->
             <div class="country-select-placeholder"></div>
             <div class="address-search-placeholder"></div>
             <div class="address-form-placeholder"></div>
             <div class="address-list-placeholder"></div>
             <div class="address-shipping-options"></div>
+            <!-- FIM CONTAINER DOS COMPONENTES FILHOS -->
+
+            <!-- NEXT STEP BUTTON -->
+            <p class="submit btn-submit-wrapper btn-go-to-payment-wrapper">
+                <button type="submit" class="submit btn btn-large btn-success btn-go-to-payment" data-i18n="shipping.goToPayment"
+                        tabindex="350"></button>
+            </p>
         </div>
-        <!-- FIM CONTAINER DOS COMPONENTES FILHOS -->
 
     </div>
 
-    <!-- NEXT STEP BUTTON -->
-    <p class="submit btn-submit-wrapper btn-go-to-payment-wrapper">
-        <button type="submit" class="submit btn btn-large btn-success btn-go-to-payment" data-i18n="shipping.goToPayment"
-                tabindex="350"></button>
-    </p>
 </div>
