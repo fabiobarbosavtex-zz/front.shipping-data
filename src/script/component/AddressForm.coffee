@@ -196,9 +196,6 @@ define ['flight/lib/component',
 
         return addressObj
 
-      @updateAddressHandler = (ev) ->
-        @updateAddress(@attr.parsley.isValid())
-
       # Trigger address updated event
       @updateAddress = (isValid) ->
         ev?.preventDefault()
