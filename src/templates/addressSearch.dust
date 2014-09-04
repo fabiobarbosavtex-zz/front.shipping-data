@@ -4,6 +4,15 @@
     <a href="javascript:void(0);" class="cancel-new-address" data-i18n="shipping.addressForm.cancelEditAddress"></a>
   </p>
 {/showBackButton}
+{?loadingGeolocation}
+<div class="loading loading-bg loading-geolocation">
+    <div class="loading-img">
+        <i class="icon-spinner icon-spin">
+            <span data-i18n="global.loading"></span>
+        </i>
+    </div>
+</div>
+{/loadingGeolocation}
 <form class="address-form-new box-new address-form-{country}" data-parsley-bind="true" data-parsley-focus="first">
 
   <fieldset class="address-data">
@@ -14,7 +23,8 @@
 
             <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221"
             class="ship-postal-code postal-code postal-code-{country} input-small {?loading}loading-postal-code{:else}postal-code-query{/loading}"
-            value="{postalCodeQuery}" name="postalCodeQuery" {?loading}disabled="disabled"{/loading}
+            value="{postalCodeQuery}" name="postalCodeQuery"
+            {?loading}disabled="disabled"{/loading} {?loadingGeolocation}disabled="disabled"{/loadingGeolocation}
             data-parsley-required="true" data-parsley-trigger="change"
             data-parsley-postalcode="true" data-parsley-errors-container=".postal-code-errors">
 

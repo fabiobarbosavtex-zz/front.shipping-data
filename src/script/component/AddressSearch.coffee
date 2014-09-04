@@ -84,15 +84,6 @@ define ['flight/lib/component',
         @render()
 
       @startGoogleAddressSearch = ->
-        if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading
-          window.vtex.maps.isGoogleMapsAPILoading = true
-          @loading()
-          script = document.createElement("script")
-          script.type = "text/javascript"
-          script.src = "//maps.googleapis.com/maps/api/js?sensor=true&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsLoadedOnSearch"
-          document.body.appendChild(script)
-          return
-
         @select('addressSearchSelector').typeahead
             minLength: 3
           ,
@@ -221,11 +212,21 @@ define ['flight/lib/component',
         @$node.html('')
 
       @openGeolocationSearch = ->
-        @attr.data.showGeolocationSearch = true;
-        @render()
+        if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading
+          window.vtex.maps.isGoogleMapsAPILoading = true
+          script = document.createElement("script")
+          script.type = "text/javascript"
+          script.src = "//maps.googleapis.com/maps/api/js?sensor=true&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsLoadedOnSearch"
+          document.body.appendChild(script)
+          @attr.data.loadingGeolocation = true
+          @render()
+          return
+        else
+          @attr.data.showGeolocationSearch = true
+          @render()
 
       @openZipSearch = ->
-        @attr.data.showGeolocationSearch = false;
+        @attr.data.showGeolocationSearch = false
         @render()
 
       @stopSubmit = (ev) ->
@@ -254,7 +255,8 @@ define ['flight/lib/component',
 
         # Called when google maps api is loaded
         window.vtex.maps.googleMapsLoadedOnSearch = =>
-          @attr.data.loading = false
+          @attr.data.loadingGeolocation = false
+          @attr.data.showGeolocationSearch = true
           window.vtex.maps.isGoogleMapsAPILoaded = true
           window.vtex.maps.isGoogleMapsAPILoading = false
           @render()
