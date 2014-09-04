@@ -47,8 +47,8 @@
       </p>
 
       <p class="ship-number input text hide">
-        <label for="ship-number"><span data-i18n="shipping.addressForm.number"></span> <span class="item-required">*</span></label>
-        <input type="text" tabindex="223" id="ship-number" class="input-mini" value="{number}" name="number" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
+        <label for="ship-number"><span data-i18n="shipping.addressForm.number"></span></label>
+        <input type="text" tabindex="223" id="ship-number" class="input-mini" value="{number}" name="number" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
       </p>
 
       <p class="ship-more-info input text">
