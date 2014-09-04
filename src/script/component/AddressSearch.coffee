@@ -39,13 +39,11 @@ define ['flight/lib/component',
           if @attr.data.showGeolocationSearch
             @startGoogleAddressSearch()
 
-          if @attr.data.loading #TODO botar dentro do template
-            $('input, select, .btn', @$node).attr('disabled', 'disabled')
-
           @select('postalCodeQuerySelector').inputmask
             mask: @attr.countryRules.masks.postalCode
 
-          @select('postalCodeQuerySelector').focus()
+          if not (@attr.data.loading or @attr.data.loadingGeolocation or @attr.data.showGeolocationSearch)
+            @select('postalCodeQuerySelector').focus()
 
           window.ParsleyValidator.addValidator('postalcode',
             (val) =>
@@ -126,15 +124,21 @@ define ['flight/lib/component',
                     _.each response, (item) =>
                       hasPostalCode = false
                       isPostalCodePrefix = false
-                      _.each item.address_components, (component) =>
-                        _.each component.types, (type) ->
-                          if type is "postal_code"
-                            hasPostalCode = true
-                          if type is 'postal_code_prefix'
-                            isPostalCodePrefix = true
+
+                      # Only mind showing addresses that has postal code
+                      # if country use postal code
+                      if @attr.countryRules.usePostalCode
+                        _.each item.address_components, (component) =>
+                          _.each component.types, (type) ->
+                            if type is "postal_code"
+                              hasPostalCode = true
+                            if type is 'postal_code_prefix'
+                              isPostalCodePrefix = true
+
                       item = _.extend(item, @getAddressFromGoogle(item, googleDataMap))
-                      if hasPostalCode and !isPostalCodePrefix
+                      if (not @attr.countryRules.usePostalCode) or (hasPostalCode and !isPostalCodePrefix)
                         itemsToDisplay.push item
+
                     process(itemsToDisplay)
               , 300)
 
