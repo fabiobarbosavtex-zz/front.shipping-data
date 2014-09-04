@@ -51,7 +51,7 @@ define ['flight/lib/component',
               # Caso tenha entrega agendada
               if @attr.isScheduledDeliveryAvailable
                 # Coloca a tradução correta no pickadate
-                if locale isnt 'en-US'
+                if @attr.locale isnt 'en-US'
                   $.extend( $.fn.pickadate.defaults, vtex.pickadate[@attr.locale] )
 
                 _.each @attr.data.shippingOptions, (so) =>
@@ -150,5 +150,7 @@ define ['flight/lib/component',
         @on 'click',
           'shippingOptionSelector': @selectShippingOptionHandler
           'deliveryWindowSelector': @deliveryWindowSelected
+
+        @setLocalePath 'shipping/script/translation/'
 
     return defineComponent(ShippingOptions, withi18n, withLogisticsInfo)

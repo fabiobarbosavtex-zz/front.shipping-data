@@ -70,4 +70,6 @@ define ['flight/lib/component',
       @on 'click',
         maskedInfoSelector: @showMaskedInfoMessage
 
+      @setLocalePath 'shipping/script/translation/'
+
   return defineComponent(ShippingSummary, withi18n, withLogisticsInfo)

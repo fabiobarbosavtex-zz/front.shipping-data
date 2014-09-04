@@ -16,8 +16,8 @@ define ['flight/lib/component',
 
       deliveryCountrySelector: '#ship-country'
 
-    @renderSelectCountry = (data) ->
-      dust.render 'selectCountry', data, (err, output) =>
+    @render = ->
+      dust.render 'selectCountry', @attr.data, (err, output) =>
         output = $(output).i18n()
         @$node.html(output)
 
@@ -79,8 +79,6 @@ define ['flight/lib/component',
       @on 'change',
         'deliveryCountrySelector': @selectedCountry
 
-      @setValidators [
-
-      ]
+      @setLocalePath 'shipping/script/translation/'
 
   return defineComponent(CountrySelect, withi18n, withValidation)

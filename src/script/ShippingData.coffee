@@ -297,6 +297,11 @@ define ['flight/lib/component',
         return "No selected SLA" if logisticsInfo?[0].selectedSla is undefined
         return true
 
+      @localeSelected = (ev, locale) =>
+        @setLocale locale
+        @requireLocale().then =>
+          @$node.i18n()
+
       #
       # Initialization
       #
@@ -304,8 +309,10 @@ define ['flight/lib/component',
       @after 'initialize', ->
         @attr.stateMachine = @createStateMachine() #from withShippingStateMachine
         @attr.stateMachine.start()
-        require 'shipping/script/translation/' + @attr.locale, (translation) =>
-          @extendTranslations(translation)
+        @setLocalePath 'shipping/script/translation/'
+        # If there is an orderform present, use it for initialization
+        @setLocale locale if locale = vtexjs?.checkout?.orderForm?.clientPreferencesData?.locale
+        @requireLocale().then =>
           dust.render template, @attr.data, (err, output) =>
             translatedOutput = $(output).i18n()
             @$node.html(translatedOutput)

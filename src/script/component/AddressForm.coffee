@@ -46,55 +46,53 @@ define ['flight/lib/component',
 
       # Render this component according to the data object
       @render = ->
-        require 'shipping/script/translation/' + @attr.locale, (translation) =>
-          @extendTranslations(translation)
-          data = @attr.data
-          dust.render @attr.templates.form.name, data, (err, output) =>
-            output = $(output).i18n()
-            @$node.html(output)
-            if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading and @attr.data.hasGeolocationData
-              @loadGoogleMaps()
+        data = @attr.data
+        dust.render @attr.templates.form.name, data, (err, output) =>
+          output = $(output).i18n()
+          @$node.html(output)
+          if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading and @attr.data.hasGeolocationData
+            @loadGoogleMaps()
 
-            if window.vtex.maps.isGoogleMapsAPILoaded and @attr.data.hasGeolocationData
-              @attr.data.loading = false
-              @createMap()
+          if window.vtex.maps.isGoogleMapsAPILoaded and @attr.data.hasGeolocationData
+            @attr.data.loading = false
+            @createMap()
 
-            if data.loading
-              $('input, select, .btn', @$node).attr('disabled', 'disabled')
+          if data.loading
+            $('input, select, .btn', @$node).attr('disabled', 'disabled')
 
+          rules = @getCountryRule()
+
+          if rules.usePostalCode
+            @select('postalCodeSelector').inputmask
+              mask: rules.masks.postalCode
+            if data.labelShippingFields
+              @select('postalCodeSelector').addClass('success')
+
+          window.ParsleyValidator.addValidator('postalcode',
+          (val) =>
             rules = @getCountryRule()
+            return rules.regexes.postalCode.test(val)
+          , 32)
 
-            if rules.usePostalCode
-              @select('postalCodeSelector').inputmask
-                mask: rules.masks.postalCode
-              if data.labelShippingFields
-                @select('postalCodeSelector').addClass('success')
+          @attr.parsley = @select('addressFormSelector').parsley
+            errorClass: 'error'
+            successClass: 'success'
+            errorsWrapper: '<span class="help error error-list"></span>'
+            errorTemplate: '<span class="error-description"></span>'
 
-            window.ParsleyValidator.addValidator('postalcode',
-            (val) =>
-              rules = @getCountryRule()
-              return rules.regexes.postalCode.test(val)
-            , 32)
+          @attr.parsley.subscribe 'parsley:field:validated', () =>
+            @validate()
 
-            @attr.parsley = @select('addressFormSelector').parsley
-              errorClass: 'error'
-              successClass: 'success'
-              errorsWrapper: '<span class="help error error-list"></span>'
-              errorTemplate: '<span class="error-description"></span>'
-
-            @attr.parsley.subscribe 'parsley:field:validated', () =>
-              @validate()
-
-            rules = @getCountryRule()
-            if (@attr.data.address.validate(rules) is true)
-              @attr.parsley.validate()
-            else
-              @select('addressInputsSelector').each ->
-                if @value is ''
-                  @focus()
-                  return false
-                else
-                  @blur()
+          rules = @getCountryRule()
+          if (@attr.data.address.validate(rules) is true)
+            @attr.parsley.validate()
+          else
+            @select('addressInputsSelector').each ->
+              if @value is ''
+                @focus()
+                return false
+              else
+                @blur()
 
       # Helper function to get the current country's rules
       @getCountryRule = ->
@@ -431,6 +429,8 @@ define ['flight/lib/component',
         @setValidators [
           @validateAddress
         ]
+
+        @setLocalePath 'shipping/script/translation/'
 
         window.vtex.maps = window.vtex.maps or {}
 

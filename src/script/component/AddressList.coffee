@@ -24,14 +24,10 @@ define ['flight/lib/component',
         submitButtonSelector: '.submit .btn-success'
 
       # Render this component according to the data object
-      @render = (data) ->
-        data = @attr.data if not data
-
-        require ['shipping/script/translation/' + @attr.locale], (translation) =>
-          @extendTranslations(translation)
-          dust.render template, data, (err, output) =>
-            output = $(output).i18n()
-            $(@$node).html(output)
+      @render = ->
+        dust.render template, @attr.data, (err, output) =>
+          output = $(output).i18n()
+          @$node.html(output)
 
       # Create a new address
       # Trigger an event to AddressForm component
@@ -109,5 +105,7 @@ define ['flight/lib/component',
           'createAddressSelector': @createAddress
           'addressItemSelector': @selectAddressHandler
           'editAddressSelector': @editAddress
+
+        @setLocalePath 'shipping/script/translation/'
 
     return defineComponent(AddressList, withi18n)

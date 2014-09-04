@@ -31,34 +31,32 @@ define ['flight/lib/component',
         countryRules: false
         geoSearchTimer = false
 
-      @render = () ->
-        require ['shipping/script/translation/' + @attr.locale], (translation) =>
-          @extendTranslations(translation)
-          dust.render template, @attr.data, (err, output) =>
-            output = $(output).i18n()
-            @$node.html(output)
+      @render = ->
+        dust.render template, @attr.data, (err, output) =>
+          output = $(output).i18n()
+          @$node.html(output)
 
-            if @attr.data.showGeolocationSearch
-              @startGoogleAddressSearch()
+          if @attr.data.showGeolocationSearch
+            @startGoogleAddressSearch()
 
-            if @attr.data.loading #TODO botar dentro do template
-              $('input, select, .btn', @$node).attr('disabled', 'disabled')
+          if @attr.data.loading #TODO botar dentro do template
+            $('input, select, .btn', @$node).attr('disabled', 'disabled')
 
-            @select('postalCodeQuerySelector').inputmask
-              mask: @attr.countryRules.masks.postalCode
+          @select('postalCodeQuerySelector').inputmask
+            mask: @attr.countryRules.masks.postalCode
 
-            @select('postalCodeQuerySelector').focus()
+          @select('postalCodeQuerySelector').focus()
 
-            window.ParsleyValidator.addValidator('postalcode',
-              (val) =>
-                  return @attr.countryRules.regexes.postalCode.test(val)
-              , 32)
+          window.ParsleyValidator.addValidator('postalcode',
+            (val) =>
+                return @attr.countryRules.regexes.postalCode.test(val)
+            , 32)
 
-            @attr.parsley = @select('addressFormSelector').parsley
-              errorClass: 'error'
-              successClass: 'success'
-              errorsWrapper: '<span class="help error error-list"></span>'
-              errorTemplate: '<span class="error-description"></span>'
+          @attr.parsley = @select('addressFormSelector').parsley
+            errorClass: 'error'
+            successClass: 'success'
+            errorsWrapper: '<span class="help error error-list"></span>'
+            errorTemplate: '<span class="error-description"></span>'
 
       # Validate the postal code input
       # If successful, this will call the postal code API
@@ -242,10 +240,11 @@ define ['flight/lib/component',
         @on 'submit',
           'addressFormSelector': @stopSubmit
 
-
         @setValidators [
           @validateAddress
         ]
+
+        @setLocalePath 'shipping/script/translation/'
 
         window.vtex.maps = window.vtex.maps or {}
 

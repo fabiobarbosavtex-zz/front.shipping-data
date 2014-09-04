@@ -3,6 +3,8 @@ require = vtex.curl || window.require
 
 define [], () ->
   ->
+    localePath = null
+
     @defaultAttrs
       locale: 'pt-BR'
 
@@ -22,6 +24,8 @@ define [], () ->
         window.ParsleyValidator.addCatalog(@attr.locale, window.ParsleyConfig.i18n[@attr.locale], true)
         window.ParsleyValidator.setLocale(@attr.locale)
 
+      return translation
+
     @setLocale = (locale = "pt-BR") ->
       if locale.match('es-')
         @attr.locale = 'es'
@@ -30,7 +34,23 @@ define [], () ->
 
     @localeSelected = (ev, locale) ->
       @setLocale locale
-      @render()
+      @$node.i18n()
+
+    @setLocalePath = (path) ->
+      localePath = path
+
+    @requireLocale = ->
+      require [localePath + @attr.locale], (translation) =>
+        @extendTranslations(translation)
 
     @after 'initialize', ->
+      throw new Error("withi18n clients must initialize localePath by calling @setLocalePath()") unless localePath
       @on window, 'localeSelected.vtex', @localeSelected
+
+      # If there is an orderform present, use it for initialization
+      if locale = vtexjs?.checkout?.orderForm?.clientPreferencesData?.locale
+        @localeSelected locale
+
+      if typeof @render is 'function'
+        @around 'render', (originalRender) ->
+          @requireLocale().then(originalRender)

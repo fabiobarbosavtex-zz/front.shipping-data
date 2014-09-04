@@ -137,8 +137,7 @@ define [], () ->
       if currentShippingOptions.length > 1
         @attr.data.multipleSellers = true
 
-      require ['shipping/script/translation/' + @attr.locale], (translation) =>
-        @extendTranslations(translation)
+      @requireLocale().then =>
         for shipping in currentShippingOptions
           for sla in shipping.slas
             if sla.shippingEstimate isnt undefined and not sla.isScheduled
