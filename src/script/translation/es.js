@@ -58,8 +58,8 @@ define(function () {
         "addressExamplePRY": 'Ej: Avenida Eusebio Ayala, 100, Assunção',
         "addressExampleURY": 'Ej: Bulevar Artigas, 1394, Montevidéu',
         "addressExampleUSA": 'Ej: 225 East 41st Street, New York',
-        "didntFindAddress": 'Ainda não encontramos seu endereço :(',
-        "whatAboutMoreInfo": 'Que tal dar mais informações?'
+        "didntFindAddress": 'Aún no encontramos tu dirección :(',
+        "whatAboutMoreInfo": 'Que tal dar mas información?'
       },
       "countrySelect": {
         "chooseDeliveryCountry": 'Elija el país de entrega',
