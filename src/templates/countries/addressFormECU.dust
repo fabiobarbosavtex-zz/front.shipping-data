@@ -35,12 +35,12 @@
 
     <div class="box-delivery">
 
-      <p class="ship-street input text">
+      <p class="ship-street required input text">
         <label for="ship-street"><span data-i18n="shipping.addressForm.street"></span> <span class="item-required">*</span></label>
         <input type="text" tabindex="222" id="ship-street" class="input-xlarge" value="{street}" name="street" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
       </p>
 
-      <p class="ship-number input text">
+      <p class="ship-number required input text">
         <label for="ship-number"><span data-i18n="shipping.addressForm.number"></span> <span class="item-required">*</span></label>
         <input type="text" tabindex="223" id="ship-number" class="input-mini" value="{number}" name="number" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
       </p>
@@ -60,7 +60,7 @@
         <input type="text" tabindex="226" id="ship-neighborhood" class="input-xlarge" value="{neighborhood}" name="neighborhood" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
       </p>
 
-      <p class="ship-state input text">
+      <p class="ship-state required input text">
         <label for="ship-state"><span data-i18n="shipping.addressForm.department"></span> <span class="item-required">*</span></label>
         <select id="ship-state" tabindex="227" class="input-xlarge" name="state" data-parsley-required="true">
           {#states}
@@ -69,7 +69,7 @@
         </select>
       </p>
 
-      <p class="ship-city input text">
+      <p class="ship-city required input text">
         <label for="ship-city"><span data-i18n="shipping.addressForm.locality"></span> <span class="item-required">*</span></label>
         <select id="ship-city" tabindex="228" class="input-large" name="city" data-parsley-required="true">
           {#cities}
@@ -85,7 +85,7 @@
         </label>
       </p>
 
-      <p class="ship-name input text separate">
+      <p class="ship-name required input text separate">
         <label for="ship-name"><span data-i18n="shipping.addressForm.receiver"></span>  <span class="item-required">*</span></label>
         <input type="text" tabindex="230" id="ship-name" class="input-xlarge" name="receiverName" value="{receiverName}" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
       </p>
