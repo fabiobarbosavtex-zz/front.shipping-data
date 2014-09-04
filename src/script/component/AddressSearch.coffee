@@ -148,8 +148,8 @@ define ['flight/lib/component',
                 return formattedAddress += "</small>"
               empty: () ->
                 return "<div class='search-result-empty'>" +
-                  "<span class='search-result-empty-title'>Ainda não encontramos seu endereço :(</span>" +
-                  "<div class='search-result-empty-tip'><small class='muted'>Que tal dar mais informações?</small></div></div>"
+                  "<span class='search-result-empty-title'>"+i18n.t('shipping.addressSearch.didntFindAddress')+"</span>" +
+                  "<div class='search-result-empty-tip'><small class='muted'>"+i18n.t('shipping.addressSearch.whatAboutMoreInfo')+"</small></div></div>"
 
           .on "typeahead:selected", (e, addressObject) =>
             console.log addressObject

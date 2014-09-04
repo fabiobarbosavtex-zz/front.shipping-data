@@ -58,7 +58,8 @@ define(function () {
         "addressExamplePRY": 'Ex: Avenida Eusebio Ayala, 100, Assunção',
         "addressExampleURY": 'Ex: Bulevar Artigas, 1394, Montevidéu',
         "addressExampleUSA": 'Ex: 225 East 41st Street, New York',
-        "postalCodeNotFound": 'Ainda não encotramos seu CEP. Informe mais alguns dados do seu endereço.'
+        "didntFindAddress": 'Ainda não encontramos seu endereço :(',
+        "whatAboutMoreInfo": 'Que tal dar mais informações?'
       },
       "countrySelect": {
         "chooseDeliveryCountry": 'Escolha o país de entrega',

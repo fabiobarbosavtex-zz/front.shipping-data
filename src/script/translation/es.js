@@ -57,7 +57,9 @@ define(function () {
         "addressExamplePER": 'Ej: Av. José Pardo, 850, Miraflores, Lima',
         "addressExamplePRY": 'Ej: Avenida Eusebio Ayala, 100, Assunção',
         "addressExampleURY": 'Ej: Bulevar Artigas, 1394, Montevidéu',
-        "addressExampleUSA": 'Ej: 225 East 41st Street, New York'
+        "addressExampleUSA": 'Ej: 225 East 41st Street, New York',
+        "didntFindAddress": 'Ainda não encontramos seu endereço :(',
+        "whatAboutMoreInfo": 'Que tal dar mais informações?'
       },
       "countrySelect": {
         "chooseDeliveryCountry": 'Elija el país de entrega',
