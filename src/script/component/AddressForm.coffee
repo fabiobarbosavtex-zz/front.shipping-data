@@ -121,36 +121,24 @@ define ['flight/lib/component',
 
       @addressKeysUpdated = (ev) ->
         ev?.preventDefault()
-        postalCode = @select('postalCodeSelector').val()
-        if @getCountryRule().usePostalCode
-          postalCodeIsValid = @select('postalCodeSelector').parsley().isValid()
-        else
-          postalCodeIsValid = true
-          state = @select('stateSelector').val()
-          city = @select('citySelector').val()
-          neighborhood = @select('neighborhoodSelector').val()
-        geoCoordinates = @attr.data.address?.geoCoordinates or []
-        geoCoordinatesIsValid = geoCoordinates.length is 2
+        addressKeyMap = @getCurrentAddress()
+        addressKeyMap.geoCoordinates = @attr.data.address?.geoCoordinates or []
 
-        addressKeyMap =
-          addressId: @attr.data.address?.addressId
-          useGeolocationSearch: false # force use of postal code on future search
-          postalCode:
-            value: postalCode
-            valid: postalCodeIsValid
-          geoCoordinates:
-            value: geoCoordinates
-            valid: geoCoordinatesIsValid
-          country: @attr.data.address.country
-          city: city
-          state: state
-          neighborhood: neighborhood
+        if @getCountryRule().usePostalCode
+          addressKeyMap.postalCodeIsValid = @select('postalCodeSelector').parsley().isValid()
+          # If country use postal code, don't send geoCoordinates
+          addressKeyMap.geoCoordinates = []
+        else
+          addressKeyMap.postalCodeIsValid = true
+
+        addressKeyMap.geoCoordinatesIsValid = addressKeyMap.geoCoordinates.length is 2
+        addressKeyMap.useGeolocationSearch = false # force use of postal code on future search
 
         # TODO implementar geocode
         # from valid to invalid
-        if @attr.addressKeyMap.postalCode?.valid and not postalCodeIsValid
+        if @attr.addressKeyMap.postalCodeIsValid and not addressKeyMap.postalCodeIsValid
           @trigger('addressKeysInvalidated.vtex', [addressKeyMap])
-        else if postalCodeIsValid # new postal code is valid
+        else if addressKeyMap.postalCodeIsValid # new postal code is valid
           @trigger('addressKeysUpdated.vtex', [addressKeyMap])
 
         @attr.addressKeyMap = addressKeyMap
@@ -202,6 +190,9 @@ define ['flight/lib/component',
           addressObj.addressType = 'commercial'
         else
           addressObj.addressType = 'residential'
+
+        if addressObj.postalCode
+          addressObj.postalCode = addressObj.postalCode.replace(/\-/, '')
 
         addressObj.geoCoordinates = @attr.data.address.geoCoordinates
 

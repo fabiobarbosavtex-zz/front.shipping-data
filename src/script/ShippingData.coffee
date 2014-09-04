@@ -177,33 +177,34 @@ define ['flight/lib/component',
       @addressKeysUpdated = (ev, addressKeyMap) ->
         # In case it's an address that we already know its logistics info, return
         knownAddress = _.find @attr.orderForm.shippingData?.availableAddresses, (a) ->
-            a.addressId is addressKeyMap.addressId and a.postalCode is addressKeyMap.postalCode?.value and
-            a.geoCoordinates?[0] is addressKeyMap.geoCoordinates?.value?[0] and
-            a.geoCoordinates?[1] is addressKeyMap.geoCoordinates?.value?[1]
+            a.addressId is addressKeyMap.addressId and a.postalCode is addressKeyMap.postalCode and
+            a.geoCoordinates?[0] is addressKeyMap.geoCoordinates?[0] and
+            a.geoCoordinates?[1] is addressKeyMap.geoCoordinates?[1]
         if knownAddress then return
 
-        if addressKeyMap.postalCode and addressKeyMap.postalCode.valid
+        if addressKeyMap.postalCodeIsValid
           # If the country doesn't query for postal code, the postal code is changes are
           # triggered by the changes made in the address' state or city
           if not @attr.data.countryRules[addressKeyMap.country].queryPostalCode
             @attr.stateMachine.loadSLA()
 
           # When we start editing, we always start looking for shipping options
-          console.log "Getting shipping options for address key", addressKeyMap.postalCode.value
+          console.log "Getting shipping options for address key", addressKeyMap.postalCode
           @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
-          postalCode = addressKeyMap.postalCode.value
-          country = @attr.orderForm.shippingData.address?.country ? @attr.data.country
+          country = addressKeyMap.country ? @attr.data.country
+
+          clearAddress = @attr.data.countryRules[country].usePostalCode ? true
+          # If we are submitting a geoCoordinate address, then don't let the API
+          # overwrite the other address fields with the data provided by the postal code
+          # service
+          if addressKeyMap.geoCoordinatesValid
+            clearAddress = false
+
           # Abort previous call
           if @attr.requestAddressKeys then @attr.requestAddressKeys.abort()
           @attr.requestAddressKeys = @attr.API?.sendAttachment 'shippingData',
-                address:
-                  addressId: addressKeyMap.addressId
-                  postalCode: postalCode
-                  country: country
-                  state: addressKeyMap.state
-                  city: addressKeyMap.city
-                  neighborhood: addressKeyMap.neighborhood
-                clearAddressIfPostalCodeNotFound: @attr.data.countryRules[country].usePostalCode ? true
+                address: addressKeyMap
+                clearAddressIfPostalCodeNotFound: clearAddress
             .done( (orderForm) =>
               hasDeliveries = orderForm.shippingData.logisticsInfo[0].slas.length > 0
               # If we are editing and we received logistics info
@@ -211,8 +212,8 @@ define ['flight/lib/component',
                 if @attr.stateMachine.can('doneSLA')
                   @attr.stateMachine.doneSLA(null, orderForm.shippingData.logisticsInfo, @attr.orderForm.items, @attr.orderForm.sellers)
               else
-                if @attr.data.countryRules[@attr.data.country].queryPostalCode and @attr.stateMachine.can('clearSearch')
-                  @attr.stateMachine.clearSearch(postalCode)
+                if @attr.data.countryRules[country].queryPostalCode and @attr.stateMachine.can('clearSearch')
+                  @attr.stateMachine.clearSearch(addressKeyMap.postalCode)
                 else
                   @select('shippingOptionsSelector').trigger('disable.vtex')
                 $(window).trigger('showMessage.vtex', ['unavailable'])
@@ -220,8 +221,8 @@ define ['flight/lib/component',
             .fail( (reason) =>
               return if reason.statusText is 'abort'
               console.log reason
-              if @attr.data.countryRules[@attr.data.country].queryPostalCode and @attr.stateMachine.can('clearSearch')
-                @attr.stateMachine.clearSearch(postalCode)
+              if @attr.data.countryRules[country].queryPostalCode and @attr.stateMachine.can('clearSearch')
+                @attr.stateMachine.clearSearch(addressKeyMap.postalCode)
               else
                 @attr.stateMachine.editNoSLA(@attr.orderForm.shippingData?.address)
             )
