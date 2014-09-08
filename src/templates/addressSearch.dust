@@ -43,7 +43,9 @@
             <input type="text" autocomplete="off" autocorrect="off" id="ship-address-search" tabindex="221" class="ship-address-search input-xlarge" value="{addressQuery}" name="addressSearch" data-i18n="[placeholder]shipping.addressSearch.addressExample{country}" data-parsley-errors-container=".ship-address-search-errors">
           </p>
 
-          <small class="text-know-postal-code"><a href="javascript:void(0);" class="know-postal-code" target="_blank" data-i18n="shipping.addressForm.knowPostalCode"></a></small>
+          {?showPostalCodeLink}
+            <small class="text-know-postal-code"><a href="javascript:void(0);" class="know-postal-code" target="_blank" data-i18n="shipping.addressForm.knowPostalCode"></a></small>
+          {/showPostalCodeLink}
           <span class="ship-address-search-errors"></span>
         {/showGeolocationSearch}
 
