@@ -1,8 +1,6 @@
 <div class="select-country">
-
-
     {@if cond="{availableAddresses.length} > 0"}
-	<p style="display: block;" class="cancel-address-form">
+	<p class="cancel-address-form">
 		<a href="javascript:void(0);" class="cancel-new-address" data-i18n="shipping.countrySelect.cancelEditAddress"></a>
 	</p>
     {/if}

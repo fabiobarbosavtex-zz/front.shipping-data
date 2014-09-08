@@ -40,7 +40,7 @@
 {#shippingOptions}
     {#selectedSla}
         <div class="shipping-options {^multipleSellers}just-one{/multipleSellers}">
-            <p>
+            <p class="shipping-selected-sla">
                 <span class="text" data-i18n="shipping.shippingSummary.shipping"></span> 
                 <span class="sla">{name}</span>
                 {^isScheduled}
@@ -49,18 +49,18 @@
                 {/isScheduled}
             </p>
             {?multipleSellers}
-            <ul class="product-list muted unstyled">
+            <ul class="shipping-product-list product-list muted unstyled">
                 {#items}
-                <li><i class="icon-caret-right"></i> <span>{name}</span></li>
+                <li class="shipping-product-list-item"><i class="icon-caret-right"></i> <span>{name}</span></li>
                 {/items}
             </ul>
             {/multipleSellers}
         </div>
         {?isScheduled}
             {#deliveryWindow}
-            <p>
-                <span>{formattedDate}</span> -&nbsp;
-                <span>{label}</span>
+            <p class="shipping-selected-description">
+                <span class="shipping-selected-date">{formattedDate}</span> -&nbsp;
+                <span class="shipping-selected-price">{label}</span>
             </p>
             {/deliveryWindow}
         {/isScheduled}
