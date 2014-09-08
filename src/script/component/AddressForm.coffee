@@ -37,7 +37,7 @@ define ['flight/lib/component',
         stateSelector: '#ship-state'
         citySelector: '#ship-city'
         neighborhoodSelector: '#ship-neighborhood'
-        changePostalCodeByCN: 'select[data-postal-code-change="true"]'
+        basedOnStateChange: 'select[data-based-state-change="true"]'
         cancelAddressFormSelector: '.cancel-address-form a'
         submitButtonSelector: '.submit .btn-success.address-save'
         mapCanvasSelector: '#map-canvas'
@@ -298,23 +298,22 @@ define ['flight/lib/component',
         @changePostalCodeByState()
 
       # Change the city select options when a state is selected
-      # citiesBasedOnStateChange should be true in the country's rule
+      # basedOnStateChange should be true in the country's rule
       @changeCities = (state) ->
         rules = @getCountryRule()
-        if not rules.citiesBasedOnStateChange then return
+        if not rules.basedOnStateChange then return
 
         state = state ? rules.states[0]
 
-        @select('changePostalCodeByCN').find('option').remove().end()
-        first = null
+        @select('basedOnStateChange').find('option').remove().end()
+
+        elem = '<option></option>'
+        @select('basedOnStateChange').append(elem)
         for value of rules.map[state]
-          if not first then first = value
           elem = '<option value="'+value+'">'+value+'</option>'
-          @select('changePostalCodeByCN').append(elem)
+          @select('basedOnStateChange').append(elem)
 
-        @select('changePostalCodeByCN').val(first)
-
-        @changePostalCodeByCity()
+        @select('basedOnStateChange').val('')
 
       # Change postal code according to the state selected
       # postalCodeByState should be true in the country's rule
@@ -336,7 +335,7 @@ define ['flight/lib/component',
         return if not rules.postalCodeByCity
 
         state = @select('stateSelector').val()
-        value = @select('changePostalCodeByCN').val()
+        value = @select('basedOnStateChange').val()
         postalCode = rules.map[state][value]
 
         @select('postalCodeSelector').val(postalCode)
@@ -419,7 +418,7 @@ define ['flight/lib/component',
           'findAPostalCodeForAnotherAddressSelector': @findAnotherPostalCode
         @on 'change',
           'stateSelector': @changeState
-          'changePostalCodeByCN': @changePostalCodeByCity
+          'basedOnStateChange': @changePostalCodeByCity
         @on 'keyup',
           'postalCodeSelector': @addressKeysUpdated
 

@@ -71,7 +71,7 @@
 
       <p class="ship-city required input text">
         <label for="ship-city"><span data-i18n="shipping.addressForm.municipality"></span> <span class="item-required">*</span></label>
-        <select id="ship-city" tabindex="228" class="input-large" name="city" data-parsley-trigger="change blur" data-parsley-required="true" data-postal-code-change="true">
+        <select id="ship-city" tabindex="228" class="input-large" name="city" data-parsley-trigger="change blur" data-parsley-required="true" data-based-state-change="true">
           {#cities}
             <option value="{.}" {@eq key=. value=city}selected="true"{/eq}>{.}</option>
           {/cities}

@@ -16,7 +16,7 @@ define ->
       @deliveryOptionsByPostalCode = false
       @deliveryOptionsByGeocordinates = true
 
-      @citiesBasedOnStateChange = false
+      @basedOnStateChange = false
       @postalCodeByState = false
       @postalCodeByCity = false
 

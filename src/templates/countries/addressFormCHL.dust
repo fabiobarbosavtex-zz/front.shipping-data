@@ -71,7 +71,7 @@
 
       <p class="ship-neighborhood required input text">
         <label for="ship-neighborhood"><span data-i18n="shipping.addressForm.community"></span> <span class="item-required">*</span></label>
-        <select id="ship-neighborhood" tabindex="228" class="input-large" name="neighborhood" data-parsley-required="true" data-postal-code-change="true">
+        <select id="ship-neighborhood" tabindex="228" class="input-large" name="neighborhood" data-parsley-required="true" data-based-state-change="true">
           {#cities}
             <option value="{.}" {@eq key=. value=neighborhood}selected="true"{/eq}>{.}</option>
           {/cities}

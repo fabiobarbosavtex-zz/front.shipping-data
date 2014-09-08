@@ -37,7 +37,7 @@ define ->
       
       @usePostalCode = true
       @queryByPostalCode = true
-      @citiesBasedOnStateChange = true
+      @basedOnStateChange = true
       @postalCodeByState = false
       @postalCodeByCity = false
       @geocodingAvailable = false
