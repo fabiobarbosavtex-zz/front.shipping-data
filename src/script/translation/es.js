@@ -46,7 +46,8 @@ define(function () {
         "type": 'Tipo de dirección',
         "receiver": 'Nombre de la persona que va a recibir',
         "deliveryCountry": 'País de entrega',
-        "cancelEditAddress": 'Cancelar alterações e voltar para a lista de endereços'
+        "cancelEditAddress": 'Cancelar alterações e voltar para a lista de endereços',
+        "searchForAnotherAddress": "Buscar otra dirección"
       },
       "addressSearch": {
         "address": 'Dirección',

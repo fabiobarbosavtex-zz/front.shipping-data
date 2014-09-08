@@ -46,7 +46,8 @@ define(function () {
         "type": 'Address type',
         "receiver": 'Receiver',
         "deliveryCountry": 'Delivery country',
-        "cancelEditAddress": 'Cancel and go back to the address list'
+        "cancelEditAddress": 'Cancel and go back to the address list',
+        "searchForAnotherAddress": "Search for another address"
       },
       "addressSearch": {
         "address": 'Address',
