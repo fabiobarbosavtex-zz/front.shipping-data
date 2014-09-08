@@ -63,6 +63,7 @@
       <p class="ship-state required input text">
         <label for="ship-state"><span data-i18n="shipping.addressForm.state"></span> <span class="item-required">*</span></label>
         <select id="ship-state" tabindex="227" class="input-xlarge" name="state" data-parsley-trigger="change blur" data-parsley-required="true">
+          <option></option>
           {#states}
             <option value="{.}" {@eq key=. value=state}selected="true"{/eq}>{.}</option>
           {/states}
@@ -72,6 +73,7 @@
       <p class="ship-city required input text">
         <label for="ship-city"><span data-i18n="shipping.addressForm.city"></span> <span class="item-required">*</span></label>
         <select id="ship-city" tabindex="228" class="input-large" name="city" data-parsley-trigger="change blur" data-parsley-required="true" data-based-state-change="true">
+          <option></option>
           {#cities}
             <option value="{.}" {@eq key=. value=city}selected="true"{/eq}>{.}</option>
           {/cities}
