@@ -19,6 +19,7 @@ define ['flight/lib/component',
           addressQuery: null
           showGeolocationSearch: false
           requiredGoogleFieldsNotFound: []
+          showPostalCodeLink: false
 
         addressFormSelector: '.address-form-new'
         postalCodeQuerySelector: '.postal-code-query'
@@ -203,9 +204,13 @@ define ['flight/lib/component',
         @attr.data.showGeolocationSearch = if useGeolocationSearch? then useGeolocationSearch else false
         @attr.countryRules = countryRule
         @attr.data.country = countryRule.country
+        @attr.data.showPostalCodeLink = countryRule.usePostalCode
         # TODO may be google search
-        @attr.data.postalCodeQuery = postalCodeQuery ? ''
-        @render()
+        if countryRule.queryByPostalCode
+          @attr.data.postalCodeQuery = postalCodeQuery ? ''
+          @render()
+        if countryRule.queryByGeocoding
+          @openGeolocationSearch()
 
       @disable = (ev) ->
         ev?.stopPropagation()
