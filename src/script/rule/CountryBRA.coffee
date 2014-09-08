@@ -12,10 +12,13 @@ define ->
                'SE', 'SP', 'TO']
 
       @usePostalCode = true
-      @queryPostalCode = true
+      @queryByPostalCode = true
       @postalCodeByState = false
       @postalCodeByCity = false
-      @enableGoogleAddressSearch = true
+      @geocodingAvailable = true
+      @queryByGeocoding = false
+      @deliveryOptionsByPostalCode = true
+      @deliveryOptionsByGeocordinates = false
 
       @regexes =
         postalCode: new RegExp(/^([\d]{5})\-?([\d]{3})$/)
@@ -24,7 +27,7 @@ define ->
         postalCode: '99999-999'
 
       @requiredFields = ['addressType', 'addressId', 'receiverName',
-                         'postalCode', 'street', 'city', 'state',
+                         'postalCode', 'street', 'citytal', 'state',
                          'country', 'number', 'neighborhood']
 
       @googleDataMap = [

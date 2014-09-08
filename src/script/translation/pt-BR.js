@@ -23,6 +23,7 @@ define(function () {
         "postalCodeUSA": 'ZIP',
         "postalCodeARG": 'Código Postal (CP)',
         "postalCodeURY": 'Código Postal (CP)',
+        "postalCodePER": 'Código Postal (CP)',
         "postalCode": 'Código Postal',
         "street": 'Endereço',
         "addressLine1": 'Linha 1 do Endereço',

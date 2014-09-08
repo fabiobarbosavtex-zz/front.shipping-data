@@ -35,10 +35,14 @@ define ->
         "Zamora Chinchipe":{"Centinela Del Condor":"0023","Chinchipe":"0023","El Pangui":"0023","Nagaritza":"0023","Palanda":"0023","Paquisha":"0023","Yacuambi":"0023","Yantzaza":"0023","Zamora":"0023"}    
       
       @usePostalCode = false
-      @queryPostalCode = false
+      @queryByPostalCode = false
       @citiesBasedOnStateChange = true
       @postalCodeByState = true
       @postalCodeByCity = false
+      @geocodingAvailable = false
+      @queryByGeocoding = false
+      @deliveryOptionsByPostalCode = true
+      @deliveryOptionsByGeocordinates = false
 
       @regexes =
         postalCode: new RegExp(/^([\d]{4})$/)

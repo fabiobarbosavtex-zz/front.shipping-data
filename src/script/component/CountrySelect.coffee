@@ -38,7 +38,7 @@ define ['flight/lib/component',
         @attr.data.countryRules[country] = new countryRule()
         @attr.data.states = @attr.data.countryRules[country].states
         @attr.data.regexes = @attr.data.countryRules[country].regexes
-        @attr.data.useGeolocation = @attr.data.countryRules[country].useGeolocation
+        @attr.data.geocodingAvailable = @attr.data.countryRules[country].geocodingAvailable
 
     # Handle the selection event
     @selectedCountry = ->

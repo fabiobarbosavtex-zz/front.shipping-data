@@ -90,7 +90,7 @@ define ['flight/lib/component',
           country = @attr.data.country
           rules = @attr.data.countryRules[country]
           if @attr.orderForm.shippingData?.address is null
-            if rules.queryPostalCode
+            if rules.queryByPostalCode or rules.queryByGeocoding
               @attr.stateMachine.search(@attr.orderForm)
             else
               @attr.orderForm.shippingData?.address = {country: country}
@@ -185,7 +185,7 @@ define ['flight/lib/component',
         if addressKeyMap.postalCodeIsValid
           # If the country doesn't query for postal code, the postal code is changes are
           # triggered by the changes made in the address' state or city
-          if not @attr.data.countryRules[addressKeyMap.country].queryPostalCode
+          if not @attr.data.countryRules[addressKeyMap.country].queryByPostalCode
             @attr.stateMachine.loadSLA()
 
           # When we start editing, we always start looking for shipping options
@@ -212,7 +212,7 @@ define ['flight/lib/component',
                 if @attr.stateMachine.can('doneSLA')
                   @attr.stateMachine.doneSLA(null, orderForm.shippingData.logisticsInfo, @attr.orderForm.items, @attr.orderForm.sellers)
               else
-                if @attr.data.countryRules[country].queryPostalCode and @attr.stateMachine.can('clearSearch')
+                if @attr.data.countryRules[country].queryByPostalCode and @attr.stateMachine.can('clearSearch')
                   @attr.stateMachine.clearSearch(addressKeyMap.postalCode)
                 else
                   @select('shippingOptionsSelector').trigger('disable.vtex')
@@ -221,7 +221,7 @@ define ['flight/lib/component',
             .fail( (reason) =>
               return if reason.statusText is 'abort'
               console.log reason
-              if @attr.data.countryRules[country].queryPostalCode and @attr.stateMachine.can('clearSearch')
+              if @attr.data.countryRules[country].queryByPostalCode and @attr.stateMachine.can('clearSearch')
                 @attr.stateMachine.clearSearch(addressKeyMap.postalCode)
               else
                 @attr.stateMachine.editNoSLA(@attr.orderForm.shippingData?.address)
@@ -277,7 +277,7 @@ define ['flight/lib/component',
           countryRules[country] = new countryRule()
           @attr.data.states = countryRules[country].states
           @attr.data.regexes = countryRules[country].regexes
-          @attr.data.useGeolocation = countryRules[country].useGeolocation
+          @attr.data.geocodingAvailable = countryRules[country].geocodingAvailable
           return countryRules[country]
 
       #

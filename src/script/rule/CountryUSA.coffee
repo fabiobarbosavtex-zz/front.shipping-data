@@ -19,10 +19,14 @@ define ->
                  'Wisconsin', 'Wyoming']
       
       @usePostalCode = true
-      @queryPostalCode = false
+      @queryByPostalCode = false
       @citiesBasedOnStateChange = false
       @postalCodeByState = false
       @postalCodeByCity = false
+      @geocodingAvailable = false
+      @queryByGeocoding = false
+      @deliveryOptionsByPostalCode = true
+      @deliveryOptionsByGeocordinates = false
 
       @regexes =
         postalCode: new RegExp(/^([\d]{5})$/)

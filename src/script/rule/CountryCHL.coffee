@@ -27,11 +27,15 @@ define ->
         "XV Región": { "Arica": "1000000", "Camarones": "1040000", "General Lagos": "1080000", "Putre": "1070000"}    
 
       @usePostalCode = false
-      @queryPostalCode = false
+      @queryByPostalCode = false
       @citiesBasedOnStateChange = true
       @postalCodeByState = false
       @postalCodeByCity = true
       @swapNeighborhoodWithCity = true
+      @geocodingAvailable = false
+      @queryByGeocoding = false
+      @deliveryOptionsByPostalCode = true
+      @deliveryOptionsByGeocordinates = false
 
       @regexes =
         postalCode: new RegExp(/^([\d]{7})$/)

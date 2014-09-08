@@ -48,10 +48,14 @@ define ->
         }
 
       @usePostalCode = false
-      @queryPostalCode = false
+      @queryByPostalCode = false
       @citiesBasedOnStateChange = true
       @postalCodeByState = false
       @postalCodeByCity = true
+      @geocodingAvailable = false
+      @queryByGeocoding = false
+      @deliveryOptionsByPostalCode = true
+      @deliveryOptionsByGeocordinates = false
 
       @regexes =
         postalCode: new RegExp(/^([\d]{4})$/)

@@ -44,10 +44,14 @@ define ->
         "Vichada": { "Cumaribo" : "99773", "La Primavera" : "99524", "Puerto Carreño" : "99001", "Santa Rosalía" : "99624" }
 
       @usePostalCode = false
-      @queryPostalCode = false
+      @queryByPostalCode = false
       @citiesBasedOnStateChange = true
       @postalCodeByState = false
       @postalCodeByCity = true
+      @geocodingAvailable = false
+      @queryByGeocoding = false
+      @deliveryOptionsByPostalCode = true
+      @deliveryOptionsByGeocordinates = false
 
       @regexes =
         postalCode: new RegExp(/^([\d]{5})$/)

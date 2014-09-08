@@ -30,10 +30,14 @@ define ->
         "Treinta y Tres": { "Cerro Chato": "", "Isla Patrulla": "", "María Albina": "", "Santa Clara de Olimar": "", "Treinta y Tres": "", "Valentines": "", "Vergara":""}
       
       @usePostalCode = true
-      @queryPostalCode = false
+      @queryByPostalCode = false
       @citiesBasedOnStateChange = true
       @postalCodeByState = false
       @postalCodeByCity = false
+      @geocodingAvailable = false
+      @queryByGeocoding = false
+      @deliveryOptionsByPostalCode = true
+      @deliveryOptionsByGeocordinates = false
 
       @regexes =
         postalCode: new RegExp(/^([\d]{5})$/)

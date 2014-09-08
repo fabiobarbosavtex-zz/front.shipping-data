@@ -7,40 +7,18 @@ define ->
       @country = 'PER'
       @abbr = 'PE'
       @cities = {}
-      @states = [
-        "Amazonas"
-        "Ancash"
-        "Apurímac"
-        "Arequipa"
-        "Ayacucho"
-        "Cajamarca"
-        "Callao"
-        "Cusco"
-        "Huancavelica"
-        "Huánuco"
-        "Ica"
-        "Junín"
-        "La Libertad"
-        "Lambayeque"
-        "Lima"
-        "Loreto"
-        "Madre de Dios"
-        "Moquegua"
-        "Pasco"
-        "Piura"
-        "Puno"
-        "San Martín"
-        "Tacna"
-        "Tumbes"
-        "Ucayali"
-      ]
+      @states = []
 
-      @usePostalCode = false
-      @queryPostalCode = false
+      @usePostalCode = false # exibe campo de Postal Code
+      @queryByPostalCode = false # Busca default é Postal Code
+      @geocodingAvailable = true # oferece busca de endereço por API
+      @queryByGeocoding = true # Busca default é Geocoding
+      @deliveryOptionsByPostalCode = false
+      @deliveryOptionsByGeocordinates = true
+
       @citiesBasedOnStateChange = false
       @postalCodeByState = false
       @postalCodeByCity = false
-      @useGeolocation = true
 
       @regexes =
         postalCode: new RegExp(/^([\d]{5})$/)
