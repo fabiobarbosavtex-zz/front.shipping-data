@@ -15,8 +15,6 @@ define ->
           "Ciudad Del Este": "7000", "Domingo Martinez De Irala": "7600", "Dr. Juan Leon Mallorquin": "7430", "Hernandarias": "7220", "Itaquyry": "7330", "Juan E. Oleary": "7480", "Los Cedrales": "7690", "Mbaracayu": "7300", "Minga Guazu": "7420", "Minga Pora": "7320", "Naranjal": "7570", "Presidente Franco": "7700", "Puerto Bertoni": "7000", "San Alberto": "7310", "San Cristobal": "7550", "Santa Rita": "7540", "Santa Rosa Del Monday": "7530", "Yguazu": "7510", "Ñacunday": "7580"
         }, "Amambay": {
           "Bella Vista": "8650", "Capitan Bado": "8660", "Pedro Juan Caballero": "8500"
-        }, "Distrito Capital": {
-          "Asunción": "1119"
         }, "Boqueron": {
           "Capitan Joel Estigarribia": "9490", "Colonia Neuland": "9470", "Dr. Pedro P. Peña": "9550", "Filadelfia": "9300", "General Eugenio A. Garay": "9500", "Loma Plata": "9370", "Mariscal Estigarribia": "9400", "Teniente 1ro. Irala Fernandez": "9390"
         }, "Caaguazu": {
@@ -26,7 +24,7 @@ define ->
         }, "Canendiyu": {
           "Colonia Anahi": "7890", "Colonia Catuete": "7840", "Corpus Christi": "7850", "Curuguaty": "7930", "General Francisco Alvarez": "7980", "Itarara": "7910", "La Paloma": "7970", "Nueva Esperanza": "7990", "Salto Del Guaira": "7800", "Ygatimi": "7920", "Ypejhu": "7900"
         }, "Central": {
-          "Aregua": "2000", "Capiata": "2560", "Fernando De La Mora": "2300", "Guarambare": "2670", "Ita": "2710", "Itagua": "2740", "Jose Augusto Saldivar": "2630", "Lambare": "2420", "Limpio": "2020", "Loma Pyta": "2050", "Luque": "2060", "Mariano Roque Alonso": "2040", "Nueva Italia": "2700", "San Antonio": "2650", "San Lorenzo": "2160", "Villa Elisa": "2610", "Villeta": "2680", "Ypacarai": "2770", "Ypane": "2660", "Zeballos Cue": "1720", "Ñemby": "2540"
+          "Aregua": "2000", "Asunción": "1119", "Capiata": "2560", "Fernando De La Mora": "2300", "Guarambare": "2670", "Ita": "2710", "Itagua": "2740", "Julian Augusto Saldivar": "2630", "Lambare": "2420", "Limpio": "2020", "Loma Pyta": "2050", "Luque": "2060", "Mariano Roque Alonso": "2040", "Nueva Italia": "2700", "San Antonio": "2650", "San Lorenzo": "2160", "Villa Elisa": "2610", "Villeta": "2680", "Ypacarai": "2770", "Ypane": "2660", "Zeballos Cue": "1720", "Ñemby": "2540"
         }, "Concepcion": {
           "Belen": "8800", "Concepcion": "8700", "Horqueta": "8820", "Loreto": "8960", "Paso Barreto": "8860", "Paso Mbutu": "8870", "Puerto Fonciere": "8880", "San Carlos": "8930", "San Lazaro": "8940", "Vallemi": "8950", "Yby – Yau": "8900"
         }, "Cordillera": {
