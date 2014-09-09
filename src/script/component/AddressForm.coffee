@@ -377,7 +377,7 @@ define ['flight/lib/component',
           @render().then =>
             # For the countries that use postal code, we must trigger
             # an addressKeysUpdated, so it can search for the SLAs
-            if @getCountryRule().queryByPostalCode
+            if @getCountryRule().queryByPostalCode || @getCountryRule().queryByGeocoding
               @addressKeysUpdated()
 
         handleLoadFailure = (reason) ->
