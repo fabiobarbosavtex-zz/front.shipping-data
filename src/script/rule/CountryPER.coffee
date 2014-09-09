@@ -6,8 +6,6 @@ define ->
     constructor: () ->
       @country = 'PER'
       @abbr = 'PE'
-      @cities = {}
-      @states = []
 
       @usePostalCode = false # exibe campo de Postal Code
       @queryByPostalCode = false # Busca default é Postal Code
@@ -27,8 +25,8 @@ define ->
         postalCode: '99999'
 
       @requiredFields = ['addressType', 'addressId', 'receiverName',
-                         'street', 'city', 'state',
-                         'country', 'neighborhood', 'geocordinates']
+                         'street', 'city', 'state', 'neighborhood',
+                         'country', 'geocordinates']
 
       @googleDataMap = [
           value: "postalCode"
@@ -46,19 +44,19 @@ define ->
           types: ["route"]
           required: true
         ,
-          value: "neighborhood"
+          value: "neighborhood" # Provincia
           length: "long_name"
-          types: ["neighborhood", "locality"]
+          types: ["administrative_area_level_2"]
           required: true
         ,
-          value: "state"
+          value: "state" # Región
           length: "short_name"
           types: ["administrative_area_level_1"]
           required: true
         ,
-          value: "city"
+          value: "city" # Distrito
           length: "long_name"
-          types: ["administrative_area_level_2"]
+          types: ["locality"]
           required: true
       ]
 

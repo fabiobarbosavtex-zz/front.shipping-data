@@ -54,19 +54,19 @@
         <input type="text" tabindex="225" id="ship-reference" class="input-xlarge" value="{reference}" name="reference" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
       </p>
 
-      <p class="ship-neighborhood input text hide">
-        <label for="ship-neighborhood"><span data-i18n="shipping.addressForm.district"></span></label>
-        <input type="text" tabindex="226" id="ship-neighborhood" class="input-xlarge" value="{neighborhood}" name="neighborhood" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
+      <p class="ship-city required input text">
+        <label for="ship-city"><span data-i18n="shipping.addressForm.district"></span> <span class="item-required">*</span></label>
+        <input type="text" tabindex="226" id="ship-city" class="ship-city input-large" data-parsley-trigger="change blur" value="{city}" name="city" data-parsley-required="true" data-parsley-alphanumponc="true">
       </p>
 
-      <p class="ship-city required input text">
-        <label for="ship-city"><span data-i18n="shipping.addressForm.city"></span> <span class="item-required">*</span></label>
-        <input type="text" tabindex="227" id="ship-city" class="ship-city input-large" data-parsley-trigger="change blur" value="{city}" name="city" data-parsley-required="true" data-parsley-alphanumponc="true">
+      <p class="ship-neighborhood input text">
+        <label for="ship-neighborhood"><span data-i18n="shipping.addressForm.province"></span> <span class="item-required">*</span></label>
+        <input type="text" tabindex="227" id="ship-neighborhood" class="input-xlarge" value="{neighborhood}" name="neighborhood" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
       </p>
 
       <p class="ship-state required input text">
-        <label for="ship-state"><span data-i18n="shipping.addressForm.state"></span> <span class="item-required">*</span></label>
-        <input type="text" tabindex="228" id="ship-state" class="ship-state input-large" data-parsley-trigger="change blur" value="{state}" name="city" data-parsley-required="true" data-parsley-alphanumponc="true">
+        <label for="ship-state"><span data-i18n="shipping.addressForm.region"></span> <span class="item-required">*</span></label>
+        <input type="text" tabindex="228" id="ship-state" class="ship-state input-large" data-parsley-trigger="change blur" value="{state}" name="state" data-parsley-required="true" data-parsley-alphanumponc="true">
       </p>
 
       <p class="ship-commercial input checkbox hide">
