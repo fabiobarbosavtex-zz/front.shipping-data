@@ -102,8 +102,8 @@
                 {:else}
                 <div class="span btn-group btn-group-vertical">
                     {#slas}
-                    <label class="shipping-option-item label-vertical-group input btn {#isSelected}active{/isSelected}" for="{idAttr}" data-bind="css: {'focus': hasFocus}">
-                        <input type="radio" tabindex="33{@idx}{.}{/idx}" id="{idAttr}" name="{nameAttr}" data-bind="hasfocus: hasFocus, disable: checkout.disableInputs()" value="{id}" {#isSelected}checked="checked"{/isSelected} data-shipping-option="{index}">
+                    <label class="shipping-option-item label-vertical-group input btn {#isSelected}active{/isSelected}" for="{idAttr}">
+                        <input type="radio" tabindex="33{@idx}{.}{/idx}" id="{idAttr}" name="{nameAttr}" value="{id}" {#isSelected}checked="checked"{/isSelected} data-shipping-option="{index}">
                         {^isScheduled}
                         <span class="shipping-option-item-text-wrapper" title="{deliveryEstimateLabel}">
                             <span class="shipping-option-item-name">{name}</span>
@@ -136,9 +136,8 @@
                 <div class="scheduled-sla shipping-option-{index}">
                     <p><span data-i18n="shipping.shippingOptions.deliveryDate"></span>:</p>
                     <input class="datepicker input input-xlarge" type="text"
-                           data-bind="disable: checkout.disableInputs()"
                            data-i18n="[placeholder]shipping.shippingOptions.chooseScheduledDate" style="cursor: pointer;">
-                    <p class="scheduled-sla-time" data-bind="fadeVisible: selectedDeliveryDate() != undefined">
+                    <p class="scheduled-sla-time">
                         <span data-i18n="shipping.shippingOptions.deliveryHour"></span>:
                         <br/>
                         <span class="delivery-windows">
