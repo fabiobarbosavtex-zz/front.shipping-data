@@ -102,7 +102,7 @@ define ['flight/lib/component',
         if not window.vtex.maps.isGoogleMapsAPILoaded
           window.vtex.maps.isGoogleMapsAPILoading = true
           @loading()
-          country = @getCountryRule.abbr
+          country = @getCountryRule().abbr
           script = document.createElement("script")
           script.type = "text/javascript"
           script.src = "//maps.googleapis.com/maps/api/js?sensor=false&components=country:#{country}&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsLoadedOnAddressForm"
