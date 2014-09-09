@@ -29,6 +29,7 @@ define ['flight/lib/component',
         pickadateSelector: '.datepicker'
         deliveryWindowsSelector: '.delivery-windows'
         deliveryWindowSelector: '.delivery-windows input[type=radio]'
+        changeSlaSelector: '#change-sla-items-list'
 
       # Render this component according to the data object
       @render = (options) ->
@@ -109,6 +110,13 @@ define ['flight/lib/component',
         shippingOptions = @attr.data.shippingOptions[shippingOptionIndex]
         @selectShippingOption(shippingOptions, selectedSla)
 
+      @selectShippingOptionMultipleSellersHandler = (ev, data) ->
+        ev.preventDefault()
+        selectedSla = $(data.el).val()
+        shippingOptionIndex = $(data.el).data('shipping-option')
+        shippingOptions = @attr.data.shippingOptions[shippingOptionIndex]
+        @selectShippingOption(shippingOptions, selectedSla)
+
       @selectShippingOption = (shippingOptions, selectedSla) ->
         @updateLogisticsInfoModel(shippingOptions, selectedSla)
 
@@ -150,6 +158,8 @@ define ['flight/lib/component',
         @on 'click',
           'shippingOptionSelector': @selectShippingOptionHandler
           'deliveryWindowSelector': @deliveryWindowSelected
+        @on 'change',
+          'changeSlaSelector': @selectShippingOptionMultipleSellersHandler
 
         @setLocalePath 'shipping/script/translation/'
 

@@ -93,9 +93,9 @@
 
                 {#multipleSellers}
                 <div class="span btn-group btn-group-vertical">
-                <select id="change-sla-items-list" class="span12" tabindex="329" data-bind="disable: checkout.disableInputs()">
+                <select id="change-sla-items-list" class="span12" tabindex="329" data-shipping-option="{index}">
                     {#slas}
-                    <option value="{id}" {#isSelected}selected="selected"{/isSelected} data-shipping-option="{index}">{fullEstimateLabel}</option>
+                    <option value="{id}" {#isSelected}selected="selected"{/isSelected}>{fullEstimateLabel}</option>
                     {/slas}
                 </select>
                 </div>
