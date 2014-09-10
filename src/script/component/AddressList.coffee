@@ -11,10 +11,6 @@ define ['flight/lib/component',
         data:
           address: {}
           availableAddresses: []
-          selectedAddressId: ''
-          hasOtherAddresses: false
-          canEditData: false
-          loggedIn: false
           deliveryCountries: ['BRA', 'ARG', 'CHL']
           countryRules: {}
 
@@ -23,19 +19,16 @@ define ['flight/lib/component',
         addressItemSelector: '.address-list .address-item'
         submitButtonSelector: '.submit .btn-success'
 
-      # Render this component according to the data object
       @render = ->
         dust.render template, @attr.data, (err, output) =>
           output = $(output).i18n()
           @$node.html(output)
 
       # Create a new address
-      # Trigger an event to AddressForm component
       @createAddress = ->
         @trigger('editAddress.vtex')
 
       # Edit an existing address
-      # Trigger an event to AddressForm component
       @editAddress = ->
         @attr.data.showDontKnowPostalCode = false
         @trigger('editAddress.vtex', @attr.data.address)

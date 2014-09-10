@@ -141,7 +141,6 @@ define ['flight/lib/component',
 
       @disable = (ev) ->
         ev?.stopPropagation()
-        @attr.data.loadingShippingOptions = false
         @$node.html('')
 
       @startLoadingShippingOptions = (ev) ->

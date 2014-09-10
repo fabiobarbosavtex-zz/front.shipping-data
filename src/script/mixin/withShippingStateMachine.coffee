@@ -113,7 +113,7 @@ define [], () ->
 
     @onBeforeSelect = (event, from, to, orderForm) ->
       @attr.data.active = true
-      console.log "After select"
+      console.log "Before select"
       if to is 'list'
         @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
         @select('addressListSelector').trigger('stopLoading.vtex')

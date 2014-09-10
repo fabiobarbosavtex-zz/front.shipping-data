@@ -156,13 +156,14 @@ define ['flight/lib/component',
         if @attr.stateMachine.current is 'list'
           @select('shippingOptionsSelector').trigger('startLoading.vtex')
           @select('addressListSelector').trigger('startLoading.vtex')
-          @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData).done (orderForm) =>
-            if @validateAddress() isnt true and @attr.stateMachine.can("invalidAddress")
-              # If it's invalid, stop here and edit it
-              orderForm.shippingData.address = @setProfileNameIfNull(orderForm.shippingData.address)
-              @attr.stateMachine.invalidAddress(orderForm.shippingData.address, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
-            else if @attr.stateMachine.can("select")
-              @attr.stateMachine.select(orderForm)
+          @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData)
+            .done (orderForm) =>
+              if @validateAddress() isnt true and @attr.stateMachine.can("invalidAddress")
+                # If it's invalid, stop here and edit it
+                orderForm.shippingData.address = @setProfileNameIfNull(orderForm.shippingData.address)
+                @attr.stateMachine.invalidAddress(orderForm.shippingData.address, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
+              else if @attr.stateMachine.can("select")
+                @attr.stateMachine.select(orderForm)
 
       # The current address was updated, either selected or in edit
       @addressUpdated = (ev, address) ->
