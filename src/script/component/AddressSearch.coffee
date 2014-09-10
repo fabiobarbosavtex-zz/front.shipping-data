@@ -129,7 +129,8 @@ define ['flight/lib/component',
 
                       item = _.extend(item, @getAddressFromGoogle(item, googleDataMap))
                       if (not @attr.countryRules.usePostalCode) or (hasPostalCode and !isPostalCodePrefix)
-                        itemsToDisplay.push item
+                        if (item.street || item.number || item.neighborhood || item.city || item.state)
+                          itemsToDisplay.push item
 
                     process(itemsToDisplay)
               , 300)
