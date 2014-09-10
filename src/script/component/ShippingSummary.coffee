@@ -33,8 +33,7 @@ define ['flight/lib/component',
       @attr.data.canEditData = canEditData
       @attr.data.isUsingPostalCode = rules?.usePostalCode
       @attr.data.address = shippingData.address
-      if @attr.data.address?.addressType is "giftRegistry"
-        @attr.data.isGift = true
+      @attr.data.isGift = @attr.data.address?.addressType is "giftRegistry"
       @attr.data.giftRegistryData = giftRegistryData
       @attr.data.logisticsInfo = shippingData.logisticsInfo
       @attr.data.shippingOptions = @getShippingOptionsData(shippingData.logisticsInfo, items, sellers)
