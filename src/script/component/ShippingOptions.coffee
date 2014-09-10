@@ -154,7 +154,7 @@ define ['flight/lib/component',
         @on 'enable.vtex', @enable
         @on 'disable.vtex', @disable
         @on 'scheduleDateSelected.vtex', @scheduleDateSelected
-        @on 'startLoadingShippingOptions.vtex', @startLoadingShippingOptions
+        @on 'startLoading.vtex', @startLoadingShippingOptions
         @on 'click',
           'shippingOptionSelector': @selectShippingOptionHandler
           'deliveryWindowSelector': @deliveryWindowSelected

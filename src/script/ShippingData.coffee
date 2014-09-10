@@ -154,7 +154,8 @@ define ['flight/lib/component',
         address.isValid = true # se foi selecionado da lista, está válido
         @addressUpdated(ev, address)
         if @attr.stateMachine.current is 'list'
-          @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
+          @select('shippingOptionsSelector').trigger('startLoading.vtex')
+          @select('addressListSelector').trigger('startLoading.vtex')
           @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData).done (orderForm) =>
             if @validateAddress() isnt true and @attr.stateMachine.can("invalidAddress")
               # If it's invalid, stop here and edit it
@@ -190,7 +191,7 @@ define ['flight/lib/component',
 
           # When we start editing, we always start looking for shipping options
           console.log "Getting shipping options for address key", addressKeyMap.postalCode
-          @select('shippingOptionsSelector').trigger('startLoadingShippingOptions.vtex')
+          @select('shippingOptionsSelector').trigger('startLoading.vtex')
           country = addressKeyMap.country ? @attr.data.country
 
           clearAddress = @attr.data.countryRules[country].usePostalCode ? true

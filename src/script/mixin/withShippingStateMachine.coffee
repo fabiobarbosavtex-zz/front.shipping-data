@@ -116,6 +116,7 @@ define [], () ->
       console.log "After select"
       if to is 'list'
         @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
+        @select('addressListSelector').trigger('stopLoading.vtex')
 
     @onEnterEditNoSLA = (event, from, to, address) ->
       console.log "Enter edit with no SLA", address

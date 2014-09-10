@@ -196,6 +196,7 @@ define ['flight/lib/component',
       # Set to a loading state
       # This will disable all fields
       @loading = (ev, data) ->
+        ev?.stopPropagation()
         @attr.data.loading = true
         @render()
 
@@ -242,7 +243,7 @@ define ['flight/lib/component',
       @after 'initialize', ->
         @on 'enable.vtex', @enable
         @on 'disable.vtex', @disable
-        @on 'loading.vtex', @loading
+        @on 'startLoading.vtex', @loading
         @on 'click',
           'dontKnowPostalCodeSelector': @openGeolocationSearch
           'knowPostalCodeSelector': @openZipSearch

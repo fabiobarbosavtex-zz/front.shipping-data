@@ -98,13 +98,23 @@ define ['flight/lib/component',
           @render()
 
       @disable = (ev) ->
-        if ev then ev.stopPropagation()
+        ev?.stopPropagation()
         @$node.html('')
+
+      @startLoading = (ev) ->
+        ev?.stopPropagation()
+        console.log "start loading"
+
+      @stopLoading = (ev) ->
+        ev?.stopPropagation()
+        console.log "stop loading"
 
       # Bind events
       @after 'initialize', ->
         @on 'enable.vtex', @enable
         @on 'disable.vtex', @disable
+        @on 'startLoading.vtex', @startLoading
+        @on 'stopLoading.vtex', @stopLoading
         @on 'click',
           'createAddressSelector': @createAddress
           'addressItemSelector': @selectAddressHandler
