@@ -13,6 +13,8 @@ define ['flight/lib/component',
           availableAddresses: []
           deliveryCountries: ['BRA', 'ARG', 'CHL']
           countryRules: {}
+          loading: false
+          disableEdit: false
 
         createAddressSelector: '.address-create'
         editAddressSelector: '.address-edit'
@@ -26,10 +28,12 @@ define ['flight/lib/component',
 
       # Create a new address
       @createAddress = ->
+        return if @attr.data.loading
         @trigger('editAddress.vtex')
 
       # Edit an existing address
       @editAddress = ->
+        return if @attr.data.loading or @attr.data.disableEdit
         @attr.data.showDontKnowPostalCode = false
         @trigger('editAddress.vtex', @attr.data.address)
 
@@ -47,6 +51,8 @@ define ['flight/lib/component',
             for aa in @attr.data.availableAddresses
               aa.isSelected = aa.addressId is @attr.data.address?.addressId
               aa.isGiftList = aa.addressType is "giftRegistry"
+              if aa.isSelected and aa.isGiftList
+                @attr.data.disableEdit = true
 
               aa.firstPart = '' + aa.street
               aa.firstPart += ', ' + aa.complement if aa.complement
@@ -67,8 +73,15 @@ define ['flight/lib/component',
       @selectAddress = (selectedAddressId) ->
         for aa in @attr.data.availableAddresses
           if aa.addressId is selectedAddressId
-            aa.isSelected = true
             @attr.data.address = aa
+            aa.isSelected = true
+            # Disable edit input if selected address is from gift list
+            if aa.isGiftList
+              @attr.data.disableEdit = true
+              $('a', @select('editAddressSelector')).addClass('disabled')
+            else
+              @attr.data.disableEdit = false
+              $('a', @select('editAddressSelector')).removeClass('disabled')
           else
             aa.isSelected = false
 
@@ -81,6 +94,7 @@ define ['flight/lib/component',
 
       @enable = (ev, deliveryCountries, shippingData, giftRegistryData) ->
         if ev then ev.stopPropagation()
+        @attr.data.loading = false
         @attr.data.deliveryCountries = deliveryCountries
         @attr.data.address = shippingData.address
         @attr.data.availableAddresses = shippingData.availableAddresses
@@ -96,11 +110,15 @@ define ['flight/lib/component',
 
       @startLoading = (ev) ->
         ev?.stopPropagation()
-        console.log "start loading"
+        $('a', @select('createAddressSelector')).addClass('disabled')
+        $('a', @select('editAddressSelector')).addClass('disabled')
+        @attr.data.loading = true
 
       @stopLoading = (ev) ->
         ev?.stopPropagation()
-        console.log "stop loading"
+        $('a', @select('createAddressSelector')).removeClass('disabled')
+        $('a', @select('editAddressSelector')).removeClass('disabled')
+        @attr.data.loading = false
 
       # Bind events
       @after 'initialize', ->

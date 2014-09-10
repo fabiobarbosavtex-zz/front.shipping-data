@@ -36,12 +36,12 @@
     </fieldset>
   </div>
   <p class="link edit address-edit">
-    <a href="javascript:void(0);">
+    <a href="javascript:void(0);" {?loading}class="disabled"{:else}{?disableEdit}class="disabled"{/disableEdit}{/loading}>
       <i class="icon-edit"></i> <span data-i18n="shipping.addressList.editSelectedAddress"></span>
     </a>
   </p>
   <p class="link create address-create">
-    <a href="javascript:void(0);">
+    <a href="javascript:void(0);" {?loading}class="disabled"{/loading}>
       <i class="icon-plus"></i> <span data-i18n="shipping.addressList.anotherAddress"></span>
     </a>
   </p>
