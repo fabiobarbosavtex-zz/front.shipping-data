@@ -52,6 +52,9 @@ define ['flight/lib/component',
             @addCountryRule prop
 
             for aa in @attr.data.availableAddresses
+              aa.isSelected = aa.addressId is @attr.data.address?.addressId
+              aa.isGiftList = aa.addressType is "giftRegistry"
+
               aa.firstPart = '' + aa.street
               aa.firstPart += ', ' + aa.complement if aa.complement
               aa.firstPart += ', ' + aa.number if aa.number
@@ -69,25 +72,26 @@ define ['flight/lib/component',
         @selectAddress($('input', data.el).attr('value'))
 
       @selectAddress = (selectedAddressId) ->
-        wantedAddress = _.find @attr.data.availableAddresses, (a) ->
-          a.addressId is selectedAddressId
-        @attr.data.address = wantedAddress
+        for aa in @attr.data.availableAddresses
+          if aa.addressId is selectedAddressId
+            aa.isSelected = true
+            @attr.data.address = aa
+          else
+            aa.isSelected = false
 
-        @attr.data.selectedAddressId = selectedAddressId
         @trigger 'addressSelected.vtex', @attr.data.address
-
         @render()
 
       # Store new country rules in the data object
       @addCountryRule = (data) ->
         _.extend(@attr.data.countryRules, data)
 
-      @enable = (ev, deliveryCountries, shippingData) ->
+      @enable = (ev, deliveryCountries, shippingData, giftRegistryData) ->
         if ev then ev.stopPropagation()
         @attr.data.deliveryCountries = deliveryCountries
         @attr.data.address = shippingData.address
         @attr.data.availableAddresses = shippingData.availableAddresses
-        @attr.data.selectedAddressId = shippingData.address?.addressId
+        @attr.data.giftRegistryData = giftRegistryData
 
         if @attr.data.availableAddresses.length > 0
           @createAddressesSummaries()

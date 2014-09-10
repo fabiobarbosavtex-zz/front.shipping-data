@@ -2,37 +2,36 @@
   <div class="address-list-items">
     <fieldset>
     {#availableAddresses}
-      {@if cond="'{addressId}' == '{selectedAddressId}'"}
-        <div class="address-item active">
-          <p class="input">
-            <input type="radio" id="edit-delivery{addressId}" value="{addressId}" checked="checked" name="selected-deliveryAddress">
-            <label for="edit-delivery{addressId}" class="input">
-              <span class="firstpart">{firstPart}</span>
-              <br>              
-              <span class="secondpart">{secondPart}</span>
-            </label>
-          </p>
-          <span class="text-box-selected hide" data-i18n="shipping.addressList.selected"></span>&nbsp;
-          <span class="link-box-select selected">
-            <i class="icon-ok-circle"></i>
-          </span>
-        </div>
-      {:else}
-        <div class="address-item">
-          <p class="input">
-            <input type="radio" id="edit-delivery{addressId}" value="{addressId}" name="selected-deliveryAddress">
-            <label for="edit-delivery{addressId}" class="input">
-              <span class="firstpart">{firstPart}</span>
-              <br>
-              <span class="secondpart">{secondPart}</span>              
-            </label>
-          </p>
-          <a class="link-box-select" href="javascript:void(0);" data-i18n="shipping.addressList.select"></a>&nbsp;
-          <span class="link-box-select">
-            <i class="icon-circle-blank"></i>
-          </span>
-        </div>
-      {/if}
+      <div class="address-item {?isSelected}active{/isSelected}">
+        <p class="input">
+          <input type="radio" id="edit-delivery{addressId}" value="{addressId}" {?isSelected}checked="checked"{/isSelected} name="selected-deliveryAddress">
+          {^isGiftList}
+          <label for="edit-delivery{addressId}" class="input">
+            <span class="firstpart">{firstPart}</span>
+            <br>
+            <span class="secondpart">{secondPart}</span>
+          </label>
+          {:else}
+          <label class="input gift-list-label">
+             <span>
+                 <i class="icon-gift"></i>
+                 <span data-i18n="shipping.addressList.deliverAtAddressOf"></span>&nbsp;
+                 <strong class="gift-list-name">{giftRegistryData.description}</strong>
+             </span>
+          </label>
+          {/isGiftList}
+        </p>
+        {?isSelected}
+        <span class="text-box-selected hide" data-i18n="shipping.addressList.selected"></span>&nbsp;
+        <span class="link-box-select selected">
+          <i class="icon-ok-circle"></i>
+        {:else}
+        <a class="link-box-select" href="javascript:void(0);" data-i18n="shipping.addressList.select"></a>&nbsp;
+        <span class="link-box-select">
+          <i class="icon-circle-blank"></i>
+        {/isSelected}
+        </span>
+      </div>
     {/availableAddresses}
     </fieldset>
   </div>

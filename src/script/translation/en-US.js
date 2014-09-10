@@ -11,7 +11,8 @@ define(function () {
         "selected": 'Selected',
         "select": 'Select',
         "editSelectedAddress": 'Edit current address',
-        "anotherAddress": 'Delivery in another address'
+        "anotherAddress": 'Delivery in another address',
+        "deliverAtAddressOf": 'Deliver at address of:'
       },
       "addressForm": {
         "header": 'New address',

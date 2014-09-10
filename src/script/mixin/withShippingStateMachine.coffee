@@ -103,7 +103,7 @@ define [], () ->
       @attr.data.active = true
       console.log "Enter list"
       @select('addressFormSelector').trigger('disable.vtex')
-      @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData])
+      @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
       @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
 
     @onLeaveList = (event, from, to) ->

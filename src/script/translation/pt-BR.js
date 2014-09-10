@@ -11,7 +11,8 @@ define(function () {
         "selected": 'Selecionado',
         "select": 'Selecionar',
         "editSelectedAddress": 'Modificar endereço selecionado',
-        "anotherAddress": 'Entregar em outro endereço'
+        "anotherAddress": 'Entregar em outro endereço',
+        "deliverAtAddressOf": 'Entregar no endereço de:'
       },
       "addressForm": {
         "header": 'Cadastrar Novo endereço',
