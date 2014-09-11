@@ -39,17 +39,19 @@ define ['flight/lib/component',
 
           if @attr.data.showGeolocationSearch
             @startGoogleAddressSearch()
+            @select('addressSearchSelector').focus()
+          else
+            @attr.autocomplete = null
+            @select('postalCodeQuerySelector').inputmask
+              mask: @attr.countryRules.masks.postalCode
 
-          @select('postalCodeQuerySelector').inputmask
-            mask: @attr.countryRules.masks.postalCode
+            window.ParsleyValidator.addValidator('postalcode',
+              (val) =>
+                  return @attr.countryRules.regexes.postalCode.test(val)
+              , 32)
 
           if not (@attr.data.loading or @attr.data.loadingGeolocation or @attr.data.showGeolocationSearch)
             @select('postalCodeQuerySelector').focus()
-
-          window.ParsleyValidator.addValidator('postalcode',
-            (val) =>
-                return @attr.countryRules.regexes.postalCode.test(val)
-            , 32)
 
           @attr.parsley = @select('addressFormSelector').parsley
             errorClass: 'error'
@@ -70,7 +72,7 @@ define ['flight/lib/component',
 
       # Call the postal code API
       @getPostalCode = (postalCode) ->
-        # Clear map postition
+        # Clear map position
         @attr.getAddressInformation({
           postalCode: postalCode.replace(/-/g, '')
           country: @attr.data.country
@@ -85,77 +87,17 @@ define ['flight/lib/component',
         @render()
 
       @startGoogleAddressSearch = ->
-        @select('addressSearchSelector').typeahead
-            minLength: 3
-          ,
-            displayKey: (address) ->
-              formattedAddress = if address.street then address.street
-              if address.street and address.number then formattedAddress += ", "
-              if address.number then formattedAddress += address.number
-              formattedAddress += " - "
-              if address.neighborhood then formattedAddress += address.neighborhood
-              if address.neighborhood and address.city then formattedAddress += " - "
-              if address.city then formattedAddress += address.city
-              if address.city and address.state then formattedAddress += " - "
-              if address.state then formattedAddress += address.state
-              return formattedAddress
+        options =
+          types: ['address']
+          componentRestrictions:
+            country: @attr.countryRules.abbr
 
-            source: (query, process) =>
-              googleDataMap = @attr.countryRules.googleDataMap
-              if @attr.geoSearchTimer
-                window.clearTimeout(@attr.geoSearchTimer)
-              @attr.geoSearchTimer = window.setTimeout(=>
-                geocoder = new google.maps.Geocoder()
-                geoCodeRequest =
-                  address: query
-                  componentRestrictions:
-                    country: @attr.countryRules.abbr
-                geocoder.geocode geoCodeRequest, (response, status) =>
-                  if status is "OK" and response.length > 0
-                    itemsToDisplay = []
-                    _.each response, (item) =>
-                      hasPostalCode = false
-                      isPostalCodePrefix = false
 
-                      # Only mind showing addresses that has postal code
-                      # if country use postal code
-                      if @attr.countryRules.usePostalCode
-                        _.each item.address_components, (component) =>
-                          _.each component.types, (type) ->
-                            if type is "postal_code"
-                              hasPostalCode = true
-                            if type is 'postal_code_prefix'
-                              isPostalCodePrefix = true
+        @attr.autocomplete = new google.maps.places.Autocomplete(@select('addressSearchSelector')[0], options)
 
-                      item = _.extend(item, @getAddressFromGoogle(item, googleDataMap))
-                      if (not @attr.countryRules.usePostalCode) or (hasPostalCode and !isPostalCodePrefix)
-                        if (item.street || item.number || item.neighborhood || item.city || item.state)
-                          itemsToDisplay.push item
-
-                    process(itemsToDisplay)
-              , 300)
-
-            templates:
-              suggestion: (address) ->
-                formattedAddress = "<span class='search-result-item-street'>" + if address.street then address.street
-                if address.street and address.number then formattedAddress += ", "
-                if address.number then formattedAddress += address.number
-                formattedAddress += "</span>&nbsp;"
-                formattedAddress += "<small class='muted'>"
-                if address.neighborhood then formattedAddress += address.neighborhood
-                if address.neighborhood and address.city then formattedAddress += " - "
-                if address.city then formattedAddress += address.city
-                if address.city and address.state then formattedAddress += " - "
-                if address.state then formattedAddress += address.state
-                return formattedAddress += "</small>"
-              empty: () ->
-                return "<div class='search-result-empty'>" +
-                  "<span class='search-result-empty-title'>"+i18n.t('shipping.addressSearch.didntFindAddress')+"</span>" +
-                  "<div class='search-result-empty-tip'><small class='muted'>"+i18n.t('shipping.addressSearch.whatAboutMoreInfo')+"</small></div></div>"
-
-          .on "typeahead:selected", (e, addressObject) =>
-            console.log addressObject
-            @addressMapper(addressObject)
+        google.maps.event.addListener @attr.autocomplete, 'place_changed', (ev, data) =>
+          googleAddress = @attr.autocomplete.getPlace()
+          @addressMapper(googleAddress, @attr.countryRules.googleDataMap)
 
       @addressMapper = (googleAddress) ->
         # Clean required google fields error and render
@@ -225,7 +167,7 @@ define ['flight/lib/component',
           window.vtex.maps.isGoogleMapsAPILoading = true
           script = document.createElement("script")
           script.type = "text/javascript"
-          script.src = "//maps.googleapis.com/maps/api/js?sensor=true&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsLoadedOnSearch"
+          script.src = "//maps.googleapis.com/maps/api/js?libraries=places&sensor=true&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsLoadedOnSearch"
           document.body.appendChild(script)
           @attr.data.loadingGeolocation = true
           @render()
