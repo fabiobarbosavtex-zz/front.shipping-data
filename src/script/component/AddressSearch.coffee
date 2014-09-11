@@ -167,6 +167,7 @@ define ['flight/lib/component',
       @setGeolocation = (position) ->
         coord = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
         @attr.geolocation = google.maps.LatLngBounds(coord, coord)
+
         if @attr.autocomplete
           @attr.autocomplete.setBounds(@attr.geolocation)
         else
@@ -185,13 +186,14 @@ define ['flight/lib/component',
           script.src = "//maps.googleapis.com/maps/api/js?libraries=places&sensor=true&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsLoadedOnSearch"
           document.body.appendChild(script)
           @attr.data.loadingGeolocation = true
+          @attr.data.showGeolocationSearch = false
           @render()
           return
         else
           @attr.data.showGeolocationSearch = true
           @render()
 
-      @openZipSearch = ->
+      @openPostalCodeSearch = ->
         @attr.data.showGeolocationSearch = false
         @render()
 
@@ -205,7 +207,7 @@ define ['flight/lib/component',
         @on 'startLoading.vtex', @loading
         @on 'click',
           'dontKnowPostalCodeSelector': @openGeolocationSearch
-          'knowPostalCodeSelector': @openZipSearch
+          'knowPostalCodeSelector': @openPostalCodeSearch
         @on 'keyup',
           'postalCodeQuerySelector': @validatePostalCode
         @on 'submit',

@@ -57,7 +57,7 @@ define ['flight/lib/component',
             @attr.data.loading = false
             @createMap()
 
-          if data.loading
+          if @attr.data.loading
             $('input, select, .btn', @$node).attr('disabled', 'disabled')
 
           rules = @getCountryRule()
@@ -83,8 +83,7 @@ define ['flight/lib/component',
           @attr.parsley.subscribe 'parsley:field:validated', () =>
             @validate()
 
-          rules = @getCountryRule()
-          if (@attr.data.address.validate(rules) is true)
+          if @attr.data.address.validate(rules) is true
             @attr.parsley.validate()
           else
             @select('addressInputsSelector').each ->
@@ -181,7 +180,6 @@ define ['flight/lib/component',
         disabled.attr 'disabled', 'disabled'
         addressObj = {}
         $.each serializedForm, ->
-          #addressObj[@name] = @value
           addressObj[@name] = if (@value? and (@value isnt "")) then @value else null
 
         if addressObj.addressTypeCommercial
