@@ -19,7 +19,7 @@ define ['flight/lib/component',
           addressQuery: null
           showGeolocationSearch: false
           requiredGoogleFieldsNotFound: []
-          usePostalCode: false
+          postalCodeByInput: false
 
         addressFormSelector: '.address-form-new'
         postalCodeQuerySelector: '.postal-code-query'
@@ -152,7 +152,7 @@ define ['flight/lib/component',
         @attr.data.dontKnowPostalCodeURL = countryRule.dontKnowPostalCodeURL
         @attr.data.geocodingAvailable = countryRule.geocodingAvailable
         @attr.data.country = countryRule.country
-        @attr.data.usePostalCode = countryRule.usePostalCode
+        @attr.data.postalCodeByInput = countryRule.postalCodeByInput
 
         if countryRule.queryByPostalCode
           @attr.data.postalCodeQuery = postalCodeQuery ? ''

@@ -18,7 +18,7 @@
   <fieldset class="address-data">
 
         {^showGeolocationSearch}
-          {?usePostalCode}
+          {?postalCodeByInput}
           {! Caso possa usar geocoding e código postal !}
             <p class="ship-postal-code required input text mask">
               <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
@@ -52,7 +52,7 @@
                 <label for="ship-address-search"><span data-i18n="shipping.addressSearch.address"></span> <span class="item-required">*</span></label>
                 <input type="text" autocomplete="off" autocorrect="off" id="ship-address-search" tabindex="221" class="ship-address-search input-xlarge" value="{addressQuery}" name="addressSearch" data-i18n="[placeholder]shipping.addressSearch.addressExample{country}" data-parsley-errors-container=".ship-address-search-errors" disabled>
               </p>
-            {/usePostalCode}
+            {/postalCodeByInput}
         {:else}
           {! Geocoding aberto !}
           <p class="ship-search input text mask">
@@ -60,9 +60,9 @@
             <input type="text" autocomplete="off" autocorrect="off" id="ship-address-search" tabindex="221" class="ship-address-search input-xlarge" value="{addressQuery}" name="addressSearch" data-i18n="[placeholder]shipping.addressSearch.addressExample{country}" data-parsley-errors-container=".ship-address-search-errors">
           </p>
 
-          {?usePostalCode}
-            <small class="text-know-postal-code"><a href="javascript:void(0);" class="know-postal-code" target="_blank" data-i18n="shipping.addressForm.knowPostalCode"></a></small>
-          {/usePostalCode}
+          {?postalCodeByInput}
+            <small class="text-know-postal-code"><a href="javascript:void(0);" class="know-postal-code" target="_blank" data-i18n="shipping.addressSearch.knowPostalCode"></a></small>
+          {/postalCodeByInput}
           <span class="ship-address-search-errors"></span>
         {/showGeolocationSearch}
 

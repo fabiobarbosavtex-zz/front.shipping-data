@@ -27,11 +27,11 @@
         <span class="city">{city}</span> -&nbsp;
         {/city}
         <span class="state">{state}</span>
-        {?isUsingPostalCode}
+        {?postalCodeByInput}
         &nbsp;- <span class="postal-code">{postalCode}</span>&nbsp;
         {:else}
         &nbsp;-&nbsp;
-        {/isUsingPostalCode}
+        {/postalCodeByInput}
         <span class="country" data-i18n="countries.{country}"></span>
     </p>
     {/address}

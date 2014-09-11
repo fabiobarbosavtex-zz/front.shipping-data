@@ -26,16 +26,19 @@ define ->
         "Región Metropolitana": { "Alhué": "9650000", "Buin": "9500000", "Calera de Tango": "9560000", "Cerrillos": "9200000", "Cerro Navia": "9080000", "Colina": "9350000", "Conchalí": "8540000", "Curacaví": "9630000", "El Bosque": "8010000", "El Monte": "9810000", "Estación Central": "9160000", "Huechuraba": "8580000", "Independencia": "8380000", "Isla de Maipo": "9790000", "La Cisterna": "7970000", "La Florida": "8240000", "La Granja": "8780000", "La Pintana": "8820000", "La Reina": "7850000", "Lampa": "9380000", "Las Condes": "7550000", "Lo Barnechea": "7690000", "Lo Espejo": "9120000", "Lo Prado": "8980000", "Macul": "7810000", "Maipú": "9250000", "María Pinto": "9620000", "Melipilla": "9580000", "Ñuñoa": "7750000", "Padre Hurtado": "9710000", "Paine": "9540000", "Pedro Aguirre Cerda": "8460000", "Peñaflor": "9750000", "Peñalolén": "7910000", "Pirque": "9480000", "Providencia": "7500000", "Pudahuel": "9020000", "Puente Alto": "8150000", "Quilicura": "8700000", "Quinta Normal": "8500000", "Recoleta": "8420000", "Renca": "8640000", "San Bernardo": "8050000", "San Joaquín": "8940000", "San José de Maipo": "9460000", "San Miguel": "8900000", "San Pedro": "9660000", "San Ramón": "8860000", "Santiago": "8320000", "Talagante": "9670000", "Tiltil": "9420000", "Vitacura": "7630000" }
         "XV Región": { "Arica": "1000000", "Camarones": "1040000", "General Lagos": "1080000", "Putre": "1070000"}    
 
-      @usePostalCode = false
-      @queryByPostalCode = false
-      @basedOnStateChange = true
+      @postalCodeByInput = false
       @postalCodeByState = false
       @postalCodeByCity = true
-      @swapNeighborhoodWithCity = true
-      @geocodingAvailable = false
+
+      @queryByPostalCode = false
       @queryByGeocoding = false
+
       @deliveryOptionsByPostalCode = true
       @deliveryOptionsByGeocordinates = false
+
+      @basedOnStateChange = true
+      @geocodingAvailable = false
+      @swapNeighborhoodWithCity = true
 
       @regexes =
         postalCode: new RegExp(/^([\d]{7})$/)

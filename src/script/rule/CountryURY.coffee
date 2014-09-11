@@ -29,15 +29,19 @@ define ->
         "Tacuarembó": { "Achar": "", "Ansina": "", "Cardoso": "", "Chamberlain": "", "Cuchilla de Peralta": "", "Curtina": "", "La Pedrera": "", "Las Toscas": "", "Laureles": "", "Paso Bonilla": "", "Paso de los Toros": "", "Paso del Cerro": "", "Piedra Sola": "", "San Gregorio de Polanco": "", "Tacuarembó": "", "Tambores": "", "Valle Edén":""}
         "Treinta y Tres": { "Cerro Chato": "", "Isla Patrulla": "", "María Albina": "", "Santa Clara de Olimar": "", "Treinta y Tres": "", "Valentines": "", "Vergara":""}
       
-      @usePostalCode = true
-      @queryByPostalCode = false
-      @basedOnStateChange = true
+
+      @postalCodeByInput = true
       @postalCodeByState = false
       @postalCodeByCity = false
-      @geocodingAvailable = false
+
+      @queryByPostalCode = false
       @queryByGeocoding = false
+
       @deliveryOptionsByPostalCode = true
       @deliveryOptionsByGeocordinates = false
+
+      @basedOnStateChange = true
+      @geocodingAvailable = false
 
       @dontKnowPostalCodeURL = "http://geo.correo.com.uy/IsisBusquedaDireccionPlugin/cp.jsp"
 

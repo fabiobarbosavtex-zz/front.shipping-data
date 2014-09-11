@@ -62,7 +62,7 @@ define ['flight/lib/component',
 
           rules = @getCountryRule()
 
-          if rules.usePostalCode
+          if rules.postalCodeByInput
             @select('postalCodeSelector').inputmask
               mask: rules.masks.postalCode
             if data.labelShippingFields
@@ -122,7 +122,7 @@ define ['flight/lib/component',
         addressKeyMap = @getCurrentAddress()
         addressKeyMap.geoCoordinates = @attr.data.address?.geoCoordinates or []
 
-        if @getCountryRule().usePostalCode
+        if @getCountryRule().postalCodeByInput
           addressKeyMap.postalCodeIsValid = @select('postalCodeSelector').parsley().isValid()
           # If country use postal code, don't send geoCoordinates
           addressKeyMap.geoCoordinates = []

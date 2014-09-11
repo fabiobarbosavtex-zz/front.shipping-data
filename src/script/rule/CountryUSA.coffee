@@ -17,16 +17,19 @@ define ->
                  'South Carolina', 'South Dakota', 'Tennessee', 'Texas',
                  'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia',
                  'Wisconsin', 'Wyoming']
-      
-      @usePostalCode = true
-      @queryByPostalCode = false
-      @basedOnStateChange = false
+
+      @postalCodeByInput = true
       @postalCodeByState = false
       @postalCodeByCity = false
-      @geocodingAvailable = false
+
+      @queryByPostalCode = false
       @queryByGeocoding = false
+
       @deliveryOptionsByPostalCode = true
       @deliveryOptionsByGeocordinates = false
+
+      @basedOnStateChange = false
+      @geocodingAvailable = false
 
       @dontKnowPostalCodeURL = "https://tools.usps.com/go/ZipLookupAction!input.action"
 

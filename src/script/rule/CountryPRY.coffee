@@ -45,15 +45,18 @@ define ->
           "Alberdi": "2980", "Barrio Burrerita": "2800", "Barrio Obrero": "2800", "Cerrito": "2910", "Desmochado": "2890", "General Jose Eduvigis Diaz": "2870", "Guazu Cua": "2930", "Humaita": "2840", "Isla Umbu": "2850", "Laureles": "2920", "Mayor Jose De J. Martinez": "2880", "Paso De Patria": "2860", "Pilar": "2800", "San Juan B. De Ñeembucu": "2950", "Tacuaras": "2940", "Villa Franca": "2990", "Villa Oliva": "2970", "Villalbin": "2900"
         }
 
-      @usePostalCode = false
-      @queryByPostalCode = false
-      @basedOnStateChange = true
+      @postalCodeByInput = false
       @postalCodeByState = false
       @postalCodeByCity = true
-      @geocodingAvailable = false
+
+      @queryByPostalCode = false
       @queryByGeocoding = false
+
       @deliveryOptionsByPostalCode = true
       @deliveryOptionsByGeocordinates = false
+
+      @basedOnStateChange = true
+      @geocodingAvailable = false
 
       @regexes =
         postalCode: new RegExp(/^([\d]{4})$/)

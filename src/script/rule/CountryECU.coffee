@@ -33,16 +33,19 @@ define ->
         "Sucumbios":{"Cascales":"0021","Cuyabeno":"0021","Gonzalo Pizarro":"0021","Lago Agrio":"0021","Putumayo":"0021","Shushufindi":"0021","Sucumbios":"0021"}
         "Tungurahua":{"Ambato":"0022","Banos De Agua Santa":"0022","Cevallos":"0022","Mocha":"0022","Patate":"0022","Quero":"0022","San Pedro De Pelileo":"0022","Santiago De Pillaro":"0022","Tisaleo":"0022"}
         "Zamora Chinchipe":{"Centinela Del Condor":"0023","Chinchipe":"0023","El Pangui":"0023","Nagaritza":"0023","Palanda":"0023","Paquisha":"0023","Yacuambi":"0023","Yantzaza":"0023","Zamora":"0023"}    
-      
-      @usePostalCode = false
-      @queryByPostalCode = false
-      @basedOnStateChange = true
+
+      @postalCodeByInput = false
       @postalCodeByState = true
       @postalCodeByCity = false
-      @geocodingAvailable = false
+
+      @queryByPostalCode = false
       @queryByGeocoding = false
+
       @deliveryOptionsByPostalCode = true
       @deliveryOptionsByGeocordinates = false
+
+      @basedOnStateChange = true
+      @geocodingAvailable = false
 
       @regexes =
         postalCode: new RegExp(/^([\d]{4})$/)

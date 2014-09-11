@@ -7,16 +7,18 @@ define ->
       @country = 'PER'
       @abbr = 'PE'
 
-      @usePostalCode = false # exibe campo de Postal Code
+      @postalCodeByInput = false
+      @postalCodeByState = false
+      @postalCodeByCity = false
+
       @queryByPostalCode = false # Busca default é Postal Code
-      @geocodingAvailable = true # oferece busca de endereço por API
       @queryByGeocoding = true # Busca default é Geocoding
+
       @deliveryOptionsByPostalCode = false
       @deliveryOptionsByGeocordinates = true
 
       @basedOnStateChange = false
-      @postalCodeByState = false
-      @postalCodeByCity = false
+      @geocodingAvailable = true # oferece busca de endereço por API
 
       @regexes =
         postalCode: new RegExp(/^([\d]{5})$/)

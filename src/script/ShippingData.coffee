@@ -195,7 +195,7 @@ define ['flight/lib/component',
           @select('shippingOptionsSelector').trigger('startLoading.vtex')
           country = addressKeyMap.country ? @attr.data.country
 
-          clearAddress = @attr.data.countryRules[country].usePostalCode ? true
+          clearAddress = @attr.data.countryRules[country].postalCodeByInput ? true
           # If we are submitting a geoCoordinate address, then don't let the API
           # overwrite the other address fields with the data provided by the postal code
           # service

@@ -31,7 +31,7 @@ define ['flight/lib/component',
       @attr.data.items = items
       @attr.data.sellers = sellers
       @attr.data.canEditData = canEditData
-      @attr.data.isUsingPostalCode = rules?.usePostalCode
+      @attr.data.postalCodeByInput = rules?.postalCodeByInput
       @attr.data.address = shippingData.address
       @attr.data.isGift = @attr.data.address?.addressType is "giftRegistry"
       @attr.data.giftRegistryData = giftRegistryData

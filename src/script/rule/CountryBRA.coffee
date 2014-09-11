@@ -11,14 +11,18 @@ define ->
                'PE', 'PI', 'RJ', 'RN', 'RO', 'RS', 'RR', 'SC',
                'SE', 'SP', 'TO']
 
-      @usePostalCode = true
-      @queryByPostalCode = true
+      @postalCodeByInput = true
       @postalCodeByState = false
       @postalCodeByCity = false
-      @geocodingAvailable = true
+
+      @queryByPostalCode = true
       @queryByGeocoding = false
+
       @deliveryOptionsByPostalCode = true
       @deliveryOptionsByGeocordinates = false
+
+      @basedOnStateChange = false
+      @geocodingAvailable = true
 
       @dontKnowPostalCodeURL = "http://www.buscacep.correios.com.br/servicos/dnec/index.do"
 

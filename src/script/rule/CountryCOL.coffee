@@ -43,15 +43,18 @@ define ->
         "Vaupés": { "Carurú" : "97161", "Mitú" : "97001", "Pacoa" : "97511", "Papunaua" : "97777", "Taraira" : "97666", "Yavaraté" : "97889" },
         "Vichada": { "Cumaribo" : "99773", "La Primavera" : "99524", "Puerto Carreño" : "99001", "Santa Rosalía" : "99624" }
 
-      @usePostalCode = false
-      @queryByPostalCode = false
-      @basedOnStateChange = true
+      @postalCodeByInput = false
       @postalCodeByState = false
       @postalCodeByCity = true
-      @geocodingAvailable = false
+
+      @queryByPostalCode = false
       @queryByGeocoding = false
+
       @deliveryOptionsByPostalCode = true
       @deliveryOptionsByGeocordinates = false
+
+      @basedOnStateChange = true
+      @geocodingAvailable = false
 
       @regexes =
         postalCode: new RegExp(/^([\d]{5})$/)
