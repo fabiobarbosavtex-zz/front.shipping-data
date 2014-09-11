@@ -109,8 +109,7 @@ define ['flight/lib/component',
           geoCoordinates: [
             googleAddress.geometry.location.lng()
             googleAddress.geometry.location.lat()
-          ],
-          geometry: googleAddress.geometry
+          ]
         }
         address.country = @attr.countryRules.country
         address.addressQuery = googleAddress.formatted_address
