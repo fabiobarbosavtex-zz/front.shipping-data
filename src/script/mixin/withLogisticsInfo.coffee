@@ -154,8 +154,7 @@ define [], () ->
 
       # Para cada delivery window, iremos criar/atualizar o seu label e preço
       for key, dateArray of sla.deliveryWindows
-        for dw, i in dateArray
-          dw.index = i
+        for dw in dateArray
           dw.startDate = new Date(dw.startDateUtc)
           dw.endDate = new Date(dw.endDateUtc)
           dw.dateAsArray = @dateAsArray(dw.startDate)
