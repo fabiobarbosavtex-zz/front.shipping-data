@@ -39,6 +39,8 @@ define ->
       @deliveryOptionsByPostalCode = true
       @deliveryOptionsByGeocordinates = false
 
+      @dontKnowPostalCodeURL = "http://geo.correo.com.uy/IsisBusquedaDireccionPlugin/cp.jsp"
+
       @regexes =
         postalCode: new RegExp(/^([\d]{5})$/)
 

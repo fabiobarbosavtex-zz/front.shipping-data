@@ -20,6 +20,8 @@ define ->
       @deliveryOptionsByPostalCode = true
       @deliveryOptionsByGeocordinates = false
 
+      @dontKnowPostalCodeURL = "http://www.buscacep.correios.com.br/servicos/dnec/index.do"
+
       @regexes =
         postalCode: new RegExp(/^([\d]{5})\-?([\d]{3})$/)
 

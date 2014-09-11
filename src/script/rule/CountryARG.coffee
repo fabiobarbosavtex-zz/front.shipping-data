@@ -45,6 +45,8 @@ define ->
       @deliveryOptionsByPostalCode = true
       @deliveryOptionsByGeocordinates = false
 
+      @dontKnowPostalCodeURL = "http://www.correoargentino.com.ar/formularios/cpa"
+
       @regexes =
         postalCode: new RegExp(/^([\d]{4})$/)
 

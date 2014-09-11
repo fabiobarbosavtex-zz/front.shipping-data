@@ -28,6 +28,8 @@ define ->
       @deliveryOptionsByPostalCode = true
       @deliveryOptionsByGeocordinates = false
 
+      @dontKnowPostalCodeURL = "https://tools.usps.com/go/ZipLookupAction!input.action"
+
       @regexes =
         postalCode: new RegExp(/^([\d]{5})$/)
 

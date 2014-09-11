@@ -19,7 +19,7 @@ define ['flight/lib/component',
           addressQuery: null
           showGeolocationSearch: false
           requiredGoogleFieldsNotFound: []
-          showPostalCodeLink: false
+          usePostalCode: false
 
         addressFormSelector: '.address-form-new'
         postalCodeQuerySelector: '.postal-code-query'
@@ -27,7 +27,7 @@ define ['flight/lib/component',
         addressSearchSelector: '#ship-address-search'
         mapCanvasSelector: '#map-canvas'
         clearAddressSearchSelector: '.clear-address-search'
-        dontKnowPostalCodeSelector: '#dont-know-postal-code'
+        dontKnowPostalCodeSelector: '.dont-know-postal-code-geocoding'
         knowPostalCodeSelector: '.know-postal-code'
         countryRules: false
         geoSearchTimer = false
@@ -205,9 +205,11 @@ define ['flight/lib/component',
         ev?.stopPropagation()
         @attr.data.showGeolocationSearch = if useGeolocationSearch? then useGeolocationSearch else false
         @attr.countryRules = countryRule
+        @attr.data.dontKnowPostalCodeURL = countryRule.dontKnowPostalCodeURL
+        @attr.data.geocodingAvailable = countryRule.geocodingAvailable
         @attr.data.country = countryRule.country
-        @attr.data.showPostalCodeLink = countryRule.usePostalCode
-        # TODO may be google search
+        @attr.data.usePostalCode = countryRule.usePostalCode
+
         if countryRule.queryByPostalCode
           @attr.data.postalCodeQuery = postalCodeQuery ? ''
           @render()
