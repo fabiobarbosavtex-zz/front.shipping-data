@@ -355,6 +355,9 @@ define ['flight/lib/component',
         ev?.stopPropagation()
         @$node.html('')
 
+      @stopSubmit = (ev) ->
+        ev.preventDefault()
+
       @updateEnables = ->
         @attr.data.contractedShippingFieldsForGeolocation =
           neighborhood: @attr.data.address.neighborhood isnt '' and @attr.data.address.neighborhood?
@@ -386,6 +389,8 @@ define ['flight/lib/component',
           'basedOnStateChange': @changePostalCodeByCity
         @on 'keyup',
           'postalCodeSelector': @addressKeysUpdated
+        @on 'submit',
+          'addressFormSelector': @stopSubmit
 
         @setValidators [
           @validateAddress
