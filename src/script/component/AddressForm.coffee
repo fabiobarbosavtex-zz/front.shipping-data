@@ -116,12 +116,9 @@ define ['flight/lib/component',
       @addressKeysUpdated = (ev) ->
         ev?.preventDefault()
         addressKeyMap = @getCurrentAddress()
-        addressKeyMap.geoCoordinates = @attr.data.address?.geoCoordinates or []
 
         if @getCountryRule().postalCodeByInput
           addressKeyMap.postalCodeIsValid = @select('postalCodeSelector').parsley().isValid()
-          # If country use postal code, don't send geoCoordinates
-          addressKeyMap.geoCoordinates = []
         else
           addressKeyMap.postalCodeIsValid = true
 
@@ -187,7 +184,11 @@ define ['flight/lib/component',
         if addressObj.postalCode
           addressObj.postalCode = addressObj.postalCode.replace(/\-/, '')
 
-        addressObj.geoCoordinates = @attr.data.address.geoCoordinates
+        addressObj.geoCoordinates = @attr.data.address.geoCoordinates or []
+
+        # If country use postal code, don't send geoCoordinates
+        if @getCountryRule().deliveryOptionsByPostalCode
+          addressObj.geoCoordinates = []
 
         return addressObj
 
