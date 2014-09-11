@@ -92,6 +92,8 @@ define ['flight/lib/component',
           componentRestrictions:
             country: @attr.countryRules.abbr
 
+        if @attr.geolocation
+          options['bounds'] = @attr.geolocation
 
         @attr.autocomplete = new google.maps.places.Autocomplete(@select('addressSearchSelector')[0], options)
 
@@ -162,7 +164,20 @@ define ['flight/lib/component',
         ev?.stopPropagation()
         @$node.html('')
 
+      @setGeolocation = (position) ->
+        coord = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        @attr.geolocation = google.maps.LatLngBounds(coord, coord)
+        if @attr.autocomplete
+          @attr.autocomplete.setBounds(@attr.geolocation)
+        else
+          @openGeolocationSearch()
+
       @openGeolocationSearch = ->
+        if navigator.geolocation
+          navigator.geolocation.getCurrentPosition(@setGeolocation.bind(@))
+        else
+          @attr.geolocation = null
+
         if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading
           window.vtex.maps.isGoogleMapsAPILoading = true
           script = document.createElement("script")
