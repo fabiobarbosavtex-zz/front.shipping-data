@@ -16,10 +16,6 @@ define(function () {
       },
       "addressForm": {
         "header": 'New address',
-        "dontKnowPostalCode": 'I don\'t know my postal code',
-        "knowPostalCode": 'Use my postal code',
-        "searchAnotherAddress": 'Find postal code of another address',
-        "postalCodeVerify": 'We found your postal code. Please make sure your address is correct.',
         "postalCodeBRA": 'CEP',
         "postalCodeUSA": 'ZIP',
         "postalCodeARG": 'Código Postal (CP)',
@@ -52,6 +48,8 @@ define(function () {
       },
       "addressSearch": {
         "address": 'Address',
+        "dontKnowPostalCode": 'I don\'t know my postal code',
+        "knowPostalCode": 'Use my postal code',
         "addressExampleARG": 'Eg: Cerrito, 1350, Buenos Aires',
         "addressExampleBRA": 'Eg: Av Dr Cardoso de Melo, 1750, São Paulo',
         "addressExampleCHL": 'Eg: Apoquindo, 3039, Santiago',
@@ -61,8 +59,10 @@ define(function () {
         "addressExamplePRY": 'Eg: Avenida Eusebio Ayala, 100, Assunção',
         "addressExampleURY": 'Eg: Bulevar Artigas, 1394, Montevidéu',
         "addressExampleUSA": 'Eg: 225 East 41st Street, New York',
-        "didntFindAddress": 'We didn\'t find your address yet :(',
-        "whatAboutMoreInfo": 'What don\'t you give us some more info?'
+        "addressNotDetailed": 'The address doesn\'t have enough info.',
+        "whatAboutMoreInfo": 'What don\'t you give us some more info? (eg: number)'
+        "incompleteAddressData": 'We didn\'t find your',
+        "searchPostalCode": 'Use the postal code service to search for it.'
       },
       "countrySelect": {
         "chooseDeliveryCountry": 'Choose the delivery country',

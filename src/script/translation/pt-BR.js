@@ -16,10 +16,6 @@ define(function () {
       },
       "addressForm": {
         "header": 'Cadastrar Novo endereço',
-        "dontKnowPostalCode": 'Não sei meu CEP',
-        "knowPostalCode": 'Buscar pelo meu CEP',
-        "searchAnotherAddress": 'Encontrar CEP de outro endereço',
-        "postalCodeVerify": 'Encontramos seu CEP. Por favor, verifique se o endereço está correto.',
         "postalCodeBRA": 'CEP',
         "postalCodeUSA": 'ZIP',
         "postalCodeARG": 'Código Postal (CP)',
@@ -52,6 +48,8 @@ define(function () {
       },
       "addressSearch": {
         "address": 'Endereço',
+        "dontKnowPostalCode": 'Não sei meu CEP',
+        "knowPostalCode": 'Buscar pelo meu CEP',
         "addressExampleARG": 'Ex: Cerrito, 1350, Buenos Aires',
         "addressExampleBRA": 'Ex: Av Dr Cardoso de Melo, 1750, São Paulo',
         "addressExampleCHL": 'Ex: Apoquindo, 3039, Santiago',
@@ -61,8 +59,10 @@ define(function () {
         "addressExamplePRY": 'Ex: Avenida Eusebio Ayala, 100, Assunção',
         "addressExampleURY": 'Ex: Bulevar Artigas, 1394, Montevidéu',
         "addressExampleUSA": 'Ex: 225 East 41st Street, New York',
-        "didntFindAddress": 'Ainda não encontramos seu endereço :(',
-        "whatAboutMoreInfo": 'Que tal dar mais informações?'
+        "addressNotDetailed": 'O endereço não possui dados suficientes.',
+        "whatAboutMoreInfo": 'Que tal dar mais informações? (ex: número)',
+        "incompleteAddressData": 'Não encontramos seu',
+        "searchPostalCode": 'Utilize o serviço de correio para consultá-lo.'
       },
       "countrySelect": {
         "chooseDeliveryCountry": 'Escolha o país de entrega',

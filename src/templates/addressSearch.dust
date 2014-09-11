@@ -37,11 +37,11 @@
                 {/loading}
 
               {?geocodingAvailable}
-                <small><a href="javascript:void(0);" id="dont-know-postal-code" class="dont-know-postal-code-geocoding" target="_blank" data-i18n="shipping.addressForm.dontKnowPostalCode"></a></small>
+                <small><a href="javascript:void(0);" id="dont-know-postal-code" class="dont-know-postal-code-geocoding" target="_blank" data-i18n="shipping.addressSearch.dontKnowPostalCode"></a></small>
               {:else}
                 {! Caso não possa usar geocoding, sugerimos um site para consulta de código postal !}
                 {?dontKnowPostalCodeURL}
-                  <small><a href="{dontKnowPostalCodeURL}" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressForm.dontKnowPostalCode"></a></small>
+                  <small><a href="{dontKnowPostalCodeURL}" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressSearch.dontKnowPostalCode"></a></small>
                 {/dontKnowPostalCodeURL}
               {/geocodingAvailable}
               <span class="postal-code-errors"></span>
@@ -63,6 +63,18 @@
           {?postalCodeByInput}
             <small class="text-know-postal-code"><a href="javascript:void(0);" class="know-postal-code" target="_blank" data-i18n="shipping.addressSearch.knowPostalCode"></a></small>
           {/postalCodeByInput}
+
+          <div class="address-not-detailed hide">
+            <p class="didnt-find-address-title" data-i18n="shipping.addressSearch.addressNotDetailed"></p>
+            <p class="didnt-find-address-description" data-i18n="shipping.addressSearch.whatAboutMoreInfo"></p>
+          </div>
+
+          <div class="incomplete-address-data hide">
+            <p class="incomplete-address-data-title">
+              <span data-i18n="shipping.addressSearch.incompleteAddressData"></span> <span data-i18n="shipping.addressForm.postalCode{country}"></span>. <a href="{dontKnowPostalCodeURL}" target="_blank" class="incomplete-address-data-link" data-i18n="shipping.addressSearch.searchPostalCode"></a>
+            </p>
+          </div>
+
           <span class="ship-address-search-errors"></span>
         {/showGeolocationSearch}
 

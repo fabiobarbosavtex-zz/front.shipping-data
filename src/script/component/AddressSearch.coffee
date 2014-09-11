@@ -29,6 +29,9 @@ define ['flight/lib/component',
         clearAddressSearchSelector: '.clear-address-search'
         dontKnowPostalCodeSelector: '.dont-know-postal-code-geocoding'
         knowPostalCodeSelector: '.know-postal-code'
+        incompleteAddressData: '.incomplete-address-data'
+        addressNotDetailed: '.address-not-detailed'
+        incompleteAddressLink: '.incomplete-address-data-link'
         countryRules: false
         geoSearchTimer = false
 
@@ -116,13 +119,22 @@ define ['flight/lib/component',
         address = _.extend(address, @getAddressFromGoogle(googleAddress, googleDataMap))
 
         _.each googleDataMap, (rule) =>
-          if rule.required and not address[rule.value]
-            @attr.data.requiredGoogleFieldsNotFound.push(rule.value)
+          if rule.required and not address[rule.value] or
+            (rule.value is "postalCode" and not @attr.countryRules.regexes[rule.value].test(address[rule.value]))
+              @attr.data.requiredGoogleFieldsNotFound.push(rule.value)
 
         if @attr.data.requiredGoogleFieldsNotFound.length is 0
           @handleAddressSearch(address)
         else
-          @render()
+          if @attr.countryRules.deliveryOptionsByPostalCode
+            if address.postalCode is '' or not address.postalCode?
+              @select('incompleteAddressData').hide()
+              @select('addressNotDetailed').fadeIn()
+            else if not @attr.countryRules.regexes.postalCode.test(address.postalCode)
+              @select('addressNotDetailed').hide()
+              @select('incompleteAddressData').fadeIn()
+          else
+            @render()
 
       @getAddressFromGoogle = (googleAddress, googleDataMap) ->
         address = {}
@@ -207,6 +219,7 @@ define ['flight/lib/component',
         @on 'click',
           'dontKnowPostalCodeSelector': @openGeolocationSearch
           'knowPostalCodeSelector': @openPostalCodeSearch
+          'incompleteAddressLink': @openPostalCodeSearch
         @on 'keyup',
           'postalCodeQuerySelector': @validatePostalCode
         @on 'submit',
