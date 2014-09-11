@@ -28,7 +28,7 @@ define ->
 
       @requiredFields = ['addressType', 'addressId', 'receiverName',
                          'street', 'city', 'state', 'neighborhood',
-                         'country', 'geocordinates']
+                         'number', 'country', 'geocordinates']
 
       @googleDataMap = [
           value: "postalCode"
@@ -49,7 +49,7 @@ define ->
           value: "neighborhood" # Provincia
           length: "long_name"
           types: ["administrative_area_level_2"]
-          required: true
+          required: false
         ,
           value: "state" # Región
           length: "short_name"
@@ -58,7 +58,7 @@ define ->
         ,
           value: "city" # Distrito
           length: "long_name"
-          types: ["locality"]
+          types: ["locality", "administrative_area_level_3"]
           required: true
       ]
 
