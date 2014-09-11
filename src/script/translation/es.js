@@ -59,8 +59,10 @@ define(function () {
         "addressExamplePRY": 'Ej: Avenida Eusebio Ayala, 100, Assunção',
         "addressExampleURY": 'Ej: Bulevar Artigas, 1394, Montevidéu',
         "addressExampleUSA": 'Ej: 225 East 41st Street, New York',
-        "didntFindAddress": 'Aún no encontramos tu dirección :(',
-        "whatAboutMoreInfo": 'Que tal dar mas información?'
+        "addressNotDetailed": 'La dirección no posee datos suficientes',
+        "whatAboutMoreInfo": 'Que tal dar mas información? (ej: número)'
+        "incompleteAddressData": 'No encontramos su',
+        "searchPostalCode": 'Utilice el servicio de correo para consultario.'
       },
       "countrySelect": {
         "chooseDeliveryCountry": 'Elija el país de entrega',
