@@ -54,7 +54,11 @@ define ['flight/lib/component',
         @attr.orderForm = _.clone orderForm
         @setLocale(orderForm.clientPreferencesData?.locale)
         shippingData = @attr.orderForm.shippingData
-        return unless shippingData?
+        unless shippingData?
+          if @attr.orderForm.items.length is 0
+            @validate() # Caso não haja itens no carrinho, shippingData é null
+          return
+
         @attr.data.deliveryCountries = _.uniq(_.reduceRight(shippingData.logisticsInfo, ((memo, l) ->
           return memo.concat(l.shipsTo)), []))
         if @attr.data.deliveryCountries.length is 0
@@ -295,13 +299,15 @@ define ['flight/lib/component',
 
       @validateAddress = ->
         if @attr.orderForm.canEditData
-          currentAddress = new Address(@attr.orderForm.shippingData.address)
-          return currentAddress.validate(@attr.data.countryRules[currentAddress.country])
+          try
+            currentAddress = new Address(@attr.orderForm.shippingData.address)
+            return currentAddress.validate(@attr.data.countryRules[currentAddress.country])
+          return "Unable to validate address"
         else
           return true
 
       @validateShippingOptions = ->
-        logisticsInfo = @attr.orderForm.shippingData.logisticsInfo
+        logisticsInfo = @attr.orderForm.shippingData?.logisticsInfo
         return "Logistics info must exist" if logisticsInfo?.length is 0
         return "No selected SLA" if logisticsInfo?[0].selectedSla is undefined
         return true
