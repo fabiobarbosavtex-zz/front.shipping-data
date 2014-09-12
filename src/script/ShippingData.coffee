@@ -274,7 +274,14 @@ define ['flight/lib/component',
 
       @countrySelected = (ev, country) ->
         @attr.data.country = country
-        require 'shipping/script/rule/Country'+country, (countryRule) =>
+        deps = [
+          'shipping/script/rule/Country'+country
+          'shipping/templates/countries/addressForm'+country
+          'shipping/templates/addressSearch'
+          'shipping/templates/shippingOptions',
+          'shipping/templates/deliveryWindows'
+        ]
+        require deps, (countryRule) =>
           countryRules = @attr.data.countryRules
           countryRules[country] = new countryRule()
           @attr.data.states = countryRules[country].states
