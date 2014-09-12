@@ -60,7 +60,7 @@ define(function () {
         "addressExampleURY": 'Eg: Bulevar Artigas, 1394, Montevidéu',
         "addressExampleUSA": 'Eg: 225 East 41st Street, New York',
         "addressNotDetailed": 'The address doesn\'t have enough info.',
-        "whatAboutMoreInfo": 'What don\'t you give us some more info? (eg: number)'
+        "whatAboutMoreInfo": 'What don\'t you give us some more info? (eg: number)',
         "incompleteAddressData": 'We didn\'t find your',
         "searchPostalCode": 'Use the postal code service to search for it.'
       },
