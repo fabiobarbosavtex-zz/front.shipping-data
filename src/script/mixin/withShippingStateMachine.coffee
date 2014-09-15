@@ -22,8 +22,8 @@ define [], () ->
       { name: 'cantEdit',    from: ['listNoSLA', 'list', 'loadList'],  to: 'listNoSLA' }
       { name: 'editNoSLA',   from: 'list',    to: 'editNoSLA'    }
       { name: 'editWithSLA', from: 'list',    to: 'editWithSLA'  }
-      { name: 'loadList',    from: ['listNoSLA', 'list'],  to: 'loadList' }
-      { name: 'cancelEdit',  from: 'editWithSLA', to: 'list'     }
+      { name: 'loadList',    from: ['listNoSLA', 'list'], to: 'loadList' }
+      { name: 'cancelEdit',  from: ['editWithSLA', 'editNoSLA'], to: 'list' }
       { name: 'loadSLA',     from: 'editWithSLA', to: 'editNoSLA'}
       { name: 'loadSLA',     from: 'editNoSLA',   to: 'editNoSLA'}
       { name: 'new',         from: 'list',    to: 'search'       }
@@ -49,7 +49,6 @@ define [], () ->
           onenterlistNoSLA:  @onEnterListNoSLA.bind(this)
           onenterloadList:   @onEnterLoadList.bind(this)
           onbeforeselect:    @onBeforeSelect.bind(this)
-          onleavelist:       @onLeaveList.bind(this)
           onentereditNoSLA:  @onEnterEditNoSLA.bind(this)
           onleaveeditNoSLA:  @onLeaveEditNoSLA.bind(this)
           onentereditWithSLA:@onEnterEditWithSLA.bind(this)
@@ -75,8 +74,10 @@ define [], () ->
     @onEnterSummary = (event, from, to, locale, orderForm, rules) ->
       console.log "Enter summary"
       # Disable other components
+      @select('addressListSelector').trigger('disable.vtex')
       @select('shippingOptionsSelector').trigger('disable.vtex')
       @select('addressFormSelector').trigger('disable.vtex')
+
       # We can only enter summary if getting disabled
       @attr.data.active = false
       @select('shippingSummarySelector').trigger('enable.vtex', [locale, orderForm.shippingData, orderForm.items, orderForm.sellers, rules, orderForm.canEditData, orderForm.giftRegistryData])
@@ -85,7 +86,9 @@ define [], () ->
 
     @onLeaveSummary = (event, from, to) ->
       console.log "Leave summary"
+      # Disable other components
       @select('shippingSummarySelector').trigger('disable.vtex')
+
       # We can only leave summary if getting active
       @attr.data.active = true
       @select('goToPaymentButtonWrapperSelector').show()
@@ -94,10 +97,13 @@ define [], () ->
     @onEnterSearch = (event, from, to, postalCodeQuery, useGeolocationSearch) ->
       @attr.data.active = true
       console.log "Enter search"
+      # Disable other components
       @select('addressFormSelector').trigger('disable.vtex')
       @select('shippingOptionsSelector').trigger('disable.vtex')
-      @select('addressSearchSelector').trigger('enable.vtex', [@attr.data.countryRules[@attr.data.country], postalCodeQuery, if useGeolocationSearch? then useGeolocationSearch else false])
+      @select('addressListSelector').trigger('disable.vtex')
+
       @select('goToPaymentButtonWrapperSelector').hide()
+      @select('addressSearchSelector').trigger('enable.vtex', [@attr.data.countryRules[@attr.data.country], postalCodeQuery, if useGeolocationSearch? then useGeolocationSearch else false])
 
     @onLeaveSearch = (event, from, to) ->
       @attr.data.active = true
@@ -107,7 +113,9 @@ define [], () ->
     @onEnterList = (event, from, to, deliveryCountries, orderForm) ->
       @attr.data.active = true
       console.log "Enter list"
+      # Disable other components
       @select('addressFormSelector').trigger('disable.vtex')
+
       @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
       @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
 
@@ -115,22 +123,21 @@ define [], () ->
       @select('addressListSelector').trigger('stopLoading.vtex')
       @attr.data.active = true
       console.log "Enter list no SLA"
+      # Disable other components
       @select('addressFormSelector').trigger('disable.vtex')
-      @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
       @select('shippingOptionsSelector').trigger('disable.vtex')
+
+      @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
 
     @onEnterLoadList = (event, from, to, deliveryCountries, orderForm) ->
       @attr.data.active = true
       console.log "Enter load list"
+      # Disable other components
       @select('addressFormSelector').trigger('disable.vtex')
-      @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
+
       @select('shippingOptionsSelector').trigger('startLoading.vtex')
       @select('addressListSelector').trigger('startLoading.vtex')
-
-    @onLeaveList = (event, from, to) ->
-      console.log "Leave list"
-      @select('addressListSelector').trigger('disable.vtex')
-      @select('shippingOptionsSelector').trigger('disable.vtex')
+      @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
 
     @onBeforeSelect = (event, from, to, orderForm) ->
       @attr.data.active = true
@@ -140,17 +147,26 @@ define [], () ->
         @select('addressListSelector').trigger('stopLoading.vtex')
 
     @onEnterEditNoSLA = (event, from, to, address, hasAvailableAddresses) ->
+      @attr.data.active = true
       console.log "Enter edit with no SLA", address
       if event is 'loadSLA' then return
-      @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
+      # Disable other components
+      @select('addressListSelector').trigger('disable.vtex')
       @select('shippingOptionsSelector').trigger('disable.vtex')
+
+      @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
 
     @onLeaveEditNoSLA = (event, from, to) ->
       if to isnt 'editWithSLA' # No need to disable if we simply have new shipping options
         @select('addressFormSelector').trigger('disable.vtex')
 
     @onEnterEditWithSLA = (event, from, to, address, hasAvailableAddresses, logisticsInfo, items, sellers) ->
+      @attr.data.active = true
       console.log "Enter edit with SLA", logisticsInfo
+
+      # Disable other components
+      @select('addressListSelector').trigger('disable.vtex')
+
       if from isnt 'editNoSLA'
         @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
 
