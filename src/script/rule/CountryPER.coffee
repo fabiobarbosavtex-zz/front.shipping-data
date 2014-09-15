@@ -61,6 +61,3 @@ define ->
           types: ["locality", "administrative_area_level_3"]
           required: true
       ]
-
-      # Address components documentation
-      # -> https://developers.google.com/maps/documentation/geocoding/?hl=nl#Types
