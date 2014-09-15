@@ -139,20 +139,20 @@ define [], () ->
         @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
         @select('addressListSelector').trigger('stopLoading.vtex')
 
-    @onEnterEditNoSLA = (event, from, to, address) ->
+    @onEnterEditNoSLA = (event, from, to, address, hasAvailableAddresses) ->
       console.log "Enter edit with no SLA", address
       if event is 'loadSLA' then return
-      @select('addressFormSelector').trigger('enable.vtex', [address])
+      @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
       @select('shippingOptionsSelector').trigger('disable.vtex')
 
     @onLeaveEditNoSLA = (event, from, to) ->
       if to isnt 'editWithSLA' # No need to disable if we simply have new shipping options
         @select('addressFormSelector').trigger('disable.vtex')
 
-    @onEnterEditWithSLA = (event, from, to, address, logisticsInfo, items, sellers) ->
+    @onEnterEditWithSLA = (event, from, to, address, hasAvailableAddresses, logisticsInfo, items, sellers) ->
       console.log "Enter edit with SLA", logisticsInfo
       if from isnt 'editNoSLA'
-        @select('addressFormSelector').trigger('enable.vtex', [address])
+        @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
 
       @select('shippingOptionsSelector').trigger('enable.vtex', [logisticsInfo, items, sellers])
       @select('goToPaymentButtonWrapperSelector').show()

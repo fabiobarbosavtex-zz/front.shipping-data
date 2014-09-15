@@ -1,9 +1,9 @@
 <!-- BACK TO LIST BUTTON -->
-{@if cond="{availableAddresses.length} > 1"}
+{#hasAvailableAddresses}
   <p class="cancel-address-form">
     <a href="javascript:void(0);" class="cancel-new-address" data-i18n="shipping.addressForm.cancelEditAddress"></a>
   </p>
-{/if}
+{/hasAvailableAddresses}
 
 <form class="address-form-new box-new address-form-{country}" data-parsley-bind="true" data-parsley-focus="first">
 

@@ -329,9 +329,10 @@ define ['flight/lib/component',
           @attr.data.disableCityAndState = address.state isnt '' and address.city isnt ''
 
       # Handle the initial view of this component
-      @enable = (ev, address) ->
+      @enable = (ev, address, hasAvailableAddresses) ->
         ev?.stopPropagation()
         @attr.data.address = new Address(address)
+        @attr.data.hasAvailableAddresses = hasAvailableAddresses
         # when the address has an address query, the address was searched with geolocation
         @attr.data.addressQuery = if address.addressQuery? then address.addressQuery else false
         @attr.data.hasGeolocationData = @attr.data.address.geoCoordinates.length > 0
