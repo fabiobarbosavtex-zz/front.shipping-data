@@ -68,7 +68,9 @@ define ['flight/lib/component',
           if shippingData.address? # If a current address exists
             hasDeliveries = shippingData.logisticsInfo[0].slas.length > 0
             if not hasDeliveries
-              if @attr.stateMachine.can("unavailable")
+              if not orderForm.canEditData
+                @attr.stateMachine.cantEdit(@attr.data.deliveryCountries, @attr.orderForm)
+              else if @attr.stateMachine.can("unavailable")
                 $(window).trigger('showMessage.vtex', ['unavailable'])
                 @attr.stateMachine.unavailable(shippingData.address)
                 @trigger 'componentValidated.vtex', [[new Error("SLA array is empty")]]
@@ -93,6 +95,7 @@ define ['flight/lib/component',
         try
           country = @attr.data.country
           rules = @attr.data.countryRules[country]
+          hasDeliveries = @attr.orderForm.shippingData.logisticsInfo[0].slas.length > 0
           if @attr.orderForm.shippingData?.address is null
             if rules.queryByPostalCode or rules.queryByGeocoding
               @attr.stateMachine.search(@attr.orderForm)
@@ -104,6 +107,8 @@ define ['flight/lib/component',
             orderForm = @attr.orderForm
             orderForm.shippingData.address = @setProfileNameIfNull(orderForm.shippingData.address)
             @attr.stateMachine.invalidAddress(orderForm.shippingData.address, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
+          else if not hasDeliveries and not @attr.orderForm.canEditData
+            @attr.stateMachine.cantEdit(@attr.data.deliveryCountries, @attr.orderForm)
           else
             @attr.stateMachine.list(@attr.data.deliveryCountries, @attr.orderForm)
         catch e
@@ -157,15 +162,18 @@ define ['flight/lib/component',
         ev?.stopPropagation()
         address.isValid = true # se foi selecionado da lista, está válido
         @addressUpdated(ev, address)
-        if @attr.stateMachine.current is 'list'
-          @select('shippingOptionsSelector').trigger('startLoading.vtex')
-          @select('addressListSelector').trigger('startLoading.vtex')
+        if @attr.stateMachine.current is 'list' or @attr.stateMachine.current is 'listNoSLA'
+          @attr.stateMachine.loadList(@attr.data.deliveryCountries, @attr.orderForm)
           @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData)
             .done (orderForm) =>
+              hasDeliveries = orderForm.shippingData.logisticsInfo[0].slas.length > 0
               if @validateAddress() isnt true and @attr.stateMachine.can("invalidAddress")
                 # If it's invalid, stop here and edit it
                 orderForm.shippingData.address = @setProfileNameIfNull(orderForm.shippingData.address)
                 @attr.stateMachine.invalidAddress(orderForm.shippingData.address, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
+              else if not hasDeliveries and not orderForm.canEditData
+                $(window).trigger('showMessage.vtex', ['unavailable'])
+                @attr.stateMachine.cantEdit(@attr.data.deliveryCountries, orderForm)
               else if @attr.stateMachine.can("select")
                 @attr.stateMachine.select(orderForm)
 

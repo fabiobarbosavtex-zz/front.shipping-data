@@ -9,6 +9,7 @@ define [], () ->
       { name: 'invalidAddress',from: ['empty', 'list', 'summary'], to: 'editWithSLA'  }
       { name: 'search',      from: 'empty',   to: 'search'       }
       { name: 'editNoSLA',   from: 'empty',   to: 'editNoSLA'    }
+      { name: 'cantEdit',    from: 'empty',   to: 'listNoSLA'    }
       { name: 'list',        from: 'summary', to: 'list'         }
       { name: 'apiError',    from: 'summary', to: 'editWithSLA'  }
       { name: 'orderform',   from: 'summary', to: 'summary'      }
@@ -17,9 +18,11 @@ define [], () ->
       { name: 'unavailable', from: ['empty', 'summary'], to: 'editNoSLA'  }
       { name: 'submit',      from: 'editWithSLA', to: 'summary'  }
       { name: 'submit',      from: 'list',    to: 'summary'      }
-      { name: 'select',      from: 'list',    to: 'list'         }
+      { name: 'select',      from: 'loadList',to: 'list'         }
+      { name: 'cantEdit',    from: ['listNoSLA', 'list', 'loadList'],  to: 'listNoSLA' }
       { name: 'editNoSLA',   from: 'list',    to: 'editNoSLA'    }
       { name: 'editWithSLA', from: 'list',    to: 'editWithSLA'  }
+      { name: 'loadList',    from: ['listNoSLA', 'list'],  to: 'loadList' }
       { name: 'cancelEdit',  from: 'editWithSLA', to: 'list'     }
       { name: 'loadSLA',     from: 'editWithSLA', to: 'editNoSLA'}
       { name: 'loadSLA',     from: 'editNoSLA',   to: 'editNoSLA'}
@@ -43,6 +46,8 @@ define [], () ->
           onentersearch:     @onEnterSearch.bind(this)
           onleavesearch:     @onLeaveSearch.bind(this)
           onenterlist:       @onEnterList.bind(this)
+          onenterlistNoSLA:  @onEnterListNoSLA.bind(this)
+          onenterloadList:   @onEnterLoadList.bind(this)
           onbeforeselect:    @onBeforeSelect.bind(this)
           onleavelist:       @onLeaveList.bind(this)
           onentereditNoSLA:  @onEnterEditNoSLA.bind(this)
@@ -105,6 +110,22 @@ define [], () ->
       @select('addressFormSelector').trigger('disable.vtex')
       @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
       @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
+
+    @onEnterListNoSLA = (event, from, to, deliveryCountries, orderForm) ->
+      @select('addressListSelector').trigger('stopLoading.vtex')
+      @attr.data.active = true
+      console.log "Enter list no SLA"
+      @select('addressFormSelector').trigger('disable.vtex')
+      @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
+      @select('shippingOptionsSelector').trigger('disable.vtex')
+
+    @onEnterLoadList = (event, from, to, deliveryCountries, orderForm) ->
+      @attr.data.active = true
+      console.log "Enter load list"
+      @select('addressFormSelector').trigger('disable.vtex')
+      @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
+      @select('shippingOptionsSelector').trigger('startLoading.vtex')
+      @select('addressListSelector').trigger('startLoading.vtex')
 
     @onLeaveList = (event, from, to) ->
       console.log "Leave list"
