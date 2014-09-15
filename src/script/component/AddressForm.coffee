@@ -315,19 +315,6 @@ define ['flight/lib/component',
         @getCitiesData()
         @render()
 
-      @updateData = (ev, data) ->
-        @attr.data.availableAddresses = data.shippingData.availableAddresses ? []
-        @attr.data.address = new Address(data.shippingData.address)
-        @selectCountry(@attr.data.address.country).then @validate.bind(this)
-
-        address = @attr.data.address
-        if address.country is 'BRA'
-          @attr.data.labelShippingFields = address.neighborhood isnt '' and address.neighborhood? and
-            address.street isnt '' and address.street? and
-            address.state isnt '' and address.state? and
-            address.city isnt '' and address.city?
-          @attr.data.disableCityAndState = address.state isnt '' and address.city isnt ''
-
       # Handle the initial view of this component
       @enable = (ev, address, hasAvailableAddresses) ->
         ev?.stopPropagation()
