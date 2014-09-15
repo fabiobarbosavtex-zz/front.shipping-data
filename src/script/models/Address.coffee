@@ -33,6 +33,13 @@ define ->
       if not rules?
         return "Country rules are required for validation"
 
+      # Backwards compability
+      if rules.country is 'ARG' and @state in ["Ciudad de Buenos Aires", "Provincia de Buenos Aires"]
+        @state = "Ciudad Autónoma de Buenos Aires"
+        @city = "Ciudad Autónoma Buenos Aires"
+      if rules.country is 'PRY' and @state is "Distrito Capital"
+        @state = "Central"
+
       # Profile System normaliza estados para serem sempre em upper case
       if rules.states
         @state = @state.toUpperCase()
