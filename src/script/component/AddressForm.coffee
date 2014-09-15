@@ -14,7 +14,7 @@ define ['flight/lib/component',
         addressKeyMap: {}
         data:
           address: null
-          availableAddresses: []
+          hasAvailableAddresses: false
           disableCityAndState: false
           labelShippingFields: false
           addressSearchResults: {}

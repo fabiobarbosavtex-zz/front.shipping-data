@@ -14,7 +14,7 @@ define ['flight/lib/component',
       @defaultAttrs
         getAddressInformation: null
         data:
-          showBackButton: false
+          hasAvailableAddresses: false
           postalCodeQuery: null
           addressQuery: null
           showGeolocationSearch: false
