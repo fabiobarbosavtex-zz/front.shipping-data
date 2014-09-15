@@ -26,7 +26,7 @@
         {?city}
         <span class="city">{city}</span> -&nbsp;
         {/city}
-        <span class="state">{state}</span>
+        <span class="state">{@capitalize text=state /}</span>
         {?postalCodeByInput}
         &nbsp;- <span class="postal-code">{postalCode}</span>&nbsp;
         {:else}

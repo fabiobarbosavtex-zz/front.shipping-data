@@ -60,7 +60,7 @@
         <select id="ship-state" tabindex="226" class="input-large" name="state" data-parsley-required="true">
           <option></option>
           {#states}
-            <option value="{.}" {@eq key=. value=state}selected="true"{/eq}>{.}</option>
+            <option value="{value}" {@eq key=value value=state}selected="true"{/eq}>{key}</option>
           {/states}
         </select>
       </p>

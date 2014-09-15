@@ -60,7 +60,7 @@ define ['flight/lib/component',
               aa.firstPart += ', ' + aa.neighborhood if aa.neighborhood
               aa.firstPart += ', ' + aa.reference if aa.reference
               aa.secondPart = '' + aa.city
-              aa.secondPart += ' - ' + aa.state
+              aa.secondPart += ' - ' + _.capitalizeSentence(aa.state)
               if @attr.data.countryRules[aa.country]?.postalCodeByInput
                 aa.secondPart += ' - ' + aa.postalCode
               aa.secondPart += ' - ' + i18n.t('countries.'+aa.country)

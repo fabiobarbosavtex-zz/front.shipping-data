@@ -50,5 +50,8 @@ define ->
                          'postalCode', 'street', 'state', 'country', 'number']
 
       for state of @map
-        @states.push(state)
-        @cities[state] = _.map(@map[state], (k, v) -> return v )
+        prop =
+          value: state.toUpperCase()
+          label: state
+        @states.push(prop)
+        @cities[state.toUpperCase()] = _.keys(@map[state])

@@ -133,7 +133,7 @@
         <select id="ship-state" tabindex="228" class="ship-state input-mini" data-parsley-trigger="change blur" data-parsley-required="true" name="state" {?disableCityAndState}disabled{/disableCityAndState}>
           <option></option>
           {#states}
-            <option value="{.}" {@eq key=. value="{state}"}selected="true"{/eq}>{.}</option>
+            <option value="{value}" {@eq key=value value="{state}"}selected="true"{/eq}>{key}</option>
           {/states}
         </select>
       </p>

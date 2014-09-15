@@ -274,7 +274,7 @@ define ['flight/lib/component',
 
         elem = '<option></option>'
         @select('basedOnStateChange').append(elem)
-        for value of rules.map[state]
+        for value in rules.cities[state]
           elem = '<option value="'+value+'">'+value+'</option>'
           @select('basedOnStateChange').append(elem)
 
@@ -301,7 +301,8 @@ define ['flight/lib/component',
 
         state = @select('stateSelector').val()
         value = @select('basedOnStateChange').val()
-        postalCode = rules.map[state][value]
+        stateCapitalize = _.find rules.states, (s) -> s.value is state
+        postalCode = rules.map[stateCapitalize.label][value]
 
         @select('postalCodeSelector').val(postalCode)
         @addressKeysUpdated()

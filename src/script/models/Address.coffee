@@ -33,6 +33,10 @@ define ->
       if not rules?
         return "Country rules are required for validation"
 
+      # Profile System normaliza estados para serem sempre em upper case
+      if rules.states
+        @state = @state.toUpperCase()
+
       fieldsToValidate = ['postalCode', 'city', 'complement', 'neighborhood', 'number', 'receiverName', 'reference', 'street', 'state']
       for field in fieldsToValidate
         return "#{field} invalid (value: #{this[field]})" unless @validateField(rules, field)
@@ -42,7 +46,7 @@ define ->
         return 'geoCoordinates invalid'
 
       # Caso tenha uma lista de estados e nao esteja na lista
-      if rules.states and !(@state in rules.states)
+      if rules.states and !_.find(rules.states, (s) => s.value is @state)
         return 'state not in allowed states'
 
       # Caso tenha uma lista de cidades e nao esteja na lista

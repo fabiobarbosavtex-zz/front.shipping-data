@@ -15,12 +15,10 @@ define ->
       , 32)
 
     ###
-      Translate a variable
-      'prefix' being the prefix of the dicionary and 'text' you key
+      Capitalize
       Usage:
-      {@i18n prefix="countries." text=country /}
+      {@capitalize text=value /}
     ###
-    dust.helpers.i18n = (chunk, ctx, bodies, params) ->
-      prefix = params.prefix
+    dust.helpers.capitalize = (chunk, ctx, bodies, params) ->
       text = params.text
-      return chunk.write(i18n.t(prefix+text))
+      return chunk.write(_.capitalizeSentence(text))

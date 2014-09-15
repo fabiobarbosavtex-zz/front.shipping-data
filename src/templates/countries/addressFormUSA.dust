@@ -76,7 +76,7 @@
         <select id="ship-state" tabindex="228" class="input-medium" name="state" data-parsley-trigger="change blur" data-parsley-required="true">
           <option></option>
           {#states}
-            <option value="{.}" {@eq key=. value=state}selected="true"{/eq}>{.}</option>
+            <option value="{value}" {@eq key=value value=state}selected="true"{/eq}>{label}</option>
           {/states}
         </select>
       </p>
