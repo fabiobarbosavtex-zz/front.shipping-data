@@ -140,7 +140,11 @@ define ['flight/lib/component',
       #
 
       @done = ->
-        @validate()
+        valid = @validate()
+        if valid.length > 0 and @attr.stateMachine.can('editNoSLA')
+          hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 0
+          @attr.stateMachine.editNoSLA(@attr.orderForm.shippingData?.address, hasAvailableAddresses)
+
         @trigger('componentDone.vtex')
 
       @setProfileNameIfNull = (address) ->
