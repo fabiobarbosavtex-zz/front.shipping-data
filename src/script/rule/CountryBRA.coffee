@@ -12,11 +12,11 @@ define ->
                'PE', 'PI', 'RJ', 'RN', 'RO', 'RS', 'RR', 'SC',
                'SE', 'SP', 'TO']
 
-      for state in @states
+      for state in @statesList
         prop =
           value: state.toUpperCase()
           label: state
-        @statesValue.push(prop)
+        @states.push(prop)
 
       @postalCodeByInput = true
       @postalCodeByState = false
