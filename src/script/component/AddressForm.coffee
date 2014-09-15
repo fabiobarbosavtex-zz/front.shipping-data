@@ -106,33 +106,9 @@ define ['flight/lib/component',
           return
 
       @validateAddress = ->
-        valid = @attr.parsley.isValid()
-        if valid
-          @updateAddress(true)
-        else if @attr.data.address.isValid
-          @updateAddress(false)
-        return valid
-
-      @addressKeysUpdated = (ev) ->
-        ev?.preventDefault()
-        addressKeyMap = @getCurrentAddress()
-
-        if @getCountryRule().postalCodeByInput
-          addressKeyMap.postalCodeIsValid = @select('postalCodeSelector').parsley().isValid()
-        else
-          addressKeyMap.postalCodeIsValid = true
-
-        addressKeyMap.geoCoordinatesIsValid = addressKeyMap.geoCoordinates.length is 2
-        addressKeyMap.useGeolocationSearch = false # force use of postal code on future search
-
-        # TODO implementar geocode
-        # from valid to invalid
-        if @attr.addressKeyMap.postalCodeIsValid and not addressKeyMap.postalCodeIsValid
-          @trigger('addressKeysInvalidated.vtex', [addressKeyMap])
-        else if addressKeyMap.postalCodeIsValid # new postal code is valid
-          @trigger('addressKeysUpdated.vtex', [addressKeyMap])
-
-        @attr.addressKeyMap = addressKeyMap
+        console.log "@validateAddress"
+        address = @updateAddress()
+        return address.isValid
 
       @findAnotherPostalCode = ->
         addressKeyMap =
@@ -193,18 +169,37 @@ define ['flight/lib/component',
         return addressObj
 
       # Trigger address updated event
-      @updateAddress = (isValid) ->
+      @updateAddress = ->
         ev?.preventDefault()
 
-        @attr.data.address = @getCurrentAddress()
-        @attr.data.address.isValid = isValid
+        currentAdress  = @getCurrentAddress()
+        currentAdress.isValid = @attr.parsley.isValid()
+
+        # update address keys
+        if @getCountryRule().postalCodeByInput
+          currentAdress.postalCodeIsValid = @select('postalCodeSelector').parsley().isValid()
+        else
+          currentAdress.postalCodeIsValid = true
+
+        currentAdress.geoCoordinatesIsValid = currentAdress.geoCoordinates.length is 2
+        currentAdress.useGeolocationSearch = false # force use of postal code on future search
+
+        # TODO implementar geocode
+        # from valid to invalid
+        if @attr.data.address.postalCodeIsValid and not currentAdress.postalCodeIsValid
+          @trigger('addressKeysInvalidated.vtex', [currentAdress])
+        else if currentAdress.postalCodeIsValid and (@attr.data.address.postalCode isnt currentAdress.postalCode) # new postal code is valid
+          @trigger('addressKeysUpdated.vtex', [currentAdress])
 
         # limpa campo criado para busca do google
-        if @attr.data.address.addressSearch is null
-          delete @attr.data.address["addressSearch"]
+        if currentAdress.addressSearch is null
+          delete currentAdress["addressSearch"]
 
         # Submit address object
+        @attr.data.address = currentAdress;
         @trigger('addressUpdated.vtex', @attr.data.address)
+
+        return @attr.data.address
 
       # Select a delivery country
       # This will load the country's form and rules
@@ -291,7 +286,7 @@ define ['flight/lib/component',
           break
 
         @select('postalCodeSelector').val(postalCode)
-        @addressKeysUpdated()
+        @updateAddress()
 
       # Change postal code according to the city selected
       # postalCodeByCity should be true in the country's rule
@@ -305,7 +300,7 @@ define ['flight/lib/component',
         postalCode = rules.map[stateCapitalize.label][value]
 
         @select('postalCodeSelector').val(postalCode)
-        @addressKeysUpdated()
+        @updateAddress()
 
       # Set to a loading state
       # This will disable all fields
@@ -333,7 +328,7 @@ define ['flight/lib/component',
             # For the countries that use postal code, we must trigger
             # an addressKeysUpdated, so it can search for the SLAs
             if @getCountryRule().queryByPostalCode || @getCountryRule().queryByGeocoding
-              @addressKeysUpdated()
+              @updateAddress()
 
         handleLoadFailure = (reason) ->
           throw reason
@@ -377,8 +372,6 @@ define ['flight/lib/component',
         @on 'change',
           'stateSelector': @changeState
           'basedOnStateChange': @changePostalCodeByCity
-        @on 'keyup',
-          'postalCodeSelector': @addressKeysUpdated
         @on 'submit',
           'addressFormSelector': @stopSubmit
 
