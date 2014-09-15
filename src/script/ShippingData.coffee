@@ -97,7 +97,7 @@ define ['flight/lib/component',
           country = @attr.data.country
           rules = @attr.data.countryRules[country]
           hasDeliveries = @attr.orderForm.shippingData.logisticsInfo[0].slas.length > 0
-          hasAvailableAddresses = orderForm.shippingData.availableAddresses.length > 0
+          hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 0
           if @attr.orderForm.shippingData?.address is null
             if rules.queryByPostalCode or rules.queryByGeocoding
               @attr.stateMachine.search(@attr.orderForm)
