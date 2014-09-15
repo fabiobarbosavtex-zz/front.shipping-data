@@ -192,36 +192,36 @@ define ['flight/lib/component',
         ev?.stopPropagation()
         @validate()
 
-      @addressKeysUpdated = (ev, addressKeyMap) ->
+      @addressKeysUpdated = (ev, address) ->
         # In case it's an address that we already know its logistics info, return
         knownAddress = _.find @attr.orderForm.shippingData?.availableAddresses, (a) ->
-            a.addressId is addressKeyMap.addressId and a.postalCode is addressKeyMap.postalCode and
-            a.geoCoordinates?[0] is addressKeyMap.geoCoordinates?[0] and
-            a.geoCoordinates?[1] is addressKeyMap.geoCoordinates?[1]
+            a.addressId is address.addressId and a.postalCode is address.postalCode and
+            a.geoCoordinates?[0] is address.geoCoordinates?[0] and
+            a.geoCoordinates?[1] is address.geoCoordinates?[1]
         if knownAddress then return
 
-        if addressKeyMap.postalCodeIsValid
+        if address.postalCodeIsValid
           # If the country doesn't query for postal code, the postal code is changes are
           # triggered by the changes made in the address' state or city
-          if not @attr.data.countryRules[addressKeyMap.country].queryByPostalCode
+          if not @attr.data.countryRules[address.country].queryByPostalCode
             @attr.stateMachine.loadSLA()
 
           # When we start editing, we always start looking for shipping options
-          console.log "Getting shipping options for address key", addressKeyMap.postalCode
+          console.log "Getting shipping options for address key", address.postalCode
           @select('shippingOptionsSelector').trigger('startLoading.vtex')
-          country = addressKeyMap.country ? @attr.data.country
+          country = address.country ? @attr.data.country
 
           clearAddress = @attr.data.countryRules[country].postalCodeByInput ? true
           # If we are submitting a geoCoordinate address, then don't let the API
           # overwrite the other address fields with the data provided by the postal code
           # service
-          if addressKeyMap.geoCoordinatesValid
+          if address.geoCoordinatesValid
             clearAddress = false
 
           # Abort previous call
           if @attr.requestAddressKeys then @attr.requestAddressKeys.abort()
           @attr.requestAddressKeys = @attr.API?.sendAttachment 'shippingData',
-                address: addressKeyMap
+                address: address
                 clearAddressIfPostalCodeNotFound: clearAddress
             .done( (orderForm) =>
               hasDeliveries = orderForm.shippingData.logisticsInfo[0].slas.length > 0
@@ -232,7 +232,7 @@ define ['flight/lib/component',
                   @attr.stateMachine.doneSLA(null, hasAvailableAddresses, orderForm.shippingData.logisticsInfo, @attr.orderForm.items, @attr.orderForm.sellers)
               else
                 if @attr.data.countryRules[country].queryByPostalCode and @attr.stateMachine.can('clearSearch')
-                  @attr.stateMachine.clearSearch(addressKeyMap.postalCode)
+                  @attr.stateMachine.clearSearch(address.postalCode)
                 else
                   @select('shippingOptionsSelector').trigger('disable.vtex')
                 $(window).trigger('showMessage.vtex', ['unavailable'])
@@ -242,18 +242,18 @@ define ['flight/lib/component',
               console.log reason
               hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 0
               if @attr.data.countryRules[country].queryByPostalCode and @attr.stateMachine.can('clearSearch')
-                @attr.stateMachine.clearSearch(addressKeyMap.postalCode)
+                @attr.stateMachine.clearSearch(address.postalCode)
               else
                 @attr.stateMachine.editNoSLA(@attr.orderForm.shippingData?.address, hasAvailableAddresses)
             )
-        else if addressKeyMap.geoCoordinates
+        else if address.geoCoordinates
           # TODO implementar com geoCoordinates
-          console.log addressKeyMap, "Geo coordinates not implemented!"
+          console.log address, "Geo coordinates not implemented!"
 
       # User cleared address search key and must search again
-      @addressKeysInvalidated = (ev, addressKeyMap) ->
+      @addressKeysInvalidated = (ev, address) ->
         if @attr.stateMachine.can('clearSearch')
-          @attr.stateMachine.clearSearch(addressKeyMap.postalCode?.value, addressKeyMap.useGeolocationSearch)
+          @attr.stateMachine.clearSearch(address?.postalCode, address?.useGeolocationSearch)
 
       # User wants to edit or create an address
       @editAddress = (ev, address) ->
