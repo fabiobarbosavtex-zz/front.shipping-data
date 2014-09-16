@@ -105,7 +105,7 @@ define(function () {
       },
       "notnull": 'Este campo não deve ser nulo.',
       "notblank": 'Este campo não deve ser branco.',
-      "required": 'Este campo é obrigatório.',
+      "required": 'Campo obrigatório.',
       "regexp": 'Este campo parece estar errado.',
       "min": 'Este campo deve ser maior ou igual a %s.',
       "max": 'Este campo deve ser menor ou igual a %s.',
