@@ -183,7 +183,7 @@ define ['flight/lib/component',
                 $(window).trigger('showMessage.vtex', ['unavailable'])
                 @attr.stateMachine.cantEdit(@attr.data.deliveryCountries, orderForm)
               else if @attr.stateMachine.can("select")
-                @attr.stateMachine.select(orderForm)
+                @attr.stateMachine.select(@attr.data.deliveryCountries, orderForm)
 
       # The current address was updated, either selected or in edit
       @addressUpdated = (ev, address) ->
