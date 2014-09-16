@@ -139,7 +139,7 @@ define [], () ->
       @select('addressListSelector').trigger('startLoading.vtex')
       @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
 
-    @onBeforeSelect = (event, from, to, orderForm) ->
+    @onBeforeSelect = (event, from, to, deliveryCountries, orderForm) ->
       @attr.data.active = true
       console.log "Before select"
       if to is 'list'
