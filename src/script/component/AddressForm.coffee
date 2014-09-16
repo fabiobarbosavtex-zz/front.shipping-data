@@ -352,13 +352,14 @@ define ['flight/lib/component',
         ev.preventDefault()
 
       @updateEnables = ->
-        @attr.data.contractedShippingFieldsForGeolocation =
-          neighborhood: @attr.data.address.neighborhood isnt '' and @attr.data.address.neighborhood?
-          street: @attr.data.address.street isnt '' and @attr.data.address.street?
-          city: @attr.data.address.city isnt '' and @attr.data.address.city?
-          state: @attr.data.address.state isnt '' and @attr.data.address.state?
-          number: @attr.data.address.number isnt '' and @attr.data.address.number?
-          postalCode: @attr.data.address.postalCode isnt '' and @attr.data.address.postalCode? and @attr.data.addressQuery
+        if @getCountryRule().geocodingAvailable
+          @attr.data.contractedShippingFieldsForGeolocation =
+            neighborhood: @attr.data.address.neighborhood isnt '' and @attr.data.address.neighborhood?
+            street: @attr.data.address.street isnt '' and @attr.data.address.street?
+            city: @attr.data.address.city isnt '' and @attr.data.address.city?
+            state: @attr.data.address.state isnt '' and @attr.data.address.state?
+            number: @attr.data.address.number isnt '' and @attr.data.address.number?
+            postalCode: @attr.data.address.postalCode isnt '' and @attr.data.address.postalCode? and @attr.data.addressQuery
 
         if @getCountryRule().queryByPostalCode
           @attr.data.labelShippingFields = @attr.data.address.neighborhood isnt '' and @attr.data.address.neighborhood? and
