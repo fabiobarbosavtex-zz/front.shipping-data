@@ -163,8 +163,8 @@ define [], () ->
           objTranslation =
             from: @dateHourMinLabel(dw.startDate)
             to: @dateHourMinLabel(dw.endDate)
-          dw.label = i18n.t('shippingData.fromToHour', objTranslation) + ' - ' + dw.valueLabel
-          dw.timeLabel = i18n.t('shippingData.fromToHour', objTranslation)
+          dw.label = i18n.t('shipping.shippingOptions.fromToHour', objTranslation) + ' - ' + dw.valueLabel
+          dw.timeLabel = i18n.t('shipping.shippingOptions.fromToHour', objTranslation)
           dw.formattedDate = @formatDate(new Date(dw.startDateUtc))
           # Guarda o menor preço de entrega agendada para "a partir de"
           if dw.price + sla.price < sla.cheapestValue
