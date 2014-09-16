@@ -280,7 +280,14 @@ define ['flight/lib/component',
           address = @setProfileNameIfNull(address)
           @attr.stateMachine.editNoSLA(address, hasAvailableAddresses)
         else if @attr.stateMachine.can('new')
-          @attr.stateMachine.new()
+          country = @attr.data.country
+          rules = @attr.data.countryRules[country]
+          if rules.queryByPostalCode or rules.queryByGeocoding
+            @attr.stateMachine.new()
+          else
+            @attr.orderForm.shippingData?.address = {country: country}
+            @attr.orderForm.shippingData?.address = @setProfileNameIfNull(@attr.orderForm.shippingData?.address)
+            @attr.stateMachine.editNoSLA(@attr.orderForm.shippingData?.address, hasAvailableAddresses)
 
       # User cancelled ongoing address edit
       @cancelAddressEdit = (ev) ->
