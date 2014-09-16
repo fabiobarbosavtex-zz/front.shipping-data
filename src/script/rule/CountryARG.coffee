@@ -45,6 +45,8 @@ define ->
       @deliveryOptionsByGeocordinates = false
 
       @basedOnStateChange = true
+      @basedOnCityChange = false
+
       @geocodingAvailable = false
 
       @dontKnowPostalCodeURL = "http://www.correoargentino.com.ar/formularios/cpa"

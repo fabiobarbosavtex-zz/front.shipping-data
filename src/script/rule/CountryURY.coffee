@@ -41,6 +41,8 @@ define ->
       @deliveryOptionsByGeocordinates = false
 
       @basedOnStateChange = true
+      @basedOnCityChange = false
+
       @geocodingAvailable = false
 
       @dontKnowPostalCodeURL = "http://geo.correo.com.uy/IsisBusquedaDireccionPlugin/cp.jsp"

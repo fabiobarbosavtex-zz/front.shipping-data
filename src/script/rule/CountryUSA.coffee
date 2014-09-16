@@ -36,6 +36,8 @@ define ->
       @deliveryOptionsByGeocordinates = false
 
       @basedOnStateChange = false
+      @basedOnCityChange = false
+
       @geocodingAvailable = false
 
       @dontKnowPostalCodeURL = "https://tools.usps.com/go/ZipLookupAction!input.action"

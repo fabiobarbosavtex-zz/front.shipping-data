@@ -45,6 +45,8 @@ define ->
       @deliveryOptionsByGeocordinates = false
 
       @basedOnStateChange = true
+      @basedOnCityChange = false
+
       @geocodingAvailable = false
 
       @regexes =
