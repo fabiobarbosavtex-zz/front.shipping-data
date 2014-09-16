@@ -67,7 +67,7 @@ define ['flight/lib/component',
         @countrySelected(null, country).then =>
           if shippingData.address? # If a current address exists
             hasDeliveries = shippingData.logisticsInfo[0].slas.length > 0
-            hasAvailableAddresses = shippingData.availableAddresses.length > 0
+            hasAvailableAddresses = shippingData.availableAddresses.length > 1
             if not hasDeliveries
               if not orderForm.canEditData
                 @attr.stateMachine.cantEdit(@attr.data.deliveryCountries, @attr.orderForm)
@@ -97,7 +97,7 @@ define ['flight/lib/component',
           country = @attr.data.country
           rules = @attr.data.countryRules[country]
           hasDeliveries = @attr.orderForm.shippingData.logisticsInfo[0].slas.length > 0
-          hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 0
+          hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 1
           if @attr.orderForm.shippingData?.address is null
             if rules.queryByPostalCode or rules.queryByGeocoding
               @attr.stateMachine.search(@attr.orderForm)
@@ -124,7 +124,7 @@ define ['flight/lib/component',
           @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData)
             .fail (reason) =>
               orderForm = @attr.orderForm
-              hasAvailableAddresses = orderForm.shippingData.availableAddresses.length > 0
+              hasAvailableAddresses = orderForm.shippingData.availableAddresses.length > 1
               console.log "Could not send shipping data", reason
               @attr.stateMachine.apiError(orderForm.shippingData.address, hasAvailableAddresses, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
               @trigger 'componentValidated.vtex', [[reason]]
@@ -142,7 +142,7 @@ define ['flight/lib/component',
       @done = ->
         valid = @validate()
         if valid.length > 0 and @attr.stateMachine.can('editNoSLA')
-          hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 0
+          hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 1
           @attr.stateMachine.editNoSLA(@attr.orderForm.shippingData?.address, hasAvailableAddresses)
 
         @trigger('componentDone.vtex')
@@ -162,7 +162,7 @@ define ['flight/lib/component',
         address = @setProfileNameIfNull(address)
         address.country = address?.country ? @attr.data.country
 
-        hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 0
+        hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 1
         @attr.stateMachine.doneSearch(address, hasAvailableAddresses)
 
       # When a new addresses is selected
@@ -229,7 +229,7 @@ define ['flight/lib/component',
                 clearAddressIfPostalCodeNotFound: clearAddress
             .done( (orderForm) =>
               hasDeliveries = orderForm.shippingData.logisticsInfo[0].slas.length > 0
-              hasAvailableAddresses = orderForm.shippingData.availableAddresses.length > 0
+              hasAvailableAddresses = orderForm.shippingData.availableAddresses.length > 1
               # If we are editing and we received logistics info
               if hasDeliveries
                 if @attr.stateMachine.can('doneSLA')
@@ -244,7 +244,7 @@ define ['flight/lib/component',
             .fail( (reason) =>
               return if reason.statusText is 'abort'
               console.log reason
-              hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 0
+              hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 1
               if @attr.data.countryRules[country].queryByPostalCode and @attr.stateMachine.can('clearSearch')
                 @attr.stateMachine.clearSearch(address.postalCode)
               else
@@ -269,7 +269,7 @@ define ['flight/lib/component',
           return window.vtexid?.start(vtexIdOptions)
 
         ev?.stopPropagation()
-        hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 0
+        hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 1
         if address and
             @attr.orderForm.shippingData.address?.addressId is address.addressId and
             @attr.stateMachine.can('editWithSLA')
@@ -285,6 +285,9 @@ define ['flight/lib/component',
       # User cancelled ongoing address edit
       @cancelAddressEdit = (ev) ->
         ev?.stopPropagation()
+        if @attr.orderForm.shippingData.availableAddresses.length > 0
+          @trigger('addressKeysUpdated.vtex', [@attr.orderForm.shippingData.availableAddresses[0]])
+
         if @attr.stateMachine.can('cancelNew')
           @attr.stateMachine.cancelNew(@attr.data.deliveryCountries, @attr.orderForm)
         if @attr.stateMachine.can('cancelEdit')
