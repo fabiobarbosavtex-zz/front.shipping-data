@@ -177,9 +177,16 @@ define ['flight/lib/component',
         ev?.stopPropagation()
         address.isValid = true # se foi selecionado da lista, está válido
         @addressUpdated(ev, address)
-        if @attr.stateMachine.current is 'list' or @attr.stateMachine.current is 'listNoSLA'
-          @attr.stateMachine.loadList(@attr.data.deliveryCountries, @attr.orderForm)
-          @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData)
+
+        if @attr.stateMachine.current is 'list' or @attr.stateMachine.current is 'listNoSLA' or
+            (@attr.stateMachine.current is 'loadList' and @attr.requestAddressSelected)
+
+          if @attr.requestAddressSelected
+            @attr.requestAddressSelected.abort()
+          else
+            @attr.stateMachine.loadList(@attr.data.deliveryCountries, @attr.orderForm)
+
+          @attr.requestAddressSelected = @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData)
             .done (orderForm) =>
               hasDeliveries = orderForm.shippingData.logisticsInfo[0].slas.length > 0
               if @validateAddress() isnt true and @attr.stateMachine.can("invalidAddress")
