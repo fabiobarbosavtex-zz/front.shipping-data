@@ -35,6 +35,7 @@ define ['flight/lib/component',
         citySelector: '#ship-city'
         neighborhoodSelector: '#ship-neighborhood'
         basedOnStateChange: 'select[data-based-state-change="true"]'
+        basedOnCityChange: 'select[data-based-city-change="true"]'
         cancelAddressFormSelector: '.cancel-address-form a'
         submitButtonSelector: '.submit .btn-success.address-save'
         mapCanvasSelector: '#map-canvas'
@@ -252,36 +253,86 @@ define ['flight/lib/component',
         @trigger('cancelAddressEdit.vtex')
 
       # Fill the cities array for the selected state
-      @getCitiesData = () ->
+      @fillCitySelect = () ->
         rules = @getCountryRule()
-        if not rules.cities then return
+        if not rules.basedOnStateChange then return
 
-        state = @attr.data.address?.state ? rules.states[0]
-        @attr.data.cities = rules.cities[state]
+        state = @attr.data.address?.state
+
+        if state
+          @attr.data.cities = rules.cities[state]
+
+      # Fill the neighborhoods array for the selected city
+      @fillNeighborhoodSelect = () ->
+        rules = @getCountryRule()
+        if not rules.basedOnCityChange then return
+
+        state = @attr.data.address?.state
+        stateCapitalize = _.find rules.states, (s) -> s.value is state
+        city = @attr.data.address?.city
+
+        if city and stateCapitalize and rules.map[stateCapitalize.label][city]
+          @attr.data.neighborhoods = _.keys(rules.map[stateCapitalize.label][city])
 
       # Call two functions for the same event
-      @changeState = (ev, state) ->
+      @changedStateHandler = (ev, state) ->
         state = state?.el?.value ? null
-        @changeCities(state)
+        @changedState(state)
+
+      @changedState = (state) ->
+        if @getCountryRule().basedOnStateChange and state
+          @changeCities(state)
         @changePostalCodeByState()
+
+      @changedCityHandler = (ev, city) ->
+        city = city?.el?.value ? null
+        @changedCity(city)
+
+      @changedCity = (city) ->
+        if @getCountryRule().basedOnCityChange and city
+          @changeNeighborhoods(city)
+        @changePostalCodeByNeighborhood()
 
       # Change the city select options when a state is selected
       # basedOnStateChange should be true in the country's rule
       @changeCities = (state) ->
         rules = @getCountryRule()
-        if not rules.basedOnStateChange then return
 
-        state = state ? rules.states[0]
-
+        # Retira todos as cidades do select
         @select('basedOnStateChange').find('option').remove().end()
+
+        if rules.basedOnCityChange
+          # Retira todos os neighborhoods do select
+          @select('basedOnCityChange').find('option').remove().end()
+
+        # Caso state seja vazio, não preenchemos o select de city
+        if state is "" then return
 
         elem = '<option></option>'
         @select('basedOnStateChange').append(elem)
-        for value in rules.cities[state]
+        for value in rules.cities[state.toUpperCase()]
           elem = '<option value="'+value+'">'+value+'</option>'
           @select('basedOnStateChange').append(elem)
 
-        @select('basedOnStateChange').val('')
+      # Change the neighborhood select options when a city is selected
+      # basedOnCityChange should be true in the country's rule
+      @changeNeighborhoods = (city) ->
+        rules = @getCountryRule()
+
+        # Retira todos os neighborhoods do select
+        @select('basedOnCityChange').find('option').remove().end()
+
+        # Caso city seja vazio, não preenchemos o select de neighborhood
+        if city is "" then return
+
+        state = @select('stateSelector').val()
+        stateCapitalize = _.find rules.states, (s) -> s.value is state
+
+        elem = '<option></option>'
+        @select('basedOnCityChange').append(elem)
+        for value in _.keys(rules.map[stateCapitalize.label][city])
+          elem = '<option value="'+value+'">'+value+'</option>'
+          @select('basedOnCityChange').append(elem)
 
       # Change postal code according to the state selected
       # postalCodeByState should be true in the country's rule
@@ -310,12 +361,27 @@ define ['flight/lib/component',
         @select('postalCodeSelector').val(postalCode)
         @addressKeysUpdated()
 
+      @changePostalCodeByNeighborhood = (ev, data) ->
+        rules = @getCountryRule()
+        return if not rules.postalCodeByNeighborhood
+
+        state = @select('stateSelector').val()
+        city = @select('basedOnStateChange').val()
+        neighborhood = @select('basedOnCityChange').val()
+
+        stateCapitalize = _.find rules.states, (s) -> s.value is state
+        postalCode = rules.map[stateCapitalize.label][city][neighborhood]
+
+        @select('postalCodeSelector').val(postalCode)
+        @addressKeysUpdated()
+
       # Set to a loading state
       # This will disable all fields
       @loading = (ev, data) ->
         ev?.stopPropagation()
         @attr.data.loading = true
-        @getCitiesData()
+        @fillCitySelect()
+        @fillNeighborhoodSelect()
         @render()
 
       # Handle the initial view of this component
@@ -331,7 +397,8 @@ define ['flight/lib/component',
         handleLoadSuccess = =>
           @clearGeolocationContractedFields()
           @updateEnables(@attr.data.address)
-          @getCitiesData()
+          @fillCitySelect()
+          @fillNeighborhoodSelect()
           @render().then =>
             # For the countries that use postal code, we must trigger
             # an addressKeysUpdated, so it can search for the SLAs
@@ -379,8 +446,10 @@ define ['flight/lib/component',
           'cancelAddressFormSelector': @cancelAddressForm
           'findAPostalCodeForAnotherAddressSelector': @findAnotherPostalCode
         @on 'change',
-          'stateSelector': @changeState
+          'stateSelector': @changedStateHandler
+          'citySelector': @changedCityHandler
           'basedOnStateChange': @changePostalCodeByCity
+          'basedOnCityChange': @changePostalCodeByNeighborhood
         @on 'keyup',
           'postalCodeSelector': @addressKeysUpdated
         @on 'submit',
@@ -399,7 +468,6 @@ define ['flight/lib/component',
           @attr.data.loading = false
           window.vtex.maps.isGoogleMapsAPILoaded = true
           window.vtex.maps.isGoogleMapsAPILoading = false
-          @getCitiesData()
           @render()
 
     return defineComponent(AddressForm, withi18n, withValidation)
