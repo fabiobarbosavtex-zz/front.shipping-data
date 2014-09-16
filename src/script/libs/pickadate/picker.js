@@ -4,6 +4,7 @@
  * Hosted on http://amsul.github.io/pickadate.js
  * Licensed under MIT
  */
+(function(){
 
 var define = vtex.define || window.define;
 var require = vtex.curl || window.require;
@@ -1067,6 +1068,4 @@ return PickerConstructor
 
 
 }));
-
-
-
+})();

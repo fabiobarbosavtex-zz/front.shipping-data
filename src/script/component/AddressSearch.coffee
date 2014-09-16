@@ -6,8 +6,7 @@ define ['flight/lib/component',
         'shipping/script/models/Address',
         'shipping/script/mixin/withi18n',
         'shipping/script/mixin/withValidation',
-        'shipping/templates/addressSearch',
-        'shipping/script/libs/typeahead/typeahead.jquery'
+        'shipping/templates/addressSearch'
         ],
   (defineComponent, extensions, Address, withi18n, withValidation, template) ->
     AddressSearch = ->

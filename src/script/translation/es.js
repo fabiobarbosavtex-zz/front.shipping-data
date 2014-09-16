@@ -1,5 +1,5 @@
-define = vtex.define || window.define;
-require = vtex.curl || window.require;
+(function(){
+var define = vtex.define || window.define;
 
 define(function () {
   return {
@@ -150,3 +150,4 @@ define(function () {
     }
   }
 });
+})();

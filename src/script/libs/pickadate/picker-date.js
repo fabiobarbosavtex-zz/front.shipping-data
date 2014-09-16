@@ -3,6 +3,7 @@
  * Date picker for pickadate.js v3.5.3
  * http://amsul.github.io/pickadate.js/date.htm
  */
+(function(){
 
 var define = vtex.define || window.define;
 var require = vtex.curl || window.require;
@@ -14,7 +15,7 @@ var require = vtex.curl || window.require;
 }(function( Picker ) {
 
 
-window.vtex.pickadate = {}
+window.vtex.pickadate = {};
 
 // Portuguese
 window.vtex.pickadate['pt-BR'] = {
@@ -26,7 +27,7 @@ window.vtex.pickadate['pt-BR'] = {
     clear: 'excluir',
     format: 'dddd, d !de mmmm !de yyyy',
     formatSubmit: 'yyyy/mm/dd'
-}
+};
 
 // Spanish
 window.vtex.pickadate['es'] = {
@@ -39,7 +40,7 @@ window.vtex.pickadate['es'] = {
     firstDay: 1,
     format: 'dddd d !de mmmm !de yyyy',
     formatSubmit: 'yyyy/mm/dd'
-}
+};
 
 /**
  * Globals and constants
@@ -1370,5 +1371,4 @@ Picker.extend( 'pickadate', DatePicker )
 
 
 }));
-
-
+})();

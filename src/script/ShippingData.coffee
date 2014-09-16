@@ -2,7 +2,7 @@ define = vtex.define || window.define
 require = vtex.curl || window.require
 
 define ['flight/lib/component',
-        'state-machine/state-machine-vtex',
+        'state-machine/state-machine',
         'shipping/script/setup/extensions',
         'shipping/script/models/Address',
         'shipping/script/component/AddressSearch',
