@@ -42,7 +42,7 @@ define ->
       @geocodingAvailable = false
 
       @regexes =
-        postalCode: new RegExp(/^(\d{6})$/)
+        postalCode: new RegExp(/^(\d{5,6})$/)
 
       @masks =
         postalCode: '999999'
