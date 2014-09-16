@@ -196,15 +196,18 @@ define ['flight/lib/component',
       @updateAddress = (isValid) ->
         ev?.preventDefault()
 
-        @attr.data.address = @getCurrentAddress()
-        @attr.data.address.isValid = isValid
+        currentAddress = @getCurrentAddress()
+        currentAddress.isValid = isValid
 
         # limpa campo criado para busca do google
-        if @attr.data.address.addressSearch is null
-          delete @attr.data.address["addressSearch"]
+        if currentAddress.addressSearch is null
+          delete currentAddress["addressSearch"]
 
         # Submit address object
-        @trigger('addressUpdated.vtex', @attr.data.address)
+        @attr.data.address = new Address(currentAddress);
+        @trigger('addressUpdated.vtex', [@attr.data.address])
+
+        return @attr.data.address
 
       # Select a delivery country
       # This will load the country's form and rules
