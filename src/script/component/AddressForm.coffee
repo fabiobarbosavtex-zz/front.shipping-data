@@ -120,7 +120,7 @@ define ['flight/lib/component',
         if @getCountryRule().postalCodeByInput
           addressKeyMap.postalCodeIsValid = @select('postalCodeSelector').parsley().isValid()
         else
-          addressKeyMap.postalCodeIsValid = true
+          addressKeyMap.postalCodeIsValid = addressKeyMap.postalCode isnt null
 
         addressKeyMap.geoCoordinatesIsValid = addressKeyMap.geoCoordinates.length is 2
         addressKeyMap.useGeolocationSearch = false # force use of postal code on future search
