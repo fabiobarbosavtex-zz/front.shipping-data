@@ -39,7 +39,9 @@ define ->
 
       @basedOnStateChange = true
       @basedOnCityChange = true
+
       @geocodingAvailable = false
+      @isStateUpperCase = false
 
       @regexes =
         postalCode: new RegExp(/^(\d{5,6})$/)

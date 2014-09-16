@@ -48,6 +48,7 @@ define ->
       @basedOnCityChange = false
 
       @geocodingAvailable = false
+      @isStateUpperCase = false
 
       @regexes =
         postalCode: new RegExp(/^([\d]{4})$/)

@@ -60,9 +60,18 @@ define ['flight/lib/component',
               aa.firstPart += ', ' + aa.neighborhood if aa.neighborhood
               aa.firstPart += ', ' + aa.reference if aa.reference
               aa.secondPart = '' + aa.city
-              aa.secondPart += ' - ' + _.capitalizeSentence(aa.state)
+
+              # State is upper case based on the country rules
+              if @attr.data.countryRules[aa.country]?.isStateUpperCase
+                state = aa.state
+              else
+                state = _.capitalizeSentence(aa.state)
+              aa.secondPart += ' - ' + state
+
+              # Show postal code only if user typed it
               if @attr.data.countryRules[aa.country]?.postalCodeByInput
                 aa.secondPart += ' - ' + aa.postalCode
+
               aa.secondPart += ' - ' + i18n.t('countries.'+aa.country)
 
       # Handle selection of an address in the list

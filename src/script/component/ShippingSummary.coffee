@@ -36,6 +36,7 @@ define ['flight/lib/component',
       @attr.data.isGift = @attr.data.address?.addressType is "giftRegistry"
       @attr.data.giftRegistryData = giftRegistryData
       @attr.data.logisticsInfo = shippingData.logisticsInfo
+      @attr.data.isStateUpperCase = rules?.isStateUpperCase
       @attr.data.shippingOptions = @getShippingOptionsData(shippingData.logisticsInfo, items, sellers)
       @updateShippingOptionsLabels(@attr.data.shippingOptions).then =>
         @render() if @attr.data.active

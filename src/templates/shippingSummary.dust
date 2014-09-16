@@ -26,7 +26,13 @@
         {?city}
         <span class="city">{city}</span> -&nbsp;
         {/city}
-        <span class="state">{@capitalize text=state /}</span>
+        <span class="state">
+            {?isStateUpperCase}
+                {state}
+            {:else}
+                {@capitalize text=state /}
+            {/isStateUpperCase}
+        </span>
         {?postalCodeByInput}
         &nbsp;- <span class="postal-code">{postalCode}</span>&nbsp;
         {:else}

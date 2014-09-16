@@ -44,6 +44,7 @@ define ->
       @basedOnCityChange = false
 
       @geocodingAvailable = false
+      @isStateUpperCase = false
 
       @dontKnowPostalCodeURL = "http://geo.correo.com.uy/IsisBusquedaDireccionPlugin/cp.jsp"
 
