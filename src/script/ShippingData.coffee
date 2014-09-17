@@ -66,12 +66,13 @@ define ['flight/lib/component',
         country = shippingData.address?.country ? @attr.data.deliveryCountries[0]
         @countrySelected(null, country).then =>
           if shippingData.address? # If a current address exists
-            hasDeliveries = shippingData.logisticsInfo[0].slas.length > 0
+            li = shippingData.logisticsInfo
+            hasDeliveries = li?.length > 0 and li[0].slas.length > 0
             hasAvailableAddresses = shippingData.availableAddresses.length > 1
             if not hasDeliveries
               if not orderForm.canEditData
                 @attr.stateMachine.cantEdit(@attr.data.deliveryCountries, @attr.orderForm)
-              else if @attr.stateMachine.can("unavailable")
+              else if @attr.stateMachine.can("unavailable") and @attr.orderForm.items?.length > 0
                 $(window).trigger('showMessage.vtex', ['unavailable'])
                 @attr.stateMachine.unavailable(shippingData.address, hasAvailableAddresses)
                 @trigger 'componentValidated.vtex', [[new Error("SLA array is empty")]]
@@ -103,7 +104,8 @@ define ['flight/lib/component',
         try
           country = @attr.data.country
           rules = @attr.data.countryRules[country]
-          hasDeliveries = @attr.orderForm.shippingData.logisticsInfo[0].slas.length > 0
+          li = @attr.orderForm.shippingData.logisticsInfo
+          hasDeliveries = li?.length > 0 and li[0].slas.length > 0
           hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 1
           if @attr.orderForm.shippingData?.address is null
             if rules.queryByPostalCode or rules.queryByGeocoding
@@ -124,6 +126,8 @@ define ['flight/lib/component',
           console.log e
 
       @disable = ->
+        li = @attr.orderForm.shippingData.logisticsInfo
+        hasDeliveries = li?.length > 0 and li[0].slas.length > 0
         if @attr.stateMachine.can('submit') and @isValid()
           @attr.data.active = false
           rules = @attr.data.countryRules[@attr.orderForm.shippingData.address?.country]
@@ -136,7 +140,7 @@ define ['flight/lib/component',
               @attr.stateMachine.apiError(orderForm.shippingData.address, hasAvailableAddresses, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
               @trigger 'componentValidated.vtex', [[reason]]
               @done()
-        else if @attr.orderForm.shippingData?.availableAddresses.length is 0 or @attr.orderForm.shippingData?.logisticsInfo?[0].slas.length is 0
+        else if @attr.orderForm.shippingData?.availableAddresses.length is 0 or not hasDeliveries
           if @attr.stateMachine.can('cancelFirst')
             @attr.stateMachine.cancelFirst()
         else if @attr.stateMachine.can('cancelOther')
@@ -188,7 +192,8 @@ define ['flight/lib/component',
 
           @attr.requestAddressSelected = @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData)
             .done (orderForm) =>
-              hasDeliveries = orderForm.shippingData.logisticsInfo[0].slas.length > 0
+              li = orderForm.shippingData.logisticsInfo
+              hasDeliveries = li?.length > 0 and li[0].slas.length > 0
               if @validateAddress() isnt true and @attr.stateMachine.can("invalidAddress")
                 # If it's invalid, stop here and edit it
                 orderForm.shippingData.address = @setProfileNameIfNull(orderForm.shippingData.address)
@@ -242,7 +247,8 @@ define ['flight/lib/component',
                 address: address
                 clearAddressIfPostalCodeNotFound: clearAddress
             .done( (orderForm) =>
-              hasDeliveries = orderForm.shippingData.logisticsInfo[0].slas.length > 0
+              li = orderForm.shippingData.logisticsInfo
+              hasDeliveries = li?.length > 0 and li[0].slas.length > 0
               hasAvailableAddresses = orderForm.shippingData.availableAddresses.length > 1
               # If we are editing and we received logistics info
               if hasDeliveries
