@@ -119,14 +119,14 @@ define [], () ->
       return logisticsInfoArray
 
     @dateAsArray = (date) -> [date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()]
-    @dateAsString = (date) -> date.getUTCFullYear() + '/' + date.getUTCMonth() + '/' + date.getUTCDate()
+    @dateAsString = (date) -> date.getUTCFullYear() + '/' + (date.getUTCMonth() + 1) + '/' + date.getUTCDate()
     @dateHourMinLabel = (date) -> _.pad(date.getUTCHours(), 2) + ":" + _.pad(date.getUTCMinutes(),2) if date
 
     @formatDate = (date) ->
-      year = date.getFullYear()
-      month = date.getMonth()
-      day = date.getDate()
-      month = ('0'+month) if (parseInt(month) < 10)
+      year = date.getUTCFullYear()
+      month = date.getUTCMonth() + 1
+      day = date.getUTCDate()
+      month = ('0'+month) if (parseInt(month, 10) < 10)
       if @attr.locale is 'en-US'
         return month + '/' + day + '/' + year
       else
