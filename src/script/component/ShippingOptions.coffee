@@ -67,8 +67,9 @@ define ['flight/lib/component',
                       picker.set 'select',
                         new Date(so.selectedSla.deliveryWindow.startDateUtc)
                       # Ao selecionar uma data, o evento é disparado
-                      picker.on 'set', () =>
-                        @trigger('scheduleDateSelected.vtex', [so.index])
+                      picker.on 'set', (context) =>
+                        if context.select
+                          @trigger('scheduleDateSelected.vtex', [so.index])
 
       @getDeliveryWindowsSelector = (shippingOptionIndex) ->
         $('.shipping-option-'+shippingOptionIndex + ' ' + @attr.deliveryWindowsSelector)
