@@ -341,7 +341,9 @@ define ['flight/lib/component',
         return if not rules.postalCodeByState
 
         state = @select('stateSelector').val()
-        for city, postalCode of rules.map[state]
+        stateCapitalize = _.find rules.states, (s) -> s.value is state
+
+        for city, postalCode of rules.map[stateCapitalize.label]
           break
 
         @select('postalCodeSelector').val(postalCode)
