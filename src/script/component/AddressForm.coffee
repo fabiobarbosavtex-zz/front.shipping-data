@@ -289,7 +289,7 @@ define ['flight/lib/component',
         @changedCity(city)
 
       @changedCity = (city) ->
-        if @getCountryRule().basedOnCityChange and city
+        if @getCountryRule().basedOnCityChange
           @changeNeighborhoods(city)
         @changePostalCodeByNeighborhood()
 
@@ -322,11 +322,11 @@ define ['flight/lib/component',
         # Retira todos os neighborhoods do select
         @select('basedOnCityChange').find('option').remove().end()
 
-        # Caso city seja vazio, não preenchemos o select de neighborhood
-        if city is "" then return
-
         state = @select('stateSelector').val()
         stateCapitalize = _.find rules.states, (s) -> s.value is state
+
+        # Caso state ou city seja vazio, não preenchemos o select de neighborhood
+        if state is "" or city is "" then return
 
         elem = '<option></option>'
         @select('basedOnCityChange').append(elem)
@@ -358,6 +358,8 @@ define ['flight/lib/component',
         state = @select('stateSelector').val()
         value = @select('basedOnStateChange').val()
         stateCapitalize = _.find rules.states, (s) -> s.value is state
+
+        if not stateCapitalize or value is "" then return
         postalCode = rules.map[stateCapitalize.label][value]
 
         @select('postalCodeSelector').val(postalCode)
@@ -368,10 +370,11 @@ define ['flight/lib/component',
         return if not rules.postalCodeByNeighborhood
 
         state = @select('stateSelector').val()
+        stateCapitalize = _.find rules.states, (s) -> s.value is state
         city = @select('basedOnStateChange').val()
         neighborhood = @select('basedOnCityChange').val()
 
-        stateCapitalize = _.find rules.states, (s) -> s.value is state
+        if not stateCapitalize or city is "" or neighborhood is "" then return
         postalCode = rules.map[stateCapitalize.label][city][neighborhood]
 
         @select('postalCodeSelector').val(postalCode)
