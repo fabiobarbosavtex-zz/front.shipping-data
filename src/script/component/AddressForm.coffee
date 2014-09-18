@@ -424,7 +424,7 @@ define ['flight/lib/component',
         ev.preventDefault()
 
       @updateEnables = ->
-        if @getCountryRule().geocodingAvailable
+        if @getCountryRule().geocodingAvailable and @attr.data.address.geoCoordinates.length is 2
           @attr.data.contractedShippingFieldsForGeolocation =
             neighborhood: @attr.data.address.neighborhood isnt '' and @attr.data.address.neighborhood?
             street: @attr.data.address.street isnt '' and @attr.data.address.street?
