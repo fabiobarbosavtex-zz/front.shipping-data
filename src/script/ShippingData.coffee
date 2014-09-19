@@ -223,6 +223,9 @@ define ['flight/lib/component',
             a.geoCoordinates?[1] is address.geoCoordinates?[1]
         if knownAddress then return
 
+        if @attr.stateMachine.current is 'editWithSLA' # We have slas, no need to ask again
+          return
+
         if address.postalCodeIsValid
           # If the country doesn't query for postal code, the postal code is changes are
           # triggered by the changes made in the address' state or city
