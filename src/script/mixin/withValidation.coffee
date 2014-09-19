@@ -32,7 +32,8 @@ define [], () ->
       validationResults.length is 0 or validationResults is true
 
     # Returns array of errors
-    @validate = ->
+    @validate = (e) ->
+      e?.stopPropagation()
       validationResults = matchValidationRules.call(this)
       triggerValidationEvent.call this, validationResults
       return validationResults
@@ -47,3 +48,6 @@ define [], () ->
     @clearValidationClass = ->
       @$node.removeClass('valid')
       @$node.removeClass('has-error')
+
+    @after 'initialize', ->
+      @on 'validate.vtex', @validate
