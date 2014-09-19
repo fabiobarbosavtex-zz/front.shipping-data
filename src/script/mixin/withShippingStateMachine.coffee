@@ -4,171 +4,275 @@ require = vtex.curl || window.require
 define [], () ->
   ->
     stateMachineEvents = [
-      { name: 'start',       from: 'none',    to: 'empty'        }
-      { name: 'orderform',   from: 'empty',   to: 'summary'      }
-      { name: 'invalidAddress',from: ['empty', 'list', 'summary'], to: 'editWithSLA'  }
-      { name: 'search',      from: 'empty',   to: 'search'       }
-      { name: 'editNoSLA',   from: 'empty',   to: 'editNoSLA'    }
-      { name: 'cantEdit',    from: 'empty',   to: 'listNoSLA'    }
-      { name: 'list',        from: 'summary', to: 'list'         }
-      { name: 'apiError',    from: 'summary', to: 'editWithSLA'  }
-      { name: 'orderform',   from: 'summary', to: 'summary'      }
-      { name: 'doneSearch',  from: 'search',  to: 'editNoSLA'    }
-      { name: 'doneSLA',     from: ['editNoSLA','editWithSLA'],   to: 'editWithSLA'  }
-      { name: 'unavailable', from: ['empty', 'summary'], to: 'editNoSLA'  }
-      { name: 'submit',      from: 'editWithSLA', to: 'summary'  }
-      { name: 'submit',      from: 'list',    to: 'summary'      }
-      { name: 'select',      from: 'loadList',to: 'list'         }
-      { name: 'cantEdit',    from: ['listNoSLA', 'list', 'loadList'],  to: 'listNoSLA' }
-      { name: 'editNoSLA',   from: 'list',    to: 'editNoSLA'    }
-      { name: 'editWithSLA', from: 'list',    to: 'editWithSLA'  }
-      { name: 'loadList',    from: ['listNoSLA', 'list'], to: 'loadList' }
-      { name: 'cancelEdit',  from: ['editWithSLA', 'editNoSLA'], to: 'list' }
-      { name: 'loadSLA',     from: 'editWithSLA', to: 'editNoSLA'}
-      { name: 'loadSLA',     from: 'editNoSLA',   to: 'editNoSLA'}
-      { name: 'new',         from: 'list',    to: 'search'       }
-      { name: 'cancelNew',   from: 'search',  to: 'list'         } # only if available addresses > 0
-      { name: 'editNoSLA',   from: 'editNoSLA',   to: 'editNoSLA'}
-      { name: 'clearSearch', from: ['editNoSLA', 'editWithSLA'], to: 'search'  }
-      { name: 'cancelFirst', from: ['search', 'editNoSLA', 'editWithSLA'],  to: 'empty' } # only if available addresses == 0
-      { name: 'cancelOther', from: ['search', 'editNoSLA', 'editWithSLA'],  to: 'summary' } # only if available addresses == 0
+      { name: 'showList',           from: 'none',              to: '_list' }
+      { name: 'showForm',           from: 'none',              to: '_form' }
+      { name: 'showSummary',        from: 'none',              to: '_summary' }
+
+      { name: 'showListWithSLA',    from: '_list',             to: 'listSLA' }
+      { name: 'showListUnavailable',from: '_list',             to: 'listNoSLA' }
+      { name: 'showListCantEdit',   from: '_list',             to: 'anonListSLA' }
+      { name: 'showListCantEditUnavailable', from: '_list',    to: 'anonListNoSLA' }
+      { name: 'loadSLA',            from: 'listLoadSLA',       to: 'listSLA' }
+      { name: 'loadNoSLA',          from: 'listLoadSLA',       to: 'listNoSLA' }
+      { name: 'requestSLA',         from: 'listNoSLA',         to: 'listLoadSLA' }
+      { name: 'requestSLA',         from: 'anonListSLA',       to: 'anonListLoadSLA' }
+      { name: 'requestSLA',         from: 'anonListNoSLA',     to: 'anonListLoadSLA' }
+      { name: 'loadSLA',            from: 'anonListLoadSLA',   to: 'anonListSLA' }
+      { name: 'loadNoSLA',          from: 'anonListLoadSLA',   to: 'anonListNoSLA' }
+      { name: 'refresh',            from: 'anonListSLA',       to: 'listSLA' }
+      { name: 'refresh',            from: 'anonListNoSLA',     to: 'listNoSLA' }
+      { name: 'showForm',           from: 'listSLA',           to: '_form' }
+      { name: 'showForm',           from: 'listNoSLA',         to: '_form' }
+      { name: 'showSummary',        from: 'listSLA',           to: '_summary' }
+      { name: 'showSummary',        from: 'anonListSLA',       to: '_summary' }
+
+      { name: 'showSearch',         from: '_form',             to: 'search' }
+      { name: 'editAddressSLA',     from: '_form',             to: 'addressFormSLA' }
+      { name: 'editAddressNoSLA',   from: '_form',             to: 'addressFormNoSLA' }
+      { name: 'newAddress',         from: '_form',             to: 'addressForm' }
+      { name: 'newAddressSLA',      from: '_form',             to: 'addressFormSLA' }
+      { name: 'searchAddress',      from: 'search',            to: 'addressFormLoad' }
+      { name: 'loadAddress',        from: 'addressFormLoad',   to: 'addressForm' }
+      { name: 'requestSLA',         from: 'addressForm',       to: 'addressFormLoadSLA' }
+      { name: 'loadSLA',            from: 'addressFormLoadSLA',to: 'addressFormSLA' }
+      { name: 'loadNoSLA',          from: 'addressFormLoadSLA',to: 'addressFormNoSLA' }
+      { name: 'showSearch',         from: 'addressFormSLA',    to: 'search' }
+      { name: 'showSearch',         from: 'addressFormNoSLA',  to: 'search' }
+      { name: 'showList',           from: 'addressForm',       to: '_list' }
+      { name: 'showList',           from: 'addressFormSLA',    to: '_list' }
+      { name: 'showList',           from: 'addressFormNoSLA',  to: '_list' }
+      { name: 'showSummary',        from: 'addressFormSLA',    to: '_summary' }
+
+      { name: 'showSummary',        from: '_summary',          to: 'summary' }
+      { name: 'showEmpty',          from: '_summary',          to: 'empty' }
+      { name: 'showList',           from: 'empty',             to: '_list' }
+      { name: 'showForm',           from: 'empty',             to: '_form' }
+      { name: 'showList',           from: 'summary',           to: '_list' }
+      { name: 'showForm',           from: 'summary',           to: '_form' }
     ]
 
     @createStateMachine = ->
       StateMachine.create
-        events: stateMachineEvents,
+        events: stateMachineEvents
         callbacks:
-          onafterevent:      @onAfterEvent.bind(this)
-          onenterempty:      @onEnterEmpty.bind(this)
-          onleaveempty:      @onLeaveEmpty.bind(this)
-          onentersummary:    @onEnterSummary.bind(this)
-          onleavesummary:    @onLeaveSummary.bind(this)
-          onentersearch:     @onEnterSearch.bind(this)
-          onleavesearch:     @onLeaveSearch.bind(this)
-          onenterlist:       @onEnterList.bind(this)
-          onenterlistNoSLA:  @onEnterListNoSLA.bind(this)
-          onenterloadList:   @onEnterLoadList.bind(this)
-          onbeforeselect:    @onBeforeSelect.bind(this)
-          onentereditNoSLA:  @onEnterEditNoSLA.bind(this)
-          onleaveeditNoSLA:  @onLeaveEditNoSLA.bind(this)
-          onentereditWithSLA:@onEnterEditWithSLA.bind(this)
+          on_list:                   @on_List.bind(this)
+          onlistSLA:                 @onListSLA.bind(this)
+          onlistNoSLA:               @onListNoSLA.bind(this)
+          onlistLoadSLA:             @onListLoadSLA.bind(this)
+          onleaveListLoadSLA:        @onLeaveListLoadSLA.bind(this)
+          onanonlistSLA:             @onAnonListSLA.bind(this)
+          onanonlistNoSLA:           @onAnonListNoSLA.bind(this)
+          onanonlistLoadSLA:         @onAnonListLoadSLA.bind(this)
+          onLeaveAnonListLoadSLA:    @onLeaveAnonListLoadSLA.bind(this)
+
+          on_form:                   @on_Form.bind(this)
+          onsearch:                  @onSearch.bind(this)
+          onaddressForm:             @onAddressForm.bind(this)
+          onaddressFormLoad:         @onAddressFormLoad.bind(this)
+          onleaveaddressFormLoad:    @onLeaveAddressFormLoad.bind(this)
+          onAddressFormSLA:          @onAddressFormSLA.bind(this)
+          onleaveaddressFormSLA:     @onLeaveAddressFormSLA.bind(this)
+          onaddressFormnoSLA:        @onAddressFormNoSLA.bind(this)
+          onaddressformLoadSLA:      @onAddressFormLoadSLA.bind(this)
+          onleaveaddressFormLoadSLA: @onLeaveAddressFormLoadSLA.bind(this)
+
+          on_summary:                @on_Summary.bind(this)
+          onsummary:                 @onSummary.bind(this)
+          onleavesummary:            @onLeaveSummary.bind(this)
+          onempty:                   @onEmpty.bind(this)
+          onleaveempty:              @onLeaveEmpty.bind(this)
 
     #
     # Changed state events (FINITE STATE MACHINE)
     #
+    @onBeforeEvent = (event, from, to) ->
+      console.log "Enter "+to
+
     @onAfterEvent = ->
       if @attr.data.active
         @select('shippingStepSelector').addClass('active', 'visited')
       else
         @select('shippingStepSelector').removeClass('active')
 
-    @onEnterEmpty = (event, from, to) ->
-      console.log "Enter empty"
-      @select('addressNotFilledSelector').show()
+    @on_Summary = (event, from, to, orderForm) ->      
+      @attr.data.active = false
+
+      # Disable other components
+      @select('addressListSelector').trigger('disable.vtex')
       @select('addressFormSelector').trigger('disable.vtex')
+      @select('shippingOptionsSelector').trigger('disable.vtex')
+
+      @select('goToPaymentButtonWrapperSelector').hide()
+
+      if @isValid()
+        locale = @attr.locale
+        rules = @attr.data.countryRules[@attr.orderForm.shippingData.address?.country]
+        @attr.stateMachine.summary(orderForm, locale, rules)
+      else
+        @attr.stateMachine.showEmpty()
+
+    @onEmpty = (event, from, to) ->
+      # Disable other components
+      @select('addressListSelector').trigger('disable.vtex')
+      @select('addressFormSelector').trigger('disable.vtex')
+      @select('shippingOptionsSelector').trigger('disable.vtex')
+
+      @select('addressNotFilledSelector').show()
 
     @onLeaveEmpty = (event, from, to) ->
-      console.log "Leave empty"
       @select('addressNotFilledSelector').hide()
 
-    @onEnterSummary = (event, from, to, locale, orderForm, rules) ->
-      console.log "Enter summary"
-      # Disable other components
-      @select('addressListSelector').trigger('disable.vtex')
-      @select('shippingOptionsSelector').trigger('disable.vtex')
-      @select('addressFormSelector').trigger('disable.vtex')
-
-      # We can only enter summary if getting disabled
-      @attr.data.active = false
-      @select('shippingSummarySelector').trigger('enable.vtex', [locale, orderForm.shippingData, orderForm.items, orderForm.sellers, rules, orderForm.canEditData, orderForm.giftRegistryData])
-      @select('goToPaymentButtonWrapperSelector').hide()
-      @select('editShippingDataSelector').show()
+    @onSummary = (event, from, to, orderForm, locale, rules) ->
+      @select('shippingSummarySelector').trigger('enable.vtex', [locale, orderForm.shippingData, orderForm.items, orderForm.sellers, rules, orderForm.canEditData, orderForm.giftRegistryData])      
+      @select('editShippingDataSelector').show()    
 
     @onLeaveSummary = (event, from, to) ->
-      console.log "Leave summary"
-      # Disable other components
-      @select('shippingSummarySelector').trigger('disable.vtex')
-
-      # We can only leave summary if getting active
-      @attr.data.active = true
-      @select('goToPaymentButtonWrapperSelector').show()
       @select('editShippingDataSelector').hide()
 
-    @onEnterSearch = (event, from, to, address, hasAvailableAddresses) ->
+    @on_List = (event, from, to, orderForm) ->
       @attr.data.active = true
-      console.log "Enter search"
+
       # Disable other components
       @select('addressFormSelector').trigger('disable.vtex')
-      @select('shippingOptionsSelector').trigger('disable.vtex')
-      @select('addressListSelector').trigger('disable.vtex')
-
-      @select('goToPaymentButtonWrapperSelector').hide()
-      @select('addressSearchSelector').trigger('enable.vtex', [@attr.data.countryRules[@attr.data.country], address, hasAvailableAddresses])
-
-    @onLeaveSearch = (event, from, to) ->
-      @attr.data.active = true
-      console.log "Leave search"
       @select('addressSearchSelector').trigger('disable.vtex', null)
+      @select('shippingOptionsSelector').trigger('disable.vtex')
+      @select('shippingSummarySelector').trigger('disable.vtex')
+      @select('goToPaymentButtonWrapperSelector').hide()
 
-    @onEnterList = (event, from, to, deliveryCountries, orderForm) ->
-      @attr.data.active = true
-      console.log "Enter list"
-      # Disable other components
-      @select('addressFormSelector').trigger('disable.vtex')
+      deliveryCountries = _.uniq(_.reduceRight(orderForm.shippingData.logisticsInfo, ((memo, l) ->
+        return memo.concat(l.shipsTo)), []))
+      if deliveryCountries.length is 0
+        deliveryCountries = [orderForm.storePreferencesData?.countryCode]
 
+      hasDeliveries = orderForm.shippingData?.logisticsInfo?.length > 0 and orderForm.shippingData?.logisticsInfo[0].slas.length > 0
+      canEditData = orderForm.canEditData
+
+      if canEditData
+        if hasDeliveries
+          @attr.stateMachine.showListWithSLA(orderForm, deliveryCountries)
+        else
+          @attr.stateMachine.showListUnavailable(orderForm, deliveryCountries)
+      else
+        if hasDeliveries
+          @attr.stateMachine.showListCantEdit(orderForm, deliveryCountries)
+        else
+          @attr.stateMachine.showListCantEditUnavailable(orderForm, deliveryCountries)
+
+    @onListSLA = (event, from, to, orderForm, deliveryCountries) ->
       @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
       @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
-
-    @onEnterListNoSLA = (event, from, to, deliveryCountries, orderForm) ->
-      @select('addressListSelector').trigger('stopLoading.vtex')
-      @attr.data.active = true
-      console.log "Enter list no SLA"
-      # Disable other components
-      @select('addressFormSelector').trigger('disable.vtex')
-      @select('shippingOptionsSelector').trigger('disable.vtex')
-
-      @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
-
-    @onEnterLoadList = (event, from, to, deliveryCountries, orderForm) ->
-      @attr.data.active = true
-      console.log "Enter load list"
-      # Disable other components
-      @select('addressFormSelector').trigger('disable.vtex')
-
-      @select('shippingOptionsSelector').trigger('startLoading.vtex')
-      @select('addressListSelector').trigger('startLoading.vtex')
-      @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
-
-    @onBeforeSelect = (event, from, to, deliveryCountries, orderForm) ->
-      @attr.data.active = true
-      console.log "Before select"
-      if to is 'list'
-        @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
-        @select('addressListSelector').trigger('stopLoading.vtex')
-
-    @onEnterEditNoSLA = (event, from, to, address, hasAvailableAddresses) ->
-      @attr.data.active = true
-      console.log "Enter edit with no SLA", address
-      if event is 'loadSLA' then return
-      # Disable other components
-      @select('addressListSelector').trigger('disable.vtex')
-      @select('shippingOptionsSelector').trigger('disable.vtex')
-
-      @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
-
-    @onLeaveEditNoSLA = (event, from, to) ->
-      if to isnt 'editWithSLA' # No need to disable if we simply have new shipping options
-        @select('addressFormSelector').trigger('disable.vtex')
-
-    @onEnterEditWithSLA = (event, from, to, address, hasAvailableAddresses, logisticsInfo, items, sellers) ->
-      @attr.data.active = true
-      console.log "Enter edit with SLA", logisticsInfo
-
-      # Disable other components
-      @select('addressListSelector').trigger('disable.vtex')
-
-      if from isnt 'editNoSLA'
-        @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
-
-      @select('shippingOptionsSelector').trigger('enable.vtex', [logisticsInfo, items, sellers])
       @select('goToPaymentButtonWrapperSelector').show()
+
+    @onListNoSLA = (event, from, to, orderForm, deliveryCountries) ->
+      @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
+      @select('shippingOptionsSelector').trigger('disable.vtex')
+      @select('goToPaymentButtonWrapperSelector').hide()
+
+    @onAnonListSLA = (event, from, to, orderForm, deliveryCountries) ->
+      @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
+      @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
+      @select('goToPaymentButtonWrapperSelector').show()
+
+    @onAnonListNoSLA = (event, from, to, orderForm, deliveryCountries) ->
+      @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
+      @select('shippingOptionsSelector').trigger('disable.vtex')
+      @select('goToPaymentButtonWrapperSelector').hide()
+
+    @onListLoadSLA = (event, from, to) ->
+      @select('shippingOptionsSelector').trigger('startLoading.vtex')
+
+    @onLeaveListLoadSLA = (event, from, to) ->
+      @select('shippingOptionsSelector').trigger('stopLoading.vtex')
+
+    @onAnonListLoadSLA = (event, from, to) ->
+      @select('shippingOptionsSelector').trigger('startLoading.vtex')
+
+    @onLeaveAnonListLoadSLA = (event, from, to) ->
+      @select('shippingOptionsSelector').trigger('stopLoading.vtex')  
+
+    @on_Form = (event, from, to, orderForm) ->
+      @attr.data.active = true
+
+       # Disable other components
+      @select('addressFormSelector').trigger('disable.vtex')
+      @select('addressSearchSelector').trigger('disable.vtex', null)
+      @select('shippingOptionsSelector').trigger('disable.vtex')
+      @select('addressListSelector').trigger('disable.vtex')
+      @select('goToPaymentButtonWrapperSelector').hide()
+
+      deliveryCountries = _.uniq(_.reduceRight(orderForm.shippingData.logisticsInfo, ((memo, l) ->
+        return memo.concat(l.shipsTo)), []))
+      if deliveryCountries.length is 0
+        deliveryCountries = [orderForm.storePreferencesData?.countryCode]
+
+      address = orderForm.shippingData?.address
+      country = address?.country ? deliveryCountries[0]
+      rules = @attr.data.countryRules[country]
+      hasAvailableAddresses = orderForm.shippingData?.availableAddresses.length > 1
+      hasDeliveries = orderForm.shippingData?.logisticsInfo?.length > 0 and orderForm.shippingData?.logisticsInfo[0].slas.length > 0
+
+      if address and (not rules.regexes.postalCode.test(address.postalCode) and rules.queryByPostalCode) or
+        (rules.queryByGeocoding and address.geoCoordinates.length isnt 2)
+          @attr.stateMachine.showSearch(rules, address.postalCode, rules.queryByGeocoding, hasAvailableAddresses)
+          return
+
+      addressObj = new Address(address) if address
+      if address and addressObj.validate(rules) is true
+        if hasDeliveries
+          @attr.stateMachine.editAddressSLA(orderForm, address, hasAvailableAddresses)
+        else
+          @attr.stateMachine.editAddressNoSLA(orderForm, address, hasAvailableAddresses)
+      else
+        address = {country: country}
+        address = @setProfileNameIfNull(address)
+        if rules.queryByPostalCode or rules.queryByGeocoding
+          @attr.stateMachine.next = =>
+            @attr.stateMachine.showSearch(rules, address.postalCode, rules.queryByGeocoding, hasAvailableAddresses)
+        else if hasDeliveries
+          @attr.stateMachine.next = =>
+            @attr.stateMachine.newAddressSLA(orderForm, address, hasAvailableAddresses)
+        else
+          @attr.stateMachine.next = =>
+            @attr.stateMachine.newAddress(orderForm, address, hasAvailableAddresses)
+
+    @onSearch = (event, from, to, rules, postalCodeQuery, useGeolocationSearch, hasAvailableAddresses) ->
+      # Disable other components
+      @select('addressFormSelector').trigger('disable.vtex')
+      @select('shippingOptionsSelector').trigger('disable.vtex')
+      
+      @select('addressSearchSelector').trigger('enable.vtex', [rules, postalCodeQuery, useGeolocationSearch, hasAvailableAddresses])
+
+    @onLeaveSearch = (event, from, to) ->
+      @select('addressSearchSelector').trigger('disable.vtex', null)
+
+    @onAddressForm = (event, from, to, orderForm, address, hasAvailableAddresses) ->
+      @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
+      @select('shippingOptionsSelector').trigger('disable.vtex')
+
+    @onAddressFormLoad = (event, from, to) ->
+      @select('addressFormSelector').trigger('startLoading.vtex')
+
+    @onLeaveAddressFormLoad = (event, from, to) ->
+      @select('addressFormSelector').trigger('stopLoading.vtex')
+
+    @onAddressFormSLA = (event, from, to, orderForm, address, hasAvailableAddresses) ->
+      @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])    
+      @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
+      @select('goToPaymentButtonWrapperSelector').show()
+
+    @onLeaveAddressFormSLA = (event, from, to) ->
+      @select('goToPaymentButtonWrapperSelector').hide()
+
+    @onAddressFormNoSLA = (event, from, to, orderForm, address, hasAvailableAddresses) ->
+      # TODO Exibir mensagem unavailable
+      @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
+      @select('shippingOptionsSelector').trigger('disable.vtex')
+
+    @onAddressFormLoadSLA = (event, from, to) ->
+      @select('shippingOptionsSelector').trigger('startLoading.vtex')
+
+    @onLeaveAddressFormLoadSLA = (event, from, to) ->
+      @select('shippingOptionsSelector').trigger('stopLoading.vtex')
+
+
+    return stateMachineEvents
