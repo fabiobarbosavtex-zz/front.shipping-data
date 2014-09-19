@@ -64,36 +64,18 @@ define ['flight/lib/component',
         if @attr.data.deliveryCountries.length is 0
           @attr.data.deliveryCountries = [orderForm.storePreferencesData?.countryCode]
         country = shippingData.address?.country ? @attr.data.deliveryCountries[0]
+
         @countrySelected(null, country).then =>
-          if shippingData.address? # If a current address exists
-            shippingData.address = @addressDefaults(shippingData.address)
-            li = shippingData.logisticsInfo
-            hasDeliveries = li?.length > 0 and li[0].slas.length > 0
-            hasAvailableAddresses = shippingData.availableAddresses.length > 1
-            if not hasDeliveries
-              if not orderForm.canEditData
-                @attr.stateMachine.cantEdit(@attr.data.deliveryCountries, @attr.orderForm)
-              else if @attr.stateMachine.can("unavailable") and @attr.orderForm.items?.length > 0
-                $(window).trigger('showMessage.vtex', ['unavailable'])
-                @attr.stateMachine.unavailable(shippingData.address, hasAvailableAddresses)
-                @trigger 'componentValidated.vtex', [[new Error("SLA array is empty")]]
-                @done()
-            else if @attr.stateMachine.can('orderform')
-                rules = @attr.data.countryRules[shippingData.address.country]
-                # If we call the event 'orderForm' and it is already on the state
-                # 'summary', nothing will happen, because it will try to change to the
-                # same state, so it doesn't do anything. We must trigger the 'enable'
-                # event directly to the component, so it can update with the new orderform
-                if @attr.stateMachine.current is 'summary'
-                  @select('shippingSummarySelector').trigger('enable.vtex', [@attr.locale, orderForm.shippingData, orderForm.items, orderForm.sellers, rules, orderForm.canEditData, orderForm.giftRegistryData])
-                else
-                  @attr.stateMachine.orderform(@attr.locale, orderForm, rules)
+          hasAvailableAddresses = shippingData.availableAddresses.length > 1
+
+          if @attr.stateMachine.current is 'none'
+            if @attr.data.active
+              if hasAvailableAddresses
+                @attr.stateMachine.showList(@attr.orderForm)
+              else
+                @attr.stateMachine.showForm(@attr.orderForm)
             else
-              # When a user cannot edit data, opens VTEX ID and logs in, if
-              # he's in the list state, nothing will happen (for the same reasons
-              # stated in the comment above) so we update it's values manually
-              if @attr.stateMachine.current is 'list'
-                @select('addressListSelector').trigger('enable.vtex', [@attr.data.deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
+              @attr.stateMachine.showSummary(@attr.orderForm)
 
           @validate()
 
@@ -103,65 +85,38 @@ define ['flight/lib/component',
 
       @enable = ->
         try
-          country = @attr.data.country
+          orderForm = @attr.orderForm
+
+          deliveryCountries = _.uniq(_.reduceRight(orderForm.shippingData.logisticsInfo, ((memo, l) ->
+            return memo.concat(l.shipsTo)), []))
+          if deliveryCountries.length is 0
+            deliveryCountries = [orderForm.storePreferencesData?.countryCode]
+
+          shippingData = orderForm.shippingData
+          country = shippingData?.address?.country ? deliveryCountries[0]
           rules = @attr.data.countryRules[country]
-          li = @attr.orderForm.shippingData.logisticsInfo
-          hasDeliveries = li?.length > 0 and li[0].slas.length > 0
-          hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 1
-          if @attr.orderForm.shippingData?.address is null
-            if rules.queryByPostalCode or rules.queryByGeocoding
-              @attr.stateMachine.search({}, hasAvailableAddresses)
-            else
-              @attr.orderForm.shippingData?.address = {country: country}
-              @attr.orderForm.shippingData?.address = @addressDefaults(@attr.orderForm.shippingData?.address)
-              @attr.stateMachine.editNoSLA(@attr.orderForm.shippingData?.address, hasAvailableAddresses)
-          else if @validateAddress() isnt true
-            orderForm = @attr.orderForm
-            orderForm.shippingData.address = @addressDefaults(orderForm.shippingData.address)
-            @attr.stateMachine.invalidAddress(orderForm.shippingData.address, hasAvailableAddresses, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
-          else if not hasDeliveries and not @attr.orderForm.canEditData
-            @attr.stateMachine.cantEdit(@attr.data.deliveryCountries, @attr.orderForm)
+
+          address = new Address(shippingData.address)
+          if not shippingData?.address or address.validate(rules) isnt true
+            @attr.stateMachine.showForm(orderForm)
+            @attr.stateMachine.next()
           else
-            @attr.stateMachine.list(@attr.data.deliveryCountries, @attr.orderForm)
+            @attr.stateMachine.showList(orderForm)
+            @attr.stateMachine.next()
         catch e
           console.log e
 
       @disable = ->
-        li = @attr.orderForm.shippingData.logisticsInfo
-        hasDeliveries = li?.length > 0 and li[0].slas.length > 0
-        if @attr.stateMachine.can('submit') and @isValid()
-          @attr.data.active = false
-          rules = @attr.data.countryRules[@attr.orderForm.shippingData.address?.country]
-          @attr.stateMachine.submit(@attr.locale, @attr.orderForm, rules)
-          @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData)
-            .fail (reason) =>
-              orderForm = @attr.orderForm
-              hasAvailableAddresses = orderForm.shippingData.availableAddresses.length > 1
-              console.log "Could not send shipping data", reason
-              @attr.stateMachine.apiError(orderForm.shippingData.address, hasAvailableAddresses, orderForm.shippingData.logisticsInfo, orderForm.items, orderForm.sellers)
-              @trigger 'componentValidated.vtex', [[reason]]
-              @done()
-        else if @attr.orderForm.shippingData?.availableAddresses.length is 0 or not hasDeliveries
-          if @attr.stateMachine.can('cancelFirst')
-            @attr.stateMachine.cancelFirst()
-        else if @attr.stateMachine.can('cancelOther')
-            @attr.stateMachine.cancelOther(@attr.locale, @attr.orderForm, @attr.data.countryRules[@attr.data.country])
+        if @attr.stateMachine.can('showSummary')
+          @attr.stateMachine.showSummary(orderForm)
 
-      @profileUpdated = (e, profile) ->
+	  @profileUpdated = (e, profile) ->
         # Changed when the user makes changes to the profile, before sending the profile to the API and getting a response.
         @attr.profileFromEvent = profile
 
       #
       # Events from children components
       #
-
-      @tryDone = ->
-        if @attr.stateMachine.current is 'editWithSLA'
-          # When the AddressForm is finished validating, ShippingData will also validate due to @addressFormValidated()
-          @select('addressFormSelector').one('componentValidated.vtex', (e, errors) => @done() if errors.length is 0)
-          @select('addressFormSelector').trigger('validate.vtex')
-        else
-          @done()
 
       @done = ->
         valid = @validate()
@@ -402,7 +357,6 @@ define ['flight/lib/component',
 
       @after 'initialize', ->
         @attr.stateMachine = @createStateMachine() #from withShippingStateMachine
-        @attr.stateMachine.start()
         @setLocalePath 'shipping/script/translation/'
         # If there is an orderform present, use it for initialization
         @setLocale locale if locale = vtexjs?.checkout?.orderForm?.clientPreferencesData?.locale
@@ -432,7 +386,7 @@ define ['flight/lib/component',
             @on 'deliverySelected.vtex', @deliverySelected
             @on 'countrySelected.vtex', @countrySelected
             @on 'addressFormSelector', 'componentValidated.vtex', @addressFormValidated
-            @on window, 'profileUpdated', @profileUpdated
+			@on window, 'profileUpdated', @profileUpdated
             @on 'click',
               'goToPaymentButtonSelector': @tryDone
               'editShippingDataSelector': @enable
