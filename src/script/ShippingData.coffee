@@ -150,6 +150,14 @@ define ['flight/lib/component',
       # Events from children components
       #
 
+      @tryDone = ->
+        if @attr.stateMachine.current is 'editWithSLA'
+          # When the AddressForm is finished validating, ShippingData will also validate due to @addressFormValidated()
+          @$node.one('componentValidated.vtex', (e, errors) => @done() if errors.length is 0)
+          @select('addressFormSelector').trigger('validate.vtex')
+        else
+          @done()
+
       @done = ->
         valid = @validate()
         if valid.length > 0 and @attr.stateMachine.can('editNoSLA')
@@ -406,7 +414,7 @@ define ['flight/lib/component',
             @on 'countrySelected.vtex', @countrySelected
             @on 'addressFormSelector', 'componentValidated.vtex', @addressFormValidated
             @on 'click',
-              'goToPaymentButtonSelector': @done
+              'goToPaymentButtonSelector': @tryDone
               'editShippingDataSelector': @enable
 
             @setValidators [
