@@ -106,6 +106,7 @@ define ['flight/lib/component',
 
       @selectShippingOptionHandler = (ev, data) ->
         ev.preventDefault()
+        if $(data.el).hasClass('active') then return
         selectedSla = $('input', data.el).attr('value')
         shippingOptionIndex = $('input', data.el).data('shipping-option')
         shippingOptions = @attr.data.shippingOptions[shippingOptionIndex]
