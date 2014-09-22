@@ -6,8 +6,28 @@ define [], () ->
     @getShippingOptionsData = (logisticsInfo, items, sellers) ->
       updatedLogisticsInfo = []
       # Para cada item
-      for logisticItem in logisticsInfo
-        item = items[logisticItem.itemIndex]
+      logisticsInfo = _.map logisticsInfo, (logisticItem) ->
+        newLogisticItem =
+          itemIndex: logisticItem.itemIndex
+          itemId: logisticItem.itemId
+          selectedSla: logisticItem.selectedSla
+          shipsTo: logisticItem.shipsTo.slice(0)
+
+        newLogisticItem.slas = _.map logisticItem.slas, (sla) ->
+          newSla =
+            id: sla.id
+            listPrice: sla.listPrice
+            name: sla.name
+            price: sla.price
+            shippingEstimate: sla.shippingEstimate
+            shippingEstimateDate: sla.shippingEstimateDate
+            deliveryWindow: _.extend({}, sla.deliveryWindow)
+            tax: sla.tax
+
+          newSla.availableDeliveryWindows = _.map sla.availableDeliveryWindows, (dw) -> _.extend({}, dw)
+          return newSla
+
+        item = items[newLogisticItem.itemIndex]
 
         # Encontra o seller do item
         seller = _.find sellers, (seller) ->
@@ -15,8 +35,11 @@ define [], () ->
 
         # Extende logistics info com o seller e os dados do item
         if seller
-          newLogisticItem = _.extend({}, logisticItem, {seller:seller}, {item: item})
+          newLogisticItem.seller = seller
+          newLogisticItem.item = item
           updatedLogisticsInfo.push(newLogisticItem)
+
+        return newLogisticItem
 
       # Agrupa os items de logistic info por seller
       logisticsBySeller = _.groupBy updatedLogisticsInfo, (so) -> return so.seller.id
