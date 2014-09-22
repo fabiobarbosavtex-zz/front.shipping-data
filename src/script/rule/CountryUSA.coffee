@@ -19,7 +19,7 @@ define ->
                      'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia',
                      'Wisconsin', 'Wyoming']
 
-      for state in @states
+      for state in @statesList
         prop =
           value: state.toUpperCase()
           label: state
