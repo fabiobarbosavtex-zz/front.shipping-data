@@ -19,6 +19,9 @@ define ['flight/lib/component',
           showGeolocationSearch: false
           requiredGoogleFieldsNotFound: []
           postalCodeByInput: false
+          currentAddress:
+            raw: null
+            formatted: null
 
         addressFormSelector: '.address-form-new'
         postalCodeQuerySelector: '.postal-code-query'
@@ -31,6 +34,7 @@ define ['flight/lib/component',
         incompleteAddressData: '.incomplete-address-data'
         addressNotDetailed: '.address-not-detailed'
         incompleteAddressLink: '.incomplete-address-data-link'
+        addressSuggestionSelector: '#current-address-suggestion'
         countryRules: false
         geoSearchTimer = false
 
@@ -102,18 +106,14 @@ define ['flight/lib/component',
 
         google.maps.event.addListener @attr.autocomplete, 'place_changed', (ev, data) =>
           googleAddress = @attr.autocomplete.getPlace()
-          @addressMapper(googleAddress, @attr.countryRules.googleDataMap)
+          @addressMapper(googleAddress, googleAddress.geometry.location.lat(), googleAddress.geometry.location.lng())
 
-      @addressMapper = (googleAddress) ->
+      @addressMapper = (googleAddress, lat, lng) ->
         # Clean required google fields error and render
         @attr.data.requiredGoogleFieldsNotFound = []
         googleDataMap = @attr.countryRules.googleDataMap
-        address = {
-          geoCoordinates: [
-            googleAddress.geometry.location.lng()
-            googleAddress.geometry.location.lat()
-          ]
-        }
+        address =
+          geoCoordinates: [lng, lat]
         address.country = @attr.countryRules.country
         address.addressQuery = googleAddress.formatted_address
         address = _.extend(address, @getAddressFromGoogle(googleAddress, googleDataMap))
@@ -158,6 +158,7 @@ define ['flight/lib/component',
       # Handle the initial view of this component
       @enable = (ev, countryRule, address, hasAvailableAddresses) ->
         ev?.stopPropagation()
+        @attr.data.showGeolocationSearch = if useGeolocationSearch? then useGeolocationSearch else false
         @attr.countryRules = countryRule
         @attr.data.dontKnowPostalCodeURL = countryRule.dontKnowPostalCodeURL
         @attr.data.geocodingAvailable = countryRule.geocodingAvailable
@@ -177,9 +178,27 @@ define ['flight/lib/component',
         ev?.stopPropagation()
         @$node.html('')
 
+      @getCurrentAddress = (lat, lng) ->
+        $.ajax
+          url: "//maps.googleapis.com/maps/api/geocode/json?latlng=#{lat},#{lng}"
+          success: @onCurrentAddressLoaded.bind(@)
+
+      @onCurrentAddressLoaded = (response) ->
+        if response.status is "OK"
+          googleDataMap = @attr.countryRules.googleDataMap
+          @attr.data.currentAddress.raw = _.find response.results, (address) ->
+            return address.geometry.location_type is "ROOFTOP"
+          if @attr.data.currentAddress.raw
+            @attr.data.currentAddress.formatted = _.extend new Address(), @getAddressFromGoogle(@attr.data.currentAddress.raw, googleDataMap)
+          @render()
+
+      @selectCurrentAddress = ->
+        @addressMapper(@attr.data.currentAddress.raw, @attr.data.currentAddress.raw.geometry.location.lat, @attr.data.currentAddress.raw.geometry.location.lng)
+
       @setGeolocation = (position) ->
         coord = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
         @attr.geolocation = google.maps.LatLngBounds(coord, coord)
+        @getCurrentAddress(position.coords.latitude, position.coords.longitude)
 
         if @attr.autocomplete
           @attr.autocomplete.setBounds(@attr.geolocation)
@@ -227,6 +246,7 @@ define ['flight/lib/component',
           'dontKnowPostalCodeSelector': @openGeolocationSearch
           'knowPostalCodeSelector': @openPostalCodeSearch
           'incompleteAddressLink': @openPostalCodeSearch
+          'addressSuggestionSelector': @selectCurrentAddress
           'cancelAddressFormSelector': @cancelAddressSearch
         @on 'keyup',
           'postalCodeQuerySelector': @validatePostalCode
