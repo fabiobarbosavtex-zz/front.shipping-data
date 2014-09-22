@@ -35,6 +35,7 @@ define ['flight/lib/component',
         addressNotDetailed: '.address-not-detailed'
         incompleteAddressLink: '.incomplete-address-data-link'
         addressSuggestionSelector: '#current-address-suggestion'
+        textAddressSuggestionSelector: '.text-address-suggestion'
         countryRules: false
         geoSearchTimer = false
 
@@ -190,7 +191,10 @@ define ['flight/lib/component',
             return address.geometry.location_type is "ROOFTOP"
           if @attr.data.currentAddress.raw
             @attr.data.currentAddress.formatted = _.extend new Address(), @getAddressFromGoogle(@attr.data.currentAddress.raw, googleDataMap)
-          @render()
+          @select('textAddressSuggestionSelector')
+            .find('.formatted-address-sugestion')
+            .text("#{@attr.data.currentAddress.formatted.street}, #{@attr.data.currentAddress.formatted.number}, #{@attr.data.currentAddress.formatted.neighborhood}")
+            .parent().parent().fadeIn()
 
       @selectCurrentAddress = ->
         @addressMapper(@attr.data.currentAddress.raw, @attr.data.currentAddress.raw.geometry.location.lat, @attr.data.currentAddress.raw.geometry.location.lng)
