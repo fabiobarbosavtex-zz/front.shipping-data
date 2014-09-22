@@ -42,7 +42,7 @@
 
       <p class="ship-number required input text">
         <label for="ship-number"><span data-i18n="shipping.addressForm.number"></span> <span class="item-required">*</span></label>
-        <input type="text" tabindex="223" id="ship-number" class="input-mini" value="{number}" name="number" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
+        <input type="text" tabindex="223" id="ship-number" class="input-mini" value="{number}" name="number" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-alphanumponc="true" data-parsley-maxlength="50">
       </p>
 
       <p class="ship-more-info input text">
@@ -89,7 +89,7 @@
 
       <p class="ship-name required input text separate">
         <label for="ship-name"><span data-i18n="shipping.addressForm.receiver"></span>  <span class="item-required">*</span></label>
-        <input type="text" tabindex="230" id="ship-name" class="input-xlarge" name="receiverName" value="{receiverName}" data-parsley-trigger="change blur" data-parsley-required="true" data-parsley-alphanumponc="true">
+        <input type="text" tabindex="230" id="ship-name" class="input-xlarge" name="receiverName" value="{receiverName}" data-parsley-trigger="change blur" data-parsley-required="true" data-parsley-alphanumponc="true" data-parsley-maxlength="100">
       </p>
 
     </div>
