@@ -142,10 +142,11 @@ define ['flight/lib/component',
       @addressSearchResult = (ev, address) ->
         console.log "address result", address
 
-        address = @addressDefaults(address)
-
-        hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 1
-        @attr.stateMachine.doneSearch(address, hasAvailableAddresses)
+        @attr.orderForm.shippingData.address = @addressDefaults(address)
+        address = @attr.orderForm.shippingData.address
+        address.country = address?.country ? @attr.data.country
+        
+        @attr.stateMachine.showForm(@attr.orderForm)
 
       # When a new addresses is selected
       @addressSelected = (ev, address) ->
@@ -388,7 +389,7 @@ define ['flight/lib/component',
             @on 'addressFormSelector', 'componentValidated.vtex', @addressFormValidated
 			@on window, 'profileUpdated', @profileUpdated
             @on 'click',
-              'goToPaymentButtonSelector': @tryDone
+              'goToPaymentButtonSelector': @done
               'editShippingDataSelector': @enable
 
             @setValidators [
