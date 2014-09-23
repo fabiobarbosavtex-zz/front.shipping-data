@@ -210,6 +210,11 @@ define ['flight/lib/component',
         @attr.data.showGeolocationSearch = false
         @render()
 
+      @cancelAddressSearch = (ev) ->
+        ev.preventDefault();
+        @disable()
+        @trigger('cancelAddressEdit.vtex')
+
       @stopSubmit = (ev) ->
         ev.preventDefault()
 
@@ -222,6 +227,7 @@ define ['flight/lib/component',
           'dontKnowPostalCodeSelector': @openGeolocationSearch
           'knowPostalCodeSelector': @openPostalCodeSearch
           'incompleteAddressLink': @openPostalCodeSearch
+          'cancelAddressFormSelector': @cancelAddressSearch
         @on 'keyup',
           'postalCodeQuerySelector': @validatePostalCode
         @on 'submit',

@@ -248,7 +248,8 @@ define ['flight/lib/component',
         @attr.marker.setMap(@attr.map)
 
       # Close the form
-      @cancelAddressForm = ->
+      @cancelAddressForm = (ev) ->
+        ev.preventDefault()
         @disable()
         @trigger('cancelAddressEdit.vtex')
 
