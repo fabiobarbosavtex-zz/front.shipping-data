@@ -226,13 +226,11 @@ define ['flight/lib/component',
       @addressKeysUpdated = (ev, address) ->
         # In case it's an address that we already know its logistics info, return
         knownAddress = _.find @attr.orderForm.shippingData?.availableAddresses, (a) ->
-            a.addressId is address.addressId and a.postalCode is address.postalCode and
+            a.addressId is address.addressId and
+            a.postalCode?.replace('-', '') is address.postalCode?.replace('-', '') and
             a.geoCoordinates?[0] is address.geoCoordinates?[0] and
             a.geoCoordinates?[1] is address.geoCoordinates?[1]
         if knownAddress then return
-
-        if @attr.stateMachine.current is 'editWithSLA' # We have slas, no need to ask again
-          return
 
         if address.postalCodeIsValid
           # If the country doesn't query for postal code, the postal code is changes are
