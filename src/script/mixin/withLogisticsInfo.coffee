@@ -230,7 +230,7 @@ define [], () ->
           li.deliveryWindow = deliveryWindow
           li.selectedSla = selectedSla
 
-      if deliveryWindow
+      if selectedSla.isScheduled and deliveryWindow
         @selectDeliveryWindow(shippingOption.selectedSla, deliveryWindow)
       @trigger('deliverySelected.vtex', [@attr.data.logisticsInfo])
 
