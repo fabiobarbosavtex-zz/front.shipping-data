@@ -109,7 +109,7 @@ define ['flight/lib/component',
           hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 1
           if @attr.orderForm.shippingData?.address is null
             if rules.queryByPostalCode or rules.queryByGeocoding
-              @attr.stateMachine.search(@attr.orderForm)
+              @attr.stateMachine.search({}, hasAvailableAddresses)
             else
               @attr.orderForm.shippingData?.address = {country: country}
               @attr.orderForm.shippingData?.address = @setProfileNameIfNull(@attr.orderForm.shippingData?.address)
@@ -265,7 +265,7 @@ define ['flight/lib/component',
                   @attr.stateMachine.doneSLA(null, hasAvailableAddresses, orderForm.shippingData.logisticsInfo, @attr.orderForm.items, @attr.orderForm.sellers)
               else
                 if @attr.data.countryRules[country].queryByPostalCode and @attr.stateMachine.can('clearSearch')
-                  @attr.stateMachine.clearSearch(address.postalCode)
+                  @attr.stateMachine.clearSearch(address, hasAvailableAddresses)
                 else
                   @select('shippingOptionsSelector').trigger('disable.vtex')
                 $(window).trigger('showMessage.vtex', ['unavailable'])
@@ -275,7 +275,7 @@ define ['flight/lib/component',
               console.log reason
               hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 1
               if @attr.data.countryRules[country].queryByPostalCode and @attr.stateMachine.can('clearSearch')
-                @attr.stateMachine.clearSearch(address.postalCode)
+                @attr.stateMachine.clearSearch(address, hasAvailableAddresses)
               else
                 @attr.stateMachine.editNoSLA(@attr.orderForm.shippingData?.address, hasAvailableAddresses)
             )
@@ -286,7 +286,8 @@ define ['flight/lib/component',
       # User cleared address search key and must search again
       @addressKeysInvalidated = (ev, address) ->
         if @attr.stateMachine.can('clearSearch')
-          @attr.stateMachine.clearSearch(address?.postalCode, address?.useGeolocationSearch)
+          hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 1
+          @attr.stateMachine.clearSearch(address, hasAvailableAddresses)
 
       # User wants to edit or create an address
       @editAddress = (ev, address) ->
@@ -312,7 +313,7 @@ define ['flight/lib/component',
           country = @attr.data.country
           rules = @attr.data.countryRules[country]
           if rules.queryByPostalCode or rules.queryByGeocoding
-            @attr.stateMachine.new()
+            @attr.stateMachine.new({}, hasAvailableAddresses)
           else
             @attr.orderForm.shippingData?.address = {country: country}
             @attr.orderForm.shippingData?.address = @setProfileNameIfNull(@attr.orderForm.shippingData?.address)

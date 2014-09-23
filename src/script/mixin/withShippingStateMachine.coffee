@@ -94,7 +94,7 @@ define [], () ->
       @select('goToPaymentButtonWrapperSelector').show()
       @select('editShippingDataSelector').hide()
 
-    @onEnterSearch = (event, from, to, postalCodeQuery, useGeolocationSearch) ->
+    @onEnterSearch = (event, from, to, address, hasAvailableAddresses) ->
       @attr.data.active = true
       console.log "Enter search"
       # Disable other components
@@ -103,7 +103,7 @@ define [], () ->
       @select('addressListSelector').trigger('disable.vtex')
 
       @select('goToPaymentButtonWrapperSelector').hide()
-      @select('addressSearchSelector').trigger('enable.vtex', [@attr.data.countryRules[@attr.data.country], postalCodeQuery, if useGeolocationSearch? then useGeolocationSearch else false])
+      @select('addressSearchSelector').trigger('enable.vtex', [@attr.data.countryRules[@attr.data.country], address, hasAvailableAddresses])
 
     @onLeaveSearch = (event, from, to) ->
       @attr.data.active = true

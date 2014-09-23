@@ -82,6 +82,7 @@ define ['flight/lib/component',
 
       @handleAddressSearch = (address) ->
         @attr.data.loading = false
+        address.addressId = @attr.data.addressId
         @trigger('addressSearchResult.vtex', [address])
 
       @handleAddressSearchError = ->
@@ -155,17 +156,19 @@ define ['flight/lib/component',
         @render()
 
       # Handle the initial view of this component
-      @enable = (ev, countryRule, postalCodeQuery, useGeolocationSearch) ->
+      @enable = (ev, countryRule, address, hasAvailableAddresses) ->
         ev?.stopPropagation()
-        @attr.data.showGeolocationSearch = if useGeolocationSearch? then useGeolocationSearch else false
         @attr.countryRules = countryRule
         @attr.data.dontKnowPostalCodeURL = countryRule.dontKnowPostalCodeURL
         @attr.data.geocodingAvailable = countryRule.geocodingAvailable
         @attr.data.country = countryRule.country
         @attr.data.postalCodeByInput = countryRule.postalCodeByInput
+        @attr.data.showGeolocationSearch = address?.useGeolocationSearch
+        @attr.data.addressId = address?.addressId
+        @attr.data.hasAvailableAddresses = hasAvailableAddresses
 
         if countryRule.queryByPostalCode
-          @attr.data.postalCodeQuery = postalCodeQuery ? ''
+          @attr.data.postalCodeQuery = address?.postalCode ? ''
           @render()
         if countryRule.queryByGeocoding
           @openGeolocationSearch()
