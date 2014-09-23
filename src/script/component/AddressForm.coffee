@@ -430,7 +430,7 @@ define ['flight/lib/component',
             street: @attr.data.address.street isnt '' and @attr.data.address.street?
             city: @attr.data.address.city isnt '' and @attr.data.address.city?
             state: @attr.data.address.state isnt '' and @attr.data.address.state?
-            number: @attr.data.address.number isnt '' and @attr.data.address.number?
+            number: @attr.data.address.number isnt '' and @attr.data.address.number? and !@attr.data.address.isSuggestion
             postalCode: @attr.data.address.postalCode isnt '' and @attr.data.address.postalCode? and @attr.data.addressQuery
 
         if @getCountryRule().queryByPostalCode
