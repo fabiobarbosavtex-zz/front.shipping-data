@@ -17,7 +17,6 @@ define ->
       @reference = data.reference
       @state = data.state
       @street = data.street
-      @isSuggestion = data.isSuggestion ? false
 
     validateField: (rules, name) =>
       value = @[name]
