@@ -22,6 +22,7 @@ define ['flight/lib/component',
           currentAddress:
             raw: null
             formatted: null
+            position: null
 
         addressFormSelector: '.address-form-new'
         postalCodeQuerySelector: '.postal-code-query'
@@ -36,6 +37,7 @@ define ['flight/lib/component',
         incompleteAddressLink: '.incomplete-address-data-link'
         addressSuggestionLinkSelector: '#current-address-suggestion-link'
         textAddressSuggestionSelector: '.text-address-suggestion'
+        formattedAddressSugestionSelector: '.formatted-address-sugestion'
         countryRules: false
         geoSearchTimer = false
 
@@ -194,31 +196,28 @@ define ['flight/lib/component',
             currentAddress.formatted = @getAddressFromGoogle(currentAddress.raw, @attr.countryRules.googleDataMap)
 
           # Fills and show the suggestion selector on HTML
-          @select('textAddressSuggestionSelector')
-            .find('.formatted-address-sugestion')
+          @select('formattedAddressSugestionSelector')
             .text("#{currentAddress.formatted.street}, #{currentAddress.formatted.number}, #{currentAddress.formatted.neighborhood}")
-            .parent().parent().fadeIn()
+          @select('textAddressSuggestionSelector').fadeIn()
 
       @selectCurrentAddress = ->
         currentAddress = @attr.data.currentAddress
         @addressMapper(currentAddress.raw, currentAddress.raw.geometry.location.lat, currentAddress.raw.geometry.location.lng)
 
       @setGeolocation = (position) ->
-        coord = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-        @attr.geolocation = google.maps.LatLngBounds(coord, coord)
+        @attr.data.currentAddress.position = position;
         @getCurrentAddress(position.coords.latitude, position.coords.longitude)
+        if window.vtex.maps.isGoogleMapsAPILoaded
+          @setAutocompleteBounds()
 
-        if @attr.autocomplete
-          @attr.autocomplete.setBounds(@attr.geolocation)
-        else
-          @openGeolocationSearch()
+      @setAutocompleteBounds = ->
+        if @attr.data.currentAddress.position
+          coord = new google.maps.LatLng(@attr.data.currentAddress.position.coords.latitude, @attr.data.currentAddress.position.coords.longitude);
+          @attr.geolocation = google.maps.LatLngBounds(coord, coord)
+          @attr.autocomplete?.setBounds(@attr.geolocation)
 
       @openGeolocationSearch = ->
-        if navigator.geolocation
-          navigator.geolocation.getCurrentPosition(@setGeolocation.bind(@))
-        else
-          @attr.geolocation = null
-
+        @getNavigatorGeolocation()
         if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading
           window.vtex.maps.isGoogleMapsAPILoading = true
           script = document.createElement("script")
@@ -228,10 +227,15 @@ define ['flight/lib/component',
           @attr.data.loadingGeolocation = true
           @attr.data.showGeolocationSearch = false
           @render()
-          return
         else
           @attr.data.showGeolocationSearch = true
           @render()
+
+      @getNavigatorGeolocation = ->
+        if navigator.geolocation
+          navigator.geolocation.getCurrentPosition(@setGeolocation.bind(@))
+        else
+          @attr.geolocation = null
 
       @openPostalCodeSearch = ->
         @attr.data.showGeolocationSearch = false
@@ -275,6 +279,7 @@ define ['flight/lib/component',
           @attr.data.showGeolocationSearch = true
           window.vtex.maps.isGoogleMapsAPILoaded = true
           window.vtex.maps.isGoogleMapsAPILoading = false
+          @setAutocompleteBounds()
           @render()
 
     return defineComponent(AddressSearch, withi18n, withValidation)
