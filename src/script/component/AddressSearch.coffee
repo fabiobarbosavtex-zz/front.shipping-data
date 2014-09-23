@@ -34,7 +34,7 @@ define ['flight/lib/component',
         incompleteAddressData: '.incomplete-address-data'
         addressNotDetailed: '.address-not-detailed'
         incompleteAddressLink: '.incomplete-address-data-link'
-        addressSuggestionSelector: '#current-address-suggestion'
+        addressSuggestionLinkSelector: '#current-address-suggestion-link'
         textAddressSuggestionSelector: '.text-address-suggestion'
         countryRules: false
         geoSearchTimer = false
@@ -104,7 +104,7 @@ define ['flight/lib/component',
 
         @attr.autocomplete = new google.maps.places.Autocomplete(@select('addressSearchSelector')[0], options)
 
-        google.maps.event.addListener @attr.autocomplete, 'place_changed', (ev, data) =>
+        google.maps.event.addListener @attr.autocomplete, 'place_changed', =>
           googleAddress = @attr.autocomplete.getPlace()
           @addressMapper(googleAddress, googleAddress.geometry.location.lat(), googleAddress.geometry.location.lng())
 
@@ -168,7 +168,7 @@ define ['flight/lib/component',
         if countryRule.queryByPostalCode
           @attr.data.postalCodeQuery = postalCodeQuery ? ''
           @render()
-        if countryRule.queryByGeocoding
+        if countryRule.queryByGeocoding or @attr.data.showGeolocationSearch
           @openGeolocationSearch()
 
       @disable = (ev) ->
@@ -182,18 +182,22 @@ define ['flight/lib/component',
 
       @onCurrentAddressLoaded = (response) ->
         if response.status is "OK"
-          googleDataMap = @attr.countryRules.googleDataMap
-          @attr.data.currentAddress.raw = _.find response.results, (address) ->
+          # Find and store the current location address booth in raw and formatted models
+          currentAddress = @attr.data.currentAddress
+          currentAddress.raw = _.find response.results, (address) ->
             return address.geometry.location_type is "ROOFTOP"
-          if @attr.data.currentAddress.raw
-            @attr.data.currentAddress.formatted = _.extend new Address(), @getAddressFromGoogle(@attr.data.currentAddress.raw, googleDataMap)
+          if currentAddress.raw
+            currentAddress.formatted = _.extend new Address(), @getAddressFromGoogle(currentAddress.raw, @attr.countryRules.googleDataMap)
+
+          # Fills and show the suggestion selector on HTML
           @select('textAddressSuggestionSelector')
             .find('.formatted-address-sugestion')
-            .text("#{@attr.data.currentAddress.formatted.street}, #{@attr.data.currentAddress.formatted.number}, #{@attr.data.currentAddress.formatted.neighborhood}")
+            .text("#{currentAddress.formatted.street}, #{currentAddress.formatted.number}, #{currentAddress.formatted.neighborhood}")
             .parent().parent().fadeIn()
 
       @selectCurrentAddress = ->
-        @addressMapper(@attr.data.currentAddress.raw, @attr.data.currentAddress.raw.geometry.location.lat, @attr.data.currentAddress.raw.geometry.location.lng)
+        currentAddress = @attr.data.currentAddress
+        @addressMapper(currentAddress.raw, currentAddress.raw.geometry.location.lat, currentAddress.raw.geometry.location.lng)
 
       @setGeolocation = (position) ->
         coord = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
@@ -241,7 +245,7 @@ define ['flight/lib/component',
           'dontKnowPostalCodeSelector': @openGeolocationSearch
           'knowPostalCodeSelector': @openPostalCodeSearch
           'incompleteAddressLink': @openPostalCodeSearch
-          'addressSuggestionSelector': @selectCurrentAddress
+          'addressSuggestionLinkSelector': @selectCurrentAddress
         @on 'keyup',
           'postalCodeQuerySelector': @validatePostalCode
         @on 'submit',
