@@ -109,7 +109,7 @@ define ['flight/lib/component',
           googleAddress = @attr.autocomplete.getPlace()
           @addressMapper(googleAddress, googleAddress.geometry.location.lat(), googleAddress.geometry.location.lng())
 
-      @addressMapper = (googleAddress, lat, lng, isSuggestion = false) ->
+      @addressMapper = (googleAddress, lat, lng) ->
         # Clean required google fields error and render
         @attr.data.requiredGoogleFieldsNotFound = []
         googleDataMap = @attr.countryRules.googleDataMap
@@ -117,7 +117,6 @@ define ['flight/lib/component',
           geoCoordinates: [lng, lat]
         address.country = @attr.countryRules.country
         address.addressQuery = googleAddress.formatted_address
-        address.isSuggestion = isSuggestion
         address = _.extend(address, @getAddressFromGoogle(googleAddress, googleDataMap))
 
         _.each googleDataMap, (rule) =>
@@ -192,7 +191,7 @@ define ['flight/lib/component',
           currentAddress.raw = _.find response.results, (address) ->
             return address.geometry.location_type is "ROOFTOP"
           if currentAddress.raw
-            currentAddress.formatted = _.extend new Address(), @getAddressFromGoogle(currentAddress.raw, @attr.countryRules.googleDataMap)
+            currentAddress.formatted = @getAddressFromGoogle(currentAddress.raw, @attr.countryRules.googleDataMap)
 
           # Fills and show the suggestion selector on HTML
           @select('textAddressSuggestionSelector')
@@ -202,7 +201,7 @@ define ['flight/lib/component',
 
       @selectCurrentAddress = ->
         currentAddress = @attr.data.currentAddress
-        @addressMapper(currentAddress.raw, currentAddress.raw.geometry.location.lat, currentAddress.raw.geometry.location.lng, true)
+        @addressMapper(currentAddress.raw, currentAddress.raw.geometry.location.lat, currentAddress.raw.geometry.location.lng)
 
       @setGeolocation = (position) ->
         coord = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
