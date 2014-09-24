@@ -33,6 +33,7 @@ define ['flight/lib/component',
 
       # Render this component according to the data object
       @render = (options) ->
+        options = @attr.renderOptions
         data = @attr.data
 
         requiredFiles = if @attr.isScheduledDeliveryAvailable then @attr.pickadateFiles else []
@@ -44,6 +45,7 @@ define ['flight/lib/component',
             dust.render deliveryWindowsTemplate, data, (err, output) =>
               output = $(output).i18n()
               @getDeliveryWindowsSelector(options.index).html(output)
+              @attr.renderOptions = null
           else
             dust.render shippingOptionsTemplate, data, (err, output) =>
               output = $(output).i18n()
@@ -86,7 +88,10 @@ define ['flight/lib/component',
         @updateLogisticsInfoModel(shippingOptions, shippingOptions.selectedSla.id, @getCheapestDeliveryWindow(shippingOptions, new Date(date)))
 
         # Renderizamos as novas delivery windows para a data selecionada
-        @render(template: 'deliveryWindows', index: index)
+        @attr.renderOptions =
+          template: 'deliveryWindows'
+          index: index
+        @render()
 
       @deliveryWindowSelected = (ev, data) ->
         # Pega o indice da delivery window
