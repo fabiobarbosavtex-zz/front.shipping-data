@@ -229,6 +229,10 @@ define [], () ->
         if _.find(shippingOption.items, (i) -> i.index is li.itemIndex)
           li.deliveryWindow = deliveryWindow
           li.selectedSla = selectedSla
+          if selectedSla
+            selectedSlaObject = _.find(li.slas, (sla) -> sla.id is selectedSla)
+            if selectedSlaObject
+              selectedSlaObject.deliveryWindow = deliveryWindow
 
       if selectedSla.isScheduled and deliveryWindow
         @selectDeliveryWindow(shippingOption.selectedSla, deliveryWindow)
