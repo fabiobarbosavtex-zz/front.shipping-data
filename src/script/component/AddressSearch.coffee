@@ -236,7 +236,7 @@ define ['flight/lib/component',
 
       @getNavigatorGeolocation = ->
         if navigator.geolocation
-          navigator.geolocation.getCurrentPosition(@setGeolocation.bind(@), @geolocationError.bind(@), { enableHighAccuracy: true, maximumAge: 120 * 1000 })
+          navigator.geolocation.getCurrentPosition(@setGeolocation.bind(@), @geolocationError.bind(@), { enableHighAccuracy: true, maximumAge: 120 * 1000, timeout: 15 * 1000 })
         else
           @attr.geolocation = null
 
