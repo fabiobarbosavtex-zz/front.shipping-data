@@ -350,7 +350,19 @@ define ['flight/lib/component',
           @attr.data.states = countryRules[country].states
           @attr.data.regexes = countryRules[country].regexes
           @attr.data.geocodingAvailable = countryRules[country].geocodingAvailable
+          @loadGoogleMapsAPI(countryRules[country])
           return countryRules[country]
+
+      @loadGoogleMapsAPI = (countryRule) ->
+        if (countryRule.geocodingAvailable)
+          if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading
+            window.vtex.maps.isGoogleMapsAPILoading = true
+            script = document.createElement("script")
+            script.type = "text/javascript"
+            script.src = "//maps.googleapis.com/maps/api/js?libraries=places&sensor=true&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsAPILoaded"
+            document.body.appendChild(script)
+          else
+            @trigger 'googleMapsAPILoaded.vtex'
 
       #
       # Validation
@@ -427,5 +439,13 @@ define ['flight/lib/component',
             # If there is an orderform present, use it for initialization
             if vtexjs?.checkout?.orderForm?
               @orderFormUpdated null, vtexjs.checkout.orderForm
+
+            window.vtex.maps = window.vtex.maps or {}
+
+            # Called when google maps api is loaded
+            window.vtex.maps.googleMapsAPILoaded = =>
+              window.vtex.maps.isGoogleMapsAPILoaded = true
+              window.vtex.maps.isGoogleMapsAPILoading = false
+              @trigger 'googleMapsAPILoaded.vtex'
 
     return defineComponent(ShippingData, withi18n, withValidation, withShippingStateMachine)
