@@ -61,9 +61,6 @@
               {?street}
                 <span>{address.street}</span>
               {/street}
-              {?number}
-                <span>, {address.number}</span>
-              {/number}
               <span> - </span>
               <a class="link-edit" href="javascript:void(0);" id="force-shipping-fields" data-i18n="global.edit"></a>
             </span>
