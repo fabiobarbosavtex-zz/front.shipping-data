@@ -210,6 +210,9 @@ define ['flight/lib/component',
         if window.vtex.maps.isGoogleMapsAPILoaded
           @setAutocompleteBounds()
 
+      @geolocationError = (error) ->
+        console.log(error)
+
       @setAutocompleteBounds = ->
         if @attr.data.currentAddress.position
           coord = new google.maps.LatLng(@attr.data.currentAddress.position.coords.latitude, @attr.data.currentAddress.position.coords.longitude);
@@ -233,7 +236,7 @@ define ['flight/lib/component',
 
       @getNavigatorGeolocation = ->
         if navigator.geolocation
-          navigator.geolocation.getCurrentPosition(@setGeolocation.bind(@))
+          navigator.geolocation.getCurrentPosition(@setGeolocation.bind(@), @geolocationError.bind(@), { enableHighAccuracy: true, maximumAge: 120 * 1000 })
         else
           @attr.geolocation = null
 
