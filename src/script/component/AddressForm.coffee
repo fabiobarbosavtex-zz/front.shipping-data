@@ -49,7 +49,7 @@ define ['flight/lib/component',
           output = $(output).i18n()
           @$node.html(output)
           if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading and @attr.data.hasGeolocationData
-            @loadGoogleMaps()
+            @loading()
 
           if window.vtex.maps.isGoogleMapsAPILoaded and @attr.data.hasGeolocationData
             @attr.data.loading = false
@@ -96,18 +96,6 @@ define ['flight/lib/component',
       @getCountryRule = ->
         @attr.data.countryRules[@attr.data.address.country]
 
-      @loadGoogleMaps = ->
-        if not window.vtex.maps.isGoogleMapsAPILoaded
-          window.vtex.maps.isGoogleMapsAPILoading = true
-          @loading()
-          country = @getCountryRule().abbr
-          script = document.createElement("script")
-          script.type = "text/javascript"
-          script.src = "//maps.googleapis.com/maps/api/js?libraries=places&sensor=false&components=country:#{country}&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsLoadedOnAddressForm"
-          document.body.appendChild(script)
-          return
-
-      # Only "go to payment" button ever triggers this validation
       @validateAddress = ->
         valid = @attr.parsley.validate()
         if valid
@@ -441,11 +429,16 @@ define ['flight/lib/component',
 
           @attr.data.disableCityAndState = @attr.data.address.state and @attr.data.address.city
 
+      @googleMapsAPILoaded = ->
+        @attr.data.loading = false
+        @render()
+
       # Bind events
       @after 'initialize', ->
         @on 'enable.vtex', @enable
         @on 'disable.vtex', @disable
         @on 'startLoading.vtex', @loading
+        @on 'googleMapsAPILoaded.vtex', @googleMapsAPILoaded
         @on 'click',
           'forceShippingFieldsSelector': @forceShippingFields
           'cancelAddressFormSelector': @cancelAddressForm
@@ -465,14 +458,5 @@ define ['flight/lib/component',
         ]
 
         @setLocalePath 'shipping/script/translation/'
-
-        window.vtex.maps = window.vtex.maps or {}
-
-        # Called when google maps api is loaded
-        window.vtex.maps.googleMapsLoadedOnAddressForm = =>
-          @attr.data.loading = false
-          window.vtex.maps.isGoogleMapsAPILoaded = true
-          window.vtex.maps.isGoogleMapsAPILoading = false
-          @render()
 
     return defineComponent(AddressForm, withi18n, withValidation)
