@@ -1,105 +1,104 @@
-# front.shipping-data
+# VTEX Shipping Data
 
-Componente de endereços construído em [Flight](http://flightjs.github.io/).
+Browser component that offers a complete experience to collect shipping information from the user.
 
-## Requerimentos
+Also available are separate, smallers components for single tasks, such as editing an address or listing multiple addresses.  
 
-```html
-<!-- index.html -->
+- [Developing](#developing)
+	- [Requirements](#requirements)
+	- [Quick Start](#quick-start) 
+- [Usage](#usage)
+- [Architecture](#architecture)
+	- [Shipping Data](#shipping-data)
+	- [Address Form Component](#address-form-component)
+	- [Address List Component](#address-list-component)
+	- [Address Search Component](#address-search-component)
+	- [Country Select Component](#country-select-component)
+	- [Shipping Options Component](#shipping-options-component)
+	- [Shipping Summary Component](#shipping-summary-component)
+	- [Validation Mixin](#validation-mixin)
+	- [i18n Mixin](#i18n-mixin)
+ 
 
-<!--[if lt IE 9]>
-<script src="/front.shipping-data/libs/es5-shim/es5-shim.min.js"></script>
-<script src="/front.shipping-data/libs/es5-shim/es5-sham.min.js"></script>
-<![endif]-->
-<script src="//io.vtex.com.br/front-libs/jquery/1.8.3/jquery-1.8.3.min.js"></script>
-<script src="//io.vtex.com.br/front-libs/underscore/1.5.2-gentle/underscore-min.js"></script>
-<script src="//io.vtex.com.br/front-libs/dustjs-linkedin/2.2.2/dust-core-2.2.2.min.js"></script>
-<script src="//io.vtex.com.br/front-libs/dustjs-linkedin-helpers/1.1.1/dust-helpers-1.1.1.js"></script>
-<script src="//io.vtex.com.br/front-libs/flight/1.0.9/flight.min.js"></script>
+# Developing
 
-<script src="//io.vtex.com.br/front-libs/curl/0.8.7-vtex/curl.js"></script>
+## Requirements
 
-<!-- Insira a versão que deseja usar aqui -->
-<script src="//io.vtex.com.br/front.shipping-data/1.1.0/js/libs.min.js"></script>
+Install grunt-cli
 
-<script src="//io.vtex.com.br/front-libs/front-i18n/0.4.1/vtex-i18n.js"></script>
+	npm install -g grunt-cli
 
-<!-- Insira a versão que deseja usar aqui -->
-<script src="//io.vtex.com.br/front.shipping-data/1.1.0/js/setup/front-shipping-data.min.js"></script>
-```
+Install this project's dependencies
 
-## Exemplo de uso
+	npm install
 
+**Windows Users:** Issue these commands in your Git Shell, or a cmd with git in your PATH. (Afterwards, please [install a decent OS](http://ubuntu.com/download))
 
-```javascript
-/* main.js */
+**Using port 80 without `sudo`:** Follow [this gist](https://gist.github.com/gadr/6389682) to allow node to bind to port 80. Otherwise, you will need to `sudo grunt`.
 
-'use strict';
+## Quick start
 
-// Primeiramente, de require nos componentes
-vtex.curl(['component/AddressForm', 'component/AddressList'],
-  function(AddressForm, AddressList) {
-    // Seletor que engloba os dois componentes
-    var addressBookComponent = '.address-book';
-    // Seletores onde os componentes serão inseridos
-    var addressListComponent = '.address-list-placeholder';
-    var addressFormComponent = '.address-form-placeholder';
-    
-    // Instanciando os componentes
-    var addressList = new AddressList(addressListComponent);
-    var addressForm = new AddressForm(addressFormComponent);
-    
-    var checkout = { API: new vtex.checkout.API() };
+	grunt
 
-    // Alimenta componente com endereços da API
-    checkout.API.getOrderForm(['shippingData']).done(function(data){
-      var shippingData = data.shippingData;
+This will start the application at [http://basedevmkp.vtexlocal.com.br/front.shipping-data/app/](http://walmartv5.vtexlocal.com.br/front.shipping-data/app/).
 
-      if (shippingData) {
-        shippingData.deliveryCountries = _.reduceRight(
-          shippingData.logisticsInfo,
-          function(memo, l) {
-            return memo.concat(l.shipsTo);
-          }, []
-        );
-      }
+To develop alongside [Checkout-UI](https://github.com/vtex/vcs.checkout-ui), use the `dev` task.
 
-      // Dispara evento (componente é visível a partir deste momento)
-      $(addressBookComponent).trigger('updateAddresses', shippingData);
-    }).fail(function(){
-      // Tratamento de erro
-    });
+	grunt dev
+		
+------
 
-    // Escuta eventos
-    $(addressBookComponent).on('newAddress addressSelected', function(ev, addressObj){
-      // Encapsula em objeto shippingData
-      var shippingData = { address: addressObj };
-      var serializedAttachment = JSON.stringify(shippingData);
-      // Salva na API
-      checkout.API.sendAttachment('shippingData', serializedAttachment).done(function(data){
-        // Dispara evento com dados atualizados da API
-        $(addressBookComponent).trigger('updateAddresses', data.shippingData);
-      }).fail(function(){
-        // Tratamento de erro
-      });;
-    });
-  }
-);
-```
+# Usage
 
-## API
+The component is always published on VTEX IO CDN:
 
-A API é baseada em eventos jQuery.
+First, grab the setup file:
 
-### Eventos Ativos
+http://io.vtex.com.br/front.shipping-data/2.0.53/script/setup/front-shipping-data.js
 
-#### updateAddresses
-Dispare este evento para atualizar o objeto shippingData.
+Then, simply `require` the component:
 
-### Eventos Passivos
+	vtex.curl ['shipping/script/ShippingData'], (ShippingData) ->
+		ShippingData.attachTo('#shipping-data',  { API: vtexjs.checkout })
 
-#### newAddress
-Este evento é disparado quando o usuário dá submit em um endereço, tanto para casos de novo endereço quanto para casos de edição. O objeto Address é enviado como parâmetro.
+------
 
-#### addressSelected
-Este evento é disparado quando o usuário seleciona um endereço da lista de endereços. O objeto Address é enviado como parâmetro.
+# Architecture 
+
+This repository is divided into one main application component, `ShippingData`, and other, smaller, focused components. 
+
+## ShippingData
+
+`ShippingData` adheres to the [Component Event API](https://github.com/vtex/vcs.checkout-ui/blob/master/README.md#component-event-api). It coordinates the children components in order to enable the desired behaviour in the checkout shipping step.
+
+## Address Form Component
+
+	vtex.curl ['shipping/script/component/AddressForm'], (AddressForm) ->
+		AddressForm.attachTo('#address-form')
+
+### Events listened to
+
+#### `enable.vtex`
+#### `disable.vtex`
+#### `startLoading.vtex`
+
+### Events triggered
+
+#### `addressKeysInvalidated.vtex`
+#### `addressKeysUpdated.vtex`
+#### `addressUpdated.vtex`
+#### `cancelAddressEdit.vtex`
+
+## Address List Component
+
+## Address Search Component
+
+## Country Select Component
+
+## Shipping Options Component
+
+## Shipping Summary Component
+
+## Validation Mixin
+
+## i18n Mixin

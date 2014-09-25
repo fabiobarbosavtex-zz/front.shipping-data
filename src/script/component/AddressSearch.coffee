@@ -210,8 +210,16 @@ define ['flight/lib/component',
         if window.vtex.maps.isGoogleMapsAPILoaded
           @setAutocompleteBounds()
 
-      @geolocationError = (error) ->
-        console.log(error)
+      @handleGeolocationError = (error) ->
+        if error.code == 1
+          console.log(error)
+          console.log("PERMISSION_DENIED")
+        if error.code == 2
+          console.log(error)
+          console.log("POSITION_UNAVAILABLE")
+        if error.code == 3
+          console.log(error)
+          console.log("TIMEOUT")
 
       @setAutocompleteBounds = ->
         if @attr.data.currentAddress.position
@@ -222,11 +230,6 @@ define ['flight/lib/component',
       @openGeolocationSearch = ->
         @getNavigatorGeolocation()
         if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading
-          window.vtex.maps.isGoogleMapsAPILoading = true
-          script = document.createElement("script")
-          script.type = "text/javascript"
-          script.src = "//maps.googleapis.com/maps/api/js?libraries=places&sensor=true&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsLoadedOnSearch"
-          document.body.appendChild(script)
           @attr.data.loadingGeolocation = true
           @attr.data.showGeolocationSearch = false
           @render()
@@ -236,7 +239,7 @@ define ['flight/lib/component',
 
       @getNavigatorGeolocation = ->
         if navigator.geolocation
-          navigator.geolocation.getCurrentPosition(@setGeolocation.bind(@), @geolocationError.bind(@), { enableHighAccuracy: true, maximumAge: 120 * 1000 })
+          navigator.geolocation.getCurrentPosition(@setGeolocation.bind(@), @handleGeolocationError.bind(@), { enableHighAccuracy: true, maximumAge: 120 * 1000, timeout: 15 * 1000 })
         else
           @attr.geolocation = null
 
@@ -252,11 +255,18 @@ define ['flight/lib/component',
       @stopSubmit = (ev) ->
         ev.preventDefault()
 
+      @googleMapsAPILoaded = ->
+        @attr.data.loadingGeolocation = false
+        @attr.data.showGeolocationSearch = true
+        @setAutocompleteBounds()
+        @render()
+
       # Bind events
       @after 'initialize', ->
         @on 'enable.vtex', @enable
         @on 'disable.vtex', @disable
         @on 'startLoading.vtex', @loading
+        @on 'googleMapsAPILoaded.vtex', @googleMapsAPILoaded
         @on 'click',
           'dontKnowPostalCodeSelector': @openGeolocationSearch
           'knowPostalCodeSelector': @openPostalCodeSearch
@@ -273,16 +283,5 @@ define ['flight/lib/component',
         ]
 
         @setLocalePath 'shipping/script/translation/'
-
-        window.vtex.maps = window.vtex.maps or {}
-
-        # Called when google maps api is loaded
-        window.vtex.maps.googleMapsLoadedOnSearch = =>
-          @attr.data.loadingGeolocation = false
-          @attr.data.showGeolocationSearch = true
-          window.vtex.maps.isGoogleMapsAPILoaded = true
-          window.vtex.maps.isGoogleMapsAPILoading = false
-          @setAutocompleteBounds()
-          @render()
 
     return defineComponent(AddressSearch, withi18n, withValidation)
