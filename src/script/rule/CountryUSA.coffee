@@ -29,7 +29,7 @@ define ->
       @postalCodeByState = false
       @postalCodeByCity = false
 
-      @queryByPostalCode = false
+      @queryByPostalCode = true
       @queryByGeocoding = false
 
       @deliveryOptionsByPostalCode = true
