@@ -150,6 +150,7 @@ define [], () ->
       year = date.getUTCFullYear()
       month = date.getUTCMonth() + 1
       day = date.getUTCDate()
+      day = ('0'+day) if (parseInt(day, 10) < 10)
       month = ('0'+month) if (parseInt(month, 10) < 10)
       if @attr.locale is 'en-US'
         return month + '/' + day + '/' + year
@@ -232,8 +233,7 @@ define [], () ->
           li.selectedSla = selectedSla
           if selectedSla
             selectedSlaObject = _.find(li.slas, (sla) -> sla.id is selectedSla)
-            if selectedSlaObject
-              selectedSlaObject.deliveryWindow = deliveryWindow
+            selectedSlaObject?.deliveryWindow = deliveryWindow
 
       if selectedSla.isScheduled and deliveryWindow
         @selectDeliveryWindow(shippingOption.selectedSla, deliveryWindow)
