@@ -53,17 +53,17 @@ define [], () ->
           selectedSla: ''
           slas: []
           index: index
-        index++
 
         for logi in logistic
           composedLogistic.items.push(logi.item)
           composedLogistic.seller = logi.seller
-          for sla, i in logi.slas
+          for sla in logi.slas
             # Ve se SLA em questão já está no array de SLAS computados
             composedSla = _.find composedLogistic.slas, (_sla) -> _sla.id is sla.id
 
             # Caso nao esteja no array de SLAS computados, o SLA será computado pela primeira vez
             if not composedSla
+              sla.shippingOptionsIndex = index
               shouldPushThis = true
 
               if sla.availableDeliveryWindows and sla.availableDeliveryWindows.length > 0
@@ -98,6 +98,7 @@ define [], () ->
 
           composedLogistic.selectedSla = selectedSla
 
+        index++
         return composedLogistic
 
       _.each logisticsInfoArray, (li) =>

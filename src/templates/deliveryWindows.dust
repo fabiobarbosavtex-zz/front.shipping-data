@@ -1,6 +1,6 @@
 {#deliveryWindowsForDate}
 <label class="radio">
-    <input type="radio" value="{@idx}{.}{/idx}" id="delivery-window-{@idx}{.}{/idx}" name="delivery-window-{nameAttr}" data-shipping-option="{index}"
+    <input type="radio" value="{@idx}{.}{/idx}" id="delivery-window-{@idx}{.}{/idx}" name="delivery-window-{nameAttr}" data-shipping-option="{shippingOptionsIndex}"
     {#isWindowSelected}checked="checked"{/isWindowSelected}
     data-bind="disable: checkout.disableInputs()">
     <span>{label}</span>
