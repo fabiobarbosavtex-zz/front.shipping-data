@@ -223,20 +223,26 @@ define [], () ->
           else
             # Devemos sempre deixar a flag de todas as outras como false
             dateWindow.isWindowSelected = false
+      return
 
     @updateLogisticsInfoModel = (shippingOption, selectedSla, deliveryWindow) ->
       # Atualiza o logisticsInfo
       for li in @attr.data.logisticsInfo
         # Caso os items do shipping option fale do logistic info em questão
         if _.find(shippingOption.items, (i) -> i.index is li.itemIndex)
-          li.deliveryWindow = deliveryWindow
-          li.selectedSla = selectedSla
-          if selectedSla
-            selectedSlaObject = _.find(li.slas, (sla) -> sla.id is selectedSla)
-            selectedSlaObject?.deliveryWindow = deliveryWindow
 
-      if selectedSla.isScheduled and deliveryWindow
+          selectedSlaObject = _.find(li.slas, (sla) -> sla.id is selectedSla)
+          if selectedSlaObject.availableDeliveryWindows.length > 0
+            if not deliveryWindow
+              deliveryWindow = selectedSlaObject.availableDeliveryWindows[0]
+            selectedSlaObject.deliveryWindow = deliveryWindow
+
+          li.selectedSla = selectedSla
+          li.deliveryWindow = deliveryWindow
+
+      if shippingOption.selectedSla.availableDeliveryWindows.length > 0 and deliveryWindow
         @selectDeliveryWindow(shippingOption.selectedSla, deliveryWindow)
+
       @trigger('deliverySelected.vtex', [@attr.data.logisticsInfo])
 
     @getCheapestDeliveryWindow = (shippingOptions, date) ->

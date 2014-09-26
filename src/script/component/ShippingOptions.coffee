@@ -27,7 +27,7 @@ define ['flight/lib/component',
 
         shippingOptionSelector: '.shipping-option-item'
         pickadateSelector: '.datepicker'
-        deliveryWindowsSelector: '.delivery-windows'
+        deliveryWindowsTemplateSelector: '.scheduled-sla-time'
         deliveryWindowSelector: '.delivery-windows input[type=radio]'
         changeSlaSelector: '#change-sla-items-list'
 
@@ -67,15 +67,19 @@ define ['flight/lib/component',
                       # Pega a instancia do picker
                       picker = @getPickadateSelector(so.index).pickadate('picker')
                       # Seleciona a data selecionada
-                      picker.set 'select',
-                        new Date(so.selectedSla.deliveryWindow.startDateUtc)
+                      if so.selectedSla.deliveryWindow.startDateUtc
+                        picker.set 'select',
+                          new Date(so.selectedSla.deliveryWindow.startDateUtc)
+                      else
+                        picker.clear()
+
                       # Ao selecionar uma data, o evento é disparado
                       picker.on 'set', (context) =>
                         if context.select
                           @trigger('scheduleDateSelected.vtex', [so.index])
 
       @getDeliveryWindowsSelector = (shippingOptionIndex) ->
-        $('.shipping-option-'+shippingOptionIndex + ' ' + @attr.deliveryWindowsSelector)
+        $('.shipping-option-'+shippingOptionIndex + ' ' + @attr.deliveryWindowsTemplateSelector)
 
       @getPickadateSelector = (shippingOptionIndex) ->
         $('.shipping-option-'+shippingOptionIndex + ' ' + @attr.pickadateSelector)

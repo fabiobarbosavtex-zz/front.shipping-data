@@ -138,11 +138,7 @@
                     <input class="datepicker input input-xlarge" type="text"
                            data-i18n="[placeholder]shipping.shippingOptions.chooseScheduledDate" style="cursor: pointer;">
                     <p class="scheduled-sla-time">
-                        <span data-i18n="shipping.shippingOptions.deliveryHour"></span>:
-                        <br/>
-                        <span class="delivery-windows">
                         {>deliveryWindows /}
-                        </span>
                     </p>
                 </div>
                 {/if}
