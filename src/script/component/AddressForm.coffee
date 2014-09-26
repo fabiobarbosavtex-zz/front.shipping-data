@@ -78,8 +78,9 @@ define ['flight/lib/component',
             errorsWrapper: '<span class="help error error-list"></span>'
             errorTemplate: '<span class="error-description"></span>'
 
-          @attr.parsley.subscribe 'parsley:field:validated', () =>
-            @validate()
+          @attr.parsley.subscribe 'parsley:field:validated', =>
+            valid = @attr.parsley.isValid()
+            @updateAddress(valid)
 
           if @attr.data.address.validate(rules) is true
             @attr.parsley.validate()
@@ -106,8 +107,9 @@ define ['flight/lib/component',
           document.body.appendChild(script)
           return
 
+      # Only "go to payment" button ever triggers this validation
       @validateAddress = ->
-        valid = @attr.parsley.isValid()
+        valid = @attr.parsley.validate()
         if valid
           @updateAddress(true)
         else if @attr.data.address.isValid
@@ -195,8 +197,6 @@ define ['flight/lib/component',
 
       # Trigger address updated event
       @updateAddress = (isValid) ->
-        ev?.preventDefault()
-
         currentAddress = @getCurrentAddress()
         currentAddress.isValid = isValid
 
