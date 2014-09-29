@@ -66,6 +66,7 @@ Then, simply `require` the component:
 # Architecture 
 
 This repository is divided into one main application component, `ShippingData`, and other, smaller, focused components. 
+If no description is provided for an event, it likely adheres to the [Component Event API](https://github.com/vtex/vcs.checkout-ui/blob/master/README.md#component-event-api).
 
 ## ShippingData
 
@@ -73,21 +74,47 @@ This repository is divided into one main application component, `ShippingData`, 
 
 ## Address Form Component
 
-	vtex.curl ['shipping/script/component/AddressForm'], (AddressForm) ->
-		AddressForm.attachTo('#address-form')
+Require path: `'shipping/script/component/AddressForm'`
+Provides: [Flight component](https://github.com/flightjs/flight/blob/master/doc/component_api.md#componentattachtoselector-options)
+
+## Address Keys
+
+An `address key` is an attribute that defines the address. If it is changed, the address is invalidated or must fetch new delivery options. For example, if the current country uses `postalCode` as the query parameter, changing the `postalCode` must prompt a new search.
 
 ### Events listened to
 
 #### `enable.vtex`
 #### `disable.vtex`
 #### `startLoading.vtex`
+#### `validate.vtex`
+
+Upon receiving this event, the entire form is validated, causing multiple instances of the `addressUpdated.vtex` event being triggered. See [issue #9](https://github.com/vtex/front.shipping-data/issues/9).
 
 ### Events triggered
 
-#### `addressKeysInvalidated.vtex`
-#### `addressKeysUpdated.vtex`
-#### `addressUpdated.vtex`
+#### `addressKeysInvalidated.vtex [addressJSON]`
+ 
+The user changed an address key to an invalid state and a new search must start. 
+e.g. User edited the `postalCode` field.
+
+- address - an extended Address JSON with `postalCodeIsValid`, `geoCoordinatesIsValid` and `useGeolocationSearch` properties.
+
+#### `addressKeysUpdated.vtex [addressJSON]`
+
+The user changed an address key to a valid state. This indicates that new shipping options should be fetched. 
+
+- address - an extended Address JSON with `postalCodeIsValid`, `geoCoordinatesIsValid` and `useGeolocationSearch` properties.
+
+#### `addressUpdated.vtex [address instanceof Address]`
+
+The user changed the currently edited address. 
+This event is triggered after any address property is validated.
+
+- address - an instance of Address
+
 #### `cancelAddressEdit.vtex`
+
+The user canceled the current address editing.
 
 ## Address List Component
 
