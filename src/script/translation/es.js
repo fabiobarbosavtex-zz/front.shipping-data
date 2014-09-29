@@ -49,8 +49,8 @@ define(function () {
       },
       "addressSearch": {
         "address": 'Dirección',
-        "dontKnowPostalCode": 'No conozco mi Código Postal (CP)',
-        "knowPostalCode": 'Buscar pelo mi Código Postal (CP)',
+        "dontKnowPostalCode": 'No conozco mi Código Postal',
+        "knowPostalCode": 'Buscar pelo mi Código Postal',
         "addressExampleARG": 'Ej: Cerrito, 1350, Buenos Aires',
         "addressExampleBRA": 'Ej: Av Dr Cardoso de Melo, 1750, São Paulo',
         "addressExampleCHL": 'Ej: Apoquindo, 3039, Santiago',
