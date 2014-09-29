@@ -1,0 +1,161 @@
+<!-- BACK TO LIST BUTTON -->
+{?hasAvailableAddresses}
+  <p class="cancel-address-form">
+    <a href="javascript:void(0);" class="cancel-new-address" data-i18n="shipping.addressForm.cancelEditAddress"></a>
+  </p>
+{/hasAvailableAddresses}
+
+<form class="address-form-new box-new address-form-{country}" data-parsley-bind="true" data-parsley-focus="first">
+
+  {#address}
+  <fieldset class="address-data">
+
+    <!-- HIDDEN FIELDS -->
+    <input type="hidden" name="addressId" value="{address.addressId}"/>
+    <input type="hidden" name="country" value="{country}"/>
+
+    <!-- COUNTRY NAME -->
+    <p class="ship-international input one-delivery-country">
+      <span data-i18n="shipping.addressForm.deliveryCountry"></span> {country}
+    </p>
+
+    {?hasGeolocationData}
+      <div id="map-canvas" class="map-canvas"></div>
+    {/hasGeolocationData}
+
+    <p class="hum ship-postal-code required input text mask {?contractedShippingFieldsForGeolocation.postalCode}hide{/contractedShippingFieldsForGeolocation.postalCode}">
+      <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
+      <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221"
+               class="ship-postal-code postal-code postal-code-{country} input-small clear-address-search" value="{postalCode}" name="postalCode"
+               data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-postalcode="true" data-parsley-errors-container=".postal-code-errors" />
+
+      {?comeFromGeoSearch}
+        <small><a href="javascript:void(0);" class="find-a-postal-code-for-another-address" data-i18n="shipping.addressSearch.dontKnowPostalCode"></a></small>
+      {/comeFromGeoSearch}
+      <span class="postal-code-errors"></span>
+    </p>
+
+    <div class="box-delivery">
+
+      <!-- LABEL SHIPING FIELDS FOR POSTAL CODE SEARCH -->
+      {^addressQuery}
+        {?labelShippingFields}
+          <p class="ship-filled-data">
+          <span class="ship-street-text">
+            <span>{street}</span> - <a class="link-edit" href="javascript:void(0);" id="force-shipping-fields" data-i18n="global.edit"></a>
+          </span>
+            <br>
+          <span class="ship-info-text">
+            <span>{neighborhood}</span> - <span>{city}</span> - <span>{state}</span>
+          </span>
+          </p>
+        {/labelShippingFields}
+      {/addressQuery}
+
+      <!-- LABEL SHIPING FIELDS FOR GEOLOCATION SEARCH -->
+      {?addressQuery}
+        {#contractedShippingFieldsForGeolocation}
+          <p class="ship-filled-data">
+            <!-- STREET, NUMBER, AND EDIT -->
+            <span class="ship-street-text">
+              {?street}
+                <span>{address.street}</span>
+              {/street}
+              {?number}
+                <span>, {address.number}</span>
+              {/number}
+              <span> - </span>
+              <a class="link-edit" href="javascript:void(0);" id="force-shipping-fields" data-i18n="global.edit"></a>
+            </span>
+            <br>
+
+            <!-- NEIGHBORHOOD, CITY, STATE,  AND EDIT -->
+            <span class="ship-info-text">
+              {?neighborhood}
+                <span>{address.neighborhood}</span>
+              {/neighborhood}
+              {?city}
+                {?neighborhood}
+                <span> - </span>
+                {/neighborhood}
+                <span>{address.city}</span>
+              {/city}
+              {?state}
+                {?city}
+                  <span> - </span>
+                {/city}
+                <span>{address.state}</span>
+              {/state}
+            </span>
+             <br>
+            <!-- POSTAL CODE -->
+            <span class="filled-postal-code hide">
+              {?postalCode}
+                <span class="postal-code-label"><span data-i18n="shipping.addressForm.postalCode{address.country}"></span>:</span> <span class="postal-code-value">{address.postalCode}</span>
+              {/postalCode}
+            </span>
+          </p>
+        {/contractedShippingFieldsForGeolocation}
+      {/addressQuery}
+
+      <p class="ship-street required input text {?contractedShippingFieldsForGeolocation.street}hide{/contractedShippingFieldsForGeolocation.street} {?labelShippingFields}hide{/labelShippingFields}">
+        <label for="ship-street"><span data-i18n="shipping.addressForm.street"></span> <span class="item-required">*</span></label>
+        <input type="text" tabindex="222" id="ship-street" class="input-xlarge" value="{street}" name="street" data-parsley-trigger="change blur" data-parsley-required="true" data-parsley-alphanumponc="true">
+      </p>
+
+      <p class="ship-number required input text {?contractedShippingFieldsForGeolocation.number}hide{/contractedShippingFieldsForGeolocation.number}">
+        <label for="ship-number"><span data-i18n="shipping.addressForm.number"></span> <span class="item-required">*</span></label>
+        <input type="text" tabindex="223" id="ship-number" class="input-mini" value="{number}" name="number" data-parsley-trigger="change blur" data-parsley-required="true" data-parsley-alphanumponc="true" data-parsley-maxlength="50">
+      </p>
+
+      <p class="ship-more-info input text {?contractedShippingFieldsForGeolocation.complement}hide{/contractedShippingFieldsForGeolocation.complement}">
+        <label for="ship-more-info"><span data-i18n="shipping.addressForm.complement">Complemento</span></label>
+        <input type="text" tabindex="224" id="ship-more-info" class="input-medium" data-i18n="[placeholder]global.notRequired" value="{complement}" name="complement" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
+      </p>
+
+      <p class="ship-reference input text hide {?contractedShippingFieldsForGeolocation.reference}hide{/contractedShippingFieldsForGeolocation.reference}">
+        <label for="ship-reference"><span data-i18n="shipping.addressForm.reference">Ponto de referência</span></label>
+        <input type="text" tabindex="225" id="ship-reference" class="input-xlarge" value="{reference}" name="reference" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
+      </p>
+
+      <p class="ship-neighborhood required input text {?contractedShippingFieldsForGeolocation.neighborhood}hide{/contractedShippingFieldsForGeolocation.neighborhood} {?labelShippingFields}hide{/labelShippingFields}">
+        <label for="ship-neighborhood"><span data-i18n="shipping.addressForm.neighborhood">Bairro</span> <span class="item-required">*</span></label>
+        <input type="text" tabindex="226" id="ship-neighborhood" class="input-large" value="{neighborhood}" name="neighborhood" data-parsley-trigger="change blur" data-parsley-required="true" data-parsley-alphanumponc="true">
+      </p>
+
+      <p class="ship-city required input text {?contractedShippingFieldsForGeolocation.city}hide{/contractedShippingFieldsForGeolocation.city} {?labelShippingFields}hide{/labelShippingFields}">
+        <label for="ship-city"><span data-i18n="shipping.addressForm.city"></span> <span class="item-required">*</span></label>
+        <input type="text" tabindex="227" id="ship-city" class="ship-city input-large" data-parsley-trigger="change blur" value="{city}" name="city" data-parsley-required="true" data-parsley-alphanumponc="true" {?disableCityAndState}disabled{/disableCityAndState}>
+      </p>
+
+      <p class="ship-state required input text {?contractedShippingFieldsForGeolocation.state}hide{/contractedShippingFieldsForGeolocation.state} {?labelShippingFields}hide{/labelShippingFields}">
+        <label for="ship-state"><span data-i18n="shipping.addressForm.state"></span> <span class="item-required">*</span></label>
+        <select id="ship-state" tabindex="228" class="ship-state input-mini" data-parsley-trigger="change blur" data-parsley-required="true" name="state" {?disableCityAndState}disabled{/disableCityAndState}>
+          <option></option>
+          {#states}
+            <option value="{value}" {@eq key=value value="{state}"}selected="true"{/eq}>{label}</option>
+          {/states}
+        </select>
+      </p>
+
+      <p class="ship-commercial input checkbox hide">
+        <label for="ship-commercial">
+          <input type="checkbox" tabindex="228" id="ship-commercial" name="addressTypeCommercial" value="true">
+          <span data-i18n="shipping.addressForm.commercial"></span>
+        </label>
+      </p>
+
+      <p class="ship-name required input text separate">
+        <label for="ship-name"><span data-i18n="shipping.addressForm.receiver"></span>  <span class="item-required">*</span></label>
+        <input type="text" tabindex="229" id="ship-name" class="input-xlarge" name="receiverName" value="{receiverName}" data-parsley-trigger="change blur" data-parsley-required="true" data-parsley-alphanumponc="true" data-parsley-maxlength="100">
+      </p>
+
+    </div>
+
+    <p class="submit btn-submit-wrapper pull-left hide">
+      <button type="submit" class="submit btn btn-large btn-success address-save" tabindex="350" data-i18n="global.save"></button>
+    </p>
+
+  </fieldset>
+  {/address}
+</form>

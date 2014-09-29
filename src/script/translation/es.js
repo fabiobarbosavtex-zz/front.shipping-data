@@ -21,6 +21,7 @@ define(function () {
         "postalCodeARG": 'Código Postal (CP)',
         "postalCodeURY": 'Código Postal (CP)',
         "postalCodePER": 'Código Postal (CP)',
+        "postalCodeMEX": 'Código Postal',
         "postalCode": 'Código Postal (CP)',
         "street": 'Calle',
         "addressLine1": 'Dirección Línea 1',
