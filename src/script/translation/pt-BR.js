@@ -63,7 +63,8 @@ define(function () {
         "addressNotDetailed": 'O endereço não possui dados suficientes.',
         "whatAboutMoreInfo": 'Que tal dar mais informações? (ex: número)',
         "incompleteAddressData": 'Não encontramos seu',
-        "searchPostalCode": 'Utilize o serviço de correio para consultá-lo.'
+        "searchPostalCode": 'Utilize o serviço de correio para consultá-lo.',
+        "shipsTo": "Entregar em"
       },
       "countrySelect": {
         "chooseDeliveryCountry": 'Escolha o país de entrega',
