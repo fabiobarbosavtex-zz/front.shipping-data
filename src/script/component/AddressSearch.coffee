@@ -176,6 +176,8 @@ define ['flight/lib/component',
           @render()
         if countryRule.queryByGeocoding or @attr.data.showGeolocationSearch
           @openGeolocationSearch()
+        else if @isMobile()
+          @getNavigatorGeolocation()
 
       @disable = (ev) ->
         ev?.stopPropagation()
@@ -245,6 +247,8 @@ define ['flight/lib/component',
 
       @openPostalCodeSearch = ->
         @attr.data.showGeolocationSearch = false
+        if @isMobile()
+          @getNavigatorGeolocation()
         @render()
 
       @cancelAddressSearch = (ev) ->
@@ -254,6 +258,11 @@ define ['flight/lib/component',
 
       @stopSubmit = (ev) ->
         ev.preventDefault()
+
+      @isMobile = ->
+        if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+          return true
+        return false
 
       @googleMapsAPILoaded = ->
         @attr.data.loadingGeolocation = false
