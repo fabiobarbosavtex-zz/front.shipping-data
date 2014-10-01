@@ -72,10 +72,13 @@ define ['flight/lib/component',
             if @attr.data.active
               if hasAvailableAddresses
                 @attr.stateMachine.showList(@attr.orderForm)
+                @attr.stateMachine.next()
               else
                 @attr.stateMachine.showForm(@attr.orderForm)
+                @attr.stateMachine.next()
             else
               @attr.stateMachine.showSummary(@attr.orderForm)
+              @attr.stateMachine.next()
 
           @validate()
 
@@ -108,7 +111,8 @@ define ['flight/lib/component',
 
       @disable = ->
         if @attr.stateMachine.can('showSummary')
-          @attr.stateMachine.showSummary(orderForm)
+          @attr.stateMachine.showSummary(@attr.orderForm)
+          @attr.stateMachine.next()
 
 	  @profileUpdated = (e, profile) ->
         # Changed when the user makes changes to the profile, before sending the profile to the API and getting a response.
@@ -147,6 +151,7 @@ define ['flight/lib/component',
         address.country = address?.country ? @attr.data.country
         
         @attr.stateMachine.showForm(@attr.orderForm)
+        @attr.stateMachine.next()
 
       # When a new addresses is selected
       @addressSelected = (ev, address) ->
@@ -154,13 +159,13 @@ define ['flight/lib/component',
         address.isValid = true # se foi selecionado da lista, está válido
         @addressUpdated(ev, address)
 
-        if @attr.stateMachine.current is 'list' or @attr.stateMachine.current is 'listNoSLA' or
-            (@attr.stateMachine.current is 'loadList' and @attr.requestAddressSelected)
+        if @attr.stateMachine.current is 'listSLA' or @attr.stateMachine.current is 'listNoSLA' or
+            (@attr.stateMachine.current is 'listLoadList' and @attr.requestAddressSelected)
 
           if @attr.requestAddressSelected
             @attr.requestAddressSelected.abort()
           else
-            @attr.stateMachine.loadList(@attr.data.deliveryCountries, @attr.orderForm)
+            @attr.stateMachine.showList(@attr.data.deliveryCountries, @attr.orderForm)
 
           @attr.requestAddressSelected = @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData)
             .done (orderForm) =>
