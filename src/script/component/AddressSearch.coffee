@@ -19,7 +19,7 @@ define ['flight/lib/component',
           showGeolocationSearch: false
           requiredGoogleFieldsNotFound: []
           postalCodeByInput: false
-          currentAddress:
+          suggestedAddress:
             raw: null
             formatted: null
             position: null
@@ -35,7 +35,7 @@ define ['flight/lib/component',
         incompleteAddressData: '.incomplete-address-data'
         addressNotDetailed: '.address-not-detailed'
         incompleteAddressLink: '.incomplete-address-data-link'
-        addressSuggestionLinkSelector: '#current-address-suggestion-link'
+        addressSuggestionLinkSelector: '#address-suggestion-link'
         textAddressSuggestionSelector: '.text-address-suggestion'
         formattedAddressSugestionSelector: '.formatted-address-sugestion'
         countryRules: false
@@ -175,8 +175,7 @@ define ['flight/lib/component',
         @attr.data.hasAvailableAddresses = hasAvailableAddresses
 
         if countryRule.queryByPostalCode
-          @attr.data.postalCodeQuery = address?.postalCode ? ''
-          @render()
+          @openPostalCodeSearch(address)
         if countryRule.queryByGeocoding or @attr.data.showGeolocationSearch
           @openGeolocationSearch()
         else if @isMobile()
@@ -186,48 +185,48 @@ define ['flight/lib/component',
         ev?.stopPropagation()
         @$node.html('')
 
-      @getCurrentAddress = (lat, lng) ->
+      @getSuggestedAddress = (lat, lng) ->
         $.ajax
           url: "//maps.googleapis.com/maps/api/geocode/json?latlng=#{lat},#{lng}"
-          success: @onCurrentAddressLoaded.bind(@)
+          success: @onSuggestedAddressLoaded.bind(@)
 
-      @onCurrentAddressLoaded = (response) ->
+      @onSuggestedAddressLoaded = (response) ->
         if response.status is "OK"
-          # Find and store the current location address booth in raw and formatted models
-          currentAddress = @attr.data.currentAddress
-          currentAddress.raw = _.find response.results, (address) ->
+          # Find and store the suggested location address booth in raw and formatted models
+          suggestedAddress = @attr.data.suggestedAddress
+          suggestedAddress.raw = _.find response.results, (address) ->
             return address.geometry.location_type is "ROOFTOP"
-          if currentAddress.raw
-            currentAddress.formatted = @getAddressFromGoogle(currentAddress.raw, @attr.countryRules.googleDataMap)
+          if suggestedAddress.raw
+            suggestedAddress.formatted = @getAddressFromGoogle(suggestedAddress.raw, @attr.countryRules.googleDataMap)
+            # Fills and show the suggestion selector on HTML
+            @select('formattedAddressSugestionSelector')
+              .text("#{suggestedAddress.formatted.street}, #{suggestedAddress.formatted.number}, #{suggestedAddress.formatted.neighborhood}")
+            @select('textAddressSuggestionSelector').fadeIn()
+          else
+            suggestedAddress =
+              raw: null
+              formatted: null
+              position: null
 
-          # Fills and show the suggestion selector on HTML
-          @select('formattedAddressSugestionSelector')
-            .text("#{currentAddress.formatted.street}, #{currentAddress.formatted.number}, #{currentAddress.formatted.neighborhood}")
-          @select('textAddressSuggestionSelector').fadeIn()
-
-      @selectCurrentAddress = ->
-        @addressMapper(@attr.data.currentAddress.raw)
+      @selectSuggestedAddress = ->
+        @addressMapper(@attr.data.suggestedAddress.raw)
 
       @setGeolocation = (position) ->
-        @attr.data.currentAddress.position = position;
-        @getCurrentAddress(position.coords.latitude, position.coords.longitude)
+        @attr.data.suggestedAddress.position = position;
+        @getSuggestedAddress(position.coords.latitude, position.coords.longitude)
         if window.vtex.maps.isGoogleMapsAPILoaded
           @setAutocompleteBounds()
 
       @handleGeolocationError = (error) ->
-        if error.code == 1
-          console.log(error)
-          console.log("PERMISSION_DENIED")
-        if error.code == 2
-          console.log(error)
-          console.log("POSITION_UNAVAILABLE")
-        if error.code == 3
-          console.log(error)
-          console.log("TIMEOUT")
+        switch error.code
+          when 1 then console.log("PERMISSION_DENIED")
+          when 2 then console.log("POSITION_UNAVAILABLE")
+          when 3 then console.log("TIMEOUT")
+          else console.log("GENERIC_EROR")
 
       @setAutocompleteBounds = ->
-        if @attr.data.currentAddress.position
-          coord = new google.maps.LatLng(@attr.data.currentAddress.position.coords.latitude, @attr.data.currentAddress.position.coords.longitude);
+        if @attr.data.suggestedAddress.position
+          coord = new google.maps.LatLng(@attr.data.suggestedAddress.position.coords.latitude, @attr.data.suggestedAddress.position.coords.longitude);
           @attr.geolocation = google.maps.LatLngBounds(coord, coord)
           @attr.autocomplete?.setBounds(@attr.geolocation)
 
@@ -247,7 +246,8 @@ define ['flight/lib/component',
         else
           @attr.geolocation = null
 
-      @openPostalCodeSearch = ->
+      @openPostalCodeSearch = (address) ->
+        @attr.data.postalCodeQuery = address?.postalCode ? ''
         @attr.data.showGeolocationSearch = false
         if @isMobile()
           @getNavigatorGeolocation()
@@ -262,9 +262,7 @@ define ['flight/lib/component',
         ev.preventDefault()
 
       @isMobile = ->
-        if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
-          return true
-        return false
+        return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
 
       @googleMapsAPILoaded = ->
         @attr.data.loadingGeolocation = false
@@ -282,7 +280,7 @@ define ['flight/lib/component',
           'dontKnowPostalCodeSelector': @openGeolocationSearch
           'knowPostalCodeSelector': @openPostalCodeSearch
           'incompleteAddressLink': @openPostalCodeSearch
-          'addressSuggestionLinkSelector': @selectCurrentAddress
+          'addressSuggestionLinkSelector': @selectSuggestedAddress
           'cancelAddressFormSelector': @cancelAddressSearch
         @on 'keyup',
           'postalCodeQuerySelector': @validatePostalCode
