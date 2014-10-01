@@ -165,7 +165,6 @@ define ['flight/lib/component',
       # Handle the initial view of this component
       @enable = (ev, countryRule, address, hasAvailableAddresses) ->
         ev?.stopPropagation()
-        @attr.data.showGeolocationSearch = if useGeolocationSearch? then useGeolocationSearch else false
         @attr.countryRules = countryRule
         @attr.data.dontKnowPostalCodeURL = countryRule.dontKnowPostalCodeURL
         @attr.data.geocodingAvailable = countryRule.geocodingAvailable
