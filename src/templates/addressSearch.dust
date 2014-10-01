@@ -50,7 +50,7 @@
 
             <!-- ADRESS SUGGESTION FROM GEOCODE SENSOR -->
             <p class="text-address-suggestion hide">
-              <a href="javascript:void(0);" id="current-address-suggestion-link">
+              <a href="javascript:void(0);" id="address-suggestion-link">
                 <i class="icon-map-marker"></i> <span data-i18n="shipping.addressSearch.shipsTo"></span> <span class="formatted-address-sugestion"></span>
               </a>
             </p>
@@ -72,7 +72,7 @@
 
           <!-- ADRESS SUGGESTION FROM GEOCODE SENSOR -->
           <p class="text-address-suggestion text-address-suggestion-border-bottom hide">
-            <a href="javascript:void(0);" id="current-address-suggestion-link">
+            <a href="javascript:void(0);" id="address-suggestion-link">
               <i class="icon-map-marker"></i> <span data-i18n="shipping.addressSearch.shipsTo"></span> <span class="formatted-address-sugestion"></span>
             </a>
           </p>
