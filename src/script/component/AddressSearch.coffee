@@ -51,8 +51,9 @@ define ['flight/lib/component',
             @select('addressSearchSelector').focus()
           else
             @attr.autocomplete = null
-            @select('postalCodeQuerySelector').inputmask
-              mask: @attr.countryRules.masks.postalCode
+            if not @isMobile()
+              @select('postalCodeQuerySelector').inputmask
+                mask: @attr.countryRules.masks.postalCode
 
             window.ParsleyValidator.addValidator('postalcode',
               (val) =>
