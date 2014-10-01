@@ -101,15 +101,17 @@ define [], () ->
       @select('addressListSelector').trigger('disable.vtex')
       @select('addressFormSelector').trigger('disable.vtex')
       @select('shippingOptionsSelector').trigger('disable.vtex')
-
+      @select('addressNotFilledSelector').hide()
       @select('goToPaymentButtonWrapperSelector').hide()
 
       if @isValid()
         locale = @attr.locale
         rules = @attr.data.countryRules[@attr.orderForm.shippingData.address?.country]
-        @attr.stateMachine.summary(orderForm, locale, rules)
+        @attr.stateMachine.next = =>
+          @attr.stateMachine.showSummary(orderForm, locale, rules)
       else
-        @attr.stateMachine.showEmpty()
+        @attr.stateMachine.next = =>
+          @attr.stateMachine.showEmpty()
 
     @onEmpty = (event, from, to) ->
       # Disable other components
@@ -124,7 +126,7 @@ define [], () ->
 
     @onSummary = (event, from, to, orderForm, locale, rules) ->
       @select('shippingSummarySelector').trigger('enable.vtex', [locale, orderForm.shippingData, orderForm.items, orderForm.sellers, rules, orderForm.canEditData, orderForm.giftRegistryData])      
-      @select('editShippingDataSelector').show()    
+      @select('editShippingDataSelector').show()
 
     @onLeaveSummary = (event, from, to) ->
       @select('editShippingDataSelector').hide()
@@ -149,14 +151,18 @@ define [], () ->
 
       if canEditData
         if hasDeliveries
-          @attr.stateMachine.showListWithSLA(orderForm, deliveryCountries)
+          @attr.stateMachine.next = =>
+            @attr.stateMachine.showListWithSLA(orderForm, deliveryCountries)
         else
-          @attr.stateMachine.showListUnavailable(orderForm, deliveryCountries)
+          @attr.stateMachine.next = =>
+            @attr.stateMachine.showListUnavailable(orderForm, deliveryCountries)
       else
         if hasDeliveries
-          @attr.stateMachine.showListCantEdit(orderForm, deliveryCountries)
+          @attr.stateMachine.next = =>
+            @attr.stateMachine.showListCantEdit(orderForm, deliveryCountries)
         else
-          @attr.stateMachine.showListCantEditUnavailable(orderForm, deliveryCountries)
+          @attr.stateMachine.next = =>
+            @attr.stateMachine.showListCantEditUnavailable(orderForm, deliveryCountries)
 
     @onListSLA = (event, from, to, orderForm, deliveryCountries) ->
       @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
@@ -213,15 +219,18 @@ define [], () ->
 
       if address and (not rules.regexes.postalCode.test(address.postalCode) and rules.queryByPostalCode) or
         (rules.queryByGeocoding and address.geoCoordinates.length isnt 2)
-          @attr.stateMachine.showSearch(rules, address.postalCode, rules.queryByGeocoding, hasAvailableAddresses)
+          @attr.stateMachine.next = =>
+            @attr.stateMachine.showSearch(rules, address.postalCode, rules.queryByGeocoding, hasAvailableAddresses)
           return
 
       addressObj = new Address(address) if address
       if address and addressObj.validate(rules) is true
         if hasDeliveries
-          @attr.stateMachine.editAddressSLA(orderForm, address, hasAvailableAddresses)
+          @attr.stateMachine.next = =>
+            @attr.stateMachine.editAddressSLA(orderForm, address, hasAvailableAddresses)
         else
-          @attr.stateMachine.editAddressNoSLA(orderForm, address, hasAvailableAddresses)
+          @attr.stateMachine.next = =>
+            @attr.stateMachine.editAddressNoSLA(orderForm, address, hasAvailableAddresses)
       else
         address = {country: country}
         address = @setProfileNameIfNull(address)
