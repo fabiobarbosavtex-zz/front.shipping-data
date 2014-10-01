@@ -370,8 +370,9 @@ define ['flight/lib/component',
             script.type = "text/javascript"
             script.src = "//maps.googleapis.com/maps/api/js?libraries=places&sensor=true&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsAPILoaded"
             document.body.appendChild(script)
-          else
-            @trigger 'googleMapsAPILoaded.vtex'
+          else if not window.vtex.maps.isGoogleMapsAPILoading
+            @select('addressFormSelector').trigger('googleMapsAPILoaded.vtex')
+            @select('addressSearchSelector').trigger('googleMapsAPILoaded.vtex')
 
       #
       # Validation
@@ -456,6 +457,7 @@ define ['flight/lib/component',
             window.vtex.maps.googleMapsAPILoaded = =>
               window.vtex.maps.isGoogleMapsAPILoaded = true
               window.vtex.maps.isGoogleMapsAPILoading = false
-              @trigger 'googleMapsAPILoaded.vtex'
+              @select('addressFormSelector').trigger('googleMapsAPILoaded.vtex')
+              @select('addressSearchSelector').trigger('googleMapsAPILoaded.vtex')
 
     return defineComponent(ShippingData, withi18n, withValidation, withShippingStateMachine)
