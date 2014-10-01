@@ -109,14 +109,18 @@ define ['flight/lib/component',
 
         google.maps.event.addListener @attr.autocomplete, 'place_changed', =>
           googleAddress = @attr.autocomplete.getPlace()
-          @addressMapper(googleAddress, googleAddress.geometry.location.lat(), googleAddress.geometry.location.lng())
+          @addressMapper(googleAddress)
 
-      @addressMapper = (googleAddress, lat, lng) ->
+      @addressMapper = (googleAddress) ->
         # Clean required google fields error and render
         @attr.data.requiredGoogleFieldsNotFound = []
         googleDataMap = @attr.countryRules.googleDataMap
+        location = googleAddress.geometry.location
         address =
-          geoCoordinates: [lng, lat]
+          geoCoordinates: [
+            if _.isFunction(location.lng) then location.lng() else location.lng,
+            if _.isFunction(location.lat) then location.lat() else location.lat
+          ]
         address.country = @attr.countryRules.country
         address.addressQuery = googleAddress.formatted_address
         address = _.extend(address, @getAddressFromGoogle(googleAddress, googleDataMap))
@@ -203,8 +207,7 @@ define ['flight/lib/component',
           @select('textAddressSuggestionSelector').fadeIn()
 
       @selectCurrentAddress = ->
-        currentAddress = @attr.data.currentAddress
-        @addressMapper(currentAddress.raw, currentAddress.raw.geometry.location.lat, currentAddress.raw.geometry.location.lng)
+        @addressMapper(@attr.data.currentAddress.raw)
 
       @setGeolocation = (position) ->
         @attr.data.currentAddress.position = position;
