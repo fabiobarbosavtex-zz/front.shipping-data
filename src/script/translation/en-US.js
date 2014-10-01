@@ -64,7 +64,7 @@ define(function () {
         "whatAboutMoreInfo": 'What don\'t you give us some more info? (eg: number)',
         "incompleteAddressData": 'We didn\'t find your',
         "searchPostalCode": 'Use the postal code service to search for it.',
-        "shipsTo": "Sips to"
+        "shipsTo": "Ship to"
       },
       "countrySelect": {
         "chooseDeliveryCountry": 'Choose the delivery country',
