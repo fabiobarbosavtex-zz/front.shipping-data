@@ -19,6 +19,10 @@ define ['flight/lib/component',
           showGeolocationSearch: false
           requiredGoogleFieldsNotFound: []
           postalCodeByInput: false
+          suggestedAddress:
+            raw: null
+            formatted: null
+            position: null
 
         addressFormSelector: '.address-form-new'
         postalCodeQuerySelector: '.postal-code-query'
@@ -31,6 +35,9 @@ define ['flight/lib/component',
         incompleteAddressData: '.incomplete-address-data'
         addressNotDetailed: '.address-not-detailed'
         incompleteAddressLink: '.incomplete-address-data-link'
+        addressSuggestionLinkSelector: '#address-suggestion-link'
+        textAddressSuggestionSelector: '.text-address-suggestion'
+        formattedAddressSugestionSelector: '.formatted-address-sugestion'
         countryRules: false
         geoSearchTimer = false
 
@@ -100,20 +107,20 @@ define ['flight/lib/component',
 
         @attr.autocomplete = new google.maps.places.Autocomplete(@select('addressSearchSelector')[0], options)
 
-        google.maps.event.addListener @attr.autocomplete, 'place_changed', (ev, data) =>
+        google.maps.event.addListener @attr.autocomplete, 'place_changed', =>
           googleAddress = @attr.autocomplete.getPlace()
-          @addressMapper(googleAddress, @attr.countryRules.googleDataMap)
+          @addressMapper(googleAddress)
 
       @addressMapper = (googleAddress) ->
         # Clean required google fields error and render
         @attr.data.requiredGoogleFieldsNotFound = []
         googleDataMap = @attr.countryRules.googleDataMap
-        address = {
+        location = googleAddress.geometry.location
+        address =
           geoCoordinates: [
-            googleAddress.geometry.location.lng()
-            googleAddress.geometry.location.lat()
+            if _.isFunction(location.lng) then location.lng() else location.lng,
+            if _.isFunction(location.lat) then location.lat() else location.lat
           ]
-        }
         address.country = @attr.countryRules.country
         address.addressQuery = googleAddress.formatted_address
         address = _.extend(address, @getAddressFromGoogle(googleAddress, googleDataMap))
@@ -170,45 +177,82 @@ define ['flight/lib/component',
         if countryRule.queryByPostalCode
           @attr.data.postalCodeQuery = address?.postalCode ? ''
           @render()
-        if countryRule.queryByGeocoding
+        if countryRule.queryByGeocoding or @attr.data.showGeolocationSearch
           @openGeolocationSearch()
+        else if @isMobile()
+          @getNavigatorCurrentPosition()
 
       @disable = (ev) ->
         ev?.stopPropagation()
         @$node.html('')
 
-      @setGeolocation = (position) ->
-        coord = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-        @attr.geolocation = google.maps.LatLngBounds(coord, coord)
+      @getSuggestedAddress = (lat, lng) ->
+        $.ajax
+          url: "//maps.googleapis.com/maps/api/geocode/json?latlng=#{lat},#{lng}"
+          success: @onSuggestedAddressLoaded.bind(@)
 
-        if @attr.autocomplete
-          @attr.autocomplete.setBounds(@attr.geolocation)
-        else
-          @openGeolocationSearch()
+      @onSuggestedAddressLoaded = (response) ->
+        if response.status is "OK"
+          # Find and store the suggested location address booth in raw and formatted models
+          suggestedAddress = @attr.data.suggestedAddress
+          suggestedAddress.raw = _.find response.results, (address) ->
+            return address.geometry.location_type is "ROOFTOP"
+          if suggestedAddress.raw
+            suggestedAddress.formatted = @getAddressFromGoogle(suggestedAddress.raw, @attr.countryRules.googleDataMap)
+            # Fills and show the suggestion selector on HTML
+            @select('formattedAddressSugestionSelector')
+              .text("#{suggestedAddress.formatted.street}, #{suggestedAddress.formatted.number}, #{suggestedAddress.formatted.neighborhood}")
+            @select('textAddressSuggestionSelector').fadeIn()
+          else
+            suggestedAddress =
+              raw: null
+              formatted: null
+              position: null
+
+      @selectSuggestedAddress = ->
+        @addressMapper(@attr.data.suggestedAddress.raw)
+
+      @setGeolocation = (position) ->
+        @attr.data.suggestedAddress.position = position;
+        @getSuggestedAddress(position.coords.latitude, position.coords.longitude)
+        if window.vtex.maps.isGoogleMapsAPILoaded
+          @setAutocompleteBounds()
+
+      @handleGeolocationError = (error) ->
+        switch error.code
+          when 1 then console.log("PERMISSION_DENIED")
+          when 2 then console.log("POSITION_UNAVAILABLE")
+          when 3 then console.log("TIMEOUT")
+          else console.log("GENERIC_EROR")
+
+      @setAutocompleteBounds = ->
+        if @attr.data.suggestedAddress.position
+          coord = new google.maps.LatLng(@attr.data.suggestedAddress.position.coords.latitude, @attr.data.suggestedAddress.position.coords.longitude);
+          @attr.geolocation = google.maps.LatLngBounds(coord, coord)
+          @attr.autocomplete?.setBounds(@attr.geolocation)
 
       @openGeolocationSearch = ->
-        if navigator.geolocation
-          navigator.geolocation.getCurrentPosition(@setGeolocation.bind(@))
-        else
-          @attr.geolocation = null
-
+        @getNavigatorCurrentPosition()
         if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading
-          window.vtex.maps.isGoogleMapsAPILoading = true
-          script = document.createElement("script")
-          script.type = "text/javascript"
-          script.src = "//maps.googleapis.com/maps/api/js?libraries=places&sensor=true&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsLoadedOnSearch"
-          document.body.appendChild(script)
           @attr.data.loadingGeolocation = true
           @attr.data.showGeolocationSearch = false
           @render()
-          return
         else
           @attr.data.showGeolocationSearch = true
           @render()
 
+      @getNavigatorCurrentPosition = ->
+        if navigator.geolocation
+          navigator.geolocation.getCurrentPosition(@setGeolocation.bind(@), @handleGeolocationError.bind(@), { enableHighAccuracy: true, maximumAge: 120 * 1000, timeout: 15 * 1000 })
+        else
+          @attr.geolocation = null
+        return
+
       @openPostalCodeSearch = ->
         @attr.data.showGeolocationSearch = false
         @render()
+        if @isMobile()
+          @getNavigatorCurrentPosition()
 
       @cancelAddressSearch = (ev) ->
         ev.preventDefault();
@@ -218,15 +262,25 @@ define ['flight/lib/component',
       @stopSubmit = (ev) ->
         ev.preventDefault()
 
+      @isMobile = ->
+        return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+
+      @googleMapsAPILoaded = ->
+        @attr.data.loadingGeolocation = false
+        @attr.data.showGeolocationSearch = true
+        @setAutocompleteBounds()
+
       # Bind events
       @after 'initialize', ->
         @on 'enable.vtex', @enable
         @on 'disable.vtex', @disable
         @on 'startLoading.vtex', @loading
+        @on 'googleMapsAPILoaded.vtex', @googleMapsAPILoaded
         @on 'click',
           'dontKnowPostalCodeSelector': @openGeolocationSearch
           'knowPostalCodeSelector': @openPostalCodeSearch
           'incompleteAddressLink': @openPostalCodeSearch
+          'addressSuggestionLinkSelector': @selectSuggestedAddress
           'cancelAddressFormSelector': @cancelAddressSearch
         @on 'keyup',
           'postalCodeQuerySelector': @validatePostalCode
@@ -238,15 +292,5 @@ define ['flight/lib/component',
         ]
 
         @setLocalePath 'shipping/script/translation/'
-
-        window.vtex.maps = window.vtex.maps or {}
-
-        # Called when google maps api is loaded
-        window.vtex.maps.googleMapsLoadedOnSearch = =>
-          @attr.data.loadingGeolocation = false
-          @attr.data.showGeolocationSearch = true
-          window.vtex.maps.isGoogleMapsAPILoaded = true
-          window.vtex.maps.isGoogleMapsAPILoading = false
-          @render()
 
     return defineComponent(AddressSearch, withi18n, withValidation)

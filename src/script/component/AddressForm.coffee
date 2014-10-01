@@ -48,8 +48,8 @@ define ['flight/lib/component',
         dust.render @attr.templates.form.name, data, (err, output) =>
           output = $(output).i18n()
           @$node.html(output)
-          if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading and @attr.data.hasGeolocationData
-            @loadGoogleMaps()
+          if not window.vtex.maps.isGoogleMapsAPILoaded and window.vtex.maps.isGoogleMapsAPILoading and @attr.data.hasGeolocationData
+            @loading()
 
           if window.vtex.maps.isGoogleMapsAPILoaded and @attr.data.hasGeolocationData
             @attr.data.loading = false
@@ -96,18 +96,6 @@ define ['flight/lib/component',
       @getCountryRule = ->
         @attr.data.countryRules[@attr.data.address.country]
 
-      @loadGoogleMaps = ->
-        if not window.vtex.maps.isGoogleMapsAPILoaded
-          window.vtex.maps.isGoogleMapsAPILoading = true
-          @loading()
-          country = @getCountryRule().abbr
-          script = document.createElement("script")
-          script.type = "text/javascript"
-          script.src = "//maps.googleapis.com/maps/api/js?libraries=places&sensor=false&components=country:#{country}&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsLoadedOnAddressForm"
-          document.body.appendChild(script)
-          return
-
-      # Only "go to payment" button ever triggers this validation
       @validateAddress = ->
         valid = @attr.parsley.validate()
         if valid
@@ -225,27 +213,28 @@ define ['flight/lib/component',
           @attr.data.regexes = @attr.data.countryRules[country].regexes
 
       @createMap = () ->
-        location = new google.maps.LatLng(@attr.data.address.geoCoordinates[1], @attr.data.address.geoCoordinates[0])
-        @select('mapCanvasSelector').css('display', 'block')
-        mapOptions =
-          zoom: 15
-          center: location
-          streetViewControl: false
-          mapTypeControl: false
-          zoomControl: true
-          zoomControlOptions:
-            position: google.maps.ControlPosition.TOP_RIGHT
-            style: google.maps.ZoomControlStyle.SMALL
+        if @attr.data.address?.geoCoordinates?.length is 2
+          location = new google.maps.LatLng(@attr.data.address.geoCoordinates[1], @attr.data.address.geoCoordinates[0])
+          @select('mapCanvasSelector').css('display', 'block')
+          mapOptions =
+            zoom: 15
+            center: location
+            streetViewControl: false
+            mapTypeControl: false
+            zoomControl: true
+            zoomControlOptions:
+              position: google.maps.ControlPosition.TOP_RIGHT
+              style: google.maps.ZoomControlStyle.SMALL
 
-        if @attr.map
-          @attr.map = null
-        @attr.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
+          if @attr.map
+            @attr.map = null
+          @attr.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
 
-        if @attr.marker
-          @attr.marker.setMap(null)
-          @attr.marker = null
-        @attr.marker = new google.maps.Marker(position: location)
-        @attr.marker.setMap(@attr.map)
+          if @attr.marker
+            @attr.marker.setMap(null)
+            @attr.marker = null
+          @attr.marker = new google.maps.Marker(position: location)
+          @attr.marker.setMap(@attr.map)
 
       # Close the form
       @cancelAddressForm = (ev) ->
@@ -431,7 +420,6 @@ define ['flight/lib/component',
             street: @attr.data.address.street isnt '' and @attr.data.address.street?
             city: @attr.data.address.city isnt '' and @attr.data.address.city?
             state: @attr.data.address.state isnt '' and @attr.data.address.state?
-            number: @attr.data.address.number isnt '' and @attr.data.address.number?
             postalCode: @attr.data.address.postalCode isnt '' and @attr.data.address.postalCode? and @attr.data.addressQuery
 
         if @getCountryRule().queryByPostalCode
@@ -442,11 +430,16 @@ define ['flight/lib/component',
 
           @attr.data.disableCityAndState = @attr.data.address.state and @attr.data.address.city
 
+      @googleMapsAPILoaded = ->
+        @attr.data.loading = false
+        @createMap()
+
       # Bind events
       @after 'initialize', ->
         @on 'enable.vtex', @enable
         @on 'disable.vtex', @disable
         @on 'startLoading.vtex', @loading
+        @on 'googleMapsAPILoaded.vtex', @googleMapsAPILoaded
         @on 'click',
           'forceShippingFieldsSelector': @forceShippingFields
           'cancelAddressFormSelector': @cancelAddressForm
@@ -466,14 +459,5 @@ define ['flight/lib/component',
         ]
 
         @setLocalePath 'shipping/script/translation/'
-
-        window.vtex.maps = window.vtex.maps or {}
-
-        # Called when google maps api is loaded
-        window.vtex.maps.googleMapsLoadedOnAddressForm = =>
-          @attr.data.loading = false
-          window.vtex.maps.isGoogleMapsAPILoaded = true
-          window.vtex.maps.isGoogleMapsAPILoading = false
-          @render()
 
     return defineComponent(AddressForm, withi18n, withValidation)
