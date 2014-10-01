@@ -175,11 +175,12 @@ define ['flight/lib/component',
         @attr.data.hasAvailableAddresses = hasAvailableAddresses
 
         if countryRule.queryByPostalCode
-          @openPostalCodeSearch(address)
+          @attr.data.postalCodeQuery = address?.postalCode ? ''
+          @render()
         if countryRule.queryByGeocoding or @attr.data.showGeolocationSearch
           @openGeolocationSearch()
         else if @isMobile()
-          @getNavigatorGeolocation()
+          @getNavigatorCurrentPosition()
 
       @disable = (ev) ->
         ev?.stopPropagation()
@@ -231,7 +232,7 @@ define ['flight/lib/component',
           @attr.autocomplete?.setBounds(@attr.geolocation)
 
       @openGeolocationSearch = ->
-        @getNavigatorGeolocation()
+        @getNavigatorCurrentPosition()
         if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading
           @attr.data.loadingGeolocation = true
           @attr.data.showGeolocationSearch = false
@@ -240,18 +241,18 @@ define ['flight/lib/component',
           @attr.data.showGeolocationSearch = true
           @render()
 
-      @getNavigatorGeolocation = ->
+      @getNavigatorCurrentPosition = ->
         if navigator.geolocation
           navigator.geolocation.getCurrentPosition(@setGeolocation.bind(@), @handleGeolocationError.bind(@), { enableHighAccuracy: true, maximumAge: 120 * 1000, timeout: 15 * 1000 })
         else
           @attr.geolocation = null
+        return
 
-      @openPostalCodeSearch = (address) ->
-        @attr.data.postalCodeQuery = address?.postalCode ? ''
+      @openPostalCodeSearch = ->
         @attr.data.showGeolocationSearch = false
-        if @isMobile()
-          @getNavigatorGeolocation()
         @render()
+        if @isMobile()
+          @getNavigatorCurrentPosition()
 
       @cancelAddressSearch = (ev) ->
         ev.preventDefault();
@@ -268,7 +269,6 @@ define ['flight/lib/component',
         @attr.data.loadingGeolocation = false
         @attr.data.showGeolocationSearch = true
         @setAutocompleteBounds()
-        @render()
 
       # Bind events
       @after 'initialize', ->

@@ -370,9 +370,7 @@ define ['flight/lib/component',
             script.type = "text/javascript"
             script.src = "//maps.googleapis.com/maps/api/js?libraries=places&sensor=true&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsAPILoaded"
             document.body.appendChild(script)
-          else if not window.vtex.maps.isGoogleMapsAPILoading
-            @select('addressFormSelector').trigger('googleMapsAPILoaded.vtex')
-            @select('addressSearchSelector').trigger('googleMapsAPILoaded.vtex')
+        return
 
       #
       # Validation

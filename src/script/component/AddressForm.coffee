@@ -213,27 +213,28 @@ define ['flight/lib/component',
           @attr.data.regexes = @attr.data.countryRules[country].regexes
 
       @createMap = () ->
-        location = new google.maps.LatLng(@attr.data.address.geoCoordinates[1], @attr.data.address.geoCoordinates[0])
-        @select('mapCanvasSelector').css('display', 'block')
-        mapOptions =
-          zoom: 15
-          center: location
-          streetViewControl: false
-          mapTypeControl: false
-          zoomControl: true
-          zoomControlOptions:
-            position: google.maps.ControlPosition.TOP_RIGHT
-            style: google.maps.ZoomControlStyle.SMALL
+        if @attr.data.address?.geoCoordinates?.length is 2
+          location = new google.maps.LatLng(@attr.data.address.geoCoordinates[1], @attr.data.address.geoCoordinates[0])
+          @select('mapCanvasSelector').css('display', 'block')
+          mapOptions =
+            zoom: 15
+            center: location
+            streetViewControl: false
+            mapTypeControl: false
+            zoomControl: true
+            zoomControlOptions:
+              position: google.maps.ControlPosition.TOP_RIGHT
+              style: google.maps.ZoomControlStyle.SMALL
 
-        if @attr.map
-          @attr.map = null
-        @attr.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
+          if @attr.map
+            @attr.map = null
+          @attr.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
 
-        if @attr.marker
-          @attr.marker.setMap(null)
-          @attr.marker = null
-        @attr.marker = new google.maps.Marker(position: location)
-        @attr.marker.setMap(@attr.map)
+          if @attr.marker
+            @attr.marker.setMap(null)
+            @attr.marker = null
+          @attr.marker = new google.maps.Marker(position: location)
+          @attr.marker.setMap(@attr.map)
 
       # Close the form
       @cancelAddressForm = (ev) ->
@@ -431,7 +432,7 @@ define ['flight/lib/component',
 
       @googleMapsAPILoaded = ->
         @attr.data.loading = false
-        @render()
+        @createMap()
 
       # Bind events
       @after 'initialize', ->
