@@ -197,7 +197,8 @@ define ['flight/lib/component',
           # Find and store the suggested location address booth in raw and formatted models
           suggestedAddress = @attr.data.suggestedAddress
           suggestedAddress.raw = _.find response.results, (address) ->
-            return address.geometry.location_type is "ROOFTOP"
+            hasPostalCode = _.any address.address_components, (a) -> "postal_code" in a.types
+            return address.geometry.location_type is "ROOFTOP" and hasPostalCode
           if suggestedAddress.raw
             suggestedAddress.formatted = @getAddressFromGoogle(suggestedAddress.raw, @attr.countryRules.googleDataMap)
             # Fills and show the suggestion selector on HTML
