@@ -110,8 +110,8 @@ define ['flight/lib/component',
         @attr.data.giftRegistryData = giftRegistryData
 
         if @attr.data.availableAddresses.length > 0
-          @createAddressesSummaries()
-          @render()
+          @createAddressesSummaries().then =>
+            @render()
 
       @disable = (ev) ->
         ev?.stopPropagation()
