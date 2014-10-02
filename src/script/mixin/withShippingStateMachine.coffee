@@ -1,7 +1,7 @@
 define = vtex.define || window.define
 require = vtex.curl || window.require
 
-define [], () ->
+define ['shipping/script/models/Address'], (Address) ->
   ->
     stateMachineEvents = [
       { name: 'showList',           from: 'none',              to: '_list' }
@@ -14,6 +14,7 @@ define [], () ->
       { name: 'showListCantEditUnavailable', from: '_list',    to: 'anonListNoSLA' }
       { name: 'loadSLA',            from: 'listLoadSLA',       to: 'listSLA' }
       { name: 'loadNoSLA',          from: 'listLoadSLA',       to: 'listNoSLA' }
+      { name: 'requestSLA',         from: 'listSLA',           to: 'listLoadSLA' }
       { name: 'requestSLA',         from: 'listNoSLA',         to: 'listLoadSLA' }
       { name: 'requestSLA',         from: 'anonListSLA',       to: 'anonListLoadSLA' }
       { name: 'requestSLA',         from: 'anonListNoSLA',     to: 'anonListLoadSLA' }
@@ -70,11 +71,10 @@ define [], () ->
           onaddressForm:             @onAddressForm.bind(this)
           onaddressFormLoad:         @onAddressFormLoad.bind(this)
           onleaveaddressFormLoad:    @onLeaveAddressFormLoad.bind(this)
-          onAddressFormSLA:          @onAddressFormSLA.bind(this)
+          onaddressFormSLA:          @onAddressFormSLA.bind(this)
           onleaveaddressFormSLA:     @onLeaveAddressFormSLA.bind(this)
           onaddressFormnoSLA:        @onAddressFormNoSLA.bind(this)
-          onaddressformLoadSLA:      @onAddressFormLoadSLA.bind(this)
-          onleaveaddressFormLoadSLA: @onLeaveAddressFormLoadSLA.bind(this)
+          onaddressFormLoadSLA:      @onAddressFormLoadSLA.bind(this)
 
           on_summary:                @on_Summary.bind(this)
           onsummary:                 @onSummary.bind(this)
@@ -224,7 +224,7 @@ define [], () ->
           return
 
       addressObj = new Address(address) if address
-      if address and addressObj.validate(rules) is true
+      if address and addressObj?.validate(rules) is true or addressObj?.postalCode?
         if hasDeliveries
           @attr.stateMachine.next = =>
             @attr.stateMachine.editAddressSLA(orderForm, address, hasAvailableAddresses)
@@ -255,16 +255,18 @@ define [], () ->
       @select('addressSearchSelector').trigger('disable.vtex', null)
 
     @onAddressForm = (event, from, to, orderForm, address, hasAvailableAddresses) ->
+      @select('addressSearchSelector').trigger('disable.vtex')
       @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
       @select('shippingOptionsSelector').trigger('disable.vtex')
 
     @onAddressFormLoad = (event, from, to) ->
-      @select('addressFormSelector').trigger('startLoading.vtex')
+      return
 
     @onLeaveAddressFormLoad = (event, from, to) ->
-      @select('addressFormSelector').trigger('stopLoading.vtex')
+      return
 
     @onAddressFormSLA = (event, from, to, orderForm, address, hasAvailableAddresses) ->
+      @select('addressSearchSelector').trigger('disable.vtex')
       @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])    
       @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
       @select('goToPaymentButtonWrapperSelector').show()
@@ -273,15 +275,11 @@ define [], () ->
       @select('goToPaymentButtonWrapperSelector').hide()
 
     @onAddressFormNoSLA = (event, from, to, orderForm, address, hasAvailableAddresses) ->
-      # TODO Exibir mensagem unavailable
+      $(window).trigger('showMessage.vtex', ['unavailable'])
       @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
       @select('shippingOptionsSelector').trigger('disable.vtex')
 
-    @onAddressFormLoadSLA = (event, from, to) ->
+    @onAddressFormLoadSLA = (event, from, to, orderForm) ->
       @select('shippingOptionsSelector').trigger('startLoading.vtex')
-
-    @onLeaveAddressFormLoadSLA = (event, from, to) ->
-      @select('shippingOptionsSelector').trigger('stopLoading.vtex')
-
 
     return stateMachineEvents
