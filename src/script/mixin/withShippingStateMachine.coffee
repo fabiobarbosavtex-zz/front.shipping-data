@@ -278,7 +278,8 @@ define ['shipping/script/models/Address'], (Address) ->
 
     @onAddressFormSLA = (event, from, to, orderForm, address, hasAvailableAddresses) ->
       @select('addressSearchSelector').trigger('disable.vtex')
-      @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])    
+      if event isnt 'loadSLA'
+        @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
       @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
       @select('goToPaymentButtonWrapperSelector').show()
 
@@ -287,7 +288,8 @@ define ['shipping/script/models/Address'], (Address) ->
 
     @onAddressFormNoSLA = (event, from, to, orderForm, address, hasAvailableAddresses) ->
       $(window).trigger('showMessage.vtex', ['unavailable'])
-      @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
+      if event isnt 'loadNoSLA'
+        @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
       @select('shippingOptionsSelector').trigger('disable.vtex')
 
     @onAddressFormLoadSLA = (event, from, to) ->
