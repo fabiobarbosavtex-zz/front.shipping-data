@@ -178,7 +178,7 @@ define ['flight/lib/component',
         if @attr.requestAddressSelected
           @attr.requestAddressSelected.abort()
 
-        @attr.stateMachine.requestSLA(@attr.orderForm)
+        @attr.stateMachine.requestSLA()
 
         @attr.requestAddressSelected = @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData)
           .done (orderForm) =>
@@ -191,18 +191,19 @@ define ['flight/lib/component',
               deliveryCountries = [orderForm.storePreferencesData?.countryCode]
 
             if hasDeliveries
-              @attr.stateMachine.loadSLA(orderForm, deliveryCountries)
+              @attr.stateMachine.loadSLA(orderForm, orderForm.shippingData?.address, deliveryCountries)
             else
-              @attr.stateMachine.loadNoSLA(orderForm, deliveryCountries)
+              @attr.stateMachine.loadNoSLA(orderForm, orderForm.shippingData?.address, deliveryCountries)
 
-            if @validateAddress() isnt true
-              # If it's invalid, stop here and edit it
-              orderForm.shippingData.address = @setProfileNameIfNull(orderForm.shippingData.address)
-              @attr.stateMachine.showForm(orderForm)
-              @attr.stateMachine.next()
+            if @attr.stateMachine.current is 'listLoadSLA'
+              if @validateAddress() isnt true
+                # If it's invalid, stop here and edit it
+                orderForm.shippingData.address = @addressDefaults(orderForm.shippingData.address)
+                @attr.stateMachine.showForm(orderForm)
+                @attr.stateMachine.next()
 
-            else if not hasDeliveries and not orderForm.canEditData
-              $(window).trigger('showMessage.vtex', ['unavailable'])
+              else if not hasDeliveries and not orderForm.canEditData
+                $(window).trigger('showMessage.vtex', ['unavailable'])
 
       # The current address was updated, either selected or in edit
       @addressUpdated = (ev, address) ->
@@ -228,7 +229,7 @@ define ['flight/lib/component',
         if address.postalCodeIsValid
           # When we start editing, we always start looking for shipping options
           console.log "Getting shipping options for address key", address.postalCode
-          @attr.stateMachine.requestSLA(@attr.orderForm)
+          @attr.stateMachine.requestSLA()
 
           country = address.country ? @attr.data.country
 
@@ -250,9 +251,9 @@ define ['flight/lib/component',
               hasAvailableAddresses = orderForm.shippingData.availableAddresses.length > 1
               # If we are editing and we received logistics info
               if hasDeliveries
-                @attr.stateMachine.loadSLA(orderForm, orderForm.shippingData.address, hasAvailableAddresses)
+                @attr.stateMachine.loadSLA(orderForm, orderForm.shippingData?.address, hasAvailableAddresses)
               else
-                @attr.stateMachine.loadNoSLA(orderForm, orderForm.shippingData.address, hasAvailableAddresses)
+                @attr.stateMachine.loadNoSLA(orderForm, orderForm.shippingData?.address, hasAvailableAddresses)
             )
             .fail( (reason) =>
               return if reason.statusText is 'abort'
