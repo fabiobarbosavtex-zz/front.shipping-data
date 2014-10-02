@@ -118,14 +118,95 @@ The user canceled the current address editing.
 
 ## Address List Component
 
+Require path: `'shipping/script/component/AddressList'`
+Provides: [Flight component](https://github.com/flightjs/flight/blob/master/doc/component_api.md#componentattachtoselector-options)
+
+### Events listened to
+
+#### `enable.vtex`
+#### `disable.vtex`
+#### `startLoading.vtex`
+#### `validate.vtex`
+
+### Events triggered
+
 ## Address Search Component
+
+Require path: `'shipping/script/component/AddressSearch'`
+Provides: [Flight component](https://github.com/flightjs/flight/blob/master/doc/component_api.md#componentattachtoselector-options)
+
+### Events listened to
+
+#### `enable.vtex`
+#### `disable.vtex`
+#### `startLoading.vtex`
+#### `validate.vtex`
+
+### Events triggered
+
 
 ## Country Select Component
 
+Require path: `'shipping/script/component/CountrySelect'`
+Provides: [Flight component](https://github.com/flightjs/flight/blob/master/doc/component_api.md#componentattachtoselector-options)
+
+### Events listened to
+
+#### `enable.vtex`
+#### `disable.vtex`
+#### `startLoading.vtex`
+#### `validate.vtex`
+
+### Events triggered
+
+
 ## Shipping Options Component
+
+Require path: `'shipping/script/component/ShippingOptions'`
+Provides: [Flight component](https://github.com/flightjs/flight/blob/master/doc/component_api.md#componentattachtoselector-options)
+
+### Events listened to
+
+#### `enable.vtex`
+#### `disable.vtex`
+#### `startLoading.vtex`
+#### `validate.vtex`
+
+### Events triggered
+
 
 ## Shipping Summary Component
 
+Require path: `'shipping/script/component/ShippingSummary'`
+Provides: [Flight component](https://github.com/flightjs/flight/blob/master/doc/component_api.md#componentattachtoselector-options)
+
+### Events listened to
+
+#### `enable.vtex`
+#### `disable.vtex`
+#### `startLoading.vtex`
+#### `validate.vtex`
+
+### Events triggered
+
+
 ## Validation Mixin
 
+Require path: `'shipping/script/mixins/withValidation'`
+Provides: [Flight component](https://github.com/flightjs/flight/blob/master/doc/component_api.md#componentattachtoselector-options)
+
+### Events listened to
+
+#### `validate.vtex`
+
+### Events triggered
+
+
 ## i18n Mixin
+
+Require path: `'shipping/script/mixins/withi18n'`
+Provides: [Flight component](https://github.com/flightjs/flight/blob/master/doc/component_api.md#componentattachtoselector-options)
+
+### Events listened to
+
+### Events triggered
