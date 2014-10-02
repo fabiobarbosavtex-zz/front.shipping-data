@@ -258,11 +258,7 @@ define ['flight/lib/component',
             .fail( (reason) =>
               return if reason.statusText is 'abort'
               console.log reason
-              hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 1
-              if @attr.data.countryRules[country].queryByPostalCode and @attr.stateMachine.can('clearSearch')
-                @attr.stateMachine.clearSearch(address, hasAvailableAddresses)
-              else
-                @attr.stateMachine.editNoSLA(@attr.orderForm.shippingData?.address, hasAvailableAddresses)
+              @attr.stateMachine.showForm(@attr.orderForm)
             )
         else if address.geoCoordinates
           # TODO implementar com geoCoordinates
