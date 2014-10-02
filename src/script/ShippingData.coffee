@@ -276,6 +276,25 @@ define ['flight/lib/component',
 
       # User wants to edit or create an address
       @editAddress = (ev, address) ->
+        ev?.stopPropagation()
+
+        if not @attr.orderForm.canEditData
+          vtexIdOptions =
+            returnUrl: window.location.href
+            userEmail: vtexjs?.checkout?.orderForm?.clientProfileData?.email
+            locale: @attr.locale
+          return window.vtexid?.start(vtexIdOptions)
+
+        if @attr.stateMachine.current is 'listLoadSLA'
+          requestingSLA = true
+
+        @attr.stateMachine.showForm(@attr.orderForm)
+        @attr.stateMachine.next()
+        if requestingSLA
+          @attr.stateMachine.requestSLA()
+
+      @newAddress = (ev) ->
+        ev.stopPropagation()
         if not @attr.orderForm.canEditData
           vtexIdOptions =
             returnUrl: window.location.href
@@ -284,6 +303,7 @@ define ['flight/lib/component',
           return window.vtexid?.start(vtexIdOptions)
 
         ev?.stopPropagation()
+        @attr.orderForm.shippingData?.address = {}
         @attr.stateMachine.showForm(@attr.orderForm)
         @attr.stateMachine.next()
 
@@ -386,6 +406,7 @@ define ['flight/lib/component',
             @on 'addressKeysInvalidated.vtex', @addressKeysInvalidated
             @on 'cancelAddressEdit.vtex', @cancelAddressEdit
             @on 'editAddress.vtex', @editAddress
+            @on 'newAddress.vtex', @newAddress
             @on 'deliverySelected.vtex', @deliverySelected
             @on 'countrySelected.vtex', @countrySelected
             @on 'addressFormSelector', 'componentValidated.vtex', @addressFormValidated
