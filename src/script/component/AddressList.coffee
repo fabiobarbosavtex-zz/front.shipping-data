@@ -29,7 +29,7 @@ define ['flight/lib/component',
       # Create a new address
       @createAddress = ->
         return if @attr.data.loading
-        @trigger('editAddress.vtex')
+        @trigger('newAddress.vtex')
 
       # Edit an existing address
       @editAddress = ->
