@@ -285,13 +285,8 @@ define ['flight/lib/component',
             locale: @attr.locale
           return window.vtexid?.start(vtexIdOptions)
 
-        if @attr.stateMachine.current is 'listLoadSLA'
-          requestingSLA = true
-
         @attr.stateMachine.showForm(@attr.orderForm)
         @attr.stateMachine.next()
-        if requestingSLA
-          @attr.stateMachine.requestSLA()
 
       @newAddress = (ev) ->
         ev.stopPropagation()

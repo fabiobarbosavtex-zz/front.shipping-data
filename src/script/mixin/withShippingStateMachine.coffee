@@ -221,6 +221,9 @@ define ['shipping/script/models/Address'], (Address) ->
       hasAvailableAddresses = orderForm.shippingData?.availableAddresses.length > 1
       hasDeliveries = orderForm.shippingData?.logisticsInfo?.length > 0 and orderForm.shippingData?.logisticsInfo[0].slas.length > 0
 
+      if @attr.stateMachine.from is 'listLoadSLA'
+        requestingSLA = true
+
       if address and (not rules.regexes.postalCode.test(address.postalCode) and rules.queryByPostalCode) or
         (rules.queryByGeocoding and address.geoCoordinates.length isnt 2)
           @attr.stateMachine.next = =>
@@ -232,12 +235,16 @@ define ['shipping/script/models/Address'], (Address) ->
         if hasDeliveries
           @attr.stateMachine.next = =>
             @attr.stateMachine.editAddressSLA(orderForm, address, hasAvailableAddresses)
+            if requestingSLA
+              @attr.stateMachine.requestSLA()
         else
           @attr.stateMachine.next = =>
             @attr.stateMachine.editAddressNoSLA(orderForm, address, hasAvailableAddresses)
+            if requestingSLA
+              @attr.stateMachine.requestSLA()
       else
         address = {country: country}
-        address = @setProfileNameIfNull(address)
+        address = @addressDefaults(address)
         if rules.queryByPostalCode or rules.queryByGeocoding
           @attr.stateMachine.next = =>
             @attr.stateMachine.showSearch(rules, address.postalCode, rules.queryByGeocoding, hasAvailableAddresses)
