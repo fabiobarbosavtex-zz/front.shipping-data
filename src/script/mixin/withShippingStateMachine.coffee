@@ -12,6 +12,7 @@ define ['shipping/script/models/Address'], (Address) ->
       { name: 'showListUnavailable',from: '_list',             to: 'listNoSLA' }
       { name: 'showListCantEdit',   from: '_list',             to: 'anonListSLA' }
       { name: 'showListCantEditUnavailable', from: '_list',    to: 'anonListNoSLA' }
+      { name: 'requestSLA',         from: 'listLoadSLA',       to: 'listLoadSLA' }
       { name: 'loadSLA',            from: 'listLoadSLA',       to: 'listSLA' }
       { name: 'loadNoSLA',          from: 'listLoadSLA',       to: 'listNoSLA' }
       { name: 'requestSLA',         from: 'listSLA',           to: 'listLoadSLA' }
@@ -23,6 +24,7 @@ define ['shipping/script/models/Address'], (Address) ->
       { name: 'refresh',            from: 'anonListSLA',       to: 'listSLA' }
       { name: 'refresh',            from: 'anonListNoSLA',     to: 'listNoSLA' }
       { name: 'showForm',           from: 'listSLA',           to: '_form' }
+      { name: 'showForm',           from: 'listLoadSLA',       to: '_form' }
       { name: 'showForm',           from: 'listNoSLA',         to: '_form' }
       { name: 'showSummary',        from: 'listSLA',           to: '_summary' }
       { name: 'showSummary',        from: 'anonListSLA',       to: '_summary' }
@@ -35,6 +37,8 @@ define ['shipping/script/models/Address'], (Address) ->
       { name: 'searchAddress',      from: 'search',            to: 'addressFormLoad' }
       { name: 'loadAddress',        from: 'addressFormLoad',   to: 'addressForm' }
       { name: 'requestSLA',         from: 'addressForm',       to: 'addressFormLoadSLA' }
+      { name: 'requestSLA',         from: 'addressFormSLA',    to: 'addressFormLoadSLA' }
+      { name: 'requestSLA',         from: 'addressFormNoSLA',  to: 'addressFormLoadSLA' }
       { name: 'loadSLA',            from: 'addressFormLoadSLA',to: 'addressFormSLA' }
       { name: 'loadNoSLA',          from: 'addressFormLoadSLA',to: 'addressFormNoSLA' }
       { name: 'showSearch',         from: 'addressFormSLA',    to: 'search' }
@@ -279,7 +283,7 @@ define ['shipping/script/models/Address'], (Address) ->
       @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
       @select('shippingOptionsSelector').trigger('disable.vtex')
 
-    @onAddressFormLoadSLA = (event, from, to, orderForm) ->
+    @onAddressFormLoadSLA = (event, from, to) ->
       @select('shippingOptionsSelector').trigger('startLoading.vtex')
 
     return stateMachineEvents
