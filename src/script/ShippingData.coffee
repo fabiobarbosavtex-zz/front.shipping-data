@@ -68,7 +68,7 @@ define ['flight/lib/component',
         @countrySelected(null, country).then =>
           hasAvailableAddresses = shippingData.availableAddresses.length > 1
 
-          if @attr.stateMachine.current is 'none'
+          if @attr.stateMachine.current is 'none' or @attr.stateMachine.current is 'empty'
             if @attr.data.active
               if hasAvailableAddresses
                 @attr.stateMachine.showList(@attr.orderForm)
@@ -100,7 +100,7 @@ define ['flight/lib/component',
           rules = @attr.data.countryRules[country]
 
           address = new Address(shippingData.address)
-          if not shippingData?.address or address.validate(rules) isnt true
+          if not shippingData?.address or address.validate(rules) isnt true and orderForm.canEditData is true
             @attr.stateMachine.showForm(orderForm)
             @attr.stateMachine.next()
           else

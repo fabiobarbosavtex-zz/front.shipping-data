@@ -65,9 +65,9 @@ define ['shipping/script/models/Address'], (Address) ->
           onlistNoSLA:               @onListNoSLA.bind(this)
           onlistLoadSLA:             @onListLoadSLA.bind(this)
           onleaveListLoadSLA:        @onLeaveListLoadSLA.bind(this)
-          onanonlistSLA:             @onAnonListSLA.bind(this)
-          onanonlistNoSLA:           @onAnonListNoSLA.bind(this)
-          onanonlistLoadSLA:         @onAnonListLoadSLA.bind(this)
+          onanonListSLA:             @onAnonListSLA.bind(this)
+          onanonListNoSLA:           @onAnonListNoSLA.bind(this)
+          onanonListLoadSLA:         @onAnonListLoadSLA.bind(this)
           onLeaveAnonListLoadSLA:    @onLeaveAnonListLoadSLA.bind(this)
 
           on_form:                   @on_Form.bind(this)
@@ -151,9 +151,8 @@ define ['shipping/script/models/Address'], (Address) ->
         deliveryCountries = [orderForm.storePreferencesData?.countryCode]
 
       hasDeliveries = orderForm.shippingData?.logisticsInfo?.length > 0 and orderForm.shippingData?.logisticsInfo[0].slas.length > 0
-      canEditData = orderForm.canEditData
 
-      if canEditData
+      if orderForm.canEditData
         if hasDeliveries
           @attr.stateMachine.next = =>
             @attr.stateMachine.showListWithSLA(orderForm, deliveryCountries)
