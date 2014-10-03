@@ -17,8 +17,11 @@ define ['shipping/script/models/Address'], (Address) ->
       { name: 'loadNoSLA',          from: 'listLoadSLA',       to: 'listNoSLA' }
       { name: 'requestSLA',         from: 'listSLA',           to: 'listLoadSLA' }
       { name: 'requestSLA',         from: 'listNoSLA',         to: 'listLoadSLA' }
+      { name: 'showList',           from: 'anonListSLA',       to: '_list' }
+      { name: 'showList',           from: 'anonListNoSLA',     to: '_list' }
       { name: 'requestSLA',         from: 'anonListSLA',       to: 'anonListLoadSLA' }
       { name: 'requestSLA',         from: 'anonListNoSLA',     to: 'anonListLoadSLA' }
+      { name: 'requestSLA',         from: 'anonListLoadSLA',   to: 'anonListLoadSLA' }
       { name: 'loadSLA',            from: 'anonListLoadSLA',   to: 'anonListSLA' }
       { name: 'loadNoSLA',          from: 'anonListLoadSLA',   to: 'anonListNoSLA' }
       { name: 'refresh',            from: 'anonListSLA',       to: 'listSLA' }
@@ -52,8 +55,10 @@ define ['shipping/script/models/Address'], (Address) ->
       { name: 'showEmpty',          from: '_summary',          to: 'empty' }
       { name: 'showList',           from: 'empty',             to: '_list' }
       { name: 'showForm',           from: 'empty',             to: '_form' }
+      { name: 'showSummary',        from: 'empty',             to: '_summary' }
       { name: 'showList',           from: 'summary',           to: '_list' }
       { name: 'showForm',           from: 'summary',           to: '_form' }
+      { name: 'showSummary',        from: 'summary',           to: '_summary' }
     ]
 
     @createStateMachine = ->
