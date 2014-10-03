@@ -172,37 +172,39 @@ define ['shipping/script/models/Address'], (Address) ->
 
       @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
       @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
-      @select('goToPaymentButtonWrapperSelector').show()
+      @select('goToPaymentButtonWrapperSelector').fadeIn("fast")
 
     @onListNoSLA = (event, from, to, orderForm) ->
       deliveryCountries = @attr.data.deliveryCountries
 
       @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
       @select('shippingOptionsSelector').trigger('disable.vtex')
-      @select('goToPaymentButtonWrapperSelector').hide()
+      @select('goToPaymentButtonWrapperSelector').fadeIn("fast")
 
     @onAnonListSLA = (event, from, to, orderForm) ->
       deliveryCountries = @attr.data.deliveryCountries
 
       @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
       @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
-      @select('goToPaymentButtonWrapperSelector').show()
+      @select('goToPaymentButtonWrapperSelector').fadeIn("fast")
 
     @onAnonListNoSLA = (event, from, to, orderForm) ->
       deliveryCountries = @attr.data.deliveryCountries
 
       @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
       @select('shippingOptionsSelector').trigger('disable.vtex')
-      @select('goToPaymentButtonWrapperSelector').hide()
+      @select('goToPaymentButtonWrapperSelector').fadeIn("fast")
 
     @onListLoadSLA = (event, from, to) ->
       @select('shippingOptionsSelector').trigger('startLoading.vtex')
+      @select('goToPaymentButtonWrapperSelector').fadeOut("fast")
 
     @onLeaveListLoadSLA = (event, from, to) ->
       @select('shippingOptionsSelector').trigger('stopLoading.vtex')
 
     @onAnonListLoadSLA = (event, from, to) ->
       @select('shippingOptionsSelector').trigger('startLoading.vtex')
+      @select('goToPaymentButtonWrapperSelector').fadeOut("fast")
 
     @onLeaveAnonListLoadSLA = (event, from, to) ->
       @select('shippingOptionsSelector').trigger('stopLoading.vtex')  
