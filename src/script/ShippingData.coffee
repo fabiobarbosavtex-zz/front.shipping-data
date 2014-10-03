@@ -260,7 +260,8 @@ define ['flight/lib/component',
             .fail( (reason) =>
               return if reason.statusText is 'abort'
               console.log reason
-              @attr.stateMachine.showForm(@attr.orderForm)
+              @attr.stateMachine.error(@attr.orderForm)
+              @attr.stateMachine.next()
             )
         else if address.geoCoordinates
           # TODO implementar com geoCoordinates
