@@ -252,10 +252,11 @@ define ['flight/lib/component',
             .done( (orderForm) =>
               hasDeliveries = @attr.data.hasDeliveries
 
-              if hasDeliveries
-                @attr.stateMachine.loadSLA(orderForm)
-              else
-                @attr.stateMachine.loadNoSLA(orderForm)
+              if @attr.stateMachine.can('loadSLA') or @attr.stateMachine.can('loadNoSLA')
+                if hasDeliveries
+                  @attr.stateMachine.loadSLA(orderForm)
+                else
+                  @attr.stateMachine.loadNoSLA(orderForm)
             )
             .fail( (reason) =>
               return if reason.statusText is 'abort'
