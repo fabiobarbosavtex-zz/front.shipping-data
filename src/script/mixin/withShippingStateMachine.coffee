@@ -82,7 +82,7 @@ define ['shipping/script/models/Address'], (Address) ->
           onleaveaddressFormLoad:    @onLeaveAddressFormLoad.bind(this)
           onaddressFormSLA:          @onAddressFormSLA.bind(this)
           onleaveaddressFormSLA:     @onLeaveAddressFormSLA.bind(this)
-          onaddressFormnoSLA:        @onAddressFormNoSLA.bind(this)
+          onaddressFormNoSLA:        @onAddressFormNoSLA.bind(this)
           onaddressFormLoadSLA:      @onAddressFormLoadSLA.bind(this)
 
           on_summary:                @on_Summary.bind(this)
