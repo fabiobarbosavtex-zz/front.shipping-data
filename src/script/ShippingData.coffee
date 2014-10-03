@@ -59,18 +59,16 @@ define ['flight/lib/component',
             @validate() # Caso não haja itens no carrinho, shippingData é null
           return
 
-        @attr.data.deliveryCountries = _.uniq(_.reduceRight(shippingData.logisticsInfo, ((memo, l) ->
-          return memo.concat(l.shipsTo)), []))
-        if @attr.data.deliveryCountries.length is 0
-          @attr.data.deliveryCountries = [orderForm.storePreferencesData?.countryCode]
+        @attr.data.deliveryCountries = @getDeliveryCountries(@attr.orderForm)
+        @attr.data.hasAvailableAddresses = shippingData.availableAddresses.length > 1
+        @attr.data.hasDeliveries = shippingData?.logisticsInfo?.length > 0 and shippingData?.logisticsInfo[0].slas.length > 0
+
         country = shippingData.address?.country ? @attr.data.deliveryCountries[0]
 
         @countrySelected(null, country).then =>
-          hasAvailableAddresses = shippingData.availableAddresses.length > 1
-
           if @attr.stateMachine.current is 'none' or @attr.stateMachine.current is 'empty'
             if @attr.data.active
-              if hasAvailableAddresses
+              if @attr.data.hasAvailableAddresses
                 @attr.stateMachine.showList(@attr.orderForm)
                 @attr.stateMachine.next()
               else
@@ -163,11 +161,9 @@ define ['flight/lib/component',
         console.log "address result", address
 
         @attr.orderForm.shippingData.address = @addressDefaults(address)
-        address = @attr.orderForm.shippingData.address
-        address.country = address?.country ? @attr.data.country
-        hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 1
+        @attr.orderForm.shippingData.address.country = address?.country ? @attr.data.country
         
-        @attr.stateMachine.loadAddress(@attr.orderForm, address, hasAvailableAddresses)
+        @attr.stateMachine.loadAddress(@attr.orderForm)
 
       # When a new addresses is selected
       @addressSelected = (ev, address) ->
@@ -191,9 +187,9 @@ define ['flight/lib/component',
               deliveryCountries = [orderForm.storePreferencesData?.countryCode]
 
             if hasDeliveries
-              @attr.stateMachine.loadSLA(orderForm, orderForm.shippingData?.address, deliveryCountries)
+              @attr.stateMachine.loadSLA(orderForm)
             else
-              @attr.stateMachine.loadNoSLA(orderForm, orderForm.shippingData?.address, deliveryCountries)
+              @attr.stateMachine.loadNoSLA(orderForm)
 
             if @attr.stateMachine.current is 'listLoadSLA'
               if @validateAddress() isnt true
@@ -248,12 +244,11 @@ define ['flight/lib/component',
             .done( (orderForm) =>
               li = orderForm.shippingData.logisticsInfo
               hasDeliveries = li?.length > 0 and li[0].slas.length > 0
-              hasAvailableAddresses = orderForm.shippingData.availableAddresses.length > 1
-              # If we are editing and we received logistics info
+
               if hasDeliveries
-                @attr.stateMachine.loadSLA(orderForm, orderForm.shippingData?.address, hasAvailableAddresses)
+                @attr.stateMachine.loadSLA(orderForm)
               else
-                @attr.stateMachine.loadNoSLA(orderForm, orderForm.shippingData?.address, hasAvailableAddresses)
+                @attr.stateMachine.loadNoSLA(orderForm)
             )
             .fail( (reason) =>
               return if reason.statusText is 'abort'
@@ -339,6 +334,17 @@ define ['flight/lib/component',
             script.src = "//maps.googleapis.com/maps/api/js?libraries=places&sensor=true&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsAPILoaded"
             document.body.appendChild(script)
         return
+
+      #
+      # Helper functions
+      #
+      @getDeliveryCountries = (orderForm) ->
+        deliveryCountries = _.uniq(_.reduceRight(orderForm.shippingData.logisticsInfo, ((memo, l) ->
+          return memo.concat(l.shipsTo)), []))
+        if deliveryCountries.length is 0
+          deliveryCountries = [orderForm.storePreferencesData?.countryCode]
+
+        return deliveryCountries
 
       #
       # Validation
