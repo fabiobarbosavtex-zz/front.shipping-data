@@ -46,7 +46,11 @@ define ['shipping/script/models/Address'], (Address) ->
       { name: 'loadNoSLA',          from: 'addressFormLoadSLA',to: 'addressFormNoSLA' }
       { name: 'showSearch',         from: 'addressFormSLA',    to: 'search' }
       { name: 'showSearch',         from: 'addressFormNoSLA',  to: 'search' }
+      { name: 'showSearch',         from: 'addressFormLoadSLA',to: 'search' }
+      { name: 'showList',           from: 'search',            to: '_list' }
       { name: 'showList',           from: 'addressForm',       to: '_list' }
+      { name: 'showList',           from: 'addressFormLoad',   to: '_list' }
+      { name: 'showList',           from: 'addressFormLoadSLA',to: '_list' }
       { name: 'showList',           from: 'addressFormSLA',    to: '_list' }
       { name: 'showList',           from: 'addressFormNoSLA',  to: '_list' }
       { name: 'showSummary',        from: 'addressFormSLA',    to: '_summary' }
