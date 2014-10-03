@@ -131,6 +131,7 @@ define ['flight/lib/component',
               @attr.data.requiredGoogleFieldsNotFound.push(rule.value)
 
         if @attr.data.requiredGoogleFieldsNotFound.length is 0
+          @trigger('addressSearchStart.vtex')
           @handleAddressSearch(address)
         else
           if @attr.countryRules.deliveryOptionsByPostalCode
