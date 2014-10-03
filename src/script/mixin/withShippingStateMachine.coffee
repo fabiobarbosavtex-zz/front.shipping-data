@@ -40,6 +40,7 @@ define ['shipping/script/models/Address'], (Address) ->
       { name: 'loadAddress',        from: 'addressFormLoad',   to: 'addressForm' }
       { name: 'requestSLA',         from: 'addressForm',       to: 'addressFormLoadSLA' }
       { name: 'requestSLA',         from: 'addressFormSLA',    to: 'addressFormLoadSLA' }
+      { name: 'requestSLA',         from: 'addressFormLoadSLA',to: 'addressFormLoadSLA' }
       { name: 'requestSLA',         from: 'addressFormNoSLA',  to: 'addressFormLoadSLA' }
       { name: 'loadSLA',            from: 'addressFormLoadSLA',to: 'addressFormSLA' }
       { name: 'loadNoSLA',          from: 'addressFormLoadSLA',to: 'addressFormNoSLA' }
