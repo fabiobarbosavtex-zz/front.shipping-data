@@ -81,7 +81,6 @@ define ['flight/lib/component',
 
       # Call the postal code API
       @getPostalCode = (postalCode) ->
-        # Clear map position
         @trigger('addressSearchStart.vtex')
         @attr.getAddressInformation({
           postalCode: postalCode.replace(/-/g, '')
