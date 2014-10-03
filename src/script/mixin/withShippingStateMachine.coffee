@@ -145,44 +145,47 @@ define ['shipping/script/models/Address'], (Address) ->
       @select('shippingSummarySelector').trigger('disable.vtex')
       @select('goToPaymentButtonWrapperSelector').hide()
 
-      deliveryCountries = _.uniq(_.reduceRight(orderForm.shippingData.logisticsInfo, ((memo, l) ->
-        return memo.concat(l.shipsTo)), []))
-      if deliveryCountries.length is 0
-        deliveryCountries = [orderForm.storePreferencesData?.countryCode]
-
-      hasDeliveries = orderForm.shippingData?.logisticsInfo?.length > 0 and orderForm.shippingData?.logisticsInfo[0].slas.length > 0
+      hasDeliveries = @attr.data.hasDeliveries
 
       if orderForm.canEditData
         if hasDeliveries
           @attr.stateMachine.next = =>
-            @attr.stateMachine.showListWithSLA(orderForm, deliveryCountries)
+            @attr.stateMachine.showListWithSLA(orderForm)
         else
           @attr.stateMachine.next = =>
-            @attr.stateMachine.showListUnavailable(orderForm, deliveryCountries)
+            @attr.stateMachine.showListUnavailable(orderForm)
       else
         if hasDeliveries
           @attr.stateMachine.next = =>
-            @attr.stateMachine.showListCantEdit(orderForm, deliveryCountries)
+            @attr.stateMachine.showListCantEdit(orderForm)
         else
           @attr.stateMachine.next = =>
-            @attr.stateMachine.showListCantEditUnavailable(orderForm, deliveryCountries)
+            @attr.stateMachine.showListCantEditUnavailable(orderForm)
 
-    @onListSLA = (event, from, to, orderForm, deliveryCountries) ->
+    @onListSLA = (event, from, to, orderForm) ->
+      deliveryCountries = @attr.data.deliveryCountries
+
       @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
       @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
       @select('goToPaymentButtonWrapperSelector').show()
 
-    @onListNoSLA = (event, from, to, orderForm, deliveryCountries) ->
+    @onListNoSLA = (event, from, to, orderForm) ->
+      deliveryCountries = @attr.data.deliveryCountries
+
       @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
       @select('shippingOptionsSelector').trigger('disable.vtex')
       @select('goToPaymentButtonWrapperSelector').hide()
 
-    @onAnonListSLA = (event, from, to, orderForm, deliveryCountries) ->
+    @onAnonListSLA = (event, from, to, orderForm) ->
+      deliveryCountries = @attr.data.deliveryCountries
+
       @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
       @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
       @select('goToPaymentButtonWrapperSelector').show()
 
-    @onAnonListNoSLA = (event, from, to, orderForm, deliveryCountries) ->
+    @onAnonListNoSLA = (event, from, to, orderForm) ->
+      deliveryCountries = @attr.data.deliveryCountries
+
       @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
       @select('shippingOptionsSelector').trigger('disable.vtex')
       @select('goToPaymentButtonWrapperSelector').hide()
@@ -209,16 +212,13 @@ define ['shipping/script/models/Address'], (Address) ->
       @select('addressListSelector').trigger('disable.vtex')
       @select('goToPaymentButtonWrapperSelector').hide()
 
-      deliveryCountries = _.uniq(_.reduceRight(orderForm.shippingData.logisticsInfo, ((memo, l) ->
-        return memo.concat(l.shipsTo)), []))
-      if deliveryCountries.length is 0
-        deliveryCountries = [orderForm.storePreferencesData?.countryCode]
+      deliveryCountries = @attr.data.deliveryCountries
+      hasAvailableAddresses = @attr.data.hasAvailableAddresses
+      hasDeliveries = @attr.data.hasDeliveries
 
       address = orderForm.shippingData?.address
       country = address?.country ? deliveryCountries[0]
       rules = @attr.data.countryRules[country]
-      hasAvailableAddresses = orderForm.shippingData?.availableAddresses.length > 1
-      hasDeliveries = orderForm.shippingData?.logisticsInfo?.length > 0 and orderForm.shippingData?.logisticsInfo[0].slas.length > 0
 
       if @attr.stateMachine.from is 'listLoadSLA'
         requestingSLA = true
@@ -233,26 +233,26 @@ define ['shipping/script/models/Address'], (Address) ->
       if address and addressObj?.validate(rules) is true or addressObj?.postalCode?
         if hasDeliveries
           @attr.stateMachine.next = =>
-            @attr.stateMachine.editAddressSLA(orderForm, address, hasAvailableAddresses)
+            @attr.stateMachine.editAddressSLA(orderForm)
             if requestingSLA
               @attr.stateMachine.requestSLA()
         else
           @attr.stateMachine.next = =>
-            @attr.stateMachine.editAddressNoSLA(orderForm, address, hasAvailableAddresses)
+            @attr.stateMachine.editAddressNoSLA(orderForm)
             if requestingSLA
               @attr.stateMachine.requestSLA()
       else
-        address = {country: country}
-        address = @addressDefaults(address)
+        orderForm.shippingData.address = {country: country}
+        orderForm.shippingData.address = @addressDefaults(address)
         if rules.queryByPostalCode or rules.queryByGeocoding
           @attr.stateMachine.next = =>
             @attr.stateMachine.showSearch(rules, address.postalCode, rules.queryByGeocoding, hasAvailableAddresses)
         else if hasDeliveries
           @attr.stateMachine.next = =>
-            @attr.stateMachine.newAddressSLA(orderForm, address, hasAvailableAddresses)
+            @attr.stateMachine.newAddressSLA(orderForm)
         else
           @attr.stateMachine.next = =>
-            @attr.stateMachine.newAddress(orderForm, address, hasAvailableAddresses)
+            @attr.stateMachine.newAddress(orderForm)
 
     @onSearch = (event, from, to, rules, postalCodeQuery, useGeolocationSearch, hasAvailableAddresses) ->
       # Disable other components
@@ -264,7 +264,10 @@ define ['shipping/script/models/Address'], (Address) ->
     @onLeaveSearch = (event, from, to) ->
       @select('addressSearchSelector').trigger('disable.vtex', null)
 
-    @onAddressForm = (event, from, to, orderForm, address, hasAvailableAddresses) ->
+    @onAddressForm = (event, from, to, orderForm) ->
+      address = orderForm.shippingData?.address
+      hasAvailableAddresses = @attr.data.hasAvailableAddresses
+
       @select('addressSearchSelector').trigger('disable.vtex')
       @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
       @select('shippingOptionsSelector').trigger('disable.vtex')
@@ -275,17 +278,23 @@ define ['shipping/script/models/Address'], (Address) ->
     @onLeaveAddressFormLoad = (event, from, to) ->
       return
 
-    @onAddressFormSLA = (event, from, to, orderForm, address, hasAvailableAddresses) ->
+    @onAddressFormSLA = (event, from, to, orderForm) ->
+      address = orderForm.shippingData?.address
+      hasAvailableAddresses = @attr.data.hasAvailableAddresses
+
       @select('addressSearchSelector').trigger('disable.vtex')
       if event isnt 'loadSLA'
         @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
       @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
-      @select('goToPaymentButtonWrapperSelector').show()
+      @select('goToPaymentButtonWrapperSelector').fadeIn("fast")
 
     @onLeaveAddressFormSLA = (event, from, to) ->
-      @select('goToPaymentButtonWrapperSelector').hide()
+      @select('goToPaymentButtonWrapperSelector').fadeOut("fast")
 
-    @onAddressFormNoSLA = (event, from, to, orderForm, address, hasAvailableAddresses) ->
+    @onAddressFormNoSLA = (event, from, to, orderForm) ->
+      address = orderForm.shippingData?.address
+      hasAvailableAddresses = @attr.data.hasAvailableAddresses
+
       $(window).trigger('showMessage.vtex', ['unavailable'])
       if event isnt 'loadNoSLA'
         @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
