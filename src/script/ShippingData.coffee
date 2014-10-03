@@ -138,6 +138,11 @@ define ['flight/lib/component',
           # When the AddressForm is finished validating, ShippingData will also validate due to @addressFormValidated()
           @select('addressFormSelector').one('componentValidated.vtex', (e, errors) => @done() if errors.length is 0)
           @select('addressFormSelector').trigger('validate.vtex')
+        else if @attr.stateMachine.current is 'listSLA'
+          address = new Address(@attr.orderForm.shippingData.address)
+          if address.validate() isnt true
+            @attr.stateMachine.showForm(@attr.orderForm)
+            @attr.stateMachine.next()
         else
           @done()
 
