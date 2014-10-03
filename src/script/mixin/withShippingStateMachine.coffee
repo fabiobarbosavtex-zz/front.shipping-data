@@ -36,7 +36,6 @@ define ['shipping/script/models/Address'], (Address) ->
       { name: 'editAddressSLA',     from: '_form',             to: 'addressFormSLA' }
       { name: 'editAddressNoSLA',   from: '_form',             to: 'addressFormNoSLA' }
       { name: 'newAddress',         from: '_form',             to: 'addressForm' }
-      { name: 'newAddressSLA',      from: '_form',             to: 'addressFormSLA' }
       { name: 'searchAddress',      from: 'search',            to: 'addressFormLoad' }
       { name: 'loadAddress',        from: 'addressFormLoad',   to: 'addressForm' }
       { name: 'requestSLA',         from: 'addressForm',       to: 'addressFormLoadSLA' }
@@ -249,14 +248,11 @@ define ['shipping/script/models/Address'], (Address) ->
             if requestingSLA
               @attr.stateMachine.requestSLA()
       else
-        orderForm.shippingData.address = {country: country}
-        orderForm.shippingData.address = @addressDefaults(address)
+        orderForm.shippingData.address = address = {country: country}
+        address = @addressDefaults(address)
         if rules.queryByPostalCode or rules.queryByGeocoding
           @attr.stateMachine.next = =>
             @attr.stateMachine.showSearch(rules, address.postalCode, rules.queryByGeocoding, hasAvailableAddresses)
-        else if hasDeliveries
-          @attr.stateMachine.next = =>
-            @attr.stateMachine.newAddressSLA(orderForm)
         else
           @attr.stateMachine.next = =>
             @attr.stateMachine.newAddress(orderForm)
