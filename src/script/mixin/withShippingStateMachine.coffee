@@ -177,6 +177,8 @@ define ['shipping/script/models/Address'], (Address) ->
     @onListNoSLA = (event, from, to, orderForm) ->
       deliveryCountries = @attr.data.deliveryCountries
 
+      $(window).trigger('showMessage.vtex', ['unavailable'])
+
       @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
       @select('shippingOptionsSelector').trigger('disable.vtex')
       @select('goToPaymentButtonWrapperSelector').fadeIn("fast")
@@ -190,6 +192,8 @@ define ['shipping/script/models/Address'], (Address) ->
 
     @onAnonListNoSLA = (event, from, to, orderForm) ->
       deliveryCountries = @attr.data.deliveryCountries
+
+      $(window).trigger('showMessage.vtex', ['unavailable'])
 
       @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
       @select('shippingOptionsSelector').trigger('disable.vtex')
@@ -300,6 +304,7 @@ define ['shipping/script/models/Address'], (Address) ->
       hasAvailableAddresses = @attr.data.hasAvailableAddresses
 
       $(window).trigger('showMessage.vtex', ['unavailable'])
+
       if event isnt 'loadNoSLA'
         @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
       @select('shippingOptionsSelector').trigger('disable.vtex')
