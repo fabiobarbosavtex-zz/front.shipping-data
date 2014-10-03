@@ -186,13 +186,8 @@ define ['flight/lib/component',
 
         @attr.requestAddressSelected = @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData)
           .done (orderForm) =>
-            li = orderForm.shippingData.logisticsInfo
-
-            hasDeliveries = li?.length > 0 and li[0].slas.length > 0
-            deliveryCountries = _.uniq(_.reduceRight(orderForm.shippingData.logisticsInfo, ((memo, l) ->
-              return memo.concat(l.shipsTo)), []))
-            if deliveryCountries.length is 0
-              deliveryCountries = [orderForm.storePreferencesData?.countryCode]
+            hasDeliveries = @attr.data.hasDeliveries
+            deliveryCountries = @attr.data.deliveryCountries
 
             if hasDeliveries
               @attr.stateMachine.loadSLA(orderForm)
@@ -250,8 +245,7 @@ define ['flight/lib/component',
                 address: address
                 clearAddressIfPostalCodeNotFound: clearAddress
             .done( (orderForm) =>
-              li = orderForm.shippingData.logisticsInfo
-              hasDeliveries = li?.length > 0 and li[0].slas.length > 0
+              hasDeliveries = @attr.data.hasDeliveries
 
               if hasDeliveries
                 @attr.stateMachine.loadSLA(orderForm)
@@ -270,7 +264,7 @@ define ['flight/lib/component',
       # User cleared address search key and must search again
       @addressKeysInvalidated = (ev, address) ->
         rules = @attr.data.countryRules[address.country]
-        hasAvailableAddresses = @attr.orderForm.shippingData.availableAddresses.length > 1
+        hasAvailableAddresses = @attr.data.hasAvailableAddresses
         @attr.stateMachine.showSearch(rules, address?.postalCode, address?.useGeolocationSearch, hasAvailableAddresses)
 
       # User wants to edit or create an address
@@ -296,7 +290,6 @@ define ['flight/lib/component',
             locale: @attr.locale
           return window.vtexid?.start(vtexIdOptions)
 
-        ev?.stopPropagation()
         @attr.orderForm.shippingData?.address = {}
         @attr.stateMachine.showForm(@attr.orderForm)
         @attr.stateMachine.next()
@@ -304,7 +297,7 @@ define ['flight/lib/component',
       # User cancelled ongoing address edit
       @cancelAddressEdit = (ev) ->
         ev?.stopPropagation()
-        if @attr.orderForm.shippingData.availableAddresses.length > 0
+        if @attr.orderForm.shippingData.availableAddresses.length > 0 # Cuidado: nao é o mesmo que hasAvailableAddresses
           @trigger('addressKeysUpdated.vtex', [@attr.orderForm.shippingData.availableAddresses[0]])
 
         @attr.stateMachine.showList(@attr.orderForm)
@@ -344,7 +337,7 @@ define ['flight/lib/component',
         return
 
       #
-      # Helper functions
+      # Helpers
       #
       @getDeliveryCountries = (orderForm) ->
         deliveryCountries = _.uniq(_.reduceRight(orderForm.shippingData.logisticsInfo, ((memo, l) ->
