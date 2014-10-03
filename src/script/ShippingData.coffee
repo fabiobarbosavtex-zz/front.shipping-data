@@ -271,7 +271,7 @@ define ['flight/lib/component',
       @addressKeysInvalidated = (ev, address) ->
         rules = @attr.data.countryRules[address.country]
         hasAvailableAddresses = @attr.data.hasAvailableAddresses
-        @attr.stateMachine.showSearch(rules, address?.postalCode, address?.useGeolocationSearch, hasAvailableAddresses)
+        @attr.stateMachine.showSearch(rules, address, hasAvailableAddresses)
 
       # User wants to edit or create an address
       @editAddress = (ev, address) ->
