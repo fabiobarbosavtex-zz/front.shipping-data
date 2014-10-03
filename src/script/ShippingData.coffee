@@ -63,10 +63,18 @@ define ['flight/lib/component',
         @attr.data.hasAvailableAddresses = shippingData.availableAddresses.length > 1
         @attr.data.hasDeliveries = shippingData?.logisticsInfo?.length > 0 and shippingData?.logisticsInfo[0].slas.length > 0
 
+        # Caso data.canEditData ainda nao esteja preenchido, preencha
+        if not @attr.data.canEditData?
+          @attr.data.canEditData = @attr.orderForm.canEditData
+
+        # Caso o usuario faça login
+        if @attr.orderForm.canEditData isnt @attr.data.canEditData
+          @attr.data.userIsNowLoggedIn = true
+
         country = shippingData.address?.country ? @attr.data.deliveryCountries[0]
 
         @countrySelected(null, country).then =>
-          if @attr.stateMachine.current is 'none' or @attr.stateMachine.current is 'empty'
+          if @attr.stateMachine.current is 'none' or @attr.stateMachine.current is 'empty' or @attr.data.userIsNowLoggedIn
             if @attr.data.active
               if @attr.data.hasAvailableAddresses
                 @attr.stateMachine.showList(@attr.orderForm)
@@ -98,7 +106,7 @@ define ['flight/lib/component',
           rules = @attr.data.countryRules[country]
 
           address = new Address(shippingData.address)
-          if not shippingData?.address or address.validate(rules) isnt true and orderForm.canEditData is true
+          if orderForm.canEditData is true and (!shippingData?.address or address.validate(rules) isnt true)
             @attr.stateMachine.showForm(orderForm)
             @attr.stateMachine.next()
           else
