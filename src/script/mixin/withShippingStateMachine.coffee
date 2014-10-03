@@ -237,7 +237,7 @@ define ['shipping/script/models/Address'], (Address) ->
       if address and (not rules.regexes.postalCode.test(address.postalCode) and rules.queryByPostalCode) or
         (rules.queryByGeocoding and address.geoCoordinates.length isnt 2)
           @attr.stateMachine.next = =>
-            @attr.stateMachine.showSearch(rules, address.postalCode, rules.queryByGeocoding, hasAvailableAddresses)
+            @attr.stateMachine.showSearch(rules, address, hasAvailableAddresses)
           return
 
       addressObj = new Address(address) if address
@@ -257,17 +257,17 @@ define ['shipping/script/models/Address'], (Address) ->
         address = @addressDefaults(address)
         if rules.queryByPostalCode or rules.queryByGeocoding
           @attr.stateMachine.next = =>
-            @attr.stateMachine.showSearch(rules, address.postalCode, rules.queryByGeocoding, hasAvailableAddresses)
+            @attr.stateMachine.showSearch(rules, address, hasAvailableAddresses)
         else
           @attr.stateMachine.next = =>
             @attr.stateMachine.newAddress(orderForm)
 
-    @onSearch = (event, from, to, rules, postalCodeQuery, useGeolocationSearch, hasAvailableAddresses) ->
+    @onSearch = (event, from, to, rules, address, hasAvailableAddresses) ->
       # Disable other components
       @select('addressFormSelector').trigger('disable.vtex')
       @select('shippingOptionsSelector').trigger('disable.vtex')
       
-      @select('addressSearchSelector').trigger('enable.vtex', [rules, postalCodeQuery, useGeolocationSearch, hasAvailableAddresses])
+      @select('addressSearchSelector').trigger('enable.vtex', [rules, address, hasAvailableAddresses])
 
     @onLeaveSearch = (event, from, to) ->
       @select('addressSearchSelector').trigger('disable.vtex', null)
