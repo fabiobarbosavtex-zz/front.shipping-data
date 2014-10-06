@@ -236,6 +236,7 @@ define ['shipping/script/models/Address'], (Address) ->
       address = orderForm.shippingData?.address
       country = address?.country ? deliveryCountries[0]
       rules = @attr.data.countryRules[country]
+      rules = @attr.data.countryRules[deliveryCountries[0]] unless rules
 
       if @attr.stateMachine.from is 'listLoadSLA'
         requestingSLA = true

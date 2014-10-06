@@ -72,7 +72,7 @@ define ['flight/lib/component',
           @attr.data.userIsNowLoggedIn = true
           @attr.data.canEditData = @attr.orderForm.canEditData
 
-        country = shippingData.address?.country ? @attr.data.deliveryCountries[0]
+        country = @attr.data.deliveryCountries[0] ? shippingData.address?.country
 
         @countrySelected(null, country).then =>
           if @attr.stateMachine.current is 'none' or @attr.stateMachine.current is 'empty' or @attr.data.userIsNowLoggedIn
@@ -102,7 +102,7 @@ define ['flight/lib/component',
 
           deliveryCountries = @getDeliveryCountries(orderForm)
           shippingData = orderForm.shippingData
-          country = shippingData?.address?.country ? deliveryCountries[0]
+          country = deliveryCountries[0] ? shippingData?.address?.country
           rules = @attr.data.countryRules[country]
 
           address = new Address(shippingData.address)
