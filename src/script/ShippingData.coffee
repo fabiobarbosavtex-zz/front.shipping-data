@@ -70,11 +70,15 @@ define ['flight/lib/component',
         # Caso o usuario faça login
         if @attr.orderForm.canEditData isnt @attr.data.canEditData
           @attr.data.userIsNowLoggedIn = true
+          @attr.data.canEditData = @attr.orderForm.canEditData
 
         country = shippingData.address?.country ? @attr.data.deliveryCountries[0]
 
         @countrySelected(null, country).then =>
           if @attr.stateMachine.current is 'none' or @attr.stateMachine.current is 'empty' or @attr.data.userIsNowLoggedIn
+            if @attr.data.userIsNowLoggedIn
+              @attr.data.userIsNowLoggedIn = false
+
             if @attr.data.active
               if @attr.data.hasAvailableAddresses
                 @attr.stateMachine.showList(@attr.orderForm)
