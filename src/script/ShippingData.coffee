@@ -368,7 +368,7 @@ define ['flight/lib/component',
             window.vtex.maps.isGoogleMapsAPILoading = true
             script = document.createElement("script")
             script.type = "text/javascript"
-            script.src = "//maps.googleapis.com/maps/api/js?libraries=places&sensor=true&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsAPILoaded"
+            script.src = "//maps.googleapis.com/maps/api/js?libraries=places&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsAPILoaded"
             document.body.appendChild(script)
         return
 
