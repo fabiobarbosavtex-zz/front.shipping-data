@@ -135,7 +135,8 @@ define ['flight/lib/component',
       # Events from children components
       #
 
-      @tryDone = ->
+      @tryDone = (ev) ->
+        ev?.stopPropagation()
         if @attr.stateMachine.current is 'addressFormSLA'
           # When the AddressForm is finished validating, ShippingData will also validate due to @addressFormValidated()
           @select('addressFormSelector').one('componentValidated.vtex', (e, errors) => @done() if errors.length is 0)
@@ -422,6 +423,7 @@ define ['flight/lib/component',
             @on 'deliverySelected.vtex', @deliverySelected
             @on 'countrySelected.vtex', @countrySelected
             @on 'addressFormSelector', 'componentValidated.vtex', @addressFormValidated
+            @on 'addressFormSubmit.vtex', @tryDone
             @on 'click',
               'goToPaymentButtonSelector': @tryDone
               'editShippingDataSelector': @enable
