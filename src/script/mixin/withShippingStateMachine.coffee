@@ -17,8 +17,6 @@ define ['shipping/script/models/Address'], (Address) ->
       { name: 'loadNoSLA',          from: 'listLoadSLA',       to: 'listNoSLA' }
       { name: 'requestSLA',         from: 'listSLA',           to: 'listLoadSLA' }
       { name: 'requestSLA',         from: 'listNoSLA',         to: 'listLoadSLA' }
-      { name: 'showList',           from: 'anonListSLA',       to: '_list' }
-      { name: 'showList',           from: 'anonListNoSLA',     to: '_list' }
       { name: 'requestSLA',         from: 'anonListSLA',       to: 'anonListLoadSLA' }
       { name: 'requestSLA',         from: 'anonListNoSLA',     to: 'anonListLoadSLA' }
       { name: 'requestSLA',         from: 'anonListLoadSLA',   to: 'anonListLoadSLA' }
@@ -26,6 +24,8 @@ define ['shipping/script/models/Address'], (Address) ->
       { name: 'loadNoSLA',          from: 'anonListLoadSLA',   to: 'anonListNoSLA' }
       { name: 'refresh',            from: 'anonListSLA',       to: 'listSLA' }
       { name: 'refresh',            from: 'anonListNoSLA',     to: 'listNoSLA' }
+      { name: 'showList',           from: 'anonListSLA',       to: '_list' }
+      { name: 'showList',           from: 'anonListNoSLA',     to: '_list' }
       { name: 'showForm',           from: 'anonListNoSLA',     to: '_form' }
       { name: 'showForm',           from: 'listSLA',           to: '_form' }
       { name: 'showForm',           from: 'listLoadSLA',       to: '_form' }
