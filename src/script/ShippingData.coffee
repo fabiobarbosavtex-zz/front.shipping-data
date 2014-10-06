@@ -229,7 +229,18 @@ define ['flight/lib/component',
             a.postalCode?.replace('-', '') is address.postalCode?.replace('-', '') and
             a.geoCoordinates?[0] is address.geoCoordinates?[0] and
             a.geoCoordinates?[1] is address.geoCoordinates?[1]
-        if knownAddress then return
+
+        # If we already know the SLAs for this address, just carry on with the states
+        if knownAddress
+          @attr.orderForm.shippingData.address = address
+          @attr.stateMachine.requestSLA()
+          hasDeliveries = @attr.data.hasDeliveries
+          if @attr.stateMachine.can('loadSLA') or @attr.stateMachine.can('loadNoSLA')
+            if hasDeliveries
+              @attr.stateMachine.loadSLA(@attr.orderForm)
+            else
+              @attr.stateMachine.loadNoSLA(@attr.orderForm)
+          return
 
         if address.postalCodeIsValid
           # When we start editing, we always start looking for shipping options
