@@ -308,7 +308,7 @@ define ['shipping/script/models/Address'], (Address) ->
       @select('goToPaymentButtonWrapperSelector').fadeIn("fast")
 
     @onLeaveAddressFormSLA = (event, from, to) ->
-      @select('goToPaymentButtonWrapperSelector').fadeOut("fast")
+      @select('goToPaymentButtonWrapperSelector').hide()
 
     @onAddressFormNoSLA = (event, from, to, orderForm) ->
       address = orderForm.shippingData?.address
