@@ -205,17 +205,21 @@ define ['shipping/script/models/Address'], (Address) ->
       @select('goToPaymentButtonWrapperSelector').fadeOut("fast")
 
     @onListLoadSLA = (event, from, to) ->
+      @select('addressListSelector').trigger('startLoading.vtex')
       @select('shippingOptionsSelector').trigger('startLoading.vtex')
       @select('goToPaymentButtonWrapperSelector').fadeOut("fast")
 
     @onLeaveListLoadSLA = (event, from, to) ->
+      @select('addressListSelector').trigger('stopLoading.vtex')
       @select('shippingOptionsSelector').trigger('stopLoading.vtex')
 
     @onAnonListLoadSLA = (event, from, to) ->
+      @select('addressListSelector').trigger('startLoading.vtex')
       @select('shippingOptionsSelector').trigger('startLoading.vtex')
       @select('goToPaymentButtonWrapperSelector').fadeOut("fast")
 
     @onLeaveAnonListLoadSLA = (event, from, to) ->
+      @select('addressListSelector').trigger('stopLoading.vtex')
       @select('shippingOptionsSelector').trigger('stopLoading.vtex')  
 
     @on_Form = (event, from, to, orderForm) ->
