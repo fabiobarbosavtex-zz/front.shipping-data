@@ -185,7 +185,7 @@ define ['shipping/script/models/Address'], (Address) ->
 
       @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
       @select('shippingOptionsSelector').trigger('disable.vtex')
-      @select('goToPaymentButtonWrapperSelector').fadeIn("fast")
+      @select('goToPaymentButtonWrapperSelector').fadeOut("fast")
 
     @onAnonListSLA = (event, from, to, orderForm) ->
       deliveryCountries = @attr.data.deliveryCountries
@@ -201,7 +201,7 @@ define ['shipping/script/models/Address'], (Address) ->
 
       @select('addressListSelector').trigger('enable.vtex', [deliveryCountries, orderForm.shippingData, orderForm.giftRegistryData])
       @select('shippingOptionsSelector').trigger('disable.vtex')
-      @select('goToPaymentButtonWrapperSelector').fadeIn("fast")
+      @select('goToPaymentButtonWrapperSelector').fadeOut("fast")
 
     @onListLoadSLA = (event, from, to) ->
       @select('shippingOptionsSelector').trigger('startLoading.vtex')
