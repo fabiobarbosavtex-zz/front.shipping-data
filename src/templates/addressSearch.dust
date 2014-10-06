@@ -38,7 +38,7 @@
                 {/loading}
 
               {?geocodingAvailable}
-                <small><a href="javascript:void(0);" id="dont-know-postal-code" class="dont-know-postal-code-geocoding" target="_blank" data-i18n="shipping.addressSearch.dontKnowPostalCode"></a></small>
+                <small><a href="javascript:void(0);" id="dont-know-postal-code" class="dont-know-postal-code-geocoding" data-i18n="shipping.addressSearch.dontKnowPostalCode"></a></small>
               {:else}
                 {! Caso não possa usar geocoding, sugerimos um site para consulta de código postal !}
                 {?dontKnowPostalCodeURL}
@@ -78,7 +78,7 @@
           </p>
 
           {?postalCodeByInput}
-            <small class="text-know-postal-code"><a href="javascript:void(0);" class="know-postal-code" target="_blank" data-i18n="shipping.addressSearch.knowPostalCode"></a></small>
+            <small class="text-know-postal-code"><a href="javascript:void(0);" class="know-postal-code" data-i18n="shipping.addressSearch.knowPostalCode"></a></small>
           {/postalCodeByInput}
 
           <div class="address-not-detailed hide">
