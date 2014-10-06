@@ -96,17 +96,15 @@ define ['flight/lib/component',
         try
           orderForm = @attr.orderForm
 
-          deliveryCountries = _.uniq(_.reduceRight(orderForm.shippingData.logisticsInfo, ((memo, l) ->
-            return memo.concat(l.shipsTo)), []))
-          if deliveryCountries.length is 0
-            deliveryCountries = [orderForm.storePreferencesData?.countryCode]
-
+          deliveryCountries = @getDeliveryCountries(orderForm)
           shippingData = orderForm.shippingData
           country = shippingData?.address?.country ? deliveryCountries[0]
           rules = @attr.data.countryRules[country]
 
           address = new Address(shippingData.address)
-          if orderForm.canEditData is true and (!shippingData?.address or address.validate(rules) isnt true)
+          firstTimeBuying = (orderForm.canEditData is true and orderForm.loggedIn is false)
+          invalidAddress = (orderForm.canEditData is true and (!shippingData?.address or address.validate(rules) isnt true))
+          if invalidAddress or firstTimeBuying
             @attr.stateMachine.showForm(orderForm)
             @attr.stateMachine.next()
           else

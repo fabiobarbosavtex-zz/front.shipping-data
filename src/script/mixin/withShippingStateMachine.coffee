@@ -224,6 +224,7 @@ define ['shipping/script/models/Address'], (Address) ->
       @select('addressFormSelector').trigger('disable.vtex')
       @select('addressSearchSelector').trigger('disable.vtex', null)
       @select('shippingOptionsSelector').trigger('disable.vtex')
+      @select('shippingSummarySelector').trigger('disable.vtex')
       @select('addressListSelector').trigger('disable.vtex')
       @select('goToPaymentButtonWrapperSelector').hide()
 
