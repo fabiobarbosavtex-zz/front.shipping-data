@@ -100,7 +100,7 @@ define ['flight/lib/component',
         try
           orderForm = @attr.orderForm
 
-          deliveryCountries = @getDeliveryCountries(orderForm)
+          deliveryCountries = @attr.data.deliveryCountries
           shippingData = orderForm.shippingData
           country = deliveryCountries[0] ? shippingData?.address?.country
           rules = @attr.data.countryRules[country]
