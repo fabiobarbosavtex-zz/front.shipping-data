@@ -81,7 +81,7 @@ define ['flight/lib/component',
 
       # Call the postal code API
       @getPostalCode = (postalCode) ->
-        # Clear map position
+        @trigger('addressSearchStart.vtex')
         @attr.getAddressInformation({
           postalCode: postalCode.replace(/-/g, '')
           country: @attr.data.country
@@ -131,6 +131,7 @@ define ['flight/lib/component',
               @attr.data.requiredGoogleFieldsNotFound.push(rule.value)
 
         if @attr.data.requiredGoogleFieldsNotFound.length is 0
+          @trigger('addressSearchStart.vtex')
           @handleAddressSearch(address)
         else
           if @attr.countryRules.deliveryOptionsByPostalCode

@@ -42,7 +42,7 @@ define ->
 
       # Profile System normaliza estados para serem sempre em upper case
       if rules.states
-        @state = @state.toUpperCase()
+        @state = @state?.toUpperCase()
 
       fieldsToValidate = ['postalCode', 'city', 'complement', 'neighborhood', 'number', 'receiverName', 'reference', 'street', 'state']
       for field in fieldsToValidate

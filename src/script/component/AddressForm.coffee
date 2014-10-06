@@ -412,6 +412,7 @@ define ['flight/lib/component',
 
       @stopSubmit = (ev) ->
         ev.preventDefault()
+        @trigger('addressFormSubmit.vtex')
 
       @updateEnables = ->
         if @getCountryRule().geocodingAvailable and @attr.data.address.geoCoordinates.length is 2
