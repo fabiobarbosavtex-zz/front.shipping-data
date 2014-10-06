@@ -199,20 +199,11 @@ define ['flight/lib/component',
             hasDeliveries = @attr.data.hasDeliveries
             deliveryCountries = @attr.data.deliveryCountries
 
-            if hasDeliveries
-              @attr.stateMachine.loadSLA(orderForm)
-            else
-              @attr.stateMachine.loadNoSLA(orderForm)
-
-            if @attr.stateMachine.current is 'listLoadSLA'
-              if @validateAddress() isnt true
-                # If it's invalid, stop here and edit it
-                orderForm.shippingData.address = @addressDefaults(orderForm.shippingData.address)
-                @attr.stateMachine.showForm(orderForm)
-                @attr.stateMachine.next()
-
-              else if not hasDeliveries and not orderForm.canEditData
-                $(window).trigger('showMessage.vtex', ['unavailable'])
+            if @attr.stateMachine.can('loadSLA') or @attr.stateMachine.can('loadNoSLA')
+              if hasDeliveries
+                @attr.stateMachine.loadSLA(orderForm)
+              else
+                @attr.stateMachine.loadNoSLA(orderForm)
 
       # The current address was updated, either selected or in edit
       @addressUpdated = (ev, address) ->
