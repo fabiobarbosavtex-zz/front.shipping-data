@@ -190,6 +190,7 @@ define ['flight/lib/component',
         $.ajax
           url: "//maps.googleapis.com/maps/api/geocode/json?latlng=#{lat},#{lng}"
           success: @onSuggestedAddressLoaded.bind(@)
+          error: @onSuggestedAddressError.bind(@)
 
       @onSuggestedAddressLoaded = (response) ->
         if response.status is "OK"
@@ -209,6 +210,13 @@ define ['flight/lib/component',
               raw: null
               formatted: null
               position: null
+        else if response.status is "OVER_QUERY_LIMIT"
+          console.log "OVER_QUERY_LIMIT"
+          # todo -> Logar isso em algum lugar
+
+      @onSuggestedAddressError = (error) ->
+        console.log "REVERSE GEOCODE ERROR"
+        console.log error
 
       @selectSuggestedAddress = ->
         @addressMapper(@attr.data.suggestedAddress.raw)
