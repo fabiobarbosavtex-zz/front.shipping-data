@@ -130,7 +130,7 @@
 
       <p class="ship-state required input text {?contractedShippingFieldsForGeolocation.state}hide{/contractedShippingFieldsForGeolocation.state} {?labelShippingFields}hide{/labelShippingFields}">
         <label for="ship-state"><span data-i18n="shipping.addressForm.state"></span> <span class="item-required">*</span></label>
-        <select id="ship-state" tabindex="228" class="ship-state input-mini" data-parsley-trigger="change blur" data-parsley-required="true" name="state" {?disableCityAndState}disabled{/disableCityAndState}>
+        <select id="ship-state" tabindex="228" class="ship-state input-xlarge" data-parsley-trigger="change blur" data-parsley-required="true" name="state" {?disableCityAndState}disabled{/disableCityAndState}>
           <option></option>
           {#states}
             <option value="{value}" {@eq key=value value="{state}"}selected="true"{/eq}>{label}</option>
