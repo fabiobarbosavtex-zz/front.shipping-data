@@ -119,7 +119,7 @@
       </p>
 
       <p class="ship-neighborhood required input text {?contractedShippingFieldsForGeolocation.neighborhood}hide{/contractedShippingFieldsForGeolocation.neighborhood} {?labelShippingFields}hide{/labelShippingFields}">
-        <label for="ship-neighborhood"><span data-i18n="shipping.addressForm.neighborhood">Bairro</span> <span class="item-required">*</span></label>
+        <label for="ship-neighborhood"><span data-i18n="shipping.addressForm.colony"></span> <span class="item-required">*</span></label>
         <input type="text" tabindex="226" id="ship-neighborhood" class="input-large" value="{neighborhood}" name="neighborhood" data-parsley-trigger="change blur" data-parsley-required="true" data-parsley-alphanumponc="true">
       </p>
 

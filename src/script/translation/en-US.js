@@ -37,6 +37,7 @@ define(function () {
         "state": 'State',
         "region": 'Region',
         "community": 'Community',
+        "colony": 'Colony',
         "direction": 'Direction',
         "department": 'Departament',
         "municipality": 'Municipality',
