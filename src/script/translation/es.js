@@ -34,7 +34,7 @@ define(function () {
         "commercial": 'Dirección de Trabajo',
         "city": 'Ciudad',
         "locality": 'Localidad',
-        "state": 'Provincia',
+        "state": 'Estado',
         "region": 'Región',
         "community": 'Comuna',
         "direction": 'Dirección',
