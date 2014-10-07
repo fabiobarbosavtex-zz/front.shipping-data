@@ -32,8 +32,8 @@ define [], () ->
       validationResults.length is 0 or validationResults is true
 
     # Returns array of errors
-    @validate = (e) ->
-      e?.stopPropagation()
+    @validate = (ev) ->
+      ev?.stopPropagation()
       validationResults = matchValidationRules.call(this)
       triggerValidationEvent.call this, validationResults
       return validationResults

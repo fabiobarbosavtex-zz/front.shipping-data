@@ -29,7 +29,7 @@ define ['flight/lib/component',
       # Create a new address
       @createAddress = ->
         return if @attr.data.loading
-        @trigger('editAddress.vtex')
+        @trigger('newAddress.vtex')
 
       # Edit an existing address
       @editAddress = ->
@@ -110,8 +110,8 @@ define ['flight/lib/component',
         @attr.data.giftRegistryData = giftRegistryData
 
         if @attr.data.availableAddresses.length > 0
-          @createAddressesSummaries()
-          @render()
+          @createAddressesSummaries().then =>
+            @render()
 
       @disable = (ev) ->
         ev?.stopPropagation()
