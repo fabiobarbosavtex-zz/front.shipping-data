@@ -1,6 +1,3 @@
-define = vtex.define || window.define
-require = vtex.curl || window.require
-
 define ['shipping/script/models/Address'], (Address) ->
   ->
     stateMachineEvents = [
