@@ -1,6 +1,3 @@
-define = vtex.define || window.define
-require = vtex.curl || window.require
-
 define ['flight/lib/component',
         'shipping/script/setup/extensions',
         'shipping/script/mixin/withi18n',

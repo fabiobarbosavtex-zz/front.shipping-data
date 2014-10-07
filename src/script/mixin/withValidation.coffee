@@ -1,6 +1,3 @@
-define = vtex.define || window.define
-require = vtex.curl || window.require
-
 # Inspired by Parsley, this mixin offers two main methods:
 # isValid, which does not affect the DOM or toggle events and
 # validate, which toggles the valid data in the component's $node
