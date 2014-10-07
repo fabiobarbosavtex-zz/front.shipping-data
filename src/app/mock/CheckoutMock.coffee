@@ -1,5 +1,5 @@
 define = vtex.define || define
-require = vtex.require || require
+require = vtex.curl || require
 
 define ->
     class CheckoutMock
