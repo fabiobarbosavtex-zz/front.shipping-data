@@ -96,6 +96,8 @@ define ['shipping/script/models/Address'], (Address) ->
           onempty:                   @onEmpty.bind(this)
           onleaveempty:              @onLeaveEmpty.bind(this)
 
+          onafterevent:              @onAfterEvent.bind(this)
+
     #
     # Changed state events (FINITE STATE MACHINE)
     #
