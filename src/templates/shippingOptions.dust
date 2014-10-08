@@ -132,7 +132,7 @@
 
 
                 {#slas}
-                {@if cond="{isScheduled} && {isSelected}"}
+                {?isScheduled}{?isSelected}
                 <div class="scheduled-sla shipping-option-{index}">
                     <p><span data-i18n="shipping.shippingOptions.deliveryDate"></span>:</p>
                     <input class="datepicker input input-xlarge" type="text"
@@ -141,7 +141,7 @@
                         {>deliveryWindows /}
                     </p>
                 </div>
-                {/if}
+                {/isSelected}{/isScheduled}
                 {/slas}
             </div>
         {/shippingOptions}
