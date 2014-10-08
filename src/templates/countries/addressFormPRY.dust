@@ -61,7 +61,7 @@
       </p>
 
       <p class="ship-state required input text">
-        <label for="ship-state"><span data-i18n="shipping.addressForm.province"></span> <span class="item-required">*</span></label>
+        <label for="ship-state"><span data-i18n="shipping.addressForm.department"></span> <span class="item-required">*</span></label>
         <select id="ship-state" tabindex="227" class="input-xlarge" name="state" data-parsley-trigger="change blur" data-parsley-required="true">
           <option></option>
           {#states}
