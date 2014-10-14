@@ -26,6 +26,7 @@ define ['shipping/script/models/Address'], (Address) ->
       { name: 'refresh',            from: 'anonListNoSLA',     to: 'listNoSLA' }
       { name: 'showList',           from: 'anonListSLA',       to: '_list' }
       { name: 'showList',           from: 'anonListNoSLA',     to: '_list' }
+      { name: 'showForm',           from: 'anonListSLA',       to: '_form' }
       { name: 'showForm',           from: 'anonListNoSLA',     to: '_form' }
       { name: 'showForm',           from: 'listSLA',           to: '_form' }
       { name: 'showForm',           from: 'listLoadSLA',       to: '_form' }
