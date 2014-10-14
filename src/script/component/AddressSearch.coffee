@@ -90,6 +90,7 @@ define ['flight/lib/component',
       @handleAddressSearch = (address) ->
         @attr.data.loading = false
         address.addressId = @attr.data.addressId
+        address.state = address.state?.toUpperCase() if address.state
         @trigger('addressSearchResult.vtex', [address])
 
       @handleAddressSearchError = ->
