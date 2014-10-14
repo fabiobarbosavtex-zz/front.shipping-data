@@ -141,6 +141,7 @@ define ['flight/lib/component',
       # filled by the postal code service
       @forceShippingFields = ->
         @attr.data.labelShippingFields = false
+        @attr.data.labelFields = null
         @attr.data.hasGeolocationData = false
         @attr.data.addressQuery = false
         @clearGeolocationContractedFields()
@@ -428,6 +429,14 @@ define ['flight/lib/component',
             @attr.data.address.street isnt '' and @attr.data.address.street? and
             @attr.data.address.state isnt '' and @attr.data.address.state? and
             @attr.data.address.city isnt '' and @attr.data.address.city?
+
+          @attr.data.labelFields =
+            state: @attr.data.address.state isnt '' and @attr.data.address.state?
+            city: @attr.data.address.city isnt '' and @attr.data.address.city?
+            neighborhood: @attr.data.address.neighborhood isnt '' and @attr.data.address.neighborhood?
+
+          if _.all(@attr.data.labelFields, (f) -> f is false)
+            @attr.data.labelFields = null
 
           @attr.data.disableCityAndState = @attr.data.address.state and @attr.data.address.city
 
