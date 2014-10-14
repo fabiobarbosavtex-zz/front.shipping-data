@@ -27,6 +27,8 @@ define(function () {
         "addressLine1": 'Address Line 1',
         "addressLine2": 'Address Line 2',
         "number": 'Number',
+        "exteriorNumber": 'Exterior Number',
+        "interiorNumber": 'Interior Number',
         "complement": 'Additional info (eg: apt 201)',
         "reference": 'Close to',
         "district": 'District',

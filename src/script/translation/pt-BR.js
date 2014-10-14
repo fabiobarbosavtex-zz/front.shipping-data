@@ -27,6 +27,8 @@ define(function () {
         "addressLine1": 'Linha 1 do Endereço',
         "addressLine2": 'Linha 2 do Endereço',
         "number": 'Número',
+        "exteriorNumber": 'No. Exterior',
+        "interiorNumber": 'No. Interior',
         "complement": 'Complemento e referência',
         "reference": 'Ponto de referência (ex: Próximo ao parque Itú)',
         "district": 'Distrito',

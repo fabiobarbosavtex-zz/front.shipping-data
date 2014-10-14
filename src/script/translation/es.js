@@ -27,6 +27,8 @@ define(function () {
         "addressLine1": 'Dirección Línea 1',
         "addressLine2": 'Dirección Línea 2',
         "number": 'Número',
+        "exteriorNumber": 'No. Exterior',
+        "interiorNumber": 'No. Interior',
         "complement": 'Piso o Departamento (ej: 2A)',
         "reference": 'Punto o calle acerca',
         "district": 'Distrito',
