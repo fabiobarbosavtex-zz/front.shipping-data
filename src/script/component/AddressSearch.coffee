@@ -50,9 +50,6 @@ define ['flight/lib/component',
             @select('addressSearchSelector').focus()
           else
             @attr.autocomplete = null
-            if not @isMobile()
-              @select('postalCodeQuerySelector').inputmask
-                mask: @attr.countryRules.masks.postalCode
 
             window.ParsleyValidator.addValidator('postalcode',
               (val) =>
@@ -60,7 +57,7 @@ define ['flight/lib/component',
               , 32)
 
           if not (@attr.data.loading or @attr.data.loadingGeolocation or @attr.data.showGeolocationSearch)
-            @select('postalCodeQuerySelector').focus()
+            @select('postalCodeQuerySelector').focus().val(@select('postalCodeQuerySelector').val())
 
           @attr.parsley = @select('addressFormSelector').parsley
             errorClass: 'error'
@@ -74,7 +71,7 @@ define ['flight/lib/component',
         postalCode = data.el.value
         rules = @attr.countryRules
         if rules.regexes.postalCode.test(postalCode)
-          @attr.data.postalCodeQuery = postalCode
+          @attr.data.postalCodeQuery = _.maskString(postalCode, rules.masks.postalCode)
           @attr.data.loading = true
           @render()
           @getPostalCode postalCode
@@ -91,6 +88,10 @@ define ['flight/lib/component',
         @attr.data.loading = false
         address.addressId = @attr.data.addressId
         address.state = address.state?.toUpperCase() if address.state
+        rules = @attr.countryRules
+        if rules.postalCodeByInput
+          address.postalCode = _.maskString(address.postalCode, rules.masks.postalCode)
+
         @trigger('addressSearchResult.vtex', [address])
 
       @handleAddressSearchError = ->
