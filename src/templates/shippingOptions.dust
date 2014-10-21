@@ -33,13 +33,13 @@
                     {^multipleSellers}
                     <div class="span btn-group btn-group-vertical">
                         <label class="shipping-option-item label-vertical-group input btn active" for="seller-1-sla-Econômica" htmlfor="seller-1-sla-Econômica">
-                            <input type="radio" disabled name="seller-1" id="seller-1-sla-Econômica" tabindex="330" value="Econômica">
+                            <input type="radio" disabled name="seller-1" id="seller-1-sla-Econômica" value="Econômica">
                             <span data-i18n="shipping.shippingOptions.shippingOption"></span> - <span data-i18n="global.value"></span> -
                             <span class="delivery-estimate" data-i18n="shipping.shippingOptions.shippingEstimate"></span>
                             <i class="icon-ok-circle"></i>
                         </label>
                         <label class="shipping-option-item label-vertical-group input btn" for="seller-1-sla-Econômica" htmlfor="seller-1-sla-Econômica">
-                            <input type="radio" disabled name="seller-1" id="seller-1-sla-Econômica" tabindex="330" value="Econômica">
+                            <input type="radio" disabled name="seller-1" id="seller-1-sla-Econômica" value="Econômica">
                             <span data-i18n="shipping.shippingOptions.shippingOption"></span> - <span data-i18n="global.value"></span> -
                             <span class="delivery-estimate" data-i18n="shipping.shippingOptions.shippingEstimate"></span>
                             <i class="icon-circle-blank"></i>
@@ -135,7 +135,7 @@
                 {?isScheduled}{?isSelected}
                 <div class="scheduled-sla shipping-option-{index}">
                     <p><span data-i18n="shipping.shippingOptions.deliveryDate"></span>:</p>
-                    <input class="datepicker input input-xlarge" type="text"
+                    <input class="datepicker input input-xlarge" type="text" tabindex="339"
                            data-i18n="[placeholder]shipping.shippingOptions.chooseScheduledDate" style="cursor: pointer;">
                     <p class="scheduled-sla-time">
                         {>deliveryWindows /}

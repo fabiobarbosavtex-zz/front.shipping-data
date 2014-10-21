@@ -60,10 +60,7 @@ define ['flight/lib/component',
 
           rules = @getCountryRule()
 
-          if rules.postalCodeByInput
-            @select('postalCodeSelector').inputmask
-              mask: rules.masks.postalCode
-            if data.labelShippingFields
+          if rules.postalCodeByInput and data.labelShippingFields
               @select('postalCodeSelector').addClass('success')
 
           window.ParsleyValidator.addValidator('postalcode',
@@ -391,6 +388,10 @@ define ['flight/lib/component',
         @attr.data.comeFromGeoSearch = address.addressQuery?
 
         handleLoadSuccess = =>
+          rules = @getCountryRule()
+          if rules?.postalCodeByInput and rules?.masks?.postalCode
+            @attr.data.address.postalCode = _.maskString(@attr.data.address.postalCode, rules.masks.postalCode)
+
           @clearGeolocationContractedFields()
           @updateEnables(@attr.data.address)
           @fillCitySelect()
