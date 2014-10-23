@@ -60,10 +60,7 @@ define ['flight/lib/component',
 
           rules = @getCountryRule()
 
-          if rules.postalCodeByInput
-            @select('postalCodeSelector').inputmask
-              mask: rules.masks.postalCode
-            if data.labelShippingFields
+          if rules.postalCodeByInput and data.labelShippingFields
               @select('postalCodeSelector').addClass('success')
 
           window.ParsleyValidator.addValidator('postalcode',
@@ -119,7 +116,8 @@ define ['flight/lib/component',
         # TODO implementar geocode
         # from valid to invalid
         if @attr.addressKeyMap.postalCodeIsValid and not addressKeyMap.postalCodeIsValid
-          @trigger('addressKeysInvalidated.vtex', [addressKeyMap])
+          if @getCountryRule().queryByPostalCode || @getCountryRule().queryByGeocoding
+            @trigger('addressKeysInvalidated.vtex', [addressKeyMap])
         else if addressKeyMap.postalCodeIsValid # new postal code is valid
           @trigger('addressKeysUpdated.vtex', [addressKeyMap])
 
@@ -391,6 +389,10 @@ define ['flight/lib/component',
         @attr.data.comeFromGeoSearch = address.addressQuery?
 
         handleLoadSuccess = =>
+          rules = @getCountryRule()
+          if rules?.postalCodeByInput and rules?.masks?.postalCode and @attr.data.address.postalCode and @attr.data.address.postalCode.length > 0
+            @attr.data.address.postalCode = _.maskString(@attr.data.address.postalCode, rules.masks.postalCode)
+
           @clearGeolocationContractedFields()
           @updateEnables(@attr.data.address)
           @fillCitySelect()

@@ -4,7 +4,7 @@
     <span class="delivery-windows">
         {#deliveryWindowsForDate}
         <label class="radio">
-            <input type="radio" value="{@idx}{.}{/idx}" id="delivery-window-{@idx}{.}{/idx}" name="delivery-window-{nameAttr}" data-shipping-option="{shippingOptionsIndex}"
+            <input type="radio" tabindex="34{@idx}{.}{/idx}" value="{@idx}{.}{/idx}" id="delivery-window-{@idx}{.}{/idx}" name="delivery-window-{nameAttr}" data-shipping-option="{shippingOptionsIndex}"
             {#isWindowSelected}checked="checked"{/isWindowSelected}
             data-bind="disable: checkout.disableInputs()">
             <span>{label}</span>
