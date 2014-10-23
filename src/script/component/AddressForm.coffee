@@ -116,7 +116,8 @@ define ['flight/lib/component',
         # TODO implementar geocode
         # from valid to invalid
         if @attr.addressKeyMap.postalCodeIsValid and not addressKeyMap.postalCodeIsValid
-          @trigger('addressKeysInvalidated.vtex', [addressKeyMap])
+          if @getCountryRule().queryByPostalCode || @getCountryRule().queryByGeocoding
+            @trigger('addressKeysInvalidated.vtex', [addressKeyMap])
         else if addressKeyMap.postalCodeIsValid # new postal code is valid
           @trigger('addressKeysUpdated.vtex', [addressKeyMap])
 
@@ -389,7 +390,7 @@ define ['flight/lib/component',
 
         handleLoadSuccess = =>
           rules = @getCountryRule()
-          if rules?.postalCodeByInput and rules?.masks?.postalCode
+          if rules?.postalCodeByInput and rules?.masks?.postalCode and @attr.data.address.postalCode and @attr.data.address.postalCode.length > 0
             @attr.data.address.postalCode = _.maskString(@attr.data.address.postalCode, rules.masks.postalCode)
 
           @clearGeolocationContractedFields()
