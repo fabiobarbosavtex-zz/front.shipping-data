@@ -38,6 +38,7 @@ define ['flight/lib/component',
         shippingTitleSelector: '.accordion-shipping-title'
         addressNotFilledSelector: '.address-not-filled-verification'
         shippingStepSelector: '.step'
+        shippingStepTitleSelector: '.accordion-shipping-title'
 
         shippingSummarySelector: '.shipping-summary-placeholder'
         addressFormSelector: '.address-form-placeholder'

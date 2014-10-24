@@ -108,8 +108,10 @@ define ['shipping/script/models/Address'], (Address) ->
     @onAfterEvent = ->
       if @attr.data.active
         @select('shippingStepSelector').addClass('active', 'visited')
+        @select('shippingStepTitleSelector').addClass('accordion-toggle-active')
       else
         @select('shippingStepSelector').removeClass('active')
+        @select('shippingStepTitleSelector').removeClass('accordion-toggle-active')
 
     @on_Summary = (event, from, to, orderForm) ->      
       @attr.data.active = false
