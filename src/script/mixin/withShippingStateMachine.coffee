@@ -47,13 +47,17 @@ define ['state-machine/state-machine',
       { name: 'showSearch',         from: 'addressFormSLA',    to: 'search' }
       { name: 'showSearch',         from: 'addressFormNoSLA',  to: 'search' }
       { name: 'showSearch',         from: 'addressFormLoadSLA',to: 'search' }
+      { name: 'showForm',           from: 'search',            to: '_form' }
       { name: 'showList',           from: 'search',            to: '_list' }
       { name: 'showList',           from: 'addressForm',       to: '_list' }
       { name: 'showList',           from: 'addressFormLoad',   to: '_list' }
       { name: 'showList',           from: 'addressFormLoadSLA',to: '_list' }
       { name: 'showList',           from: 'addressFormSLA',    to: '_list' }
       { name: 'showList',           from: 'addressFormNoSLA',  to: '_list' }
+      { name: 'showSummary',        from: 'search',            to: '_summary' }
+      { name: 'showSummary',        from: 'addressForm',       to: '_summary' }
       { name: 'showSummary',        from: 'addressFormSLA',    to: '_summary' }
+      { name: 'showSummary',        from: 'addressFormNoSLA',  to: '_summary' }
 
       { name: 'showSummary',        from: '_summary',          to: 'summary' }
       { name: 'showEmpty',          from: '_summary',          to: 'empty' }
@@ -134,6 +138,7 @@ define ['state-machine/state-machine',
       # Disable other components
       @select('addressListSelector').trigger('disable.vtex')
       @select('addressFormSelector').trigger('disable.vtex')
+      @select('addressSearchSelector').trigger('disable.vtex')
       @select('shippingOptionsSelector').trigger('disable.vtex')
       @select('shippingSummarySelector').trigger('disable.vtex')
 
