@@ -243,7 +243,7 @@ define [], () ->
       if shippingOption.selectedSla.availableDeliveryWindows.length > 0 and deliveryWindow
         @selectDeliveryWindow(shippingOption.selectedSla, deliveryWindow)
 
-      @trigger('deliverySelected.vtex', [@attr.data.logisticsInfo])
+      @trigger('deliverySelected.vtex', [@attr.data.logisticsInfo, {skipSendAttachment: true}])
 
     @getCheapestDeliveryWindow = (shippingOptions, date) ->
       # Pega o sla em questão
