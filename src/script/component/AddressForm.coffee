@@ -378,9 +378,18 @@ define ['flight/lib/component',
         @fillNeighborhoodSelect()
         @render()
 
+      @profileUpdated = (e, profile) ->
+        # Changed when the user makes changes to the profile, before sending the profile to the API and getting a response.
+        @attr.profileFromEvent = profile
+
       # Handle the initial view of this component
       @enable = (ev, address, hasAvailableAddresses) ->
         ev?.stopPropagation()
+        firstName = window.vtexjs.checkout.orderForm?.clientProfileData?.firstName or @attr.profileFromEvent?.firstName
+        lastName = window.vtexjs.checkout.orderForm?.clientProfileData?.lastName or @attr.profileFromEvent?.lastName
+        if firstName and (address.receiverName is '' or not address.receiverName)
+          address.receiverName = firstName + ' ' + lastName
+
         @attr.data.address = new Address(address)
         @attr.data.hasAvailableAddresses = hasAvailableAddresses
         # when the address has an address query, the address was searched with geolocation
@@ -452,6 +461,7 @@ define ['flight/lib/component',
         @on 'disable.vtex', @disable
         @on 'startLoading.vtex', @loading
         @on 'googleMapsAPILoaded.vtex', @googleMapsAPILoaded
+        @on window, 'profileUpdated', @profileUpdated
         @on 'click',
           'forceShippingFieldsSelector': @forceShippingFields
           'cancelAddressFormSelector': @cancelAddressForm
