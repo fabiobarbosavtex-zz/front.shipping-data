@@ -11,12 +11,13 @@ define ['flight/lib/component',
         'shipping/script/component/ShippingOptions',
         'shipping/script/component/ShippingSummary',
         'shipping/script/component/CountrySelect',
+        'shipping/script/component/ShippingDataStore',
         'shipping/script/mixin/withi18n',
         'shipping/script/mixin/withValidation',
         'shipping/script/mixin/withShippingStateMachine',
         'shipping/templates/shippingData',
         'link!shipping/style/style'],
-  (defineComponent, FSM, extensions, Address, AddressSearch, AddressForm, AddressList, ShippingOptions, ShippingSummary, CountrySelect, withi18n, withValidation, withShippingStateMachine, template) ->
+  (defineComponent, FSM, extensions, Address, AddressSearch, AddressForm, AddressList, ShippingOptions, ShippingSummary, CountrySelect, ShippingDataStore, withi18n, withValidation, withShippingStateMachine, template) ->
     ShippingData = ->
       @defaultAttrs
         API: null
@@ -119,12 +120,12 @@ define ['flight/lib/component',
           console.log e
 
       @disable = ->
-        if @attr.stateMachine.can('showSummary')
+        if @attr.stateMachine.can('showSummary') and @attr.stateMachine.current isnt 'summary'
           @attr.stateMachine.showSummary(@attr.orderForm)
           @attr.stateMachine.next()
-        if @isValid()
-          @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData)
-            .fail (reason) =>
+          if @isValid()
+            xhr = ShippingDataStore.sendAttachment(@attr.orderForm.shippingData)
+            xhr?.fail (reason) =>
               @trigger 'componentValidated.vtex', [[reason]]
               @done()
 
@@ -196,10 +197,9 @@ define ['flight/lib/component',
 
         @attr.stateMachine.requestSLA()
 
-        @attr.requestAddressSelected = @attr.API?.sendAttachment('shippingData', @attr.orderForm.shippingData)
-          .done (orderForm) =>
+        @attr.requestAddressSelected = ShippingDataStore.sendAttachment(@attr.orderForm.shippingData)
+        @attr.requestAddressSelected?.done (orderForm) =>
             hasDeliveries = @attr.data.hasDeliveries
-            deliveryCountries = @attr.data.deliveryCountries
 
             if @attr.stateMachine.can('loadSLA') or @attr.stateMachine.can('loadNoSLA')
               if hasDeliveries
@@ -255,10 +255,11 @@ define ['flight/lib/component',
 
           # Abort previous call
           if @attr.requestAddressKeys then @attr.requestAddressKeys.abort()
-          @attr.requestAddressKeys = @attr.API?.sendAttachment 'shippingData',
+          @attr.requestAddressKeys = ShippingDataStore.sendAttachment
                 address: address
                 clearAddressIfPostalCodeNotFound: clearAddress
-            .done( (orderForm) =>
+
+          @attr.requestAddressKeys?.done( (orderForm) =>
               hasDeliveries = @attr.data.hasDeliveries
 
               if @attr.stateMachine.can('loadSLA') or @attr.stateMachine.can('loadNoSLA')
