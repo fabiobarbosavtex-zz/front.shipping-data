@@ -426,6 +426,7 @@ define ['flight/lib/component',
             @on 'countrySelected.vtex', @countrySelected
             @on 'addressFormSelector', 'componentValidated.vtex', @addressFormValidated
             @on 'addressFormSubmit.vtex', @tryDone
+            @on window, 'profileUpdated', @profileUpdated
             @on 'click',
               'goToPaymentButtonSelector': @tryDone
               'editShippingDataSelector': @enable
