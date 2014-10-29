@@ -5,6 +5,8 @@ require = vtex.curl || window.require
 class ShippingDataStore
   constructor: ->
     $(window).on 'orderFormUpdated.vtex', @orderFormUpdated
+    if window.vtexjs.checkout.orderForm?
+      @orderFormUpdated(null, window.vtexjs.checkout.orderForm)
 
   orderFormUpdated: (ev, orderForm) =>
     @orderForm = JSON.parse JSON.stringify orderForm # RUDE cloning

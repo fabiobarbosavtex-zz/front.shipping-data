@@ -120,14 +120,14 @@ define ['flight/lib/component',
           console.log e
 
       @disable = ->
-        if @attr.stateMachine.can('showSummary')
+        if @attr.stateMachine.can('showSummary') and @attr.stateMachine.current isnt 'summary'
           @attr.stateMachine.showSummary(@attr.orderForm)
           @attr.stateMachine.next()
-        if @isValid()
-          xhr = ShippingDataStore.sendAttachment(@attr.orderForm.shippingData)
-          xhr?.fail (reason) =>
-            @trigger 'componentValidated.vtex', [[reason]]
-            @done()
+          if @isValid()
+            xhr = ShippingDataStore.sendAttachment(@attr.orderForm.shippingData)
+            xhr?.fail (reason) =>
+              @trigger 'componentValidated.vtex', [[reason]]
+              @done()
 
       @profileUpdated = (e, profile) ->
         # Changed when the user makes changes to the profile, before sending the profile to the API and getting a response.
