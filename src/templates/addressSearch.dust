@@ -24,7 +24,7 @@
             <p class="ship-postal-code required input text mask">
               <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
 
-              <input type="text" autocomplete="off" id="ship-postal-code" tabindex="221"
+              <input type="text" autocomplete="off" id="ship-postal-code"
               class="ship-postal-code postal-code postal-code-{country} input-small {?loading}loading-postal-code{:else}postal-code-query{/loading}"
               value="{postalCodeQuery}" name="postalCodeQuery"
               {?loading}disabled="disabled"{/loading} {?loadingGeolocation}disabled="disabled"{/loadingGeolocation}
@@ -59,7 +59,7 @@
             {! Caso possa usar apenas geocoding, esse é o estado de loading do geocoding !}
               <p class="ship-search input text mask">
                 <label for="ship-address-search"><span data-i18n="shipping.addressSearch.address"></span></label>
-                <input type="text" autocomplete="off" autocorrect="off" id="ship-address-search" tabindex="221" class="ship-address-search input-xlarge" value="{addressQuery}" name="addressSearch" data-i18n="[placeholder]shipping.addressSearch.addressExample{country}" data-parsley-errors-container=".ship-address-search-errors" disabled>
+                <input type="text" autocomplete="off" autocorrect="off" id="ship-address-search" class="ship-address-search input-xlarge" value="{addressQuery}" name="addressSearch" data-i18n="[placeholder]shipping.addressSearch.addressExample{country}" data-parsley-errors-container=".ship-address-search-errors" disabled>
               </p>
               <div class="ship-address-search-errors"></div>
             {/postalCodeByInput}
@@ -67,7 +67,7 @@
           {! Geocoding aberto !}
           <p class="ship-search input text mask">
             <label for="ship-address-search"><span data-i18n="shipping.addressSearch.address"></span></label>
-            <input type="text" autocomplete="off" autocorrect="off" id="ship-address-search" tabindex="221" class="ship-address-search input-block-level" value="{addressQuery}" name="addressSearch" data-i18n="[placeholder]shipping.addressSearch.addressExample{country}" data-parsley-errors-container=".ship-address-search-errors">
+            <input type="text" autocomplete="off" autocorrect="off" id="ship-address-search" class="ship-address-search input-block-level" value="{addressQuery}" name="addressSearch" data-i18n="[placeholder]shipping.addressSearch.addressExample{country}" data-parsley-errors-container=".ship-address-search-errors">
           </p>
 
           <!-- ADRESS SUGGESTION FROM GEOCODE SENSOR -->

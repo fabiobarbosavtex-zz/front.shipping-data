@@ -25,7 +25,7 @@
                 <div class="sla-items-list">
                     {#multipleSellers}
                     <div class="span btn-group btn-group-vertical">
-                        <select class="span12" tabindex="329">
+                        <select class="span12">
                             <option data-i18n="global.loading"></option>
                         </select>
                     </div>
@@ -93,7 +93,7 @@
 
                 {#multipleSellers}
                 <div class="span btn-group btn-group-vertical">
-                <select id="change-sla-items-list" class="span12" tabindex="329" data-shipping-option="{index}">
+                <select id="change-sla-items-list" class="span12" data-shipping-option="{index}">
                     {#slas}
                     <option value="{id}" {#isSelected}selected="selected"{/isSelected}>{fullEstimateLabel}</option>
                     {/slas}
@@ -103,7 +103,7 @@
                 <div class="span btn-group btn-group-vertical">
                     {#slas}
                     <label class="shipping-option-item label-vertical-group input btn {#isSelected}active{/isSelected}" for="{idAttr}">
-                        <input type="radio" tabindex="33{@idx}{.}{/idx}" id="{idAttr}" name="{nameAttr}" value="{id}" {#isSelected}checked="checked"{/isSelected} data-shipping-option="{index}">
+                        <input type="radio" id="{idAttr}" name="{nameAttr}" value="{id}" {#isSelected}checked="checked"{/isSelected} data-shipping-option="{index}">
                         {^isScheduled}
                         <span class="shipping-option-item-text-wrapper" title="{deliveryEstimateLabel}">
                             <span class="shipping-option-item-name">{name}</span>
@@ -135,7 +135,7 @@
                 {?isScheduled}{?isSelected}
                 <div class="scheduled-sla shipping-option-{index}">
                     <p><span data-i18n="shipping.shippingOptions.deliveryDate"></span>:</p>
-                    <input class="datepicker input input-xlarge" type="text" tabindex="339"
+                    <input class="datepicker input input-xlarge" type="text"
                            data-i18n="[placeholder]shipping.shippingOptions.chooseScheduledDate" style="cursor: pointer;">
                     <p class="scheduled-sla-time">
                         {>deliveryWindows /}

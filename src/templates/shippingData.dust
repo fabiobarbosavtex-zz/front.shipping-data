@@ -3,7 +3,7 @@
     <div class="accordion-heading">
     <span class="accordion-toggle collapsed accordion-shipping-title">
         <i class="icon-home"></i> <span data-i18n="shipping.title"></span>
-        <a href="#/shipping" id="edit-shipping-data" class="link-box-edit btn btn-small hide" data-i18n="[title]global.edit">
+        <a href="#/shipping" id="edit-shipping-data" class="link-box-edit btn btn-small hide" tabindex="-1" data-i18n="[title]global.edit">
             <i class="icon-edit"></i>
         </a>
     </span>
@@ -29,8 +29,7 @@
 
             <!-- NEXT STEP BUTTON -->
             <p class="submit btn-submit-wrapper btn-go-to-payment-wrapper">
-                <button type="submit" class="submit btn btn-large btn-success btn-go-to-payment" data-i18n="shipping.goToPayment"
-                        tabindex="350"></button>
+                <button type="submit" class="submit btn btn-large btn-success btn-go-to-payment" data-i18n="shipping.goToPayment"></button>
             </p>
         </div>
 
