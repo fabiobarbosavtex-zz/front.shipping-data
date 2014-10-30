@@ -39,6 +39,7 @@ define ['flight/lib/component',
 
       @render = ->
         dust.render template, @attr.data, (err, output) =>
+          if not @attr.active then return
           output = $(output).i18n()
           @$node.html(output)
 
@@ -165,6 +166,7 @@ define ['flight/lib/component',
       # Handle the initial view of this component
       @enable = (ev, countryRule, address, hasAvailableAddresses) ->
         ev?.stopPropagation()
+        @attr.active = true
         @attr.countryRules = countryRule
         @attr.data.dontKnowPostalCodeURL = countryRule.dontKnowPostalCodeURL
         @attr.data.geocodingAvailable = countryRule.geocodingAvailable
@@ -184,6 +186,7 @@ define ['flight/lib/component',
 
       @disable = (ev) ->
         ev?.stopPropagation()
+        @attr.active = false
         @$node.html('')
 
       @getSuggestedAddress = (lat, lng) ->

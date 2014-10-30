@@ -121,6 +121,7 @@ define ['state-machine/state-machine',
       # Disable other components
       @select('addressListSelector').trigger('disable.vtex')
       @select('addressFormSelector').trigger('disable.vtex')
+      @select('addressSearchSelector').trigger('disable.vtex')
       @select('shippingOptionsSelector').trigger('disable.vtex')
       @select('addressNotFilledSelector').hide()
       @select('goToPaymentButtonWrapperSelector').hide()

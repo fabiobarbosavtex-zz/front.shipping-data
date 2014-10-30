@@ -43,6 +43,7 @@ define ['flight/lib/component',
       @render = ->
         data = @attr.data
         dust.render @attr.templates.form.name, data, (err, output) =>
+          if not @attr.active then return
           output = $(output).i18n()
           @$node.html(output)
           if not window.vtex.maps.isGoogleMapsAPILoaded and window.vtex.maps.isGoogleMapsAPILoading and @attr.data.hasGeolocationData
@@ -382,6 +383,7 @@ define ['flight/lib/component',
       # Handle the initial view of this component
       @enable = (ev, address, hasAvailableAddresses) ->
         ev?.stopPropagation()
+        @attr.active = true
         firstName = window.vtexjs.checkout.orderForm?.clientProfileData?.firstName or @attr.profileFromEvent?.firstName
         lastName = window.vtexjs.checkout.orderForm?.clientProfileData?.lastName or @attr.profileFromEvent?.lastName
         if firstName and (address.receiverName is '' or not address.receiverName)
@@ -417,6 +419,7 @@ define ['flight/lib/component',
 
       @disable = (ev) ->
         ev?.stopPropagation()
+        @attr.active = false
         @$node.html('')
 
       @stopSubmit = (ev) ->
