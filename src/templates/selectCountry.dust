@@ -7,7 +7,7 @@
 
 	<p class="ship-country required input text">
 		<label for="ship-country"><span data-i18n="shipping.countrySelect.chooseDeliveryCountry"></span></label>
-		<select id="ship-country" tabindex="1" class="input-medium required" name="country">
+		<select id="ship-country" class="input-medium required" name="country">
 			{^showAddressForm}
 				<option value=""></option>
 			{/showAddressForm}
