@@ -51,6 +51,12 @@ define ['flight/lib/component',
               output = $(output).i18n()
               @$node.html(output)
 
+              @$node.find(".shipping-option-item input")
+                .focus(-> $(this).parent().addClass("focus"))
+                .blur(-> $(".shipping-option-item").removeClass("focus"))
+
+              @$node.find(".shipping-option-item input[checked='checked']").focus()
+
               # Caso tenha entrega agendada
               if @attr.isScheduledDeliveryAvailable
                 @attr.locale = i18n.lng()
