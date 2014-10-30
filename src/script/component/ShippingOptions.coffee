@@ -32,7 +32,7 @@ define ['flight/lib/component',
         changeSlaSelector: '#change-sla-items-list'
 
       # Render this component according to the data object
-      @render = (options) ->
+      @render = ->
         options = @attr.renderOptions
         data = @attr.data
 
@@ -55,7 +55,9 @@ define ['flight/lib/component',
                 .focus(-> $(this).parent().addClass("focus"))
                 .blur(-> $(".shipping-option-item").removeClass("focus"))
 
-              @$node.find(".shipping-option-item input[checked='checked']").focus()
+              if options?.focusOnSelectedDelivery
+                @$node.find(".shipping-option-item input[checked='checked']").focus()
+                @attr.renderOptions = null
 
               # Caso tenha entrega agendada
               if @attr.isScheduledDeliveryAvailable
@@ -141,6 +143,8 @@ define ['flight/lib/component',
         # Atualizamos o modelo
         @attr.data.shippingOptions = @getShippingOptionsData(@attr.data.logisticsInfo, @attr.data.items, @attr.data.sellers)
         @updateShippingOptionsLabels(@attr.data.shippingOptions).then =>
+          @attr.renderOptions =
+            focusOnSelectedDelivery: true
           @render()
 
       @enable = (ev, logisticsInfo, items, sellers) ->
