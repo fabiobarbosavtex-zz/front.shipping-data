@@ -1,6 +1,3 @@
-define = vtex.define || window.define
-require = vtex.curl || window.require
-
 define ['flight/lib/component',
         'shipping/script/setup/extensions',
         'shipping/script/mixin/withi18n',
@@ -41,7 +38,7 @@ define ['flight/lib/component',
         countriesUsedRequire = _.map @attr.data.deliveryCountries, (c) ->
           return 'shipping/script/rule/Country'+c
 
-        require countriesUsedRequire, =>
+        vtex.curl countriesUsedRequire, =>
           for country, i in arguments
             prop = {}
             prop[@attr.data.deliveryCountries[i]] = new arguments[i]()

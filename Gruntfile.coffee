@@ -11,12 +11,22 @@ module.exports = (grunt) ->
     replaceGlob: "build/**/front-shipping-data.js"
     open: 'http://basedevmkp.vtexlocal.com.br/front.shipping-data/app/'
 
+  config.coffee["app"] =
+    files: [
+      expand: true
+      cwd: 'src/app'
+      src: ['**/*.coffee']
+      dest: "build-raw/<%= relativePath %>/app/"
+      rename: (path, filename) ->
+        path + filename.replace("coffee", "js")
+    ]
+
   config.dust =
     files:
       expand: true
       cwd: 'src/templates/'
       src: ['**/*.dust']
-      dest: 'build/<%= relativePath %>/templates/'
+      dest: 'build-raw/<%= relativePath %>/templates/'
       ext: '.js'
     options:
       relative: true
@@ -26,28 +36,46 @@ module.exports = (grunt) ->
         packageName: null
         deps: false
 
-  config.copy.templates =
-    expand: true
-    cwd: 'build/<%= relativePath %>/'
-    src: ['templates/**/*.*']
-    dest: 'build/<%= relativePath %>/'
-    options:
-      process: (content) ->
-        "(function(){var define=window.vtex.define||window.define;#{content}})()"
+  config.requirejs =
+    compile:
+      options:
+        namespace: 'vtex'
+        appDir: "build-raw/<%= relativePath %>/"
+        name: 'shipping/script/ShippingData'
+        optimize: 'uglify2'
+        generateSourceMaps: true
+        preserveLicenseComments: false
+        mainConfigFile: 'build-raw/<%= relativePath %>/app/main.js'
+        exclude: [
+          "flight/lib/component",
+          "state-machine/state-machine",
+          "link!shipping/style/style"
+        ]
+        dir: "build/<%= relativePath %>/"
+        paths:
+          'shipping': '../',
+          'state-machine': '//io.vtex.com.br/front-libs/state-machine/2.3.2-vtex/',
+          'flight': '//io.vtex.com.br/front-libs/flight/1.1.4-vtex/',
+          'link': '../script/plugin/link'
 
   config.watch.dust =
     files: ['src/templates/**/*.dust']
-    tasks: ['dust', 'copy:templates']
+    tasks: ['dust']
 
   # Add app files to coffe compilation and watch
+  config.clean.main.push 'build-raw'
   config.watch.coffee.files.push 'src/app/**/*.coffee'
+  config.watch.coffee.tasks.push 'requirejs'
   config.watch.main.files.push 'src/app/**/*.html'
-  config.coffee.main.files[0].cwd = 'src/'
-  config.coffee.main.files[0].dest = 'build/<%= relativePath %>/'
+  config.less.main.files[0].dest = 'build-raw/<%= relativePath %>/style/'
+  config.coffee.main.files[0].cwd = 'src/script/'
+  config.coffee.main.files[0].dest = 'build-raw/<%= relativePath %>/script/'
+  config.copy.main.files[0].dest = 'build-raw/<%= relativePath %>/'
+  config.copy.pkg.files[0].dest = 'build-raw/<%= relativePath %>/package.json'
 
   tasks =
   # Building block tasks
-    build: ['clean', 'copy:main', 'copy:pkg', 'coffee', 'less', 'dust', 'copy:templates']
+    build: ['clean', 'copy:main', 'copy:pkg', 'coffee:main', 'coffee:app', 'less', 'dust', 'requirejs']
   # Deploy tasks
     dist: ['build', 'copy:deploy'] # Dist - minifies files
     test: []
@@ -55,7 +83,7 @@ module.exports = (grunt) ->
   # Development tasks
     dev: ['nolr', 'build', 'watch']
     default: ['build', 'connect', 'watch']
-    devmin: ['build', 'min', 'connect:http:keepalive'] # Minifies files and serve
+    devmin: ['build'] # Minifies files and serve
 
   # Project configuration.
   grunt.initConfig config
