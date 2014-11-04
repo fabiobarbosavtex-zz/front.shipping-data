@@ -1,6 +1,3 @@
-define = vtex.define || window.define
-require = vtex.curl || window.require
-
 define ['flight/lib/component',
         'shipping/script/setup/extensions',
         'shipping/script/mixin/withi18n',
@@ -22,8 +19,8 @@ define ['flight/lib/component',
         isScheduledDeliveryAvailable: false
         pickadateFiles: ['shipping/script/libs/pickadate/picker',
                          'shipping/script/libs/pickadate/picker-date',
-                         'link!shipping/script/libs/pickadate/classic',
-                         'link!shipping/script/libs/pickadate/classic-date']
+                         'link!shipping/script/libs/pickadate/classic.css',
+                         'link!shipping/script/libs/pickadate/classic-date.css']
 
         shippingOptionSelector: '.shipping-option-item'
         pickadateSelector: '.datepicker'
@@ -37,7 +34,7 @@ define ['flight/lib/component',
         data = @attr.data
 
         requiredFiles = if @attr.isScheduledDeliveryAvailable then @attr.pickadateFiles else []
-        require requiredFiles, =>
+        vtex.curl requiredFiles, =>
           if options and options.template is 'deliveryWindows'
             # Pega o sla em questão
             data = @attr.data.shippingOptions[options.index].selectedSla
