@@ -11,7 +11,7 @@ define [], () ->
           itemIndex: logisticItem.itemIndex
           itemId: logisticItem.itemId
           selectedSla: logisticItem.selectedSla
-          shipsTo: logisticItem.shipsTo.slice(0)
+          shipsTo: logisticItem.shipsTo?.slice(0)
 
         newLogisticItem.slas = _.map logisticItem.slas, (sla) ->
           newSla =
