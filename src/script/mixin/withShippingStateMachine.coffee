@@ -137,6 +137,7 @@ define ['shipping/script/models/Address'], (Address) ->
       @select('addressListSelector').trigger('disable.vtex')
       @select('addressFormSelector').trigger('disable.vtex')
       @select('shippingOptionsSelector').trigger('disable.vtex')
+      @select('shippingSummarySelector').trigger('disable.vtex')
 
       @select('addressNotFilledSelector').show()
 
