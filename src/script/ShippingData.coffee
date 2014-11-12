@@ -422,11 +422,11 @@ define ['flight/lib/component',
             @on 'cancelAddressEdit.vtex', @cancelAddressEdit
             @on 'editAddress.vtex', @editAddress
             @on 'newAddress.vtex', @newAddress
-            @on 'deliverySelected.vtex', @deliverySelected
             @on 'countrySelected.vtex', @countrySelected
             @on 'addressFormSelector', 'componentValidated.vtex', @addressFormValidated
             @on 'addressFormSubmit.vtex', @tryDone
             @on window, 'profileUpdated', @profileUpdated
+            @on window, 'deliverySelected.vtex', @deliverySelected
             @on 'click',
               'goToPaymentButtonSelector': @tryDone
               'editShippingDataSelector': @enable
