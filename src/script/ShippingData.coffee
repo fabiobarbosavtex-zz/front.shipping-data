@@ -113,6 +113,8 @@ define ['flight/lib/component',
           else if @attr.stateMachine.can('showList')
             @attr.stateMachine.showList(orderForm)
             @attr.stateMachine.next()
+
+          $(window).trigger('shippingDataVisited.vtex', true)
         catch e
           console.log e
 
