@@ -55,7 +55,8 @@ define ['flight/lib/component',
       ev?.stopPropagation()
       @attr.data.logisticsInfo = logisticsInfo
       @attr.data.shippingOptions = @getShippingOptionsData(logisticsInfo, items, sellers)
-      @render() if @attr.data.active
+      @updateShippingOptionsLabels(@attr.data.shippingOptions).then =>
+        @render() if @attr.data.active
 
     @showMaskedInfoMessage = (ev) ->
       ev?.preventDefault()
