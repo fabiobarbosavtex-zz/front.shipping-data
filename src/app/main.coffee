@@ -1,6 +1,8 @@
 window.console or= log: ->
 
-requirejs.config({
+vtex.require = vtex.curl || require
+
+require.config({
   paths: {
     'shipping': '../',
     'state-machine': '//io.vtex.com.br/front-libs/state-machine/2.3.2-vtex/',
@@ -9,11 +11,11 @@ requirejs.config({
   }
 })
 
-require ["shipping/script/ShippingData"], (ShippingData, CheckoutMock) ->
+require ["shipping/script/ShippingData"], (ShippingData) ->
     # Flags
     window.shippingUsingGeolocation = true
     mockShippingData = true
-    _API = (if mockShippingData then new CheckoutMock() else window.vtexjs.checkout)
+    _API = window.vtexjs.checkout
     console.log _API
     console.log ShippingData
     window.vtex.i18n.init()
