@@ -37,26 +37,26 @@ module.exports = (grunt) ->
         deps: false
 
   config.requirejs =
-    compile:
-      options:
-        namespace: 'vtex'
-        appDir: "build-raw/<%= relativePath %>/"
-        name: 'shipping/script/ShippingData'
-        optimize: 'uglify2'
-        generateSourceMaps: true
-        preserveLicenseComments: false
-        mainConfigFile: 'build-raw/<%= relativePath %>/app/main.js'
-        exclude: [
-          "flight/lib/component",
-          "state-machine/state-machine",
-          "link!shipping/style/style"
-        ]
-        dir: "build/<%= relativePath %>/"
-        paths:
-          'shipping': '../',
-          'state-machine': '//io.vtex.com.br/front-libs/state-machine/2.3.2-vtex/',
-          'flight': '//io.vtex.com.br/front-libs/flight/1.1.4-vtex/',
-          'link': '../script/plugin/link'
+    options:
+      namespace: 'vtex'
+      appDir: "build-raw/<%= relativePath %>/"
+      name: 'shipping/script/ShippingData'
+      optimize: 'uglify2'
+      generateSourceMaps: true
+      preserveLicenseComments: false
+      mainConfigFile: 'build-raw/<%= relativePath %>/app/main.js'
+      exclude: [
+        "flight/lib/component",
+        "state-machine/state-machine",
+        "link!shipping/style/style"
+      ]
+      dir: "build/<%= relativePath %>/"
+    dev:
+      uglify2:
+        mangle: false
+    dist:
+      uglify2:
+        mangle: true
 
   config.watch.dust =
     files: ['src/templates/**/*.dust']
@@ -65,7 +65,7 @@ module.exports = (grunt) ->
   # Add app files to coffe compilation and watch
   config.clean.main.push 'build-raw'
   config.watch.coffee.files.push 'src/app/**/*.coffee'
-  config.watch.coffee.tasks.push 'requirejs'
+  config.watch.coffee.tasks.push 'requirejs:dev'
   config.watch.main.files.push 'src/app/**/*.html'
   config.less.main.files[0].dest = 'build-raw/<%= relativePath %>/style/'
   config.coffee.main.files[0].cwd = 'src/script/'
@@ -75,14 +75,14 @@ module.exports = (grunt) ->
 
   tasks =
   # Building block tasks
-    build: ['clean', 'copy:main', 'copy:pkg', 'coffee:main', 'coffee:app', 'less', 'dust', 'requirejs']
+    build: ['clean', 'copy:main', 'copy:pkg', 'coffee:main', 'coffee:app', 'less', 'dust']
   # Deploy tasks
-    dist: ['build', 'copy:deploy'] # Dist - minifies files
+    dist: ['build', 'requirejs:dist', 'copy:deploy'] # Dist - minifies files
     test: []
     vtex_deploy: ['shell:cp', 'shell:cp_br']
   # Development tasks
-    dev: ['nolr', 'build', 'watch']
-    default: ['build', 'connect', 'watch']
+    dev: ['nolr', 'build', 'requirejs:dist', 'watch']
+    default: ['build', 'requirejs:dev', 'connect', 'watch']
     devmin: ['build'] # Minifies files and serve
 
   # Project configuration.
