@@ -1,5 +1,4 @@
 define ['flight/lib/component',
-        'state-machine/state-machine',
         'shipping/script/setup/extensions',
         'shipping/script/models/Address',
         'shipping/script/component/AddressSearch',
@@ -14,7 +13,7 @@ define ['flight/lib/component',
         'shipping/script/mixin/withShippingStateMachine',
         'shipping/templates/shippingData',
         'link!shipping/style/style.css'],
-  (defineComponent, FSM, extensions, Address, AddressSearch, AddressForm, AddressList, ShippingOptions, ShippingSummary, CountrySelect, ShippingDataStore, withi18n, withValidation, withShippingStateMachine, template) ->
+  (defineComponent, extensions, Address, AddressSearch, AddressForm, AddressList, ShippingOptions, ShippingSummary, CountrySelect, ShippingDataStore, withi18n, withValidation, withShippingStateMachine, template) ->
     ShippingData = ->
       @defaultAttrs
         API: null

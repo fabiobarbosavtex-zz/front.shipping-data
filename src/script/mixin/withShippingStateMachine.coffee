@@ -1,4 +1,5 @@
-define ['shipping/script/models/Address'], (Address) ->
+define ['state-machine/state-machine',
+        'shipping/script/models/Address'], (SM, Address) ->
   ->
     stateMachineEvents = [
       { name: 'showList',           from: 'none',              to: '_list' }
@@ -65,7 +66,7 @@ define ['shipping/script/models/Address'], (Address) ->
     ]
 
     @createStateMachine = ->
-      StateMachine.create
+      return StateMachine.create
         events: stateMachineEvents
         callbacks:
           on_list:                   @on_List.bind(this)
