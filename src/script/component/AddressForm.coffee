@@ -1,6 +1,3 @@
-define = vtex.define || window.define
-require = vtex.curl || window.require
-
 define ['flight/lib/component',
         'shipping/script/setup/extensions',
         'shipping/script/models/Address',
@@ -206,7 +203,7 @@ define ['flight/lib/component',
         deps = [@attr.templates.form.template,
                 'shipping/script/rule/Country'+country]
 
-        return require deps, (formTemplate, countryRule) =>
+        return vtex.curl deps, (formTemplate, countryRule) =>
           @attr.data.countryRules[country] = new countryRule()
           @attr.data.states = @attr.data.countryRules[country].states
           @attr.data.regexes = @attr.data.countryRules[country].regexes

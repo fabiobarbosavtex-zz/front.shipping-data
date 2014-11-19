@@ -1,6 +1,3 @@
-define = vtex.define || window.define
-require = vtex.curl || window.require
-
 # Encapsulates all shipping data for components
 class ShippingDataStore
   constructor: ->

@@ -1,8 +1,4 @@
-define = vtex.define || window.define
-require = vtex.curl || window.require
-
 define ['flight/lib/component',
-        'state-machine/state-machine',
         'shipping/script/setup/extensions',
         'shipping/script/models/Address',
         'shipping/script/component/AddressSearch',
@@ -16,8 +12,8 @@ define ['flight/lib/component',
         'shipping/script/mixin/withValidation',
         'shipping/script/mixin/withShippingStateMachine',
         'shipping/templates/shippingData',
-        'link!shipping/style/style'],
-  (defineComponent, FSM, extensions, Address, AddressSearch, AddressForm, AddressList, ShippingOptions, ShippingSummary, CountrySelect, ShippingDataStore, withi18n, withValidation, withShippingStateMachine, template) ->
+        'link!shipping/style/style.css'],
+  (defineComponent, extensions, Address, AddressSearch, AddressForm, AddressList, ShippingOptions, ShippingSummary, CountrySelect, ShippingDataStore, withi18n, withValidation, withShippingStateMachine, template) ->
     ShippingData = ->
       @defaultAttrs
         API: null
@@ -334,7 +330,7 @@ define ['flight/lib/component',
           'shipping/templates/shippingOptions',
           'shipping/templates/deliveryWindows'
         ]
-        require deps, (countryRule) =>
+        vtex.curl deps, (countryRule) =>
           countryRules = @attr.data.countryRules
           countryRules[country] = new countryRule()
           @attr.data.states = countryRules[country].states

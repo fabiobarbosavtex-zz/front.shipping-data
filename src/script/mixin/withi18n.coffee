@@ -1,6 +1,3 @@
-define = vtex.define || window.define
-require = vtex.curl || window.require
-
 define [], () ->
   ->
     localePath = null
@@ -40,7 +37,7 @@ define [], () ->
       localePath = path
 
     @requireLocale = ->
-      require [localePath + @attr.locale], (translation) =>
+      vtex.curl [localePath + @attr.locale], (translation) =>
         @extendTranslations(translation)
 
     @after 'initialize', ->
