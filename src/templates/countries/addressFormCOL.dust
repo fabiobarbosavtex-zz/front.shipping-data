@@ -56,7 +56,7 @@
       </p>
 
       <p class="ship-neighborhood input text">
-        <label for="ship-neighborhood"><span data-i18n="shipping.addressForm.district"></span></label>
+        <label for="ship-neighborhood"><span data-i18n="shipping.addressForm.neighborhood"></span></label>
         <input type="text"  id="ship-neighborhood" class="input-xlarge" value="{neighborhood}" name="neighborhood" data-i18n="[placeholder]global.notRequired" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
       </p>
 
