@@ -280,7 +280,6 @@ define ['flight/lib/component',
 
       @googleMapsAPILoaded = ->
         @attr.data.loadingGeolocation = false
-        @attr.data.showGeolocationSearch = true
         @setAutocompleteBounds()
 
       # Bind events
