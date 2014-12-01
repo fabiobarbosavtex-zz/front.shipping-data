@@ -333,7 +333,7 @@ define ['flight/lib/component',
           'shipping/templates/shippingOptions',
           'shipping/templates/deliveryWindows'
         ]
-        require deps, (countryRule) =>
+        vtex.curl deps, (countryRule) =>
           countryRules = @attr.data.countryRules
           countryRules[country] = new countryRule()
           @attr.data.states = countryRules[country].states
