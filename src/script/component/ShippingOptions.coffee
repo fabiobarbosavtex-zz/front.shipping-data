@@ -24,6 +24,8 @@ define ['flight/lib/component',
 
         shippingOptionSelector: '.shipping-option-item'
         pickadateSelector: '.datepicker'
+        pickadateValueSelector: '.scheduled-sla-value'
+        pickadateValueContainer: '.scheduled-sla-value-container'
         deliveryWindowsTemplateSelector: '.scheduled-sla-time'
         deliveryWindowSelector: '.delivery-windows input[type=radio]'
         changeSlaSelector: '#change-sla-items-list'
@@ -69,12 +71,14 @@ define ['flight/lib/component',
                       # Instancia o picker apenas com as datas possíveis de entrega
                       @getPickadateSelector(so.index).pickadate
                         disable: [true].concat(so.selectedSla.deliveryDates)
+                        container: '.shipping-option-'+so.index + ' ' + @attr.pickadateValueContainer
                       # Pega a instancia do picker
                       picker = @getPickadateSelector(so.index).pickadate('picker')
                       # Seleciona a data selecionada
                       if so.selectedSla.deliveryWindow.startDateUtc
                         picker.set 'select',
                           new Date(so.selectedSla.deliveryWindow.startDateUtc)
+                        @getPickadateValueSelector(so.index)?.text(picker.get('value'))
                       else
                         picker.clear()
 
@@ -89,19 +93,33 @@ define ['flight/lib/component',
       @getPickadateSelector = (shippingOptionIndex) ->
         $('.shipping-option-'+shippingOptionIndex + ' ' + @attr.pickadateSelector)
 
+      @getPickadateValueSelector = (shippingOptionIndex) ->
+        $('.shipping-option-'+shippingOptionIndex + ' ' + @attr.pickadateValueSelector)
+
       @scheduleDateSelected = (ev, index) ->
         # Pega a data seleciona no pickadate
-        date = @getPickadateSelector(index).pickadate('get', 'select')?.obj
+        picker = @getPickadateSelector(index)
+        date = picker.pickadate('get', 'select')?.obj
 
         # Por default, pegamos a primeira delivery window para esta data
         shippingOptions = @attr.data.shippingOptions[index]
         @updateLogisticsInfoModel(shippingOptions, shippingOptions.selectedSla.id, @getCheapestDeliveryWindow(shippingOptions, new Date(date)))
+
+        @getPickadateValueSelector(index).text(picker.pickadate('get', 'value'))
 
         # Renderizamos as novas delivery windows para a data selecionada
         @attr.renderOptions =
           template: 'deliveryWindows'
           index: index
         @render()
+
+      @openPickadateHandler = (ev, data) ->
+        ev.stopPropagation()
+        shippingOptionIndex = $(data.el).data('shipping-option')
+        @openPickadate(shippingOptionIndex)
+
+      @openPickadate = (shippingOptionIndex) ->
+        picker = @getPickadateSelector(shippingOptionIndex).pickadate('open')
 
       @deliveryWindowSelected = (ev, data) ->
         # Pega o indice da delivery window
@@ -176,6 +194,7 @@ define ['flight/lib/component',
         @on 'click',
           'shippingOptionSelector': @selectShippingOptionHandler
           'deliveryWindowSelector': @deliveryWindowSelected
+          'pickadateValueContainer': @openPickadateHandler
         @on 'change',
           'changeSlaSelector': @selectShippingOptionMultipleSellersHandler
 
