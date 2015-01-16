@@ -134,8 +134,12 @@
                 {#slas}
                 {?isScheduled}{?isSelected}
                 <div class="scheduled-sla shipping-option-{index}">
-                    <p><span data-i18n="shipping.shippingOptions.deliveryDate"></span>:</p>
-                    <input class="datepicker input input-xlarge" type="text"
+                    <p class="scheduled-sla-label"><span data-i18n="shipping.shippingOptions.deliveryDate"></span>:</p>
+                    <div class="scheduled-sla-value-container" data-shipping-option="{index}">
+                        <button class="scheduled-sla-edit btn btn-link icon-edit" data-i18n="[title]global.edit"></button>
+                        <span class="scheduled-sla-value"></span>
+                    </div>
+                    <input class="datepicker input input-xlarge" style="display: none;" type="text"
                            data-i18n="[placeholder]shipping.shippingOptions.chooseScheduledDate" style="cursor: pointer;">
                     <p class="scheduled-sla-time">
                         {>deliveryWindows /}
