@@ -30,6 +30,8 @@ define ['flight/lib/component',
       @attr.data.canEditData = canEditData
       @attr.data.postalCodeByInput = rules?.postalCodeByInput
       @attr.data.address = shippingData.address
+      if rules?.masks?.postalCode? and @attr.data.address?.postalCode?
+        @attr.data.address.postalCode = _.maskString(@attr.data.address.postalCode, rules.masks.postalCode)
       @attr.data.isGift = @attr.data.address?.addressType is "giftRegistry"
       @attr.data.giftRegistryData = giftRegistryData
       @attr.data.logisticsInfo = shippingData.logisticsInfo
