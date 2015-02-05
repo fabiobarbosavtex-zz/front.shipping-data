@@ -73,7 +73,7 @@ define ['flight/lib/component',
         country = @attr.data.deliveryCountries[0] ? shippingData.address?.country
 
         @countrySelected(null, country).then =>
-          if @attr.stateMachine.current is 'none' or @attr.stateMachine.current is 'empty' or @attr.data.userIsNowLoggedIn
+          if @attr.stateMachine.current in ['none', 'empty', 'summary'] or @attr.data.userIsNowLoggedIn
             if @attr.data.userIsNowLoggedIn
               @attr.data.userIsNowLoggedIn = false
 
