@@ -98,7 +98,9 @@ define ['flight/lib/component',
       @startGoogleAddressSearch = ->
         options =
           types: ['address']
-          componentRestrictions:
+
+        if @attr.countryRules.abbr
+          options['componentRestrictions'] =
             country: @attr.countryRules.abbr
 
         if @attr.geolocation
@@ -127,8 +129,9 @@ define ['flight/lib/component',
 
         _.each googleDataMap, (rule) =>
           if rule.required and not address[rule.value] or
-            (rule.value is "postalCode" and not @attr.countryRules.regexes[rule.value].test(address[rule.value]))
-              @attr.data.requiredGoogleFieldsNotFound.push(rule.value)
+              (rule.value is "postalCode" and @attr.countryRules.regexes?[rule.value]? and
+              (not @attr.countryRules.regexes[rule.value].test(address[rule.value])))
+                @attr.data.requiredGoogleFieldsNotFound.push(rule.value)
 
         if @attr.data.requiredGoogleFieldsNotFound.length is 0
           @trigger('addressSearchStart.vtex')

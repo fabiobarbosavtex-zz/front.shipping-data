@@ -249,8 +249,8 @@ define ['state-machine/state-machine',
       if @attr.stateMachine.from is 'listLoadSLA'
         requestingSLA = true
 
-      if address and (not rules.regexes.postalCode.test(address.postalCode) and rules.queryByPostalCode) or
-        (rules.queryByGeocoding and address.geoCoordinates.length isnt 2)
+      if (address and (not rules.regexes.postalCode.test(address.postalCode) and rules.queryByPostalCode)) or
+        (rules.queryByGeocoding and address?.geoCoordinates?.length isnt 2)
           @attr.stateMachine.next = =>
             @attr.stateMachine.showSearch(rules, address, hasAvailableAddresses)
           return
