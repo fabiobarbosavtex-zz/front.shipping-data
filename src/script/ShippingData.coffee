@@ -342,7 +342,7 @@ define ['flight/lib/component',
       @loadGoogleMapsAPI = (countryRule) ->
         if (countryRule.geocodingAvailable)
           if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading
-            window.vtex.maps.isGoogleMapsAPILoading = true
+            window.vtex.maps.isGoogleMapsAPILoading = $.Deferred()
             script = document.createElement("script")
             script.type = "text/javascript"
             script.src = "//maps.googleapis.com/maps/api/js?libraries=places&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsAPILoaded"
@@ -444,7 +444,7 @@ define ['flight/lib/component',
             # Called when google maps api is loaded
             window.vtex.maps.googleMapsAPILoaded = =>
               window.vtex.maps.isGoogleMapsAPILoaded = true
-              window.vtex.maps.isGoogleMapsAPILoading = false
+              window.vtex.maps.isGoogleMapsAPILoading.resolve(true)
               @select('addressFormSelector').trigger('googleMapsAPILoaded.vtex')
               @select('addressSearchSelector').trigger('googleMapsAPILoaded.vtex')
 

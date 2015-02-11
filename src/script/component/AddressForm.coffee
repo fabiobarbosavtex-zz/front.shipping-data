@@ -45,7 +45,7 @@ define ['flight/lib/component',
         dust.render @attr.templates.form.name, data, (err, output) =>
           output = $(output).i18n()
           @$node.html(output)
-          if not window.vtex.maps.isGoogleMapsAPILoaded and window.vtex.maps.isGoogleMapsAPILoading and @attr.data.hasGeolocationData
+          if not window.vtex.maps.isGoogleMapsAPILoaded and @attr.data.hasGeolocationData
             @loading()
 
           if window.vtex.maps.isGoogleMapsAPILoaded and @attr.data.hasGeolocationData

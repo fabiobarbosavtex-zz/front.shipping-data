@@ -104,11 +104,12 @@ define ['flight/lib/component',
         if @attr.geolocation
           options['bounds'] = @attr.geolocation
 
-        @attr.autocomplete = new google.maps.places.Autocomplete(@select('addressSearchSelector')[0], options)
+        window.vtex.maps.isGoogleMapsAPILoading.done =>
+          @attr.autocomplete = new google.maps.places.Autocomplete(@select('addressSearchSelector')[0], options)
 
-        google.maps.event.addListener @attr.autocomplete, 'place_changed', =>
-          googleAddress = @attr.autocomplete.getPlace()
-          @addressMapper(googleAddress)
+          google.maps.event.addListener @attr.autocomplete, 'place_changed', =>
+            googleAddress = @attr.autocomplete.getPlace()
+            @addressMapper(googleAddress)
 
       @addressMapper = (googleAddress) ->
         # Clean required google fields error and render
@@ -242,10 +243,14 @@ define ['flight/lib/component',
 
       @openGeolocationSearch = ->
         @getNavigatorCurrentPosition()
-        if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading
+        if not window.vtex.maps.isGoogleMapsAPILoaded
           @attr.data.loadingGeolocation = true
           @attr.data.showGeolocationSearch = false
           @render()
+          window.vtex.maps.isGoogleMapsAPILoading.done =>
+            @attr.data.loadingGeolocation = false
+            @attr.data.showGeolocationSearch = true
+            @render()
         else
           @attr.data.showGeolocationSearch = true
           @render()
