@@ -13,7 +13,7 @@ define ->
                   "Ancon": "150102",
                   "Ate": "150103",
                   "Barranco": "150125",
-                  "Breñ": "150104",
+                  "Breña": "150104",
                   "Carabayllo": "150105",
                   "Chaclacayo": "150107",
                   "Chorrillos": "150108",
