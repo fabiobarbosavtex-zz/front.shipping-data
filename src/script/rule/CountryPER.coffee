@@ -13,7 +13,7 @@ define ->
                   "Ancon": "150102",
                   "Ate": "150103",
                   "Barranco": "150125",
-                  "Breñ": "150104",
+                  "Breña": "150104",
                   "Carabayllo": "150105",
                   "Chaclacayo": "150107",
                   "Chorrillos": "150108",
@@ -66,6 +66,14 @@ define ->
                   "Gorgor": "150206",
                   "Huancapon": "150207",
                   "Manas": "150208"
+              },
+              "Callao": {
+                  "Bellavista": "070102",
+                  "Callao": "070101",
+                  "Carmen De La Legua Reynoso": "070103",
+                  "La Perla": "070104",
+                  "La Punta": "070105",
+                  "Ventanilla": "070106"
               },
               "Canta": {
                   "Arahuay": "150302",
@@ -1020,16 +1028,6 @@ define ->
                   "Sexi": "060907",
                   "Uticyacu": "060908",
                   "Yauyucan": "060909"
-              }
-          },
-          "Callao": {
-              "Callao": {
-                  "Bellavista": "070102",
-                  "Callao": "070101",
-                  "Carmen De La Legua Reynoso": "070103",
-                  "La Perla": "070104",
-                  "La Punta": "070105",
-                  "Ventanilla": "070106"
               }
           },
           "Cusco": {
