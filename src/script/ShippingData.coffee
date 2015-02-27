@@ -310,11 +310,13 @@ define ['flight/lib/component',
       # User cancelled ongoing address edit
       @cancelAddressEdit = (ev) ->
         ev?.stopPropagation()
-        if @attr.orderForm.shippingData.availableAddresses.length > 0 # Cuidado: nao é o mesmo que hasAvailableAddresses
-          @trigger('addressKeysUpdated.vtex', [@attr.orderForm.shippingData.availableAddresses[0]])
 
         @attr.stateMachine.showList(@attr.orderForm)
         @attr.stateMachine.next()
+
+        if @attr.orderForm.shippingData.availableAddresses.length > 0 # Cuidado: nao é o mesmo que hasAvailableAddresses
+          defaultAddress = @attr.orderForm.shippingData.availableAddresses[0]
+          @select('addressListSelector').trigger('selectAddress.vtex', defaultAddress.addressId)
 
       # User chose shipping options
       @deliverySelected = (ev, logisticsInfo) ->

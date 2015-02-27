@@ -76,6 +76,10 @@ define ['flight/lib/component',
         ev.preventDefault()
         @selectAddress($('input', data.el).attr('value'))
 
+      @selectAddressByIdHandler = (ev, id) ->
+        ev.stopPropagation()
+        @selectAddress(id)
+
       @selectAddress = (selectedAddressId) ->
         for aa in @attr.data.availableAddresses
           if aa.addressId is selectedAddressId
@@ -132,6 +136,7 @@ define ['flight/lib/component',
         @on 'disable.vtex', @disable
         @on 'startLoading.vtex', @startLoading
         @on 'stopLoading.vtex', @stopLoading
+        @on 'selectAddress.vtex', @selectAddressByIdHandler
         @on 'click',
           'createAddressSelector': @createAddress
           'addressItemSelector': @selectAddressHandler
