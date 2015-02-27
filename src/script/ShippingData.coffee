@@ -314,8 +314,9 @@ define ['flight/lib/component',
         @attr.stateMachine.showList(@attr.orderForm)
         @attr.stateMachine.next()
 
-        if @attr.orderForm.shippingData.availableAddresses.length > 0 # Cuidado: nao é o mesmo que hasAvailableAddresses
-          defaultAddress = @attr.orderForm.shippingData.availableAddresses[0]
+        listLength = @attr.orderForm.shippingData.availableAddresses.length
+        if listLength > 0
+          defaultAddress = @attr.orderForm.shippingData.availableAddresses[listLength-1]
           @select('addressListSelector').trigger('selectAddress.vtex', defaultAddress.addressId)
 
       # User chose shipping options
