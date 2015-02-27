@@ -109,7 +109,7 @@ define ['flight/lib/component',
           if invalidAddress or firstTimeBuying
             @attr.stateMachine.showForm(orderForm)
             @attr.stateMachine.next()
-          else
+          else if @attr.stateMachine.can('showList')
             @attr.stateMachine.showList(orderForm)
             @attr.stateMachine.next()
         catch e
