@@ -39,7 +39,9 @@ define [], () ->
         return newLogisticItem
 
       # Agrupa os items de logistic info por seller
-      logisticsBySeller = _.groupBy updatedLogisticsInfo, (so) -> return so.seller.id
+			# Adiciona "seller" para impedir coercao do objeto em array pelo iOS8 ... JUST WORKS
+			# http://stackoverflow.com/questions/28155841/misterious-failure-of-jquery-each-and-underscore-each-on-ios
+      logisticsBySeller = _.groupBy updatedLogisticsInfo, (so) -> return "seller" + so.seller.id
 
       # Vamos massagear todo o logistics info
       index = 0

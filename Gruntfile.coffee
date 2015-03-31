@@ -81,7 +81,7 @@ module.exports = (grunt) ->
     test: []
     vtex_deploy: ['shell:cp', 'shell:cp_br']
   # Development tasks
-    dev: ['nolr', 'build', 'requirejs:dist', 'watch']
+    dev: ['nolr', 'build', 'requirejs:dev', 'watch']
     default: ['build', 'requirejs:dev', 'connect', 'watch']
     devmin: ['build'] # Minifies files and serve
 
