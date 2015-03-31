@@ -25,6 +25,7 @@ define ['flight/lib/component',
         shippingOptionSelector: '.shipping-option-item'
         pickadateSelector: '.datepicker'
         pickadateValueSelector: '.scheduled-sla-value'
+        selectDeliveryDateSelector: '.scheduled-sla-select'
         pickadateValueContainer: '.scheduled-sla-value-container'
         deliveryWindowsTemplateSelector: '.scheduled-sla-time'
         deliveryWindowSelector: '.delivery-windows input[type=radio]'
@@ -78,6 +79,7 @@ define ['flight/lib/component',
                       if so.selectedSla.deliveryWindow.startDateUtc
                         picker.set 'select',
                           new Date(so.selectedSla.deliveryWindow.startDateUtc)
+                        @getSelectDeliveryDateSelector(so.index)?.hide()
                         @getPickadateValueSelector(so.index)?.text(picker.get('value'))
                       else
                         picker.clear()
@@ -95,6 +97,9 @@ define ['flight/lib/component',
 
       @getPickadateValueSelector = (shippingOptionIndex) ->
         $('.shipping-option-'+shippingOptionIndex + ' ' + @attr.pickadateValueSelector)
+
+      @getSelectDateSelector = (shippingOptionIndex) ->
+        $('.shipping-option-'+shippingOptionIndex + ' ' + @attr.selectDeliveryDateSelector)
 
       @scheduleDateSelected = (ev, index) ->
         # Pega a data seleciona no pickadate
