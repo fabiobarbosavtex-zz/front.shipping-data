@@ -2,9 +2,10 @@ define ['flight/lib/component',
         'shipping/script/setup/extensions',
         'shipping/script/mixin/withi18n',
         'shipping/script/mixin/withLogisticsInfo',
+        'shipping/script/mixin/withValidation',
         'shipping/templates/shippingOptions',
         'shipping/templates/deliveryWindows'],
-  (defineComponent, extensions, withi18n, withLogisticsInfo, shippingOptionsTemplate, deliveryWindowsTemplate) ->
+  (defineComponent, extensions, withi18n, withLogisticsInfo, withValidation, shippingOptionsTemplate, deliveryWindowsTemplate) ->
     ShippingOptions = ->
       @defaultAttrs
         data:
@@ -25,6 +26,7 @@ define ['flight/lib/component',
         shippingOptionSelector: '.shipping-option-item'
         pickadateSelector: '.datepicker'
         pickadateValueSelector: '.scheduled-sla-value'
+        selectDeliveryDateSelector: '.scheduled-sla-select'
         pickadateValueContainer: '.scheduled-sla-value-container'
         deliveryWindowsTemplateSelector: '.scheduled-sla-time'
         deliveryWindowSelector: '.delivery-windows input[type=radio]'
@@ -78,6 +80,7 @@ define ['flight/lib/component',
                       if so.selectedSla.deliveryWindow.startDateUtc
                         picker.set 'select',
                           new Date(so.selectedSla.deliveryWindow.startDateUtc)
+                        @getSelectDeliveryDateSelector(so.index)?.hide()
                         @getPickadateValueSelector(so.index)?.text(picker.get('value'))
                       else
                         picker.clear()
@@ -96,6 +99,9 @@ define ['flight/lib/component',
       @getPickadateValueSelector = (shippingOptionIndex) ->
         $('.shipping-option-'+shippingOptionIndex + ' ' + @attr.pickadateValueSelector)
 
+      @getSelectDeliveryDateSelector = (shippingOptionIndex) ->
+        $('.shipping-option-'+shippingOptionIndex + ' ' + @attr.selectDeliveryDateSelector)
+
       @scheduleDateSelected = (ev, index) ->
         # Pega a data seleciona no pickadate
         picker = @getPickadateSelector(index)
@@ -106,6 +112,7 @@ define ['flight/lib/component',
         @updateLogisticsInfoModel(shippingOptions, shippingOptions.selectedSla.id, @getCheapestDeliveryWindow(shippingOptions, new Date(date)))
 
         @getPickadateValueSelector(index).text(picker.pickadate('get', 'value'))
+        @getSelectDeliveryDateSelector(index)?.hide()
 
         # Renderizamos as novas delivery windows para a data selecionada
         @attr.renderOptions =
@@ -162,6 +169,15 @@ define ['flight/lib/component',
             focusOnSelectedDelivery: true
           @render()
 
+      @validateShippingOptions = ->
+        return _.all @attr.data.shippingOptions, (so) =>
+          if so.selectedSla.isScheduled
+            if so.selectedSla.deliveryWindow
+              return true
+            else
+              return false
+          return true
+
       @enable = (ev, logisticsInfo, items, sellers) ->
         ev?.stopPropagation()
         @attr.data.loadingShippingOptions = false
@@ -198,6 +214,10 @@ define ['flight/lib/component',
         @on 'change',
           'changeSlaSelector': @selectShippingOptionMultipleSellersHandler
 
+        @setValidators [
+          @validateShippingOptions
+        ]
+
         @setLocalePath 'shipping/script/translation/'
 
-    return defineComponent(ShippingOptions, withi18n, withLogisticsInfo)
+    return defineComponent(ShippingOptions, withi18n, withLogisticsInfo, withValidation)

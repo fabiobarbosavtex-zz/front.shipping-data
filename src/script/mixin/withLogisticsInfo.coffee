@@ -127,16 +127,6 @@ define [], () ->
             # Atualizamos seus preços e labels
             @updateDeliveryWindowsPriceAndLabels(sla)
 
-            # Caso não tenha uma delivery window selecionada
-            if not sla.deliveryWindow
-              # Pegamos a mais barata
-              deliveryWindow = sla.cheapestDeliveryWindow
-            else
-              deliveryWindow = sla.deliveryWindow
-
-            # Marcamos a delivery window como selecionada
-            @selectDeliveryWindow(sla, deliveryWindow)
-
       @setCheapestSlaIfNull(logisticsInfoArray)
 
       return logisticsInfoArray
@@ -232,8 +222,6 @@ define [], () ->
 
           selectedSlaObject = _.find(li.slas, (sla) -> sla.id is selectedSla)
           if selectedSlaObject.availableDeliveryWindows.length > 0
-            if not deliveryWindow
-              deliveryWindow = selectedSlaObject.availableDeliveryWindows[0]
             selectedSlaObject.deliveryWindow = deliveryWindow
 
           li.selectedSla = selectedSla
