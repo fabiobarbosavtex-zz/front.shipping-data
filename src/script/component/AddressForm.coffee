@@ -102,7 +102,7 @@ define ['flight/lib/component',
         ev?.preventDefault()
         addressKeyMap = @getCurrentAddress()
 
-        if @getCountryRule().postalCodeByInput and @attr.active
+        if @getCountryRule().postalCodeByInput
           addressKeyMap.postalCodeIsValid = @select('postalCodeSelector').parsley().isValid()
         else
           addressKeyMap.postalCodeIsValid = addressKeyMap.postalCode isnt null
