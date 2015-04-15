@@ -137,8 +137,18 @@ define ['flight/lib/component',
         ev?.stopPropagation()
         if @attr.stateMachine.current is 'addressFormSLA'
           # When the AddressForm is finished validating, ShippingData will also validate due to @addressFormValidated()
-          @select('addressFormSelector').one('componentValidated.vtex', (e, errors) => @done() if errors.length is 0)
+          [addressFormVal, shippingOptionsVal] = [$.Deferred(), $.Deferred()]
+
+          @select('addressFormSelector').one 'componentValidated.vtex', (e, errors) =>
+            if errors.length is 0 then addressFormVal.resolve()
+
+          @select('shippingOptionsSelector').one 'componentValidated.vtex', (e, errors) =>
+            if errors.length is 0 then shippingOptionsVal.resolve()
+
+          $.when(addressFormVal, shippingOptionsVal).then => @done()
+
           @select('addressFormSelector').trigger('validate.vtex')
+          @select('shippingOptionsSelector').trigger('validate.vtex')
           return
 
         if @attr.stateMachine.current is 'listSLA'
@@ -147,6 +157,11 @@ define ['flight/lib/component',
             @attr.stateMachine.showForm(@attr.orderForm)
             @attr.stateMachine.next()
             return
+
+          @select('shippingOptionsSelector').one 'componentValidated.vtex', (e, errors) =>
+            if errors.length is 0 then @done()
+          @select('shippingOptionsSelector').trigger('validate.vtex')
+          return
 
         @done()
 
@@ -379,6 +394,16 @@ define ['flight/lib/component',
       @validateShippingOptions = ->
         logisticsInfo = @attr.orderForm.shippingData?.logisticsInfo
         return "Logistics info must exist" if logisticsInfo?.length is 0
+
+        # Check if all entrega agendadas has a delivery window
+        allScheduledHasWindows = _.all(
+            logisticsInfo, (li) ->
+              selectedSlaName = li.selectedSla
+              selectedSla = _.find li.slas, (sla) -> return sla.id is selectedSlaName
+              return selectedSla.availableDeliveryWindows.length > 0 and selectedSla.deliveryWindow?
+          )
+        return "No delivery window" if not allScheduledHasWindows
+
         return "No selected SLA" if logisticsInfo?[0].selectedSla is undefined
         return true
 
