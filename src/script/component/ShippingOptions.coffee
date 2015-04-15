@@ -98,7 +98,7 @@ define ['flight/lib/component',
       @getPickadateValueSelector = (shippingOptionIndex) ->
         $('.shipping-option-'+shippingOptionIndex + ' ' + @attr.pickadateValueSelector)
 
-      @getSelectDateSelector = (shippingOptionIndex) ->
+      @getSelectDeliveryDateSelector = (shippingOptionIndex) ->
         $('.shipping-option-'+shippingOptionIndex + ' ' + @attr.selectDeliveryDateSelector)
 
       @scheduleDateSelected = (ev, index) ->
