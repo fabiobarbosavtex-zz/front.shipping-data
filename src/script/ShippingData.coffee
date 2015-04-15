@@ -11,9 +11,10 @@ define ['flight/lib/component',
         'shipping/script/mixin/withi18n',
         'shipping/script/mixin/withValidation',
         'shipping/script/mixin/withShippingStateMachine',
+        'shipping/script/mixin/withRouter',
         'shipping/templates/shippingData',
-        'link!shipping/style/style.css'],
-  (defineComponent, extensions, Address, AddressSearch, AddressForm, AddressList, ShippingOptions, ShippingSummary, CountrySelect, ShippingDataStore, withi18n, withValidation, withShippingStateMachine, template) ->
+        'link!shipping/style/style'],
+  (defineComponent, extensions, Address, AddressSearch, AddressForm, AddressList, ShippingOptions, ShippingSummary, CountrySelect, ShippingDataStore, withi18n, withValidation, withShippingStateMachine, withRouter, template) ->
     ShippingData = ->
       @defaultAttrs
         API: null
@@ -112,6 +113,8 @@ define ['flight/lib/component',
           else if @attr.stateMachine.can('showList')
             @attr.stateMachine.showList(orderForm)
             @attr.stateMachine.next()
+
+          $(window).trigger('shippingDataVisited.vtex', true)
         catch e
           console.log e
 
@@ -155,7 +158,7 @@ define ['flight/lib/component',
         if valid.length > 0
           @attr.stateMachine.showForm(@attr.orderForm)
 
-        @trigger('componentDone.vtex')
+        @go(@attr.nextRoute)
 
       @addressDefaults = (address) ->
         # Tries to auto fill receiver name from client profile data
@@ -363,6 +366,11 @@ define ['flight/lib/component',
 
         return deliveryCountries
 
+      @localeSelected = (ev, locale) =>
+        @setLocale locale
+        @requireLocale().then =>
+          @$node.i18n()
+
       #
       # Validation
       #
@@ -382,10 +390,24 @@ define ['flight/lib/component',
         return "No selected SLA" if logisticsInfo?[0].selectedSla is undefined
         return true
 
-      @localeSelected = (ev, locale) =>
-        @setLocale locale
-        @requireLocale().then =>
-          @$node.i18n()
+      #
+      # Router
+      #
+
+      @enter = (newHash, oldHash) ->
+        isComingBack = oldHash.indexOf(@attr.nextRoute) is 0
+
+        valid = @validate()
+        if valid.length > 0 or newHash is @attr.route+'/edit' or isComingBack
+          @enable()
+        else
+          @go(@attr.nextRoute)
+
+      @exit = (newHash) ->
+        @disable()
+
+      @changeRoute = ->
+        @go(@attr.route+'/edit')
 
       #
       # Initialization
@@ -421,14 +443,14 @@ define ['flight/lib/component',
             @on 'cancelAddressEdit.vtex', @cancelAddressEdit
             @on 'editAddress.vtex', @editAddress
             @on 'newAddress.vtex', @newAddress
+            @on 'deliverySelected.vtex', @deliverySelected
             @on 'countrySelected.vtex', @countrySelected
             @on 'addressFormSelector', 'componentValidated.vtex', @addressFormValidated
             @on 'addressFormSubmit.vtex', @tryDone
             @on window, 'profileUpdated', @profileUpdated
-            @on window, 'deliverySelected.vtex', @deliverySelected
             @on 'click',
               'goToPaymentButtonSelector': @tryDone
-              'editShippingDataSelector': @enable
+              'editShippingDataSelector': @changeRoute
 
             @setValidators [
               @validateAddress
@@ -451,4 +473,4 @@ define ['flight/lib/component',
               @select('addressFormSelector').trigger('googleMapsAPILoaded.vtex')
               @select('addressSearchSelector').trigger('googleMapsAPILoaded.vtex')
 
-    return defineComponent(ShippingData, withi18n, withValidation, withShippingStateMachine)
+    return defineComponent(ShippingData, withi18n, withValidation, withShippingStateMachine, withRouter)
