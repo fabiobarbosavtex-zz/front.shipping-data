@@ -402,17 +402,20 @@ define ['flight/lib/component',
       @validateShippingOptions = ->
         logisticsInfo = @attr.orderForm.shippingData?.logisticsInfo
         return "Logistics info must exist" if logisticsInfo?.length is 0
+        return "No selected SLA" if logisticsInfo?[0].selectedSla is undefined
 
         # Check if all entrega agendadas has a delivery window
         allScheduledHasWindows = _.all(
             logisticsInfo, (li) ->
               selectedSlaName = li.selectedSla
               selectedSla = _.find li.slas, (sla) -> return sla.id is selectedSlaName
-              return selectedSla.availableDeliveryWindows.length > 0 and selectedSla.deliveryWindow?
+              if selectedSla?
+                return selectedSla.availableDeliveryWindows?.length > 0 and selectedSla?.deliveryWindow?
+              else
+                return false
           )
         return "No delivery window" if not allScheduledHasWindows
 
-        return "No selected SLA" if logisticsInfo?[0].selectedSla is undefined
         return true
 
       #
