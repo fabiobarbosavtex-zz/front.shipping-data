@@ -127,6 +127,11 @@ define [], () ->
             # Atualizamos seus preços e labels
             @updateDeliveryWindowsPriceAndLabels(sla)
 
+            # Marcamos a delivery window como selecionada
+            if sla.deliveryWindow
+              deliveryWindow = sla.deliveryWindow
+              @selectDeliveryWindow(sla, deliveryWindow)
+
       @setCheapestSlaIfNull(logisticsInfoArray)
 
       return logisticsInfoArray
