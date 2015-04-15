@@ -2,9 +2,10 @@ define ['flight/lib/component',
         'shipping/script/setup/extensions',
         'shipping/script/mixin/withi18n',
         'shipping/script/mixin/withLogisticsInfo',
+        'shipping/script/mixin/withValidation',
         'shipping/templates/shippingOptions',
         'shipping/templates/deliveryWindows'],
-  (defineComponent, extensions, withi18n, withLogisticsInfo, shippingOptionsTemplate, deliveryWindowsTemplate) ->
+  (defineComponent, extensions, withi18n, withLogisticsInfo, withValidation, shippingOptionsTemplate, deliveryWindowsTemplate) ->
     ShippingOptions = ->
       @defaultAttrs
         data:
@@ -167,6 +168,15 @@ define ['flight/lib/component',
             focusOnSelectedDelivery: true
           @render()
 
+      @validateShippingOptions = ->
+        return _.all @attr.data.shippingOptions, (so) =>
+          if so.selectedSla.isScheduled
+            if so.selectedSla.deliveryWindow
+              return true
+            else
+              return false
+          return true
+
       @enable = (ev, logisticsInfo, items, sellers) ->
         ev?.stopPropagation()
         @attr.data.loadingShippingOptions = false
@@ -203,6 +213,10 @@ define ['flight/lib/component',
         @on 'change',
           'changeSlaSelector': @selectShippingOptionMultipleSellersHandler
 
+        @setValidators [
+          @validateShippingOptions
+        ]
+
         @setLocalePath 'shipping/script/translation/'
 
-    return defineComponent(ShippingOptions, withi18n, withLogisticsInfo)
+    return defineComponent(ShippingOptions, withi18n, withLogisticsInfo, withValidation)
