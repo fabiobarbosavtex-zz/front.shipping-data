@@ -112,6 +112,7 @@ define ['flight/lib/component',
         @updateLogisticsInfoModel(shippingOptions, shippingOptions.selectedSla.id, @getCheapestDeliveryWindow(shippingOptions, new Date(date)))
 
         @getPickadateValueSelector(index).text(picker.pickadate('get', 'value'))
+        @getSelectDeliveryDateSelector(index)?.hide()
 
         # Renderizamos as novas delivery windows para a data selecionada
         @attr.renderOptions =
