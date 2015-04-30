@@ -138,6 +138,9 @@
                     <div class="scheduled-sla-value-container" data-shipping-option="{index}">
                         <button class="scheduled-sla-edit btn btn-link icon-edit" data-i18n="[title]global.edit"></button>
                         <span class="scheduled-sla-value"></span>
+                        {^deliveryWindowsForDate}
+                        <span class="scheduled-sla-select" data-i18n="shipping.shippingOptions.chooseScheduledDate"></span>
+                        {/deliveryWindowsForDate}
                     </div>
                     <input class="datepicker input input-xlarge" style="display: none;" type="text"
                            data-i18n="[placeholder]shipping.shippingOptions.chooseScheduledDate" style="cursor: pointer;">
