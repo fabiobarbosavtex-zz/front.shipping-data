@@ -16,12 +16,17 @@ class ShippingDataStore
 
     if attachment.logisticsInfo
       att.logisticsInfo = _(attachment.logisticsInfo).map (li) ->
-          _(li).pick "itemIndex", "selectedSla", "deliveryWindow", "tax"
+          shipObj = _(li).pick "itemIndex", "selectedSla", "deliveryWindow", "tax"
+          shipObj.isScheduled = _.find li.slas, (sla) ->
+            if sla.id is shipObj.selectedSla
+              return sla.availableDeliveryWindows?.length > 0
+          return shipObj
+
       logisticsInfoAreEqual = _.all att.logisticsInfo, (li, i) =>
         existingLI = @orderForm.shippingData?.logisticsInfo[i]
         existingSelectedSLA = _.find existingLI.slas, (s) -> s.id is existingLI.selectedSla
 
-        if (existingSelectedSLA.deliveryWindow? and li.deliveryWindow?)
+        if (existingSelectedSLA.availableDeliveryWindows?.length > 0 and li.isScheduled?)
           deliveryWindowIsEqual = _.isEqual(existingSelectedSLA.deliveryWindow, li.deliveryWindow)
         else
           deliveryWindowIsEqual = true
