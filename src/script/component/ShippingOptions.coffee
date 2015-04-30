@@ -175,6 +175,8 @@ define ['flight/lib/component',
             if so.selectedSla.deliveryWindow.startDateUtc?
               return true
             else
+              selector = @getSelectDeliveryDateSelector(so.index)
+              selector.trigger('click')
               return false
           return true
 
