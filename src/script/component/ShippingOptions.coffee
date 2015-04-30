@@ -172,9 +172,11 @@ define ['flight/lib/component',
       @validateShippingOptions = ->
         return _.all @attr.data.shippingOptions, (so) =>
           if so.selectedSla.isScheduled
-            if so.selectedSla.deliveryWindow
+            if so.selectedSla.deliveryWindow.startDateUtc?
               return true
             else
+              selector = @getSelectDeliveryDateSelector(so.index)
+              selector.trigger('click')
               return false
           return true
 
