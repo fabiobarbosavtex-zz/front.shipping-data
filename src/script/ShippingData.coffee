@@ -161,6 +161,7 @@ define ['flight/lib/component',
           isUsingGiftRegistryAddress = address.addressType is "giftRegistry"
           $(window).trigger('isUsingGiftRegistryAddress.vtex', isUsingGiftRegistryAddress)
 
+        if @attr.stateMachine.current in ['listSLA', 'anonListSLA']
           @select('shippingOptionsSelector').one 'componentValidated.vtex', (e, errors) =>
             if errors.length is 0 then @done()
           @select('shippingOptionsSelector').trigger('validate.vtex')
