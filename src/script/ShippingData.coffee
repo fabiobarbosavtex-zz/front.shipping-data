@@ -158,6 +158,7 @@ define ['flight/lib/component',
             @attr.stateMachine.next()
             return
 
+        if @attr.stateMachine.current in ['listSLA', 'anonListSLA']
           @select('shippingOptionsSelector').one 'componentValidated.vtex', (e, errors) =>
             if errors.length is 0 then @done()
           @select('shippingOptionsSelector').trigger('validate.vtex')
