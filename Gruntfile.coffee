@@ -41,7 +41,7 @@ module.exports = (grunt) ->
       namespace: 'vtex'
       appDir: "build-raw/<%= relativePath %>/"
       name: 'shipping/script/ShippingData'
-      optimize: 'uglify2'
+      optimize: 'none'
       generateSourceMaps: true
       preserveLicenseComments: false
       mainConfigFile: 'build-raw/<%= relativePath %>/app/main.js'
