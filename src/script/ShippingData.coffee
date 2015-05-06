@@ -104,9 +104,9 @@ define ['flight/lib/component',
           rules = @attr.data.countryRules[country]
 
           address = new Address(shippingData.address)
-          firstTimeBuying = (orderForm.canEditData is true and orderForm.loggedIn is false)
+          shouldHaveOneAddress = (orderForm.canEditData is true and orderForm.loggedIn is false and not orderForm.giftRegistryData?)
           invalidAddress = (orderForm.canEditData is true and (!shippingData?.address or address.validate(rules) isnt true))
-          if invalidAddress or firstTimeBuying
+          if invalidAddress or shouldHaveOneAddress
             @attr.stateMachine.showForm(orderForm)
             @attr.stateMachine.next()
           else if @attr.stateMachine.can('showList')
@@ -157,6 +157,9 @@ define ['flight/lib/component',
             @attr.stateMachine.showForm(@attr.orderForm)
             @attr.stateMachine.next()
             return
+
+          isUsingGiftRegistryAddress = address.addressType is "giftRegistry"
+          $(window).trigger('isUsingGiftRegistryAddress.vtex', isUsingGiftRegistryAddress)
 
         if @attr.stateMachine.current in ['listSLA', 'anonListSLA']
           @select('shippingOptionsSelector').one 'componentValidated.vtex', (e, errors) =>
