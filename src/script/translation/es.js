@@ -81,7 +81,7 @@ define(function () {
         "shippingEstimate": 'Estimado',
         "ofSeller": 'del vendedor ',
         "deliveryDate": 'Fecha de entrega',
-        "chooseScheduledDate": 'Seleccione la fecha de entrega',
+        "chooseScheduledDate": 'Elija la fecha de entrega',
         "deliveryHour": 'Hora de entrega',
         "workingDay": 'Hasta __count__ día hábil',
         "workingDay_plural": 'Hasta __count__ días hábiles',
