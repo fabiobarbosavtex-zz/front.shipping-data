@@ -341,7 +341,7 @@ define ['flight/lib/component',
       # User chose shipping options
       @deliverySelected = (ev, logisticsInfo) ->
         @attr.orderForm.shippingData.logisticsInfo = logisticsInfo
-        @select('shippingSummarySelector').trigger('deliverySelected.vtex', [logisticsInfo, @attr.orderForm.items, @attr.orderForm.sellers])
+        @validate()
 
       @countrySelected = (ev, country) ->
         @attr.data.country = country
@@ -395,12 +395,8 @@ define ['flight/lib/component',
         else
           return true
 
-      @validateShippingOptions = ->
-        logisticsInfo = @attr.orderForm.shippingData?.logisticsInfo
-        return "Logistics info must exist" if logisticsInfo?.length is 0
-        return "No selected SLA" if logisticsInfo?[0].selectedSla is undefined
-
-        # Check if all entrega agendadas has a delivery window
+      # Check if all entrega agendadas has a delivery window
+      @allScheduledHasWindows = (logisticsInfo) ->
         allScheduledHasWindows = _.all(
             logisticsInfo, (li) ->
               selectedSlaName = li.selectedSla
@@ -411,7 +407,13 @@ define ['flight/lib/component',
                 return selectedSla.deliveryWindow?
               return true
           )
-        return "No delivery window" if not allScheduledHasWindows
+        return allScheduledHasWindows
+
+      @validateShippingOptions = ->
+        logisticsInfo = @attr.orderForm.shippingData?.logisticsInfo
+        return "Logistics info must exist" if logisticsInfo?.length is 0
+        return "No selected SLA" if logisticsInfo?[0].selectedSla is undefined
+        return "No delivery window" if not @allScheduledHasWindows(logisticsInfo)
 
         return true
 
