@@ -1,9 +1,7 @@
 define [], () ->
   ->
-    @getShippingOptionsData = (logisticsInfo, items, sellers) ->
-      updatedLogisticsInfo = []
-      # Para cada item
-      logisticsInfo = _.map logisticsInfo, (logisticItem) ->
+    @_mapLogisticsInfo = (logisticsInfo, items, sellers) ->
+      newLogisticsInfo = _.map logisticsInfo, (logisticItem) ->
         newLogisticItem =
           itemIndex: logisticItem.itemIndex
           itemId: logisticItem.itemId
@@ -24,28 +22,51 @@ define [], () ->
           newSla.availableDeliveryWindows = _.map sla.availableDeliveryWindows, (dw) -> _.extend({}, dw)
           return newSla
 
-        item = items[newLogisticItem.itemIndex]
+        newLogisticItem.item = items[newLogisticItem.itemIndex]
 
-        # Encontra o seller do item
         seller = _.find sellers, (seller) ->
-          return String(seller.id) is String(item.seller)
-
-        # Extende logistics info com o seller e os dados do item
-        if seller
-          newLogisticItem.seller = seller
-          newLogisticItem.item = item
-          updatedLogisticsInfo.push(newLogisticItem)
+          return String(seller.id) is String(newLogisticItem.item.seller)
+        newLogisticItem.seller = seller
 
         return newLogisticItem
+      return newLogisticsInfo
 
-      # Agrupa os items de logistic info por seller
-			# Adiciona "seller" para impedir coercao do objeto em array pelo iOS8 ... JUST WORKS
-			# http://stackoverflow.com/questions/28155841/misterious-failure-of-jquery-each-and-underscore-each-on-ios
-      logisticsBySeller = _.groupBy updatedLogisticsInfo, (so) -> return "seller" + so.seller.id
+    @_fillSLA = (index, sla, sellerId, selectedSla) ->
+      sla.shippingOptionsIndex = index
 
-      # Vamos massagear todo o logistics info
+      if sla.availableDeliveryWindows and sla.availableDeliveryWindows.length > 0
+        sla.isScheduled = true
+
+      sla.businessDays = (sla.shippingEstimate+'').indexOf('bd') isnt -1
+      sla.shippingEstimateDays = parseInt((sla.shippingEstimate+'').replace(/bd|d/,''), 10)
+
+      sla.nameAttr = _.plainChars('seller-' + sellerId)
+      sla.idAttr = _.plainChars(sla.nameAttr + '-sla-' + sla.id?.replace(/\ /g,''))
+
+      # Caso seja a entrega selecionada
+      if sla.id is selectedSla
+        sla.isSelected = true
+      else
+        sla.isSelected = false
+
+      return sla
+
+    @_createPriceLabels = (sla) ->
+      if sla.price > 0
+        sla.valueLabel = _.intAsCurrency sla.price
+      else
+        sla.valueLabel = i18n.t('global.free')
+
+      if sla.tax > 0
+        sla.taxValueLabel = _.intAsCurrency sla.tax
+      else
+        sla.taxValueLabel = i18n.t('global.free')
+
+      return sla
+
+    @_fillLogisticsInfo = (logisticsInfoBySeller) ->
       index = 0
-      logisticsInfoArray = _.map logisticsBySeller, (logistic) =>
+      logisticsInfoArray = _.map logisticsInfoBySeller, (logisticsInfo) =>
         composedLogistic =
           items: []
           seller: {}
@@ -53,72 +74,62 @@ define [], () ->
           slas: []
           index: index
 
-        for logi in logistic
-          composedLogistic.items.push(logi.item)
-          composedLogistic.seller = logi.seller
-          for sla in logi.slas
+        _.each(logisticsInfo, (info) =>
+          composedLogistic.items.push(info.item)
+          composedLogistic.seller = info.seller
+
+          _.each(info.slas, (sla) =>
             # Ve se SLA em questão já está no array de SLAS computados
             composedSla = _.find composedLogistic.slas, (_sla) -> _sla.id is sla.id
 
             # Caso nao esteja no array de SLAS computados, o SLA será computado pela primeira vez
             if not composedSla
-              sla.shippingOptionsIndex = index
-              shouldPushThis = true
-
-              if sla.availableDeliveryWindows and sla.availableDeliveryWindows.length > 0
-                sla.isScheduled = true
-                @attr.isScheduledDeliveryAvailable = true
-
-              sla.businessDays = (sla.shippingEstimate+'').indexOf('bd') isnt -1
-              sla.shippingEstimateDays = parseInt((sla.shippingEstimate+'').replace(/bd|d/,''), 10)
-              
-              sla.nameAttr = _.plainChars('seller-' + logi.seller.id)
-              sla.idAttr = _.plainChars(sla.nameAttr + '-sla-' + sla.id?.replace(/\ /g,''))
-
-              # Caso seja a entrega selecionada
-              if sla.id is logi.selectedSla
-                sla.isSelected = true
-                selectedSla = sla                  
-              else
-                sla.isSelected = false
-
-              composedSla = sla
+              composedSla = @_fillSLA(index, sla, info.seller.id, info.selectedSla)
+              isNewSLA = true
+              composedLogistic.slas.push(composedSla)
             else
               # Caso o SLA já tenha sido computado antes, iremos apenas somar o preço e a taxa
               composedSla.price += sla.price
               composedSla.tax += sla.tax
+          )
 
-            composedSla.valueLabel = if composedSla.price > 0 then _.intAsCurrency composedSla.price else i18n.t('global.free')
-            composedSla.taxValueLabel = if composedSla.tax > 0 then _.intAsCurrency composedSla.tax else i18n.t('global.free')
+          composedLogistic.slas = _.map(composedLogistic.slas, @_createPriceLabels)
 
-            if shouldPushThis
-              shouldPushThis = false
-              composedLogistic.slas.push(composedSla)
+          selectedSla = _.find composedLogistic.slas, (slas) ->
+            return slas.id == info.selectedSla
 
           composedLogistic.selectedSla = selectedSla
+        )
 
         index++
         return composedLogistic
 
+      return logisticsInfoArray
+
+    @_getDeliveryDates = (deliveryWindows) ->
+      return _.reduce(deliveryWindows, (deliveryDates, dw) =>
+        date = new Date(dw.startDateUtc)
+        dateAsArray = @dateAsArray(date)
+
+        # Ve se a data desse deliveryWindow está no array de datas
+        dateIsInArray = _.find deliveryDates, (d) ->
+          d[0] is dateAsArray[0] and d[1] is dateAsArray[1] and d[2] is dateAsArray[2]
+
+        # Caso a data não tenha sido adicionada, adiciona agora
+        if not dateIsInArray
+          deliveryDates.push dateAsArray
+
+        return deliveryDates
+      , [])
+
+    @_fillScheduled = (logisticsInfoArray) ->
       _.each logisticsInfoArray, (li) =>
-        for sla in li.slas
-          if sla.isScheduled
-            deliveryDates = []
-            # Preenche o array de deliveryDates
-            _.each sla.availableDeliveryWindows, (dw) =>
-              date = new Date(dw.startDateUtc)
-              dateAsArray = @dateAsArray(date)
-
-              # Ve se a data desse deliveryWindow está no array de datas
-              dateIsInArray = _.find deliveryDates, (d) ->
-                d[0] is dateAsArray[0] and d[1] is dateAsArray[1] and d[2] is dateAsArray[2]
-
-              # Caso a data não tenha sido adicionada, adiciona agora
-              if not dateIsInArray
-                deliveryDates.push dateAsArray
-
+        _.each li.slas, (sla) =>
+          if not sla.isScheduled
+            return
+          else
             # Salva as possíveis datas de entrega para ser usado no pickadate
-            sla.deliveryDates = deliveryDates
+            sla.deliveryDates = @_getDeliveryDates(sla.availableDeliveryWindows)
 
             # Agrupamos as delivery windows pela suas datas
             sla.deliveryWindows = _.groupBy sla.availableDeliveryWindows, (dw) =>
@@ -129,8 +140,32 @@ define [], () ->
 
             # Marcamos a delivery window como selecionada
             if sla.deliveryWindow
-              deliveryWindow = sla.deliveryWindow
-              @selectDeliveryWindow(sla, deliveryWindow)
+              @selectDeliveryWindow(sla, sla.deliveryWindow)
+
+      return logisticsInfoArray
+
+    @getShippingOptionsData = (logisticsInfo, items, sellers) ->
+      # Para cada item
+      updatedLogisticsInfo = []
+      updatedLogisticsInfo = @_mapLogisticsInfo(logisticsInfo, items, sellers)
+
+      # Agrupa os items de logistic info por seller
+			# Adiciona "seller" para impedir coercao do objeto em array pelo iOS8 ... JUST WORKS
+			# http://stackoverflow.com/questions/28155841/misterious-failure-of-jquery-each-and-underscore-each-on-ios
+      logisticsBySeller = _.groupBy updatedLogisticsInfo, (so) -> return "seller" + so.seller.id
+
+      # Vamos massagear todo o logistics info
+      logisticsInfoArray = @_fillLogisticsInfo(logisticsBySeller)
+
+      # Computamos informações sobre entrega agendada
+      logisticsInfoArray = @_fillScheduled(logisticsInfoArray)
+
+      existsScheduledDelivery = _.find(logisticsInfoArray, (li) =>
+        return _.find(li.slas, (sla) =>
+          return sla.isScheduled
+        )
+      )
+      @attr.isScheduledDeliveryAvailable = existsScheduledDelivery
 
       @setCheapestSlaIfNull(logisticsInfoArray)
 
