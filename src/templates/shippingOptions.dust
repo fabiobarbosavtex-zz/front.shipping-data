@@ -116,8 +116,12 @@
                         <span class="shipping-option-item-text-wrapper" title="{deliveryEstimateLabel}">
                             <span class="shipping-option-item-name">{name}</span>
                             <span class="shipping-option-item-sep"> - </span>
-                            <span class="shipping-option-item-up-to" data-i18n="shipping.shippingOptions.priceFrom"></span> 
+                            {#isFree}
+                            <span class="shipping-option-item-value">{isFree}</span>
+                            {:else}
+                            <span class="shipping-option-item-up-to" data-i18n="shipping.shippingOptions.priceFrom"></span>&nbsp;
                             <span class="shipping-option-item-value">{cheapestValueLabel}</span>
+                            {/isFree}
                         </span>
                         {/isScheduled}
                         {#isSelected}
