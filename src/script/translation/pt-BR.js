@@ -43,6 +43,7 @@ define(function () {
         "direction": 'Direção',
         "department": 'Departamento',
         "municipality": 'Municipalidade',
+        "delegation": 'Delegação',
         "province": "Província",
         "type": 'Tipo do endereço',
         "receiver": 'Destinatário',
