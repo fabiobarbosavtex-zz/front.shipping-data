@@ -387,6 +387,16 @@ define ['flight/lib/component',
         if firstName and (address.receiverName is '' or not address.receiverName)
           address.receiverName = firstName + ' ' + lastName
 
+        if address.neighborhoods or address.neighborhood?.indexOf(';') isnt -1
+          neighborhoods = if address.neighborhoods then address.neighborhoods else address.neighborhood
+          address.neighborhood = ''
+          @attr.data.neighborhoods = []
+          for neighborhood in neighborhoods.split(';')
+            if neighborhood.length > 0
+              @attr.data.neighborhoods.push({
+                value: neighborhood
+                label: neighborhood
+              })
         @attr.data.address = new Address(address)
         @attr.data.hasAvailableAddresses = hasAvailableAddresses
         # when the address has an address query, the address was searched with geolocation
