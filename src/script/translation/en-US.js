@@ -140,6 +140,7 @@ define(function () {
       "CHL": 'Chile',
       "COL": 'Colombia',
       "ECU": 'Equator',
+      "ECU": 'Guatemala',
       "MEX": 'Mexico',
       "PER": 'Peru',
       "PRY": 'Paraguay',
