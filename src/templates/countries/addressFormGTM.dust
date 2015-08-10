@@ -5,9 +5,9 @@
   </p>
 {/hasAvailableAddresses}
 
+{#address}
 <form class="address-form-new box-new address-form-{country}" data-parsley-bind="true" data-parsley-focus="first">
 
-  {#address}
   <fieldset class="address-data">
 
     <!-- HIDDEN FIELDS -->
@@ -37,7 +37,7 @@
 
       <p class="ship-state required input text">
         <label for="ship-state"><span data-i18n="shipping.addressForm.department"></span> <span class="item-required">*</span></label>
-        <select id="ship-state"  class="input-large" name="state" data-parsley-required="true">
+        <select id="ship-state"  class="input-xlarge" name="state" data-parsley-required="true">
           <option></option>
           {#states}
             <option value="{value}" {@eq key=value value=state}selected="true"{/eq}>{label}</option>
@@ -45,9 +45,9 @@
         </select>
       </p>
 
-      <p class="ship-city input text hide">
+      <p class="ship-city required input text">
         <label for="ship-city"><span data-i18n="shipping.addressForm.municipality"></span> <span class="item-required">*</span></label>
-        <select id="ship-city"  class="input-large" name="city" data-parsley-required="true">
+        <select id="ship-city"  class="input-xlarge" name="city" data-parsley-required="true" data-based-state-change="true">
           <option></option>
           {#cities}
             <option value="{value}" {@eq key=value value=state}selected="true"{/eq}>{label}</option>
@@ -57,7 +57,7 @@
 
       <p class="ship-street required input text">
         <label for="ship-street"><span data-i18n="shipping.addressForm.street"></span> <span class="item-required">*</span></label>
-        <input type="text"  id="ship-street" class="input-xlarge" value="{street}" name="street" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
+        <textarea id="ship-street" class="input-xlarge" name="street" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">{street}</textarea>
       </p>
 
       <p class="ship-neighborhood input text hide">
@@ -99,5 +99,5 @@
     </p>
 
   </fieldset>
-  {/address}
 </form>
+{/address}
