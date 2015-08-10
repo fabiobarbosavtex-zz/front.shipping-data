@@ -84,7 +84,11 @@ define ['flight/lib/component',
       @handleAddressSearch = (address) ->
         @attr.data.loading = false
         address.addressId = @attr.data.addressId
-        address.state = address.state?.toUpperCase() if address.state
+        if address.state
+          address.state = address.state?.toUpperCase()
+        if address.neighborhood.indexOf(';')
+          address.neighborhoods = address.neighborhood
+          address.neighborhood = ''
         rules = @attr.countryRules
         if rules.postalCodeByInput
           address.postalCode = _.maskString(address.postalCode, rules.masks.postalCode)
