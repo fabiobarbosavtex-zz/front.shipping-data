@@ -44,6 +44,7 @@ define(function () {
         "department": 'Departament',
         "municipality": 'Municipality',
         "province": "Province",
+        "delegation": 'Delegation',
         "type": 'Address type',
         "receiver": 'Receiver',
         "deliveryCountry": 'Delivery country',

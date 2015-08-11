@@ -132,7 +132,7 @@
       </p>
 
       <p class="ship-city required input text {?contractedShippingFieldsForGeolocation.city}hide{/contractedShippingFieldsForGeolocation.city} {?labelFields.city}hide{/labelFields.city}">
-        <label for="ship-city"><span data-i18n="shipping.addressForm.city"></span> <span class="item-required">*</span></label>
+        <label for="ship-city"><span data-i18n="shipping.addressForm.municipality"></span>/<span data-i18n="shipping.addressForm.delegation"></span> <span class="item-required">*</span></label>
         <input type="text"  id="ship-city" class="ship-city input-large" data-parsley-trigger="change blur" value="{city}" name="city" data-parsley-required="true" data-parsley-alphanumponc="true" {?disableCityAndState}disabled{/disableCityAndState}>
       </p>
 
