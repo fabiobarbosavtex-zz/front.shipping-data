@@ -387,7 +387,7 @@ define ['flight/lib/component',
         if firstName and (address.receiverName is '' or not address.receiverName)
           address.receiverName = firstName + ' ' + lastName
 
-        if address.neighborhoods or address.neighborhood?.indexOf(';') isnt -1
+        if address.neighborhoods or (address.neighborhood and address.neighborhood.indexOf(';') isnt -1)
           neighborhoods = if address.neighborhoods then address.neighborhoods else address.neighborhood
           address.neighborhood = ''
           @attr.data.neighborhoods = []

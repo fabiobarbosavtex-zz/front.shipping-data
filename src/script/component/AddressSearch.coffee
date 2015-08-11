@@ -86,7 +86,7 @@ define ['flight/lib/component',
         address.addressId = @attr.data.addressId
         if address.state
           address.state = address.state?.toUpperCase()
-        if address.neighborhood.indexOf(';') isnt -1
+        if address.neighborhood and address.neighborhood.indexOf(';') isnt -1
           address.neighborhoods = address.neighborhood
           address.neighborhood = ''
         rules = @attr.countryRules
