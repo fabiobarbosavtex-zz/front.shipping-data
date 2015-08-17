@@ -397,6 +397,8 @@ define ['flight/lib/component',
                 value: neighborhood
                 label: neighborhood
               })
+        else
+          @attr.data.neighborhoods = null
         @attr.data.address = new Address(address)
         @attr.data.hasAvailableAddresses = hasAvailableAddresses
         # when the address has an address query, the address was searched with geolocation
