@@ -12,7 +12,7 @@ define ->
       @postalCode = data.postalCode
       @receiverName = data.receiverName
       @reference = data.reference
-      @state = data.state
+      @state = if data.state then data.state.toUpperCase() else data.state
       @street = data.street
 
     validateField: (rules, name) =>
