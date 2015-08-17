@@ -50,7 +50,7 @@
         <select id="ship-city"  class="input-xlarge" name="city" data-parsley-required="true" data-based-state-change="true">
           <option></option>
           {#cities}
-            <option value="{value}" {@eq key=value value=state}selected="true"{/eq}>{label}</option>
+            <option value="{.}" {@eq key=. value=city}selected="true"{/eq}>{.}</option>
           {/cities}
         </select>
       </p>
