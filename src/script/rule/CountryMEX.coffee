@@ -25,7 +25,7 @@ define ->
       @basedOnStateChange = false
       @basedOnCityChange = false
 
-      @geocodingAvailable = true
+      @geocodingAvailable = false
       @isStateUpperCase = false
 
       @dontKnowPostalCodeURL = "http://www.sepomex.gob.mx/servicioslinea/paginas/ccpostales.aspx"
