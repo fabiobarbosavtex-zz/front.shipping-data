@@ -37,24 +37,38 @@ module.exports = (grunt) ->
         deps: false
 
   config.requirejs =
-    options:
-      namespace: 'vtex'
-      appDir: "build-raw/<%= relativePath %>/"
-      name: 'shipping/script/ShippingData'
-      optimize: 'uglify2'
-      generateSourceMaps: true
-      preserveLicenseComments: false
-      mainConfigFile: 'build-raw/<%= relativePath %>/app/main.js'
-      exclude: [
-        "flight/lib/component",
-        "state-machine/state-machine",
-        "link!shipping/style/style"
-      ]
-      dir: "build/<%= relativePath %>/"
     dev:
+      options:
+        namespace: 'vtex'
+        appDir: "build-raw/<%= relativePath %>/"
+        name: 'shipping/script/ShippingData'
+        optimize: 'none'
+        generateSourceMaps: true
+        preserveLicenseComments: false
+        mainConfigFile: 'build-raw/<%= relativePath %>/app/main.js'
+        exclude: [
+          "flight/lib/component",
+          "state-machine/state-machine",
+          "link!shipping/style/style"
+        ]
+        dir: "build/<%= relativePath %>/"
       uglify2:
         mangle: false
     dist:
+      options:
+        namespace: 'vtex'
+        appDir: "build-raw/<%= relativePath %>/"
+        name: 'shipping/script/ShippingData'
+        optimize: 'uglify2'
+        generateSourceMaps: true
+        preserveLicenseComments: false
+        mainConfigFile: 'build-raw/<%= relativePath %>/app/main.js'
+        exclude: [
+          "flight/lib/component",
+          "state-machine/state-machine",
+          "link!shipping/style/style"
+        ]
+        dir: "build/<%= relativePath %>/"
       uglify2:
         mangle: true
 

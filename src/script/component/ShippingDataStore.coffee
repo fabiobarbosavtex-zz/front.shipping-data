@@ -26,7 +26,7 @@ class ShippingDataStore
         existingLI = @orderForm.shippingData?.logisticsInfo[i]
         existingSelectedSLA = _.find existingLI.slas, (s) -> s.id is existingLI.selectedSla
 
-        if (existingSelectedSLA.availableDeliveryWindows?.length > 0 and li.isScheduled?)
+        if (existingSelectedSLA?.availableDeliveryWindows?.length > 0 and li.isScheduled?)
           deliveryWindowIsEqual = _.isEqual(existingSelectedSLA.deliveryWindow, li.deliveryWindow)
         else
           deliveryWindowIsEqual = true
