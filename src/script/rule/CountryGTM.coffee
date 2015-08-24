@@ -605,7 +605,7 @@ define ->
       @isStateUpperCase = false
 
       @regexes =
-        postalCode: new RegExp(/^[\d]{5}$/)
+        postalCode: new RegExp(/^[\d]{4,5}$/)
 
       @masks =
         postalCode: '99999'
