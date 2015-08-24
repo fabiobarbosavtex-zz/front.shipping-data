@@ -37,7 +37,7 @@
 
       <p class="ship-state required input text">
         <label for="ship-state"><span data-i18n="shipping.addressForm.department"></span> <span class="item-required">*</span></label>
-        <select id="ship-state"  class="input-xlarge" name="state" data-parsley-required="true">
+        <select id="ship-state"  class="input-xlarge" name="state" data-parsley-required="true" data-parsley-trigger="change blur">
           <option></option>
           {#states}
             <option value="{value}" {@eq key=value value=state}selected="true"{/eq}>{label}</option>
@@ -47,7 +47,7 @@
 
       <p class="ship-city required input text">
         <label for="ship-city"><span data-i18n="shipping.addressForm.municipality"></span> <span class="item-required">*</span></label>
-        <select id="ship-city"  class="input-xlarge" name="city" data-parsley-required="true" data-based-state-change="true">
+        <select id="ship-city"  class="input-xlarge" name="city" data-parsley-required="true" data-based-state-change="true" data-parsley-trigger="change blur">
           <option></option>
           {#cities}
             <option value="{.}" {@eq key=. value=city}selected="true"{/eq}>{.}</option>
@@ -62,7 +62,7 @@
 
       <p class="ship-neighborhood input text hide">
         <label for="ship-neighborhood"><span data-i18n="shipping.addressForm.neighborhood"></span></label>
-        <input type="text"  id="ship-neighborhood" class="input-xlarge" value="{neighborhood}" name="city" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
+        <input type="text"  id="ship-neighborhood" class="input-xlarge" value="{neighborhood}" name="neighborhood" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
       </p>
 
       <p class="ship-number input text hide">
