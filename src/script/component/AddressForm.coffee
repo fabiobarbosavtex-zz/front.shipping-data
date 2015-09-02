@@ -33,6 +33,7 @@ define ['flight/lib/component',
         neighborhoodSelector: '#ship-neighborhood'
         basedOnStateChange: 'select[data-based-state-change="true"]'
         basedOnCityChange: 'select[data-based-city-change="true"]'
+        selectizeSelect: 'select[data-selectize="true"]'
         cancelAddressFormSelector: '.cancel-address-form a'
         submitButtonSelector: '.submit .btn-success.address-save'
         mapCanvasSelector: '#map-canvas'
@@ -42,6 +43,7 @@ define ['flight/lib/component',
       # Render this component according to the data object
       @render = ->
         data = @attr.data
+
         dust.render @attr.templates.form.name, data, (err, output) =>
           output = $(output).i18n()
           @$node.html(output)
@@ -75,6 +77,17 @@ define ['flight/lib/component',
           @attr.parsley.subscribe 'parsley:field:validated', =>
             valid = @attr.parsley.isValid()
             @updateAddress(valid)
+
+          selectizeSelects = @select('selectizeSelect')
+          for select in selectizeSelects
+            selectOptionCreate = if $(select).data('selectize-create') then true else false
+            $(select).selectize?({
+              create: selectOptionCreate,
+              render:
+                option_create: (data, escape) =>
+                  addString = window.i18n.t('global.add')
+                  return '<div class="create">' + addString + ' <strong>' + escape(data.input) + '</strong>&hellip;</div>'
+            });
 
           if @attr.data.address.validate(rules) is true
             @attr.parsley.validate()
