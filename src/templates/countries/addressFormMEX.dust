@@ -129,7 +129,7 @@
       <p class="ship-neighborhood required input text {?contractedShippingFieldsForGeolocation.neighborhood}hide{/contractedShippingFieldsForGeolocation.neighborhood} {?labelFields.neighborhood}hide{/labelFields.neighborhood}">
         <label for="ship-neighborhood"><span data-i18n="shipping.addressForm.colony"></span> <span class="item-required">*</span></label>
         {?neighborhoods}
-          <select id="ship-neighborhood"  class="ship-neighborhood input-xlarge" data-parsley-trigger="change blur" data-parsley-required="true" name="neighborhood">
+          <select id="ship-neighborhood" class="ship-neighborhood input-xlarge" data-selectize="true" data-selectize-create="true" data-parsley-required="true" name="neighborhood">
             <option></option>
             {#neighborhoods}
               <option value="{value}" {@eq key=value value="{neighborhood}"}selected="true"{/eq}>{label}</option>
