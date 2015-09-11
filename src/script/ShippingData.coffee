@@ -12,8 +12,10 @@ define ['flight/lib/component',
         'shipping/script/mixin/withValidation',
         'shipping/script/mixin/withShippingStateMachine',
         'shipping/templates/shippingData',
+        'shipping/script/libs/selectize/selectize',
+        'link!shipping/script/libs/selectize/selectize.bootstrap2.css'
         'link!shipping/style/style.css'],
-  (defineComponent, extensions, Address, AddressSearch, AddressForm, AddressList, ShippingOptions, ShippingSummary, CountrySelect, ShippingDataStore, withi18n, withValidation, withShippingStateMachine, template) ->
+  (defineComponent, extensions, Address, AddressSearch, AddressForm, AddressList, ShippingOptions, ShippingSummary, CountrySelect, ShippingDataStore, withi18n, withValidation, withShippingStateMachine, template, selectize) ->
     ShippingData = ->
       @defaultAttrs
         API: null
@@ -190,7 +192,7 @@ define ['flight/lib/component',
       @addressSearchLoad = (ev) ->
         ev?.stopPropagation()
         @attr.stateMachine.searchAddress()
-   
+
       # An address search has new results.
       # Should call API to get delivery options
       @addressSearchResult = (ev, address) ->
@@ -198,7 +200,7 @@ define ['flight/lib/component',
 
         @attr.orderForm.shippingData.address = @addressDefaults(address)
         @attr.orderForm.shippingData.address.country = address?.country ? @attr.data.country
-        
+
         @attr.stateMachine.loadAddress(@attr.orderForm)
 
       # When a new addresses is selected
