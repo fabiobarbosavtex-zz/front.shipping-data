@@ -19,3 +19,17 @@ define ->
     dust.helpers.capitalize = (chunk, ctx, bodies, params) ->
       text = params.text
       return chunk.write(_.capitalizeSentence(text))
+    ###
+      Slugify
+      Usage:
+      {myReference|slugify}
+    ###
+    dust.filters.slugify = (value) ->
+      if not value? then return value
+
+      specialChars = "ąàáäâãåæćęèéëêìíïîłńòóöôõøśùúüûñçżź "
+      plain = "aaaaaaaaceeeeeiiiilnoooooosuuuunczz-"
+      regex = new RegExp '[' + specialChars + ']', 'g'
+
+      value += ""
+      return value.replace(regex, (char) -> plain.charAt (specialChars.indexOf char)).toLowerCase()

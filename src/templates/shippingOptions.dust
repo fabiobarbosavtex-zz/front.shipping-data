@@ -57,15 +57,14 @@
             <h4 class="pull-left">
                 <span class="pull-left choose-shipping-option-container">
                     <span class="choose-shipping-option" data-i18n="shipping.shippingOptions.chooseShippingOption"></span>
-                    <span class="seller-of hide" data-i18n="shipping.shippingOptions.ofSeller"></span>
                 </span>
 
-                {#shippingOptions.multipleSellers}
-                <span class="pull-right">
-                    <span class="following" data-i18n="shipping.shippingOptions.followingProducts">Produtos de </span>
-                    <strong class="seller-name">{seller.name}</strong>
+                {#multipleSellers}
+                <span class="products-from-seller-container pull-right">
+                    <span class="products-from-seller" data-i18n="shipping.shippingOptions.followingProducts"></span>&nbsp;
+                    <strong class="products-from-seller-name seller-{seller.name|slugify}">{seller.name}</strong>
                 </span>
-                {/shippingOptions.multipleSellers}
+                {/multipleSellers}
             </h4>
 
             {#multipleSellers}
