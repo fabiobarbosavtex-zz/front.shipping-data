@@ -30,7 +30,7 @@
             {?isStateUpperCase}
                 {state}
             {:else}
-                {@capitalize text=state /}
+                {state|capitalize}
             {/isStateUpperCase}
         </span>
         {?postalCodeByInput}

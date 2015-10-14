@@ -14,11 +14,11 @@ define ->
     ###
       Capitalize
       Usage:
-      {@capitalize text=value /}
+      {value|capitalize}
     ###
-    dust.helpers.capitalize = (chunk, ctx, bodies, params) ->
-      text = params.text
-      return chunk.write(_.capitalizeSentence(text))
+    dust.filters.capitalize = (text) ->
+      return _.capitalizeSentence(text)
+
     ###
       Slugify
       Usage:

@@ -47,13 +47,13 @@
             </span>
             <br>
             <span class="ship-info-text">
-              <span>{city}</span> - <span>{@capitalize text=state /}</span>
+              <span>{city}</span> - <span>{state|capitalize}</span>
             </span>
             </p>
           {:else}
             <p class="ship-filled-data">
             <span class="ship-info-text">
-              <span>{city}</span> - <span>{@capitalize text=state /}</span> - <a class="link-edit" href="javascript:void(0);" id="force-shipping-fields" data-i18n="global.edit"></a>
+              <span>{city}</span> - <span>{state|capitalize}</span> - <a class="link-edit" href="javascript:void(0);" id="force-shipping-fields" data-i18n="global.edit"></a>
             </span>
             </p>
           {/labelFields.neighborhood}
