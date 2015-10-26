@@ -39,6 +39,7 @@
           <input type="text" autocomplete="off" id="ship-postal-code"
                  class="ship-postal-code postal-code postal-code-{country} input-small clear-address-search" value="{postalCode}" name="postalCode"
                  data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-postalcode="true"/>
+          <small><a href="{dontKnowPostalCodeURL}" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressSearch.dontKnowPostalCode"></a></small>
       </p>
 
       <p class="ship-street required input text">
