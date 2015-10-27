@@ -220,6 +220,7 @@ define ['flight/lib/component',
           @attr.data.countryRules[country] = new countryRule()
           @attr.data.states = @attr.data.countryRules[country].states
           @attr.data.regexes = @attr.data.countryRules[country].regexes
+          @attr.data.dontKnowPostalCodeURL = @attr.data.countryRules[country].dontKnowPostalCodeURL
 
       @createMap = () ->
         if @attr.data.address?.geoCoordinates?.length is 2
