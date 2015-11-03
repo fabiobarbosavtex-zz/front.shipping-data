@@ -136,6 +136,7 @@ define(function () {
     },
     "countries": {
       "ARG": 'Argentina',
+      "BOL": 'Bolívia',
       "BRA": 'Brasil',
       "CHL": 'Chile',
       "COL": 'Colômbia',

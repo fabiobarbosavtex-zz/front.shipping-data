@@ -1,0 +1,158 @@
+<!-- BACK TO LIST BUTTON -->
+{?hasAvailableAddresses}
+  <p class="cancel-address-form">
+    <a href="javascript:void(0);" class="cancel-new-address" data-i18n="shipping.addressForm.cancelEditAddress"></a>
+  </p>
+{/hasAvailableAddresses}
+
+<form class="address-form-new box-new address-form-{country}" data-parsley-bind="true" data-parsley-focus="first">
+
+  {#address}
+  <fieldset class="address-data">
+
+    <!-- HIDDEN FIELDS -->
+    <input type="hidden" name="addressId" value="{address.addressId}"/>
+    <input type="hidden" name="country" value="{country}"/>
+    <input type="hidden" name="postalCode" value="{postalCode}" class="postal-code postal-code-hidden">
+
+    <!-- COUNTRY NAME -->
+    <p class="ship-international input one-delivery-country">
+      <span data-i18n="shipping.addressForm.deliveryCountry"></span> {country}
+    </p>
+
+    {?hasGeolocationData}
+      <div id="map-canvas" class="map-canvas"></div>
+    {/hasGeolocationData}
+
+    <div class="box-delivery">
+
+      <!-- LABEL SHIPING FIELDS FOR GEOLOCATION SEARCH -->
+      {?hasGeolocationData}
+      {#contractedShippingFieldsForGeolocation}
+        <p class="ship-filled-data">
+          <!-- STREET, NUMBER, AND EDIT -->
+          <span class="ship-street-text">
+            {?street}
+              <span>{address.street}</span>
+            {/street}
+            {?number}
+              <span>, {address.number}</span>
+            {/number}
+            <span> - </span>
+            <a class="link-edit find-a-postal-code-for-another-address" href="javascript:void(0);" data-i18n="global.edit"></a>
+          </span>
+          <br>
+
+          <!-- NEIGHBORHOOD, CITY, STATE,  AND EDIT -->
+          <span class="ship-info-text">
+            {?neighborhood}
+              <span>{address.neighborhood}</span>
+            {/neighborhood}
+            {?city}
+              {?neighborhood}
+              <span> - </span>
+              {/neighborhood}
+              <span>{address.city}</span>
+            {/city}
+            {?state}
+              {?city}
+                <span> - </span>
+              {/city}
+              <span>{address.state}</span>
+            {/state}
+          </span>
+        </p>
+      {/contractedShippingFieldsForGeolocation}
+      {/hasGeolocationData}
+
+      {^contractedShippingFieldsForGeolocation.street}
+      <p class="ship-street required input text">
+        <label for="ship-street"><span data-i18n="shipping.addressForm.direction"></span> <span class="item-required">*</span></label>
+        <input type="text"  id="ship-street" class="input-xlarge" value="{street}" name="street" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
+      </p>
+      {:else}
+      <input type="hidden" name="street" value="{street}">
+      {/contractedShippingFieldsForGeolocation.street}
+
+      {^contractedShippingFieldsForGeolocation.number}
+      <p class="ship-number required input text">
+        <label for="ship-number"><span data-i18n="shipping.addressForm.number"></span> <span class="item-required">*</span></label>
+        <input type="text"  id="ship-number" class="input-mini" value="{number}" name="number" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-alphanumponc="true" data-parsley-maxlength="50">
+      </p>
+      {:else}
+      <input type="hidden" name="number" value="{number}">
+      {/contractedShippingFieldsForGeolocation.number}
+
+      <p class="ship-more-info input text">
+        <label for="ship-more-info"><span data-i18n="shipping.addressForm.complement"></span></label>
+        <input type="text"  id="ship-more-info" class="input-medium" value="{complement}" name="complement" data-i18n="[placeholder]global.notRequired" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
+      </p>
+
+      <p class="ship-reference input text hide">
+        <label for="ship-reference"><span data-i18n="shipping.addressForm.reference"></span></label>
+        <input type="text"  id="ship-reference" class="input-xlarge" value="{reference}" name="reference" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
+      </p>
+
+      {^contractedShippingFieldsForGeolocation.state}
+      <p class="ship-state required input text">
+        <label for="ship-state"><span data-i18n="shipping.addressForm.department"></span> <span class="item-required">*</span></label>
+        <select id="ship-state"  class="input-xlarge" name="state" data-selectize="true" data-parsley-trigger="change blur" data-parsley-required="true">
+          <option></option>
+          {#states}
+            <option value="{value}" {@eq key=value value=state}selected="true"{/eq}>{label}</option>
+          {/states}
+        </select>
+      </p>
+      {:else}
+      <input type="hidden" name="state" value="{state}">
+      {/contractedShippingFieldsForGeolocation.state}
+
+      {^contractedShippingFieldsForGeolocation.city}
+      <p class="ship-city required input text">
+        <label for="ship-city"><span data-i18n="shipping.addressForm.province"></span> <span class="item-required">*</span></label>
+        <select id="ship-city"  class="input-xlarge" name="city" data-selectize="true" data-parsley-trigger="change blur" data-parsley-required="true" data-based-state-change="true">
+          <option></option>
+          {#cities}
+            <option value="{.}" {@eq key=. value=city}selected="true"{/eq}>{.}</option>
+          {/cities}
+        </select>
+      </p>
+      {:else}
+      <input type="hidden" name="city" value="{city}">
+      {/contractedShippingFieldsForGeolocation.city}
+
+      {^contractedShippingFieldsForGeolocation.neighborhood}
+      <p class="ship-neighborhood input text">
+        <label for="ship-neighborhood"><span data-i18n="shipping.addressForm.city"></span> <span class="item-required">*</span></label>
+        <select id="ship-neighborhood"  class="input-xlarge" name="neighborhood" data-selectize="true" data-parsley-trigger="change blur" data-parsley-required="true" data-based-city-change="true">
+          <option></option>
+          {#neighborhoods}
+            <option value="{.}" {@eq key=. value=neighborhood}selected="true"{/eq}>{.}</option>
+          {/neighborhoods}
+        </select>
+      </p>
+      {:else}
+      <input type="hidden" name="neighborhood" value="{neighborhood}">
+      {/contractedShippingFieldsForGeolocation.neighborhood}
+
+      <p class="ship-commercial input checkbox hide">
+        <label for="ship-commercial">
+          <input type="checkbox"  id="ship-commercial" name="addressTypeCommercial" value="true">
+          <span data-i18n="shipping.addressForm.commercial"></span>
+        </label>
+      </p>
+
+      <p class="ship-name required input text separate">
+        <label for="ship-name"><span data-i18n="shipping.addressForm.receiver"></span>  <span class="item-required">*</span></label>
+        <input type="text"  id="ship-name" class="input-xlarge" name="receiverName" value="{receiverName}" data-parsley-trigger="change blur" data-parsley-required="true" data-parsley-alphanumponc="true" data-parsley-maxlength="100">
+      </p>
+
+    </div>
+
+    <p class="submit btn-submit-wrapper pull-left hide">
+      <button type="submit" class="submit btn btn-large btn-success address-save"  data-i18n="global.save"></button>
+    </p>
+
+  </fieldset>
+  {/address}
+</form>
