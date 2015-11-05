@@ -28,7 +28,7 @@ define ->
       @basedOnStateChange = false
       @basedOnCityChange = false
 
-      @geocodingAvailable = true
+      @geocodingAvailable = false
       @isStateUpperCase = true
 
       @dontKnowPostalCodeURL = "http://www.buscacep.correios.com.br/servicos/dnec/index.do"
