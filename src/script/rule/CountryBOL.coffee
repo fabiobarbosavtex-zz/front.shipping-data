@@ -1,5 +1,5 @@
 define ->
-  class CountryPER
+  class CountryBOL
     constructor: () ->
       @country = 'BOL'
       @abbr = 'BO'
