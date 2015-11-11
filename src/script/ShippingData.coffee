@@ -137,6 +137,7 @@ define ['flight/lib/component',
 
       @tryDone = (ev) ->
         ev?.stopPropagation()
+
         if @attr.stateMachine.current is 'addressFormSLA'
           # When the AddressForm is finished validating, ShippingData will also validate due to @addressFormValidated()
           [addressFormVal, shippingOptionsVal] = [$.Deferred(), $.Deferred()]
@@ -159,9 +160,6 @@ define ['flight/lib/component',
             @attr.stateMachine.showForm(@attr.orderForm)
             @attr.stateMachine.next()
             return
-
-          isUsingGiftRegistryAddress = address.addressType is "giftRegistry"
-          $(window).trigger('isUsingGiftRegistryAddress.vtex', isUsingGiftRegistryAddress)
 
         if @attr.stateMachine.current in ['listSLA', 'anonListSLA']
           @select('shippingOptionsSelector').one 'componentValidated.vtex', (e, errors) =>
