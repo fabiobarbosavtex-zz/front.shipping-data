@@ -111,7 +111,7 @@ define ['state-machine/state-machine',
         @select('shippingStepSelector').removeClass('active')
         @select('shippingStepTitleSelector').removeClass('accordion-toggle-active')
 
-    @on_Summary = (event, from, to, orderForm) ->      
+    @on_Summary = (event, from, to, orderForm) ->
       @attr.data.active = false
 
       # Disable other components
@@ -143,7 +143,7 @@ define ['state-machine/state-machine',
       @select('addressNotFilledSelector').hide()
 
     @onSummary = (event, from, to, orderForm, locale, rules) ->
-      @select('shippingSummarySelector').trigger('enable.vtex', [locale, orderForm.shippingData, orderForm.items, orderForm.sellers, rules, orderForm.canEditData, orderForm.giftRegistryData])      
+      @select('shippingSummarySelector').trigger('enable.vtex', [locale, orderForm.shippingData, orderForm.items, orderForm.sellers, rules, orderForm.canEditData, orderForm.giftRegistryData])
       @select('editShippingDataSelector').show()
 
     @onLeaveSummary = (event, from, to) ->
@@ -224,7 +224,7 @@ define ['state-machine/state-machine',
 
     @onLeaveAnonListLoadSLA = (event, from, to) ->
       @select('addressListSelector').trigger('stopLoading.vtex')
-      @select('shippingOptionsSelector').trigger('stopLoading.vtex')  
+      @select('shippingOptionsSelector').trigger('stopLoading.vtex')
 
     @on_Form = (event, from, to, orderForm) ->
       @attr.data.active = true
@@ -281,7 +281,7 @@ define ['state-machine/state-machine',
       # Disable other components
       @select('addressFormSelector').trigger('disable.vtex')
       @select('shippingOptionsSelector').trigger('disable.vtex')
-      
+
       @select('addressSearchSelector').trigger('enable.vtex', [rules, address, hasAvailableAddresses])
 
     @onLeaveSearch = (event, from, to) ->
