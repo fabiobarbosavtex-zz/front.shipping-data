@@ -11,11 +11,12 @@ define ['flight/lib/component',
         'shipping/script/mixin/withi18n',
         'shipping/script/mixin/withValidation',
         'shipping/script/mixin/withShippingStateMachine',
+        'shipping/script/mixin/withImplementedCountries',
         'shipping/templates/shippingData',
         'shipping/script/libs/selectize/selectize',
         'link!shipping/script/libs/selectize/selectize.bootstrap2.css'
         'link!shipping/style/style.css'],
-  (defineComponent, extensions, Address, AddressSearch, AddressForm, AddressList, ShippingOptions, ShippingSummary, CountrySelect, ShippingDataStore, withi18n, withValidation, withShippingStateMachine, template, selectize) ->
+  (defineComponent, extensions, Address, AddressSearch, AddressForm, AddressList, ShippingOptions, ShippingSummary, CountrySelect, ShippingDataStore, withi18n, withValidation, withShippingStateMachine, withImplementedCountries, template, selectize) ->
     ShippingData = ->
       @defaultAttrs
         API: null
@@ -72,25 +73,27 @@ define ['flight/lib/component',
           @attr.data.userIsNowLoggedIn = true
           @attr.data.canEditData = @attr.orderForm.canEditData
 
-        country = @attr.data.deliveryCountries[0] ? shippingData.address?.country
+        country = shippingData.address?.country ? @attr.data.deliveryCountries[0]
 
-        @countrySelected(null, country).then =>
-          if @attr.stateMachine.current in ['none', 'empty', 'summary'] or @attr.data.userIsNowLoggedIn
-            if @attr.data.userIsNowLoggedIn
-              @attr.data.userIsNowLoggedIn = false
+        @countrySelected(null, country)
 
-            if @attr.data.active
-              if @attr.data.hasAvailableAddresses
-                @attr.stateMachine.showList(@attr.orderForm)
-                @attr.stateMachine.next()
-              else
-                @attr.stateMachine.showForm(@attr.orderForm)
-                @attr.stateMachine.next()
-            else
-              @attr.stateMachine.showSummary(@attr.orderForm)
+      @resolveState = (changedContry)->
+        if @attr.stateMachine.current in ['none', 'empty', 'summary'] or @attr.data.userIsNowLoggedIn or changedContry
+          if @attr.data.userIsNowLoggedIn
+            @attr.data.userIsNowLoggedIn = false
+
+          if @attr.data.active
+            if @attr.data.hasAvailableAddresses
+              @attr.stateMachine.showList(@attr.orderForm)
               @attr.stateMachine.next()
+            else
+              @attr.stateMachine.showForm(@attr.orderForm)
+              @attr.stateMachine.next()
+          else
+            @attr.stateMachine.showSummary(@attr.orderForm)
+            @attr.stateMachine.next()
 
-          @validate()
+        @validate()
 
       #
       # External events handlers
@@ -297,7 +300,9 @@ define ['flight/lib/component',
       @addressKeysInvalidated = (ev, address) ->
         rules = @attr.data.countryRules[address.country]
         hasAvailableAddresses = @attr.data.hasAvailableAddresses
-        @attr.stateMachine.showSearch(rules, address, hasAvailableAddresses)
+        deliveryCountries = @attr.data.deliveryCountries
+
+        @attr.stateMachine.showSearch(rules, address, hasAvailableAddresses, deliveryCountries)
 
       # User wants to edit or create an address
       @editAddress = (ev, address) ->
@@ -343,8 +348,7 @@ define ['flight/lib/component',
         @attr.orderForm.shippingData.logisticsInfo = logisticsInfo
         @validate()
 
-      @countrySelected = (ev, country) ->
-        @attr.data.country = country
+      @loadExistingCountry = (country, changedContry) ->
         deps = [
           'shipping/script/rule/Country'+country
           'shipping/templates/countries/addressForm'+country
@@ -359,7 +363,34 @@ define ['flight/lib/component',
           @attr.data.regexes = countryRules[country].regexes
           @attr.data.geocodingAvailable = countryRules[country].geocodingAvailable
           @loadGoogleMapsAPI(countryRules[country])
-          return countryRules[country]
+          @resolveState(changedContry)
+
+      @loadUniversal = (country, changedContry) ->
+        deps = [
+          'shipping/script/rule/CountryUNI'
+          'shipping/templates/countries/addressFormUNI'
+          'shipping/templates/addressSearch'
+          'shipping/templates/shippingOptions',
+          'shipping/templates/deliveryWindows'
+        ]
+        vtex.curl deps, (countryRule) =>
+          countryRules = @attr.data.countryRules
+          countryRules[country] = new countryRule()
+          @attr.data.states = countryRules[country].states
+          @attr.data.regexes = countryRules[country].regexes
+          @attr.data.geocodingAvailable = countryRules[country].geocodingAvailable
+          @loadGoogleMapsAPI(countryRules[country])
+          @resolveState(changedContry)
+
+      @countrySelected = (ev, country, changedContry) ->
+        @attr.data.country = country
+        if changedContry
+          @attr.orderForm?.shippingData?.address?.country = country
+
+        if @isCountryImplemented(country)
+          @loadExistingCountry(country, changedContry)
+        else
+          @loadUniversal(country, changedContry)
 
       @loadGoogleMapsAPI = (countryRule) ->
         if (countryRule.geocodingAvailable)
@@ -486,4 +517,4 @@ define ['flight/lib/component',
               @select('addressFormSelector').trigger('googleMapsAPILoaded.vtex')
               @select('addressSearchSelector').trigger('googleMapsAPILoaded.vtex')
 
-    return defineComponent(ShippingData, withi18n, withValidation, withShippingStateMachine)
+    return defineComponent(ShippingData, withi18n, withValidation, withShippingStateMachine, withImplementedCountries)
