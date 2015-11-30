@@ -2,8 +2,9 @@ define ['flight/lib/component',
         'shipping/script/setup/extensions',
         'shipping/script/models/Address',
         'shipping/script/mixin/withi18n',
-        'shipping/script/mixin/withValidation'],
-  (defineComponent, extensions, Address, withi18n, withValidation) ->
+        'shipping/script/mixin/withValidation',
+        'shipping/script/mixin/withImplementedCountries'],
+  (defineComponent, extensions, Address, withi18n, withValidation, withImplementedCountries) ->
     AddressForm = ->
       @defaultAttrs
         map: false
@@ -214,11 +215,17 @@ define ['flight/lib/component',
       # Select a delivery country
       # This will load the country's form and rules
       @loadCountryRulesAndTemplate = (country) ->
-        @attr.templates.form.name = @attr.templates.form.baseName + country
+        if @isCountryImplemented(country)
+          @attr.templates.form.name = @attr.templates.form.baseName + country
+          @attr.countryRulesPath = 'shipping/script/rule/Country'+country
+        else
+          @attr.templates.form.name = @attr.templates.form.baseName + 'UNI'
+          @attr.countryRulesPath = 'shipping/script/rule/CountryUNI'
+
         @attr.templates.form.template = 'shipping/templates/' + @attr.templates.form.name
 
         deps = [@attr.templates.form.template,
-                'shipping/script/rule/Country'+country]
+                @attr.countryRulesPath]
 
         return vtex.curl deps, (formTemplate, countryRule) =>
           @attr.data.countryRules[country] = new countryRule()
@@ -537,4 +544,4 @@ define ['flight/lib/component',
 
         @setLocalePath 'shipping/script/translation/'
 
-    return defineComponent(AddressForm, withi18n, withValidation)
+    return defineComponent(AddressForm, withi18n, withValidation, withImplementedCountries)
