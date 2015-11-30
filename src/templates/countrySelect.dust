@@ -1,0 +1,12 @@
+{?showCountrySelect}
+<div class="select-country">
+	<p class="ship-country required input text">
+		<label for="ship-country"><span data-i18n="shipping.countrySelect.chooseDeliveryCountry"></span></label>
+		<select id="ship-country" class="input-medium" name="country">
+			{#deliveryCountries}
+				<option value="{.}" {@eq key=. value=country}selected="true"{/eq} data-i18n="countries.{.}">{.}</option>
+			{/deliveryCountries}
+		</select>
+	</p>
+</div>
+{/showCountrySelect}
