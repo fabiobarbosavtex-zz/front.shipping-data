@@ -1,8 +1,9 @@
 define ['flight/lib/component',
         'shipping/script/setup/extensions',
         'shipping/script/mixin/withi18n',
+        'shipping/script/mixin/withImplementedCountries',
         'shipping/templates/addressList'],
-  (defineComponent, extensions, withi18n, template) ->
+  (defineComponent, extensions, withi18n, withImplementedCountries, template) ->
     AddressList = ->
       @defaultAttrs
         data:
@@ -38,7 +39,10 @@ define ['flight/lib/component',
         countriesUsedRequire = _.map @attr.data.availableAddresses, (a) ->
           if a.addressType is 'giftRegistry' or not a.country
             return null
-          return 'shipping/script/rule/Country'+a.country
+          else if @isCountryImplemented(a.country)
+            return 'shipping/script/rule/Country'+a.country
+          else
+            return 'shipping/script/rule/CountryUNI'
 
         vtex.curl countriesUsedRequire, =>
           for country, i in arguments
@@ -148,4 +152,4 @@ define ['flight/lib/component',
 
         @setLocalePath 'shipping/script/translation/'
 
-    return defineComponent(AddressList, withi18n)
+    return defineComponent(AddressList, withi18n, withImplementedCountries)
