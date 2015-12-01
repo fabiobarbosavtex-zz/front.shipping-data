@@ -7,7 +7,7 @@ define ->
 
     window.ParsleyValidator.addValidator('alphanumponc',
       (val) ->
-        regex = new RegExp(/^[A-Za-zÀ-ž0-9\/\\\-\.\,\s\(\)\'\#ªº]*$/)
+        regex = new RegExp(/^[A-Za-zÀ-ž0-9\/\\\-\.\,\s\(\)\'\#ªº°]*$/)
         return regex.test(val)
       , 32)
 
