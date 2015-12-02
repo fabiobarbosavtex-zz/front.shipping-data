@@ -241,6 +241,7 @@ define ['flight/lib/component',
         # In case it's an address that we already know its logistics info, return
         knownAddress = _.find @attr.orderForm.shippingData?.availableAddresses, (a) ->
             a.addressId is address.addressId and
+            a.country is address.country and
             a.postalCode?.replace('-', '') is address.postalCode?.replace('-', '') and
             a.geoCoordinates?[0] is address.geoCoordinates?[0] and
             a.geoCoordinates?[1] is address.geoCoordinates?[1]
