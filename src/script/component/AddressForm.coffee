@@ -457,9 +457,12 @@ define ['flight/lib/component',
           @fillCitySelect()
           @fillNeighborhoodSelect()
           @render().then =>
+            countryRule = @getCountryRule()
             # For the countries that use postal code, we must trigger
             # an addressKeysUpdated, so it can search for the SLAs
-            if @getCountryRule().queryByPostalCode || @getCountryRule().queryByGeocoding
+            if countryRule.queryByPostalCode ||
+               countryRule.queryByGeocoding ||
+               countryRule.country is 'UNI'
               @addressKeysUpdated()
 
         handleLoadFailure = (reason) ->
@@ -539,6 +542,8 @@ define ['flight/lib/component',
           'postalCodeSelector': @addressKeysUpdated
         @on 'submit',
           'addressFormSelector': @stopSubmit
+
+        @$node.on 'blur', @attr.universalPostalCodeSelector, @addressKeysUpdated.bind(this)
 
         @setValidators [
           @validateAddress
