@@ -16,11 +16,8 @@
 
     <div class="box-delivery">
 
-      <p class="ship-postal-code input text mask">
-          <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode"></span></label>
-          <input type="text" autocomplete="off" id="ship-postal-code"
-                 class="ship-postal-code postal-code postal-code-{country} input-mini clear-address-search" value="{postalCode}" name="postalCode"
-                 data-parsley-trigger="blur" data-i18n="[placeholder]global.notRequired"/>
+      <p class="ship-postal-code ship-postal-code-uni-container input text">
+      {>universalPostalCode/}
       </p>
 
       <p class="ship-street required input text">
