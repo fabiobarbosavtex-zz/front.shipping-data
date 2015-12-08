@@ -252,7 +252,7 @@ define ['state-machine/state-machine',
       hasDeliveries = @attr.data.hasDeliveries
 
       address = orderForm.shippingData?.address
-      country = address?.country ? deliveryCountries[0]
+      country = address?.country ? @attr.data.country ? deliveryCountries[0]
       rules = @attr.data.countryRules[country]
       rules = @attr.data.countryRules[deliveryCountries[0]] unless rules
 
