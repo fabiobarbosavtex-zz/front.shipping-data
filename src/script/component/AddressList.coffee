@@ -36,7 +36,7 @@ define ['flight/lib/component',
         @trigger('editAddress.vtex', @attr.data.address)
 
       @createAddressesSummaries = ->
-        countriesUsedRequire = _.map @attr.data.deliveryCountries, (c) ->
+        countriesUsedRequire = _.map @attr.data.deliveryCountries, (c) =>
           if @isCountryImplemented(c)
             return 'shipping/script/rule/Country'+c
           else
