@@ -60,14 +60,17 @@ define ['flight/lib/component',
               aa.firstPart += ', ' + aa.complement if aa.complement
               aa.firstPart += ', ' + aa.neighborhood if aa.neighborhood
               aa.firstPart += ', ' + aa.reference if aa.reference
-              aa.secondPart = '' + aa.city
 
               # State is upper case based on the country rules
               if @attr.data.countryRules[aa.country]?.isStateUpperCase
                 state = aa.state
               else
                 state = _.capitalizeSentence(aa.state)
-              aa.secondPart += ' - ' + state
+
+              if aa.city
+                aa.secondPart = aa.city + ' - ' + state
+              else
+                aa.secondPart = state
 
               # Show postal code only if user typed it
               if @attr.data.countryRules[aa.country]?.postalCodeByInput
