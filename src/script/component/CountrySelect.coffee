@@ -27,10 +27,10 @@ define ['flight/lib/component',
     # Handle the initial view of this component
     @enable = (ev, deliveryCountries, address) ->
       ev?.stopPropagation()
-      @attr.data.deliveryCountries = deliveryCountries.concat(['MEX', 'DEN'])
+      @attr.data.deliveryCountries = deliveryCountries
 
-      #if @attr.data.deliveryCountries.length > 1
-      @attr.data.showCountrySelect = true
+      if @attr.data.deliveryCountries.length > 1
+        @attr.data.showCountrySelect = true
 
       @attr.data.country = if address?.country then address.country else null
 
