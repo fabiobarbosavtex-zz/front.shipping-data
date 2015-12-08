@@ -83,7 +83,7 @@ define ['flight/lib/component',
             @attr.data.userIsNowLoggedIn = false
 
           if @attr.data.active
-            if @attr.data.hasAvailableAddresses
+            if @attr.data.hasAvailableAddresses and !changedContry
               @attr.stateMachine.showList(@attr.orderForm)
               @attr.stateMachine.next()
             else
