@@ -71,8 +71,11 @@ define(function () {
         "shipsTo": "Entregar en"
       },
       "countrySelect": {
-        "chooseDeliveryCountry": 'Elija el país de entrega',
-        "cancelEditAddress": 'Cancelar alterações e voltar para a lista de endereços'
+        "chooseDeliveryCountry": 'Elija el país de entrega'
+      },
+      "postalCodeInput": {
+        "dontUse": 'La dirección no tiene un código postal',
+        "use": 'Añadir un código postal'
       },
       "shippingOptions": {
         "shippingOptions": 'Elija las opciones de envío',
