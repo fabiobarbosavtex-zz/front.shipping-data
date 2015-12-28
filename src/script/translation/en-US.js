@@ -138,6 +138,7 @@ define(function () {
       "ARG": 'Argentina',
       "BOL": 'Bolivia',
       "BRA": 'Brazil',
+      "CAN": 'Canada',
       "CHL": 'Chile',
       "COL": 'Colombia',
       "ECU": 'Equator',
