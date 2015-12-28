@@ -137,6 +137,7 @@ define(function () {
     "countries": {
       "ARG": 'Argentina',
       "BRA": 'Brazil',
+      "CAN": 'Canada',
       "CHL": 'Chile',
       "COL": 'Colombia',
       "ECU": 'Equator',
