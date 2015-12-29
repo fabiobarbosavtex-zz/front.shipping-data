@@ -1,5 +1,5 @@
 define ->
-  class CountryUSA
+  class CountryCAN
     constructor: () ->
       @country = 'CAN'
       @abbr = 'CA'
@@ -42,7 +42,7 @@ define ->
       @dontKnowPostalCodeURL = "https://www.canadapost.ca/cpo/mc/personal/postalcode/fpc.jsf"
 
       @regexes =
-        postalCode: new RegExp(/^[a-Z0-9]{3}\ [a-Z0-9]{3}$/)
+        postalCode: new RegExp(/^[A-z0-9]{3}\ [A-z0-9]{3}$/)
 
       @masks =
         postalCode: '*** ***'

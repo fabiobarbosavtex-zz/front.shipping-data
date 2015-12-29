@@ -181,7 +181,7 @@ define [], () ->
       day = date.getUTCDate()
       day = ('0'+day) if (parseInt(day, 10) < 10)
       month = ('0'+month) if (parseInt(month, 10) < 10)
-      if @attr.locale is 'en-US'
+      if @attr.locale is 'en'
         return month + '/' + day + '/' + year
       else
         return day + '/' + month + '/' + year

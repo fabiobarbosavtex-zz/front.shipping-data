@@ -64,7 +64,7 @@ define ['flight/lib/component',
               if @attr.isScheduledDeliveryAvailable
                 @attr.locale = i18n.lng()
                 # Coloca a tradução correta no pickadate
-                if @attr.locale isnt 'en-US'
+                if @attr.locale isnt 'en'
                   $.extend( $.fn.pickadate.defaults, vtex.pickadate[@attr.locale] )
 
                 _.each @attr.data.shippingOptions, (so) =>
