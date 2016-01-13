@@ -27,7 +27,7 @@ define ->
       @postalCodeByState = false
       @postalCodeByCity = false
 
-      @queryByPostalCode = false
+      @queryByPostalCode = true
       @queryByGeocoding = false
 
       @deliveryOptionsByPostalCode = true
@@ -42,7 +42,7 @@ define ->
       @dontKnowPostalCodeURL = "https://www.canadapost.ca/cpo/mc/personal/postalcode/fpc.jsf"
 
       @regexes =
-        postalCode: new RegExp(/^[A-z0-9]{3}\ [A-z0-9]{3}$/)
+        postalCode: new RegExp(/^[A-z0-9]{3}\ ?[A-z0-9]{3}$/)
 
       @masks =
         postalCode: '*** ***'
