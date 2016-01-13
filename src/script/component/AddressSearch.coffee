@@ -77,7 +77,7 @@ define ['flight/lib/component',
       @getPostalCode = (postalCode) ->
         @trigger('addressSearchStart.vtex')
         @attr.getAddressInformation({
-          postalCode: postalCode.replace(/-/g, '')
+          postalCode: postalCode.replace(/[-\ ]/g, '')
           country: @attr.data.country
         }).then(@handleAddressSearch.bind(this), @handleAddressSearchError.bind(this))
 
