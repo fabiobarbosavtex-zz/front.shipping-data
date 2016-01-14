@@ -48,7 +48,7 @@
 
       <p class="ship-number input text hide">
         <label for="ship-number"><span data-i18n="shipping.addressForm.number"></span></label>
-        <input type="text"  id="ship-number" class="input-mini" value="{number}" name="number" data-parsley-trigger="change blur" data-parsley-alphanumponc="true" data-parsley-maxlength="50">
+        <input type="text"  id="ship-number" class="input-mini" value="N/A" name="number" data-parsley-trigger="change blur" data-parsley-alphanumponc="true" data-parsley-maxlength="50">
       </p>
 
       <p class="ship-more-info input text">
