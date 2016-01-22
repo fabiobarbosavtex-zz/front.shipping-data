@@ -67,8 +67,17 @@
       </p>
 
       <p class="ship-city required input text">
-        <label for="ship-city"><span data-i18n="shipping.addressForm.city"></span> <span class="item-required">*</span></label>
-        <input type="text"  id="ship-city" class="input-large" value="{city}" name="city" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
+        <label for="ship-city"><span data-i18n="shipping.addressForm.locality"></span> <span class="item-required">*</span></label>
+        {?cities}
+          <select id="ship-city" class="input-large" name="city" data-parsley-trigger="change blur" data-parsley-required="true" data-based-state-change="true">
+            <option></option>
+            {#cities}
+              <option value="{value}" {@eq key=value value="{city}"}selected="true"{/eq}>{label}</option>
+            {/cities}
+          </select>
+        {:else}
+          <input type="text" id="ship-city" class="ship-city input-large" data-parsley-trigger="change blur" value="{city}" name="city" data-parsley-required="true" data-parsley-alphanumponc="true">
+        {/cities}
       </p>
 
       <p class="ship-state required input text">

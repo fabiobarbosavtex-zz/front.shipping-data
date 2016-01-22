@@ -89,6 +89,9 @@ define ['flight/lib/component',
         if address.neighborhood and address.neighborhood.indexOf(';') isnt -1
           address.neighborhoods = address.neighborhood
           address.neighborhood = ''
+        if address.city and address.city.indexOf(';') isnt -1
+          address.cities = address.city
+          address.city = ''
         rules = @attr.countryRules
         if rules.postalCodeByInput
           address.postalCode = _.maskString(address.postalCode, rules.masks.postalCode)
