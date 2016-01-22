@@ -82,7 +82,7 @@
 
       <p class="ship-state required input text">
         <label for="ship-state"><span data-i18n="shipping.addressForm.province"></span> <span class="item-required">*</span></label>
-        <select id="ship-state"  class="input-medium" name="state" data-parsley-trigger="change blur" data-parsley-required="true">
+        <select id="ship-state"  class="input-medium" name="state" data-parsley-trigger="change blur" data-parsley-required="true" {?cities}disabled{/cities}>
           <option></option>
           {#states}
             <option value="{value}" {@eq key=value value=state}selected="true"{/eq}>{label}</option>
