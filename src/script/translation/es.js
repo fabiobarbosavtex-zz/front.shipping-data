@@ -17,6 +17,7 @@ define(function () {
       "addressForm": {
         "header": 'Registrar nueva dirección',
         "postalCodeBRA": 'CEP',
+        "postalCodeCAN": 'Código Postal',
         "postalCodeUSA": 'ZIP',
         "postalCodeARG": 'Código Postal (CP)',
         "postalCodeURY": 'Código Postal (CP)',

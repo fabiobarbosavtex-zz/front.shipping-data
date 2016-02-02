@@ -17,6 +17,7 @@ define(function () {
       "addressForm": {
         "header": 'New address',
         "postalCodeBRA": 'CEP',
+        "postalCodeCAN": 'Postal Code',
         "postalCodeUSA": 'ZIP',
         "postalCodeARG": 'Código Postal (CP)',
         "postalCodeURY": 'Código Postal (CP)',
