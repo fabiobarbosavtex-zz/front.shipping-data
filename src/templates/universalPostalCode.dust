@@ -1,0 +1,22 @@
+{?isUniversalUsingPostalCode}
+  <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode"></span></label>
+
+  <input type="text" autocomplete="off" id="ship-postal-code"
+  class="ship-postal-code postal-code-UNI postal-code-{country} input-mini"
+  value="{postalCode}" name="postalCode"
+  data-parsley-required="true" data-parsley-trigger="blur"
+  data-parsley-errors-container=".postal-code-errors">
+
+  {?loading}
+  <i class="loading-inline icon-spinner icon-spin">
+    <span data-i18n="global.loading"></span>
+  </i>
+  {/loading}
+
+  <small><a href="javascript:void(0);" class="ship-dont-use-postal-code" data-i18n="shipping.postalCodeInput.dontUse"></a></small>
+
+  <span class="postal-code-errors"></span>
+{:else}
+  <input type="hidden" name="postalCode" value="0"/>
+  <small><a href="javascript:void(0);" class="ship-use-postal-code" data-i18n="shipping.postalCodeInput.use"></a></small>
+{/isUniversalUsingPostalCode}
