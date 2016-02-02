@@ -9,9 +9,9 @@
 {:else}
     {#address}
     <p class="address">
-        <span class="street">{street}</span>,&nbsp;
-        {@if cond="'{country}' !== 'USA'"}
-        <span class="number">{number}</span>
+        <span class="street">{street}</span>
+        {@if cond="'{country}' !== 'USA' && '{country}' !== 'CAN'"}
+        ,&nbsp;<span class="number">{number}</span>
         {/if}
         {?complement}
         , <span class="complement">{complement}</span>

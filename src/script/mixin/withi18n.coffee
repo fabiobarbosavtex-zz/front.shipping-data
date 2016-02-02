@@ -26,6 +26,8 @@ define [], () ->
     @setLocale = (locale = "pt-BR") ->
       if locale.match('es-')
         @attr.locale = 'es'
+      else if locale.match('en-')
+        @attr.locale = 'en'
       else
         @attr.locale = locale
 

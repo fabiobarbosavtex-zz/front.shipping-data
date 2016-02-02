@@ -77,7 +77,7 @@ define ['flight/lib/component',
       @getPostalCode = (postalCode) ->
         @trigger('addressSearchStart.vtex')
         @attr.getAddressInformation({
-          postalCode: postalCode.replace(/-/g, '')
+          postalCode: postalCode.replace(/[-\ ]/g, '')
           country: @attr.data.country
         }).then(@handleAddressSearch.bind(this), @handleAddressSearchError.bind(this))
 
@@ -89,6 +89,9 @@ define ['flight/lib/component',
         if address.neighborhood and address.neighborhood.indexOf(';') isnt -1
           address.neighborhoods = address.neighborhood
           address.neighborhood = ''
+        if address.city and address.city.indexOf(';') isnt -1
+          address.cities = address.city
+          address.city = ''
         rules = @attr.countryRules
         if rules.postalCodeByInput
           address.postalCode = _.maskString(address.postalCode, rules.masks.postalCode)

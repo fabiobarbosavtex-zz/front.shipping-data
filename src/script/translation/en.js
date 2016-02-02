@@ -72,8 +72,11 @@ define(function () {
         "shipsTo": "Ship to"
       },
       "countrySelect": {
-        "chooseDeliveryCountry": 'Choose the delivery country',
-        "cancelEditAddress": 'Cancel and go back to the address list'
+        "chooseDeliveryCountry": 'Choose the delivery country'
+      },
+      "postalCodeInput": {
+        "dontUse": 'The address doesn\'t have a postal code',
+        "use": 'Add postal code'
       },
       "shippingOptions": {
         "shippingOptions": 'Choose the delivery options',
@@ -137,6 +140,7 @@ define(function () {
     },
     "countries": {
       "ARG": 'Argentina',
+      "BOL": 'Bolivia',
       "BRA": 'Brazil',
       "CAN": 'Canada',
       "CHL": 'Chile',

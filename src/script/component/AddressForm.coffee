@@ -259,7 +259,7 @@ define ['flight/lib/component',
 
         state = @attr.data.address?.state
 
-        if state
+        if state and rules.cities[state]
           @attr.data.cities = rules.cities[state]
 
       # Fill the neighborhoods array for the selected city
@@ -413,6 +413,20 @@ define ['flight/lib/component',
               })
         else
           @attr.data.neighborhoods = null
+
+        if address.cities or (address.city and address.city.indexOf(';') isnt -1)
+          cities = if address.cities then address.cities else address.city
+          address.city = ''
+          @attr.data.cities = []
+          for city in cities.split(';')
+            if city.length > 0
+              @attr.data.cities.push({
+                value: city
+                label: city
+              })
+              console.log(@attr.data.cities)
+        else
+          @attr.data.cities = null
         @attr.data.address = new Address(address)
         @attr.data.hasAvailableAddresses = hasAvailableAddresses
         # when the address has an address query, the address was searched with geolocation

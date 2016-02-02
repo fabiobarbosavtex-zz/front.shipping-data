@@ -52,7 +52,7 @@ define ['flight/lib/component',
                 @attr.data.disableEdit = true
 
               aa.firstPart = '' + aa.street
-              aa.firstPart += ', ' + aa.number if aa.number
+              aa.firstPart += ', ' + aa.number if aa.number and aa.number isnt 'N/A'
               aa.firstPart += ', ' + aa.complement if aa.complement
               aa.firstPart += ', ' + aa.neighborhood if aa.neighborhood
               aa.firstPart += ', ' + aa.reference if aa.reference
