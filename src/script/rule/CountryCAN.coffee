@@ -16,7 +16,7 @@ define ->
         "ON": "Ontario",
         "PE": "Prince Edward Island",
         "QC": "Quebec",
-        "SK": "Saskatchewan"
+        "SK": "Saskatchewan",
         "YK": "Yukon"
       }
 
