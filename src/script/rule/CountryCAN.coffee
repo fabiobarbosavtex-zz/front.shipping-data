@@ -10,11 +10,14 @@ define ->
         "MB": "Manitoba",
         "NB": "New Brunswick",
         "NL": "Newfoundland and Labrador",
+        "NT": "Northern Territories",
         "NS": "Nova Scotia",
+        "NV": "Nunavut",
         "ON": "Ontario",
         "PE": "Prince Edward Island",
         "QC": "Quebec",
         "SK": "Saskatchewan"
+        "YK": "Yukon"
       }
 
       for acronym, state of @map
