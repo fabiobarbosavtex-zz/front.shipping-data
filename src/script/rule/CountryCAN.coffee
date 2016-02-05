@@ -10,7 +10,7 @@ define ->
         "MB": "Manitoba",
         "NB": "New Brunswick",
         "NL": "Newfoundland and Labrador",
-        "NT": "Northern Territories",
+        "NT": "Northwest Territories",
         "NS": "Nova Scotia",
         "NV": "Nunavut",
         "ON": "Ontario",
