@@ -80,7 +80,11 @@ define ['flight/lib/component',
 
           selectizeSelects = @select('selectizeSelect')
           for select in selectizeSelects
-            selectOptionCreate = if $(select).data('selectize-create') then true else false
+            if $(select).data('selectize-create')
+              selectOptionCreate = true
+            else
+              selectOptionCreate = false
+
             $(select).selectize?({
               create: selectOptionCreate,
               render:
@@ -306,13 +310,20 @@ define ['flight/lib/component',
           @select('basedOnCityChange').find('option').remove().end()
 
         # Caso state seja vazio, não preenchemos o select de city
-        if state is "" then return
+        if state is "" then returnfalse
 
-        elem = '<option></option>'
-        @select('basedOnStateChange').append(elem)
-        for value in rules.cities[state.toUpperCase()]
-          elem = '<option value="'+value+'">'+value+'</option>'
+        if @select('basedOnStateChange')?.data('selectize')
+          selectize = @select('basedOnStateChange')[0].selectize
+          selectize.clearOptions()
+          options = _.map(rules.cities[state.toUpperCase()], (city) -> return { value: city, text: city })
+          selectize.addOption(options)
+          selectize.refreshOptions()
+        else
+          elem = '<option></option>'
           @select('basedOnStateChange').append(elem)
+          for value in rules.cities[state.toUpperCase()]
+            elem = '<option value="'+value+'">'+value+'</option>'
+            @select('basedOnStateChange').append(elem)
 
       # Change the neighborhood select options when a city is selected
       # basedOnCityChange should be true in the country's rule
@@ -328,11 +339,18 @@ define ['flight/lib/component',
         # Caso state ou city seja vazio, não preenchemos o select de neighborhood
         if state is "" or city is "" then return
 
-        elem = '<option></option>'
-        @select('basedOnCityChange').append(elem)
-        for value in _.keys(rules.map[stateCapitalize.label][city])
-          elem = '<option value="'+value+'">'+value+'</option>'
+        if @select('basedOnCityChange')?.data('selectize')
+          selectize = @select('basedOnCityChange')[0].selectize
+          selectize.clearOptions()
+          options = _.map(_.keys(rules.map[stateCapitalize.label][city]), (neigh) -> return { value: neigh, text: neigh })
+          selectize.addOption(options)
+          selectize.refreshOptions()
+        else
+          elem = '<option></option>'
           @select('basedOnCityChange').append(elem)
+          for value in _.keys(rules.map[stateCapitalize.label][city])
+            elem = '<option value="'+value+'">'+value+'</option>'
+            @select('basedOnCityChange').append(elem)
 
       # Change postal code according to the state selected
       # postalCodeByState should be true in the country's rule
