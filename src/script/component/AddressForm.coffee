@@ -2,13 +2,15 @@ define ['flight/lib/component',
         'shipping/script/setup/extensions',
         'shipping/script/models/Address',
         'shipping/script/mixin/withi18n',
-        'shipping/script/mixin/withValidation'],
-  (defineComponent, extensions, Address, withi18n, withValidation) ->
+        'shipping/script/mixin/withValidation',
+        'shipping/script/mixin/withImplementedCountries'],
+  (defineComponent, extensions, Address, withi18n, withValidation, withImplementedCountries) ->
     AddressForm = ->
       @defaultAttrs
         map: false
         marker: false
         addressKeyMap: {}
+        reRenderUniversalPostalCode: false
         data:
           address: null
           hasAvailableAddresses: false
@@ -20,10 +22,15 @@ define ['flight/lib/component',
           contractedShippingFieldsForGeolocation: false
           addressQuery: false
           comeFromGeoSearch: false
+          isUniversalUsingPostalCode: true
 
         templates:
+          universalPostalCode:
+            name: 'universalPostalCode'
+            path: 'shipping/templates/universalPostalCode'
           form:
             baseName: 'countries/addressForm'
+
 
         addressFormSelector: '.address-form-new'
         postalCodeSelector: '.postal-code'
@@ -39,14 +46,25 @@ define ['flight/lib/component',
         mapCanvasSelector: '#map-canvas'
         addressInputsSelector: '.box-delivery input'
         findAPostalCodeForAnotherAddressSelector: '.find-a-postal-code-for-another-address'
+        universalPostalCodePlaceholderSelector: '.ship-postal-code-uni-container'
+        universalPostalCodeSelector: '.postal-code-UNI'
+        usePostalCodeSelector: '.ship-use-postal-code'
+        dontUsePostalCodeSelector: '.ship-dont-use-postal-code'
 
       # Render this component according to the data object
       @render = ->
         data = @attr.data
 
+        if @attr.reRenderUniversalPostalCode
+          @attr.reRenderUniversalPostalCode = false
+          return dust.render @attr.templates.universalPostalCode.name, data, (err, output) =>
+            output = $(output).i18n()
+            @select('universalPostalCodePlaceholderSelector').html(output)
+
         dust.render @attr.templates.form.name, data, (err, output) =>
           output = $(output).i18n()
           @$node.html(output)
+
           if not window.vtex.maps.isGoogleMapsAPILoaded and window.vtex.maps.isGoogleMapsAPILoading and @attr.data.hasGeolocationData
             @loading()
 
@@ -214,13 +232,22 @@ define ['flight/lib/component',
       # Select a delivery country
       # This will load the country's form and rules
       @loadCountryRulesAndTemplate = (country) ->
-        @attr.templates.form.name = @attr.templates.form.baseName + country
-        @attr.templates.form.template = 'shipping/templates/' + @attr.templates.form.name
+        deps = []
+        isImplemented = @isCountryImplemented(country)
 
-        deps = [@attr.templates.form.template,
-                'shipping/script/rule/Country'+country]
+        if isImplemented
+          countryTemplate = country
+          @attr.templates.form.name = @attr.templates.form.baseName + country
+        else
+          countryTemplate = 'UNI'
+          @attr.templates.form.name = @attr.templates.form.baseName + 'UNI'
 
-        return vtex.curl deps, (formTemplate, countryRule) =>
+        deps.push('shipping/script/rule/Country'+countryTemplate)
+        deps.push('shipping/templates/' + @attr.templates.form.name)
+        if !isImplemented
+          deps.push(@attr.templates.universalPostalCode.path)
+
+        return vtex.curl deps, (countryRule) =>
           @attr.data.countryRules[country] = new countryRule()
           @attr.data.states = @attr.data.countryRules[country].states
           @attr.data.regexes = @attr.data.countryRules[country].regexes
@@ -462,9 +489,12 @@ define ['flight/lib/component',
           @fillCitySelect()
           @fillNeighborhoodSelect()
           @render().then =>
+            countryRule = @getCountryRule()
             # For the countries that use postal code, we must trigger
             # an addressKeysUpdated, so it can search for the SLAs
-            if @getCountryRule().queryByPostalCode || @getCountryRule().queryByGeocoding
+            if countryRule.queryByPostalCode ||
+               countryRule.queryByGeocoding ||
+               countryRule.country is 'UNI'
               @addressKeysUpdated()
 
         handleLoadFailure = (reason) ->
@@ -510,6 +540,18 @@ define ['flight/lib/component',
         @attr.data.loading = false
         @createMap()
 
+      @universalUsePostalCode = (e) ->
+        e.preventDefault()
+        @attr.data.isUniversalUsingPostalCode = true
+        @attr.reRenderUniversalPostalCode = true
+        @render()
+
+      @universalDontUsePostalCode = (e) ->
+        e.preventDefault()
+        @attr.data.isUniversalUsingPostalCode = false
+        @attr.reRenderUniversalPostalCode = true
+        @render().then(()=> @addressKeysUpdated())
+
       # Bind events
       @after 'initialize', ->
         @on 'enable.vtex', @enable
@@ -521,6 +563,8 @@ define ['flight/lib/component',
           'forceShippingFieldsSelector': @forceShippingFields
           'cancelAddressFormSelector': @cancelAddressForm
           'findAPostalCodeForAnotherAddressSelector': @findAnotherPostalCode
+          'usePostalCodeSelector': @universalUsePostalCode,
+          'dontUsePostalCodeSelector': @universalDontUsePostalCode
         @on 'change',
           'stateSelector': @changedStateHandler
           'citySelector': @changedCityHandler
@@ -531,10 +575,12 @@ define ['flight/lib/component',
         @on 'submit',
           'addressFormSelector': @stopSubmit
 
+        @$node.on 'blur', @attr.universalPostalCodeSelector, @addressKeysUpdated.bind(this)
+
         @setValidators [
           @validateAddress
         ]
 
         @setLocalePath 'shipping/script/translation/'
 
-    return defineComponent(AddressForm, withi18n, withValidation)
+    return defineComponent(AddressForm, withi18n, withValidation, withImplementedCountries)

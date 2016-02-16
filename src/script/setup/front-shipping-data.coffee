@@ -8,5 +8,6 @@ configuration =
 
 if vtex.curl.configuration
 	_.extend(vtex.curl.configuration.paths, configuration.paths)
+	_.extend(vtex.curl.configuration.pluginPath, configuration.pluginPath)
 else
 	vtex.curl.configuration = configuration
