@@ -430,7 +430,11 @@ define ['flight/lib/component',
         @attr.stateMachine = @createStateMachine() #from withShippingStateMachine
         @setLocalePath 'shipping/script/translation/'
         # If there is an orderform present, use it for initialization
-        @setLocale locale if locale = vtexjs?.checkout?.orderForm?.clientPreferencesData?.locale
+        if vtexjs?.checkout?.orderForm?.clientPreferencesData?.locale
+          locale = vtexjs?.checkout?.orderForm?.clientPreferencesData?.locale
+        else if $('html').attr('lang')
+          locale = $('html').attr('lang')
+        @setLocale locale
         @requireLocale().then =>
           dust.render template, @attr.data, (err, output) =>
             translatedOutput = $(output).i18n()
