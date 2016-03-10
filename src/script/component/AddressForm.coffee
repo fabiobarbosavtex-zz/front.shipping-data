@@ -212,6 +212,9 @@ define ['flight/lib/component',
         if @getCountryRule().deliveryOptionsByPostalCode
           addressObj.geoCoordinates = []
 
+        if !addressObj.number and (addressObj.country is 'USA' or addressObj.country is 'CAN')
+          addressObj.number = 'N/A'
+
         return addressObj
 
       # Trigger address updated event
