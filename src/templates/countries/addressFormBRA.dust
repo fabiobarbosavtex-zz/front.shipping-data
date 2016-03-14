@@ -14,16 +14,14 @@
     <input type="hidden" name="addressId" value="{address.addressId}"/>
     <input type="hidden" name="country" value="{country}"/>
 
+    {>"googleMaps/map"/}
+
     <!-- COUNTRY NAME -->
     <p class="ship-international input one-delivery-country">
       <span data-i18n="shipping.addressForm.deliveryCountry"></span> {country}
     </p>
 
-    {?hasGeolocationData}
-      <div id="map-canvas" class="map-canvas"></div>
-    {/hasGeolocationData}
-
-    <p class="hum ship-postal-code required input text mask {?contractedShippingFieldsForGeolocation.postalCode}hide{/contractedShippingFieldsForGeolocation.postalCode}">
+    <p class="ship-postal-code required input text mask {?contractedShippingFieldsForGeolocation.postalCode}hide{/contractedShippingFieldsForGeolocation.postalCode}">
       <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
       <input type="text" autocomplete="off" id="ship-postal-code"
                class="ship-postal-code postal-code postal-code-{country} input-small clear-address-search" value="{postalCode}" name="postalCode"
@@ -31,6 +29,10 @@
 
       {?comeFromGeoSearch}
         <small><a href="javascript:void(0);" class="find-a-postal-code-for-another-address" data-i18n="shipping.addressSearch.dontKnowPostalCode"></a></small>
+      {:else}
+        {?dontKnowPostalCodeURL}
+          <small><a href="{dontKnowPostalCodeURL}" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressSearch.dontKnowPostalCode"></a></small>
+        {/dontKnowPostalCodeURL}
       {/comeFromGeoSearch}
       <span class="postal-code-errors"></span>
     </p>
