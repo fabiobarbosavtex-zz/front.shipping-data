@@ -203,7 +203,7 @@ define ['flight/lib/component',
             suggestedAddress.formatted = @getAddressFromGoogle(suggestedAddress.raw, @attr.countryRules.googleDataMap)
             # Fills and show the suggestion selector on HTML
             @select('formattedAddressSugestionSelector')
-              .text("#{suggestedAddress.formatted.street}, #{suggestedAddress.formatted.number}, #{suggestedAddress.formatted.neighborhood}")
+              .text("#{suggestedAddress.formatted.street}, #{suggestedAddress.formatted.number}, #{suggestedAddress.formatted.city}")
             @select('textAddressSuggestionSelector').fadeIn()
           else
             suggestedAddress =
