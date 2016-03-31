@@ -88,11 +88,11 @@ define(function () {
         "deliveryDate": "Date d’envoi",
         "chooseScheduledDate": "Choisir votre  date d’envoi",
         "deliveryHour": "Horaire de livraison",
-        "workingDay": " Jusqu’à __ compter __ jour ouvré",
-        "workingDay_plural": " Jusqu’à __ compter __ jours ouvrés",
-        "day": " Jusqu’à __ compter __ jour",
-        "day_plural": "Jusqu’à__compter__ jour",
-        "fromToHour": "de__de__ à __à__",
+        "workingDay": " Jusqu’à __count__ jour ouvré",
+        "workingDay_plural": " Jusqu’à __count__ jours ouvrés",
+        "day": " Jusqu’à __count__ jour",
+        "day_plural": "Jusqu’à __count__ jour",
+        "fromToHour": "de __from__ à __to__",
         "priceFrom": "de"
       },
       "shippingSummary": {
