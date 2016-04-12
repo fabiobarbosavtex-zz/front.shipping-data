@@ -35,41 +35,45 @@ define ['flight/lib/component',
         @trigger('editAddress.vtex', @attr.data.address)
 
       @createAddressesSummaries = ->
-        countriesUsedRequire = _.map @attr.data.availableAddresses, (c) ->
-          return 'shipping/script/rule/Country'+c.country
+        countriesUsedRequire = _.map @attr.data.availableAddresses, (a) ->
+          if a.addressType is 'giftRegistry' or not a.country
+            return null
+          return 'shipping/script/rule/Country'+a.country
 
         vtex.curl countriesUsedRequire, =>
           for country, i in arguments
             prop = {}
-            prop[@attr.data.deliveryCountries[i]] = new arguments[i]()
-            @trigger window, 'newCountryRule', prop
-            @addCountryRule prop
+            currentAddress = @attr.data.availableAddresses[i]
+            if currentAddress.addressType isnt 'giftRegistry' and currentAddress.country
+              prop[currentAddress.country] = new arguments[i]()
+              @trigger window, 'newCountryRule', prop
+              @addCountryRule prop
 
-            for aa in @attr.data.availableAddresses
-              aa.isSelected = aa.addressId is @attr.data.address?.addressId
-              aa.isGiftList = aa.addressType is "giftRegistry"
-              if aa.isSelected and aa.isGiftList
-                @attr.data.disableEdit = true
+          for aa in @attr.data.availableAddresses
+            aa.isSelected = aa.addressId is @attr.data.address?.addressId
+            aa.isGiftList = aa.addressType is "giftRegistry"
+            if aa.isSelected and aa.isGiftList
+              @attr.data.disableEdit = true
 
-              aa.firstPart = '' + aa.street
-              aa.firstPart += ', ' + aa.number if aa.number and aa.number isnt 'N/A'
-              aa.firstPart += ', ' + aa.complement if aa.complement
-              aa.firstPart += ', ' + aa.neighborhood if aa.neighborhood
-              aa.firstPart += ', ' + aa.reference if aa.reference
-              aa.secondPart = '' + aa.city
+            aa.firstPart = '' + aa.street
+            aa.firstPart += ', ' + aa.number if aa.number and aa.number isnt 'N/A'
+            aa.firstPart += ', ' + aa.complement if aa.complement
+            aa.firstPart += ', ' + aa.neighborhood if aa.neighborhood
+            aa.firstPart += ', ' + aa.reference if aa.reference
+            aa.secondPart = '' + aa.city
 
-              # State is upper case based on the country rules
-              if @attr.data.countryRules[aa.country]?.isStateUpperCase
-                state = aa.state
-              else
-                state = _.capitalizeSentence(aa.state)
-              aa.secondPart += ' - ' + state
+            # State is upper case based on the country rules
+            if @attr.data.countryRules[aa.country]?.isStateUpperCase
+              state = aa.state
+            else
+              state = _.capitalizeSentence(aa.state)
+            aa.secondPart += ' - ' + state
 
-              # Show postal code only if user typed it
-              if @attr.data.countryRules[aa.country]?.postalCodeByInput
-                aa.secondPart += ' - ' + aa.postalCode
+            # Show postal code only if user typed it
+            if @attr.data.countryRules[aa.country]?.postalCodeByInput
+              aa.secondPart += ' - ' + aa.postalCode
 
-              aa.secondPart += ' - ' + i18n.t('countries.'+aa.country)
+            aa.secondPart += ' - ' + i18n.t('countries.'+aa.country)
 
       # Handle selection of an address in the list
       @selectAddressHandler = (ev, data) ->
