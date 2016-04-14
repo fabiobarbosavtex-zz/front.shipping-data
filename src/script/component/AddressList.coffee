@@ -36,7 +36,7 @@ define ['flight/lib/component',
         @trigger('editAddress.vtex', @attr.data.address)
 
       @createAddressesSummaries = ->
-        countriesUsedRequire = _.map @attr.data.availableAddresses, (a) ->
+        countriesUsedRequire = _.map @attr.data.availableAddresses, (a) =>
           if a.addressType is 'giftRegistry' or not a.country
             return null
           else if @isCountryImplemented(a.country)
