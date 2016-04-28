@@ -1,0 +1,100 @@
+<!-- BACK TO LIST BUTTON -->
+{?hasAvailableAddresses}
+  <p class="cancel-address-form">
+    <a href="javascript:void(0);" class="cancel-new-address" data-i18n="shipping.addressForm.cancelEditAddress"></a>
+  </p>
+{/hasAvailableAddresses}
+
+<form class="address-form-new box-new address-form-{country}" data-parsley-bind="true" data-parsley-focus="first">
+
+  {#address}
+  <fieldset class="address-data">
+
+    <!-- HIDDEN FIELDS -->
+    <input type="hidden" name="addressId" value="{address.addressId}"/>
+    <input type="hidden" name="country" value="{country}"/>
+
+    <!-- COUNTRY NAME -->
+    <p class="ship-international input one-delivery-country">
+      <span data-i18n="shipping.addressForm.deliveryCountry"></span> {country}
+    </p>
+
+    {?hasGeolocationData}
+      {?addressQuery}
+      <p class="ship-search required input text mask">
+        <label for="ship-address-search"><span data-i18n="">Endereço Buscado</span></label>
+        <input type="text" id="ship-address-search"  class="ship-address-search input-xlarge" value="{addressQuery}" name="addressSearch">
+      </p>
+      {/addressQuery}
+    {/hasGeolocationData}
+
+    {?hasGeolocationData}
+      <div id="map-canvas" class="map-canvas"></div>
+    {/hasGeolocationData}
+
+    <div class="box-delivery">
+
+      <p class="ship-postal-code required input text mask">
+          <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode"></span> <span class="item-required">*</span></label>
+          <input type="text" autocomplete="off" id="ship-postal-code"
+                 class="ship-postal-code postal-code postal-code-{country} input-mini clear-address-search" value="{postalCode}" name="postalCode"
+                 data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-postalcode="true"/>
+          <small><a href="{dontKnowPostalCodeURL}" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressSearch.dontKnowPostalCode"></a></small>
+      </p>
+
+      <p class="ship-street required input text">
+        <label for="ship-street"><span data-i18n="shipping.addressForm.addressLine1"></span> <span class="item-required">*</span></label>
+        <input type="text"  id="ship-street" class="input-xlarge" value="{street}" name="street" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
+      </p>
+
+      <p class="ship-number input text hide">
+        <label for="ship-number"><span data-i18n="shipping.addressForm.number"></span></label>
+        <input type="text"  id="ship-number" class="input-mini" value="{number}" name="number" data-parsley-trigger="change blur" data-parsley-alphanumponc="true" data-parsley-maxlength="50">
+      </p>
+
+      <p class="ship-more-info input text">
+        <label for="ship-more-info"><span data-i18n="shipping.addressForm.addressLine2"></span></label>
+        <input type="text"  id="ship-more-info" class="input-xlarge" value="{complement}" name="complement" data-i18n="[placeholder]global.notRequired" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
+      </p>
+
+      <p class="ship-reference input text hide">
+        <label for="ship-reference"><span data-i18n="shipping.addressForm.reference"></span></label>
+        <input type="text"  id="ship-reference" class="input-xlarge" value="{reference}" name="reference" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
+      </p>
+
+      <p class="ship-neighborhood input text hide">
+        <label for="ship-neighborhood"><span data-i18n="shipping.addressForm.neighborhood"></span></label>
+        <input type="text"  id="ship-neighborhood" class="input-xlarge" value="{neighborhood}" name="neighborhood" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
+      </p>
+
+      <p class="ship-city required input text">
+        <label for="ship-city"><span data-i18n="shipping.addressForm.city"></span> <span class="item-required">*</span></label>
+        <input type="text"  id="ship-city" class="input-large" value="{city}" name="city" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
+      </p>
+
+      <p class="ship-state required input text">
+        <label for="ship-state"><span data-i18n="shipping.addressForm.district"></span> <span class="item-required">*</span></label>
+        <input type="text"  id="ship-state" class="input-large" value="{state}" name="state" data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-alphanumponc="true">
+      </p>
+
+      <p class="ship-commercial input checkbox hide">
+        <label for="ship-commercial">
+          <input type="checkbox"  id="ship-commercial" name="addressTypeCommercial" value="true">
+          <span data-i18n="shipping.addressForm.commercial"></span>
+        </label>
+      </p>
+
+      <p class="ship-name required input text separate">
+        <label for="ship-name"><span data-i18n="shipping.addressForm.receiver"></span>  <span class="item-required">*</span></label>
+        <input type="text"  id="ship-name" class="input-xlarge" name="receiverName" value="{receiverName}" data-parsley-trigger="change blur" data-parsley-required="true" data-parsley-alphanumponc="true" data-parsley-maxlength="100">
+      </p>
+
+    </div>
+
+    <p class="submit btn-submit-wrapper pull-left hide">
+      <button type="submit" class="submit btn btn-large btn-success address-save"  data-i18n="global.save"></button>
+    </p>
+
+  </fieldset>
+  {/address}
+</form>
