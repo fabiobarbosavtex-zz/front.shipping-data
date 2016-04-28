@@ -26,7 +26,7 @@ define ->
         postalCode: new RegExp(/^(?:[\d]{4})(?:\-|)(?:[\d]{3}|)$/)
 
       @masks =
-        postalCode: '9999[-999]'
+        postalCode: '9999-999'
 
       @requiredFields = ['addressType', 'addressId', 'receiverName',
                          'postalCode', 'street', 'city', 'state',
