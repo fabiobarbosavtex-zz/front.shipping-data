@@ -28,6 +28,8 @@ define [], () ->
         @attr.locale = 'es'
       else if locale.match('en-')
         @attr.locale = 'en'
+      else if locale.match('fr-')
+        @attr.locale = 'fr'
       else
         @attr.locale = locale
 
