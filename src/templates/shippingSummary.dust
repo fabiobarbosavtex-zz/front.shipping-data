@@ -47,7 +47,7 @@
     {#selectedSla}
         <div class="shipping-options {^multipleSellers}just-one{/multipleSellers}">
             <p class="shipping-selected-sla">
-                <span class="text" data-i18n="shipping.shippingSummary.shipping"></span>
+                <span class="text" data-i18n="shipping.shippingSummary.shipping"></span>&nbsp;
                 <span class="sla">{name}</span>
                 {^isScheduled}
                     <span> - </span><span class="estimate">{deliveryEstimateLabel}</span>
