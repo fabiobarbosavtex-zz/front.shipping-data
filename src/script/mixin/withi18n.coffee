@@ -46,7 +46,9 @@ define [], () ->
     @requireLocale = ->
       @attr.locale = @fixLocale(@attr.locale)
       vtex.curl [localePath + @attr.locale], (translation) =>
-        @extendTranslations(translation)
+        if not localesLoaded[localePath + @attr.locale]
+          @extendTranslations(translation)
+        localesLoaded[localePath + @attr.locale] = true
 
     @after 'initialize', ->
       throw new Error("withi18n clients must initialize localePath by calling @setLocalePath()") unless localePath
