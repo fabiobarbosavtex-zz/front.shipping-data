@@ -13,7 +13,7 @@ define(['shipping/script/translation/pt-BR'], function (ptBRTranslation) {
         "knowPostalCode": 'Buscar pelo meu código postal'
       },
       "validation": {
-        "postalcode": 'Informe um CEP válido.'
+        "postalcode": 'Informe um código postal válido.'
       }
     }
   });

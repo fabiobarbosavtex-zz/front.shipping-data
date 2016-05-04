@@ -20,7 +20,7 @@ define ->
       @geocodingAvailable = false
       @isStateUpperCase = false
 
-      @dontKnowPostalCodeURL = "https://www.ctt.pt/feapl_2/app/open/objectSearch/objectSearch.jspx"
+      @dontKnowPostalCodeURL = "https://www.ctt.pt/feapl_2/app/open/postalCodeSearch/postalCodeSearch.jspx"
 
       @regexes =
         postalCode: new RegExp(/^(?:[\d]{4})(?:\-|)(?:[\d]{3}|)$/)
