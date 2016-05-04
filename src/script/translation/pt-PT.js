@@ -11,10 +11,10 @@ define(['shipping/script/translation/pt-BR'], function (ptBRTranslation) {
       "addressSearch": {
         "dontKnowPostalCode": 'Não sei meu código postal',
         "knowPostalCode": 'Buscar pelo meu código postal'
-      },
-      "validation": {
-        "postalcode": 'Informe um código postal válido.'
       }
+    },
+    "validation": {
+      "postalcode": 'Informe um código postal válido.'
     }
   });
 });
