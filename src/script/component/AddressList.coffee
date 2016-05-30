@@ -1,8 +1,9 @@
 define ['flight/lib/component',
         'shipping/script/setup/extensions',
         'shipping/script/mixin/withi18n',
+        'shipping/script/mixin/withImplementedCountries',
         'shipping/templates/addressList'],
-  (defineComponent, extensions, withi18n, template) ->
+  (defineComponent, extensions, withi18n, withImplementedCountries, template) ->
     AddressList = ->
       @defaultAttrs
         data:
@@ -35,10 +36,13 @@ define ['flight/lib/component',
         @trigger('editAddress.vtex', @attr.data.address)
 
       @createAddressesSummaries = ->
-        countriesUsedRequire = _.map @attr.data.availableAddresses, (a) ->
+        countriesUsedRequire = _.map @attr.data.availableAddresses, (a) =>
           if a.addressType is 'giftRegistry' or not a.country
             return null
-          return 'shipping/script/rule/Country'+a.country
+          else if @isCountryImplemented(a.country)
+            return 'shipping/script/rule/Country'+a.country
+          else
+            return 'shipping/script/rule/CountryUNI'
 
         vtex.curl countriesUsedRequire, =>
           for country, i in arguments
@@ -60,14 +64,17 @@ define ['flight/lib/component',
             aa.firstPart += ', ' + aa.complement if aa.complement
             aa.firstPart += ', ' + aa.neighborhood if aa.neighborhood
             aa.firstPart += ', ' + aa.reference if aa.reference
-            aa.secondPart = '' + aa.city
 
             # State is upper case based on the country rules
             if @attr.data.countryRules[aa.country]?.isStateUpperCase
               state = aa.state
             else
               state = _.capitalizeSentence(aa.state)
-            aa.secondPart += ' - ' + state
+
+            if aa.city
+              aa.secondPart = aa.city + ' - ' + state
+            else
+              aa.secondPart = state
 
             # Show postal code only if user typed it
             if @attr.data.countryRules[aa.country]?.postalCodeByInput
@@ -148,4 +155,4 @@ define ['flight/lib/component',
 
         @setLocalePath 'shipping/script/translation/'
 
-    return defineComponent(AddressList, withi18n)
+    return defineComponent(AddressList, withi18n, withImplementedCountries)
