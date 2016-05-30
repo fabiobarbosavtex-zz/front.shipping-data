@@ -23,13 +23,18 @@ define [], () ->
 
       return translation
 
-    @setLocale = (locale = "pt-BR") ->
+    @fixLocale = (locale) ->
       if locale.match('es-')
-        @attr.locale = 'es'
+        return 'es'
       else if locale.match('en-')
-        @attr.locale = 'en'
+        return 'en'
+      else if locale.match('fr-')
+        return 'fr'
       else
-        @attr.locale = locale
+        return locale
+
+    @setLocale = (locale = "pt-BR") ->
+      @attr.locale = @fixLocale(locale)
 
     @localeSelected = (ev, locale) ->
       @setLocale locale
@@ -39,6 +44,7 @@ define [], () ->
       localePath = path
 
     @requireLocale = ->
+      @attr.locale = @fixLocale(@attr.locale)
       vtex.curl [localePath + @attr.locale], (translation) =>
         @extendTranslations(translation)
 
