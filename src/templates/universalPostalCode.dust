@@ -13,7 +13,7 @@
   </i>
   {/loading}
 
-  <small><a href="javascript:void(0);" class="ship-dont-use-postal-code" data-i18n="shipping.postalCodeInput.dontUse"></a></small>
+  <small class="ship-dont-use-postal-code-container"><a href="javascript:void(0);" class="ship-dont-use-postal-code" data-i18n="shipping.postalCodeInput.dontUse"></a></small>
 
   <span class="postal-code-errors"></span>
 {:else}

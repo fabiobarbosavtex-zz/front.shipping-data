@@ -486,6 +486,8 @@ define ['flight/lib/component',
           rules = @getCountryRule()
           if rules?.postalCodeByInput and rules?.masks?.postalCode and @attr.data.address.postalCode and @attr.data.address.postalCode.length > 0
             @attr.data.address.postalCode = _.maskString(@attr.data.address.postalCode, rules.masks.postalCode)
+          if rules.country is 'UNI' and @attr.data.address.postalCode is '0'
+            @attr.data.isUniversalUsingPostalCode = false
 
           @clearGeolocationContractedFields()
           @updateEnables(@attr.data.address)
