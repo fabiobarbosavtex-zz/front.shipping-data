@@ -57,7 +57,7 @@ define [], () ->
 
       # If there is an orderform present, use it for initialization
       if locale = vtexjs?.checkout?.orderForm?.clientPreferencesData?.locale
-        @localeSelected locale
+        @localeSelected(null, locale)
 
       if typeof @render is 'function'
         @around 'render', (originalRender) ->
