@@ -24,10 +24,19 @@ define ['flight/lib/component',
       country = data.el.value
       @trigger('countrySelected.vtex', [country, true])
 
+    @transformCountries = (countries) ->
+      newCountries = []
+      for country in countries
+        newCountries.push({
+          code: country,
+          name: i18n.t('countries.'+ country)
+        })
+      return newCountries.sort((a, b) => a.name.localeCompare(b.name))
+
     # Handle the initial view of this component
     @enable = (ev, deliveryCountries, address) ->
       ev?.stopPropagation()
-      @attr.data.deliveryCountries = deliveryCountries
+      @attr.data.deliveryCountries = @transformCountries(deliveryCountries)
 
       if @attr.data.deliveryCountries.length > 1
         @attr.data.showCountrySelect = true
