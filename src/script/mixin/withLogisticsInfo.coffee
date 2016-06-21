@@ -196,7 +196,7 @@ define [], () ->
           for sla in shipping.slas
             if sla.shippingEstimate isnt undefined and not sla.isScheduled
               if sla.businessDays
-                sla.deliveryEstimateLabel = i18n.t 'shipping.shippingOptions.workingDay',
+                sla.deliveryEstimateLabel = i18n.t 'shipping.shippingOptions.businessDay',
                   count: sla.shippingEstimateDays
               else
                 sla.deliveryEstimateLabel = i18n.t 'shipping.shippingOptions.day',
