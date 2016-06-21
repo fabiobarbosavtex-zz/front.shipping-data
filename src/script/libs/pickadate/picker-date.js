@@ -28,6 +28,7 @@ window.vtex.pickadate['pt-BR'] = {
     format: 'dddd, d !de mmmm !de yyyy',
     formatSubmit: 'yyyy/mm/dd'
 };
+window.vtex.pickadate['pt'] = window.vtex.pickadate['pt-BR'];
 
 // Spanish
 window.vtex.pickadate['es'] = {
@@ -42,7 +43,7 @@ window.vtex.pickadate['es'] = {
     formatSubmit: 'yyyy/mm/dd'
 };
 
-window.vtex.pickadate['fr-CA'] = {
+window.vtex.pickadate['fr'] = {
     monthsFull: [ 'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre' ],
     monthsShort: [ 'jan', 'fev', 'mar', 'avr', 'mai', 'juin', 'juil', 'aou', 'sep', 'oct', 'nov', 'dec' ],
     weekdaysFull: [ 'dimanche', 'lundi', 'mardy', 'mercredi', 'jeudi', 'vendredi', 'samedi' ],
@@ -53,8 +54,6 @@ window.vtex.pickadate['fr-CA'] = {
     format: 'dd mmmm yyyy',
     formatSubmit: 'yyyy/mm/dd'
 };
-
-window.vtex.pickadate['fr'] = window.vtex.pickadate['fr-CA'];
 
 /**
  * Globals and constants
