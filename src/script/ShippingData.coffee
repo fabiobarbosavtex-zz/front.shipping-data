@@ -72,6 +72,8 @@ define ['flight/lib/component',
         if @attr.orderForm.canEditData isnt @attr.data.canEditData
           @attr.data.userIsNowLoggedIn = true
           @attr.data.canEditData = @attr.orderForm.canEditData
+        else
+          @attr.data.userWantsToCreateNewAddress = false
 
         country = shippingData.address?.country ? @attr.data.deliveryCountries[0]
 
@@ -86,6 +88,9 @@ define ['flight/lib/component',
             if @attr.data.hasAvailableAddresses and !changedContry
               @attr.stateMachine.showList(@attr.orderForm)
               @attr.stateMachine.next()
+            else if @attr.data.userWantsToCreateNewAddress
+              @attr.data.userWantsToCreateNewAddress = false
+              @newAddress()
             else
               @attr.stateMachine.showForm(@attr.orderForm)
               @attr.stateMachine.next()
@@ -320,8 +325,9 @@ define ['flight/lib/component',
         @attr.stateMachine.next()
 
       @newAddress = (ev) ->
-        ev.stopPropagation()
+        ev?.stopPropagation()
         if not @attr.orderForm.canEditData
+          @attr.data.userWantsToCreateNewAddress = true
           vtexIdOptions =
             returnUrl: window.location.href
             userEmail: vtexjs?.checkout?.orderForm?.clientProfileData?.email
