@@ -293,8 +293,8 @@ define ['state-machine/state-machine',
       @select('addressFormSelector').trigger('disable.vtex')
       @select('shippingOptionsSelector').trigger('disable.vtex')
 
-      @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address])
-      @select('addressSearchSelector').trigger('enable.vtex', [rules, address, hasAvailableAddresses])
+      @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address, hasAvailableAddresses])
+      @select('addressSearchSelector').trigger('enable.vtex', [rules, address])
 
     @onLeaveSearch = (event, from, to) ->
       @select('addressSearchSelector').trigger('disable.vtex', null)
@@ -304,9 +304,9 @@ define ['state-machine/state-machine',
       hasAvailableAddresses = @attr.data.hasAvailableAddresses
       deliveryCountries = @attr.data.deliveryCountries
 
-      @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address])
+      @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address, hasAvailableAddresses])
       @select('addressSearchSelector').trigger('disable.vtex')
-      @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
+      @select('addressFormSelector').trigger('enable.vtex', [address])
       @select('shippingOptionsSelector').trigger('disable.vtex')
 
     @onAddressFormLoad = (event, from, to) ->
@@ -320,10 +320,10 @@ define ['state-machine/state-machine',
       hasAvailableAddresses = @attr.data.hasAvailableAddresses
       deliveryCountries = @attr.data.deliveryCountries
 
-      @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address])
+      @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address, hasAvailableAddresses])
       @select('addressSearchSelector').trigger('disable.vtex')
       if event isnt 'loadSLA'
-        @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
+        @select('addressFormSelector').trigger('enable.vtex', [address])
       @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
       @select('goToPaymentButtonWrapperSelector').fadeIn("fast")
 
@@ -337,9 +337,9 @@ define ['state-machine/state-machine',
 
       $(window).trigger('showMessage.vtex', ['unavailable'])
 
-      @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address])
+      @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address, hasAvailableAddresses])
       if event isnt 'loadNoSLA'
-        @select('addressFormSelector').trigger('enable.vtex', [address, hasAvailableAddresses])
+        @select('addressFormSelector').trigger('enable.vtex', [address])
       @select('shippingOptionsSelector').trigger('disable.vtex')
 
     @onAddressFormLoadSLA = (event, from, to) ->

@@ -1,3 +1,9 @@
+{?hasAvailableAddresses}
+<p class="cancel-address-form">
+  <a href="javascript:void(0);" class="cancel-new-address" data-i18n="shipping.addressForm.cancelEditAddress"></a>
+</p>
+{/hasAvailableAddresses}
+
 {?showCountrySelect}
 <div class="select-country">
 	<p class="ship-country required input text">
