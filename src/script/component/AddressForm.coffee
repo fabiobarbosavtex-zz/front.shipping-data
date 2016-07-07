@@ -13,7 +13,6 @@ define ['flight/lib/component',
         reRenderUniversalPostalCode: false
         data:
           address: null
-          hasAvailableAddresses: false
           disableCityAndState: false
           labelShippingFields: false
           addressSearchResults: {}
@@ -41,7 +40,6 @@ define ['flight/lib/component',
         basedOnStateChange: 'select[data-based-state-change="true"]'
         basedOnCityChange: 'select[data-based-city-change="true"]'
         selectizeSelect: 'select[data-selectize="true"]'
-        cancelAddressFormSelector: '.cancel-address-form a'
         submitButtonSelector: '.submit .btn-success.address-save'
         mapCanvasSelector: '#map-canvas'
         addressInputsSelector: '.box-delivery input'
@@ -280,12 +278,6 @@ define ['flight/lib/component',
           @attr.marker = new google.maps.Marker(position: location)
           @attr.marker.setMap(@attr.map)
 
-      # Close the form
-      @cancelAddressForm = (ev) ->
-        ev.preventDefault()
-        @disable()
-        @trigger('cancelAddressEdit.vtex')
-
       # Fill the cities array for the selected state
       @fillCitySelect = () ->
         rules = @getCountryRule()
@@ -442,7 +434,7 @@ define ['flight/lib/component',
         @attr.profileFromEvent = profile
 
       # Handle the initial view of this component
-      @enable = (ev, address, hasAvailableAddresses) ->
+      @enable = (ev, address) ->
         ev?.stopPropagation()
         firstName = window.vtexjs.checkout.orderForm?.clientProfileData?.firstName or @attr.profileFromEvent?.firstName
         lastName = window.vtexjs.checkout.orderForm?.clientProfileData?.lastName or @attr.profileFromEvent?.lastName
@@ -476,7 +468,6 @@ define ['flight/lib/component',
         else
           @attr.data.cities = null
         @attr.data.address = new Address(address)
-        @attr.data.hasAvailableAddresses = hasAvailableAddresses
         # when the address has an address query, the address was searched with geolocation
         @attr.data.addressQuery = if address.addressQuery? then address.addressQuery else false
         @attr.data.hasGeolocationData = @attr.data.address.geoCoordinates.length > 0
@@ -566,7 +557,6 @@ define ['flight/lib/component',
         @on window, 'profileUpdated', @profileUpdated
         @on 'click',
           'forceShippingFieldsSelector': @forceShippingFields
-          'cancelAddressFormSelector': @cancelAddressForm
           'findAPostalCodeForAnotherAddressSelector': @findAnotherPostalCode
           'usePostalCodeSelector': @universalUsePostalCode,
           'dontUsePostalCodeSelector': @universalDontUsePostalCode

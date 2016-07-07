@@ -10,7 +10,6 @@ define ['flight/lib/component',
       @defaultAttrs
         getAddressInformation: null
         data:
-          hasAvailableAddresses: false
           postalCodeQuery: null
           addressQuery: null
           showGeolocationSearch: false
@@ -23,7 +22,6 @@ define ['flight/lib/component',
 
         addressFormSelector: '.address-form-new'
         postalCodeQuerySelector: '.postal-code-query'
-        cancelAddressFormSelector: '.cancel-address-form a'
         addressSearchSelector: '#ship-address-search'
         mapCanvasSelector: '#map-canvas'
         clearAddressSearchSelector: '.clear-address-search'
@@ -158,10 +156,6 @@ define ['flight/lib/component',
               address[rule.value] = component[rule.length]
         return address
 
-      # Close the form
-      @cancelAddressForm = ->
-        @trigger('cancelAddressSearch.vtex')
-
       # Set to a loading state
       # This will disable all fields
       @loading = (ev) ->
@@ -170,7 +164,7 @@ define ['flight/lib/component',
         @render()
 
       # Handle the initial view of this component
-      @enable = (ev, countryRule, address, hasAvailableAddresses) ->
+      @enable = (ev, countryRule, address) ->
         ev?.stopPropagation()
         @attr.countryRules = countryRule
         @attr.data.dontKnowPostalCodeURL = countryRule.dontKnowPostalCodeURL
@@ -179,7 +173,6 @@ define ['flight/lib/component',
         @attr.data.postalCodeByInput = countryRule.postalCodeByInput
         @attr.data.showGeolocationSearch = address?.useGeolocationSearch
         @attr.data.addressId = address?.addressId
-        @attr.data.hasAvailableAddresses = hasAvailableAddresses
 
         if countryRule.queryByPostalCode
           @attr.data.postalCodeQuery = address?.postalCode ? ''
@@ -270,11 +263,6 @@ define ['flight/lib/component',
         if @isMobile()
           @getNavigatorCurrentPosition()
 
-      @cancelAddressSearch = (ev) ->
-        ev.preventDefault();
-        @disable()
-        @trigger('cancelAddressEdit.vtex')
-
       @stopSubmit = (ev) ->
         ev.preventDefault()
 
@@ -298,7 +286,6 @@ define ['flight/lib/component',
           'knowPostalCodeSelector': @openPostalCodeSearch
           'incompleteAddressLink': @openPostalCodeSearch
           'addressSuggestionLinkSelector': @selectSuggestedAddress
-          'cancelAddressFormSelector': @cancelAddressSearch
         @on 'keyup',
           'postalCodeQuerySelector': @validatePostalCode
         @on 'submit',

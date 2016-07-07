@@ -1,10 +1,3 @@
-<!-- BACK TO LIST BUTTON -->
-{?hasAvailableAddresses}
-<p class="cancel-address-form">
-  <a href="javascript:void(0);" class="cancel-new-address" data-i18n="shipping.addressForm.cancelEditAddress"></a>
-</p>
-{/hasAvailableAddresses}
-
 {?loadingGeolocation}
 <div class="loading loading-bg loading-geolocation">
   <div class="loading-img">
