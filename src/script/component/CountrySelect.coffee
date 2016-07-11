@@ -9,11 +9,13 @@ define ['flight/lib/component',
   CountrySelect = ->
     @defaultAttrs
       data:
+        hasAvailableAddresses: false
         country: false
         deliveryCountries: []
         showCountrySelect: false
 
       deliveryCountrySelector: '#ship-country'
+      cancelAddressFormSelector: '.cancel-address-form a'
 
     @render = ->
       dust.render template, @attr.data, (err, output) =>
@@ -34,9 +36,10 @@ define ['flight/lib/component',
       return newCountries.sort((a, b) => a.name.localeCompare(b.name))
 
     # Handle the initial view of this component
-    @enable = (ev, deliveryCountries, address) ->
+    @enable = (ev, deliveryCountries, address, hasAvailableAddresses) ->
       ev?.stopPropagation()
       @attr.data.deliveryCountries = @transformCountries(deliveryCountries)
+      @attr.data.hasAvailableAddresses = hasAvailableAddresses
 
       if @attr.data.deliveryCountries.length > 1
         @attr.data.showCountrySelect = true
@@ -49,12 +52,20 @@ define ['flight/lib/component',
       ev?.stopPropagation()
       @$node.html('')
 
+    @cancelAddressForm = (ev) ->
+      ev.preventDefault()
+      @disable()
+      @trigger('cancelAddressEdit.vtex')
+      @trigger('cancelAddressSearch.vtex')
+
     # Bind events
     @after 'initialize', ->
       @on 'enable.vtex', @enable
       @on 'disable.vtex', @disable
       @on 'change',
         'deliveryCountrySelector': @onSelectCountry
+      @on 'click',
+        'cancelAddressFormSelector': @cancelAddressForm
 
       @setLocalePath 'shipping/script/translation/'
 
