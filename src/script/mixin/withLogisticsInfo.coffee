@@ -31,6 +31,9 @@ define [], () ->
         return newLogisticItem
       return newLogisticsInfo
 
+    @_shippingEstimateDays = (shippingEstimate) ->
+      return parseInt((shippingEstimate+'').replace(/bd|d/,''), 10)
+
     @_fillSLA = (index, sla, sellerId, selectedSla) ->
       sla.shippingOptionsIndex = index
 
@@ -38,7 +41,8 @@ define [], () ->
         sla.isScheduled = true
 
       sla.businessDays = (sla.shippingEstimate+'').indexOf('bd') isnt -1
-      sla.shippingEstimateDays = parseInt((sla.shippingEstimate+'').replace(/bd|d/,''), 10)
+      sla.shippingEstimateDays = @_shippingEstimateDays(sla.shippingEstimate)
+      sla.composedIds = [sla.id]
 
       sla.nameAttr = _.plainChars('seller-' + sellerId)
       sla.idAttr = _.plainChars(sla.nameAttr + '-sla-' + sla.id?.replace(/\ /g,''))
@@ -80,7 +84,7 @@ define [], () ->
 
           _.each(info.slas, (sla) =>
             # Ve se SLA em questão já está no array de SLAS computados
-            composedSla = _.find composedLogistic.slas, (_sla) -> _sla.id is sla.id
+            composedSla = _.find composedLogistic.slas, (_sla) -> _sla.name is sla.name
 
             # Caso nao esteja no array de SLAS computados, o SLA será computado pela primeira vez
             if not composedSla
@@ -88,15 +92,25 @@ define [], () ->
               isNewSLA = true
               composedLogistic.slas.push(composedSla)
             else
-              # Caso o SLA já tenha sido computado antes, iremos apenas somar o preço e a taxa
+              # Caso o SLA já tenha sido computado antes
+
+              # Somamos o preço e a taxa
               composedSla.price += sla.price
               composedSla.tax += sla.tax
+
+              # Exibimos a data de entrega mais demorada
+              slaDays = @_shippingEstimateDays(sla.shippingEstimate)
+              if slaDays > composedSla.shippingEstimateDays
+                composedSla.shippingEstimate = sla.shippingEstimate
+
+              # Preenchemos o array de ids
+              composedSla.composedIds.push(sla.id)
           )
 
           composedLogistic.slas = _.map(composedLogistic.slas, @_createPriceLabels)
 
           selectedSla = _.find composedLogistic.slas, (slas) ->
-            return slas.id == info.selectedSla
+            return info.selectedSla in slas.composedIds
 
           composedLogistic.selectedSla = selectedSla
         )
