@@ -210,11 +210,17 @@ define [], () ->
       # Para cada delivery window, iremos criar/atualizar o seu label e preço
       for key, dateArray of sla.deliveryWindows
         for dw in dateArray
+          value = dw.price + sla.price
+          if value is 0
+            dw.valueLabel = i18n.t('global.free')
+          else
+            sla.isFree = false
+            dw.valueLabel = _.intAsCurrency value
+
           dw.startDate = new Date(dw.startDateUtc)
           dw.endDate = new Date(dw.endDateUtc)
           dw.dateAsArray = @dateAsArray(dw.startDate)
           dw.dateString = @dateAsString(dw.startDate)
-          dw.valueLabel = _.intAsCurrency dw.price + sla.price
           objTranslation =
             from: @dateHourMinLabel(dw.startDate)
             to: @dateHourMinLabel(dw.endDate)
@@ -222,16 +228,20 @@ define [], () ->
           dw.timeLabel = i18n.t('shipping.shippingOptions.fromToHour', objTranslation)
           dw.formattedDate = @formatDate(new Date(dw.startDateUtc))
           # Guarda o menor preço de entrega agendada para "a partir de"
-          if dw.price + sla.price < sla.cheapestValue
+          if value < sla.cheapestValue
             sla.cheapestDeliveryWindow = dw
-            sla.cheapestValue = dw.price + sla.price
+            sla.cheapestValue = value
             sla.cheapestValueLabel = dw.valueLabel
             sla.cheapestEndDate = dw.endDate
-          if dw.price + sla.price > 0
-            sla.isFree = false
 
       # Reescreve label para entrega agendada
-      sla.fullEstimateLabel = sla.name + ' - ' + sla.cheapestValueLabel + ' - ' + _.dateFormat(sla.cheapestEndDate)
+      if sla.isFree
+        valueLabel = sla.isFree
+      else
+        valueLabel = i18n.t('shipping.shippingOptions.priceFrom') + ' ' + sla.cheapestValueLabel
+
+      sla.fullEstimateLabel = sla.name + ' - ' + valueLabel
+
 
     @selectDeliveryWindow = (sla, deliveryWindow) ->
       sla.deliveryWindow = deliveryWindow
