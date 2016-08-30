@@ -51,25 +51,11 @@ define ['shipping/script/module/googleRequiredFields'], (checkRequiredFields) ->
             storeAcceptsGeoCoords = ('geoCoords' in @attr.data.logisticsConfiguration?.acceptSearchKeys)
 
             address = @getAddressFromGoogle(googleAddress, googleDataMap, fallbackCountry)
-
-            @attr.data.requiredGoogleFieldsNotFound = checkRequiredFields(address, googleDataMap, postalCodeRegex, storeAcceptsGeoCoords)
-            
-            address.postalCodeIsValid = postalCodeRegex.test(address.postalCode)
-            address.geoCoordinatesIsValid = address.geoCoordinates.length is 2
-
-            if storeAcceptsGeoCoords or @attr.data.requiredGoogleFieldsNotFound.length is 0 
-              @trigger('addressKeysUpdated.vtex', [address])
-              @attr.addressKeyMap = address
-              @attr.data.address = new Address(address)
-              @render()
-            else if address.postalCode is '' or not address.postalCode?
-              console.log('Incomplete address data!')
-              # @select('incompleteAddressData').hide()
-              # @select('addressNotDetailed').fadeIn()
-            else if not postalCodeRegex.test(address.postalCode)
-              console.log('Address not detailed!')
-              # @select('addressNotDetailed').hide()
-              # @select('incompleteAddressData').fadeIn()
+            @attr.data.address.geoCoordinates = address.geoCoordinates
+            @attr.data.address.postalCodeIsValid = postalCodeRegex.test(address.postalCode)
+            @attr.data.address.geoCoordinatesIsValid = address.geoCoordinates.length is 2
+            @trigger('addressKeysUpdated.vtex', [@attr.data.address])
+            @render()
         else
           console.log('Google Maps: '+status)
       ))

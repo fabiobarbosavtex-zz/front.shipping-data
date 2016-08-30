@@ -26,7 +26,7 @@ define ['shipping/script/module/countryISOMap',
 
     getCountry = (googleAddress) ->
       countryInfo =_.find(googleAddress.address_components, (c) -> 'country' in c.types)
-      if countryInfo 
+      if countryInfo
         return countryISOMap(countryInfo.short_name)
       return null
 
@@ -60,9 +60,9 @@ define ['shipping/script/module/countryISOMap',
         return postalCodeRegex.test(postalCode)
       else
         return true
-    
+
     @selectSuggestedAddress = ->
-      @attr.data.requiredGoogleFieldsNotFound = []
+      @attr.data.invalidFields = []
       countryRules = @attr.countryRules
       googleAddress = @attr.data.suggestedAddress.raw
       postalCodeRegex = countryRules.regexes['postalCode']
@@ -75,9 +75,9 @@ define ['shipping/script/module/countryISOMap',
       # Validate postal code
       address.isPostalCodeValid = validatePostalCode(address.postalCode, postalCodeRegex)
 
-      @attr.data.requiredGoogleFieldsNotFound = checkRequiredFields(address, googleDataMap, postalCodeRegex, storeAcceptsGeoCoords)
+      @attr.data.invalidFields = checkRequiredFields(address, googleDataMap, postalCodeRegex, storeAcceptsGeoCoords)
 
-      if storeAcceptsGeoCoords or @attr.data.requiredGoogleFieldsNotFound.length is 0 
+      if storeAcceptsGeoCoords or @attr.data.invalidFields.length is 0
         @trigger('addressSearchStart.vtex')
         @sendGeoCoords(address)
       else if address.postalCode is '' or not address.postalCode?
@@ -97,12 +97,12 @@ define ['shipping/script/module/countryISOMap',
 
     @openGeolocationSearch = ->
       @getNavigatorCurrentPosition()
-      if window.vtex.maps.isGoogleMapsAPILoading and !window.vtex.maps.isGoogleMapsAPILoaded 
+      if window.vtex.maps.isGoogleMapsAPILoading and !window.vtex.maps.isGoogleMapsAPILoaded
         @attr.data.loadingGeolocation = true
         @attr.data.showGeolocationSearch = false
       else
         @attr.data.showGeolocationSearch = true
-      
+
       if @attr.isEnabled
         @render()
 
@@ -149,7 +149,7 @@ define ['shipping/script/module/countryISOMap',
       else if response.status is "OVER_QUERY_LIMIT"
         console.log "OVER_QUERY_LIMIT"
         # todo -> Logar isso em algum lugar
-    
+
     @onSuggestedAddressError = (error) ->
       console.log "REVERSE GEOCODE ERROR"
       console.log error
@@ -165,7 +165,7 @@ define ['shipping/script/module/countryISOMap',
         coord = new google.maps.LatLng(@attr.data.suggestedAddress.position.coords.latitude, @attr.data.suggestedAddress.position.coords.longitude);
         @attr.geolocation = google.maps.LatLngBounds(coord, coord)
         @attr.autocomplete?.setBounds(@attr.geolocation)
-    
+
     @setGeolocation = (position) ->
       @attr.data.suggestedAddress.position = position;
       @getSuggestedAddress(position.coords.latitude, position.coords.longitude)

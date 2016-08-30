@@ -14,7 +14,7 @@ define ['flight/lib/component',
           postalCodeQuery: null
           addressQuery: null
           showGeolocationSearch: false
-          requiredGoogleFieldsNotFound: []
+          invalidFields: []
           postalCodeByInput: false
           suggestedAddress:
             raw: null
