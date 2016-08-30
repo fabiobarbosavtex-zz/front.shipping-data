@@ -4,9 +4,10 @@ define ['flight/lib/component',
         'shipping/templates/googleMaps/map',
         'shipping/script/mixin/withi18n',
         'shipping/script/mixin/withCreateMap',
+        'shipping/script/mixin/withGoogleMaps',
         'shipping/script/mixin/withValidation',
         'shipping/script/mixin/withImplementedCountries'],
-  (defineComponent, extensions, Address, mapTemplate, withi18n, withCreateMap, withValidation, withImplementedCountries) ->
+  (defineComponent, extensions, Address, mapTemplate, withi18n, withCreateMap, withGoogleMaps, withValidation, withImplementedCountries) ->
     AddressForm = ->
       @defaultAttrs
         map: false
@@ -566,4 +567,4 @@ define ['flight/lib/component',
 
         @setLocalePath 'shipping/script/translation/'
 
-    return defineComponent(AddressForm, withi18n, withCreateMap, withValidation, withImplementedCountries)
+    return defineComponent(AddressForm, withi18n, withCreateMap, withGoogleMaps, withValidation, withImplementedCountries)
