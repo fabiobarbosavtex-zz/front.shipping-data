@@ -415,7 +415,7 @@ define ['flight/lib/component',
         if (countryRule.geocodingAvailable)
           if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading
             window.vtex.maps.isGoogleMapsAPILoading = true
-            googleAPIKey = window.vtex.googleAPIKey = 'AIzaSyDc3Jk-hMqd_2vrISb56ufBoIZEcAQwdoA'
+            googleAPIKey = window.vtex.googleMapsApiKey
             script = document.createElement("script")
             script.type = "text/javascript"
             script.src = "//maps.googleapis.com/maps/api/js?libraries=places&key=#{googleAPIKey}&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsAPILoaded"

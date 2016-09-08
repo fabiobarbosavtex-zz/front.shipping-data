@@ -38,7 +38,7 @@ define ['flight/lib/component',
 
       @render = ->
         @attr.data.geolocationSearchPlaceholder = @getGeolocationPlaceholder()
-  
+
         dust.render template, @attr.data, (err, output) =>
           output = $(output).i18n()
           @$node.html(output)
@@ -94,7 +94,9 @@ define ['flight/lib/component',
 
         @attr.data.loading = false
 
-        address.addressId = @attr.data.addressId
+        # Use current addressId if this address has none.
+        if !address.addressId
+          address.addressId = @attr.data.addressId
 
         if address.state and countryHasStateUpperCase
           address.state = address.state?.toUpperCase()
@@ -111,7 +113,7 @@ define ['flight/lib/component',
 
         if address.postalCode and countryUsePostalCodeByInput
           address.postalCode = _.maskString(address.postalCode, rules.masks.postalCode)
-        
+
         @trigger('addressSearchResult.vtex', [address])
 
       @handleAddressSearchError = ->

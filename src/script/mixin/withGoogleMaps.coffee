@@ -183,4 +183,9 @@ define ['shipping/script/module/countryISOMap',
       @attr.requestSendGeoCoords = ShippingDataStore.sendAttachment({
         address: address,
         clearAddressIfPostalCodeNotFound: false
-      }).then((() => @handleAddressSearch(address)), (() => @handleAddressSearchError(address)))
+      }).then(
+        ((orderForm) =>
+          @handleAddressSearch(orderForm.shippingData.address)),
+        (() =>
+          @handleAddressSearchError(address))
+      )
