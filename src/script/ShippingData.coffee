@@ -381,7 +381,9 @@ define ['flight/lib/component',
           @attr.data.states = countryRules[country].states
           @attr.data.regexes = countryRules[country].regexes
           @attr.data.geocodingAvailable = countryRules[country].geocodingAvailable
-          @loadGoogleMapsAPI(countryRules[country])
+          acceptsGeoCoords = ('geoCoords' in @attr.data.logisticsConfiguration?.acceptSearchKeys)
+          if acceptGeoCoords and countryRule.geocodingAvailable
+            @loadGoogleMapsAPI()
           @resolveState(changedContry)
 
       @loadUniversal = (country, changedContry) ->
@@ -398,7 +400,9 @@ define ['flight/lib/component',
           @attr.data.states = countryRules[country].states
           @attr.data.regexes = countryRules[country].regexes
           @attr.data.geocodingAvailable = countryRules[country].geocodingAvailable
-          @loadGoogleMapsAPI(countryRules[country])
+          acceptsGeoCoords = ('geoCoords' in @attr.data.logisticsConfiguration?.acceptSearchKeys)
+          if acceptGeoCoords and countryRule.geocodingAvailable
+            @loadGoogleMapsAPI()
           @resolveState(changedContry)
 
       @countrySelected = (ev, country, changedContry) ->
@@ -411,15 +415,14 @@ define ['flight/lib/component',
         else
           @loadUniversal(country, changedContry)
 
-      @loadGoogleMapsAPI = (countryRule) ->
-        if (countryRule.geocodingAvailable)
-          if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading
-            window.vtex.maps.isGoogleMapsAPILoading = true
-            googleAPIKey = window.vtex.googleMapsApiKey
-            script = document.createElement("script")
-            script.type = "text/javascript"
-            script.src = "//maps.googleapis.com/maps/api/js?libraries=places&key=#{googleAPIKey}&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsAPILoaded"
-            document.body.appendChild(script)
+      @loadGoogleMapsAPI = () ->
+        if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading
+          window.vtex.maps.isGoogleMapsAPILoading = true
+          googleAPIKey = window.vtex.googleMapsApiKey
+          script = document.createElement("script")
+          script.type = "text/javascript"
+          script.src = "//maps.googleapis.com/maps/api/js?libraries=places&key=#{googleAPIKey}&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsAPILoaded"
+          document.body.appendChild(script)
         return
 
       #
