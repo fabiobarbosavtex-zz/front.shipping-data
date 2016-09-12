@@ -478,11 +478,12 @@ define ['flight/lib/component',
       #
 
       @after 'initialize', ->
-        # TODO: REMOVE MOCK
-        @attr.data.logisticsConfiguration = {
-          acceptSearchKeys: ["postalCode", "geoCoords"],
-          shipsTo: ["BRA"]
-        }
+        @attr.data.logisticsConfiguration =
+          acceptSearchKeys: ["postalCode"]
+
+        if window.vtex.googleMapsApiKey
+          @attr.data.logisticsConfiguration.acceptSearchKeys.push("geoCoords")
+
         @attr.stateMachine = @createStateMachine() #from withShippingStateMachine
         @setLocalePath 'shipping/script/translation/'
         # If there is an orderform present, use it for initialization
