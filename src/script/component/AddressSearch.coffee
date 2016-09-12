@@ -73,8 +73,9 @@ define ['flight/lib/component',
       @validatePostalCode = (ev, data) ->
         postalCode = data.el.value
         postalCodeRegex = @attr.countryRules.regexes.postalCode
+        postalCodeMask = @attr.countryRules.masks.postalCode
         if postalCodeRegex.test(postalCode)
-          @attr.data.postalCodeQuery = _.maskString(postalCode, rules.masks.postalCode)
+          @attr.data.postalCodeQuery = _.maskString(postalCode, postalCodeMask)
           @attr.data.loading = true
           @render()
           @getPostalCode(postalCode)
