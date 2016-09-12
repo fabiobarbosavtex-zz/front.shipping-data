@@ -255,6 +255,8 @@ define ['state-machine/state-machine',
       storeAcceptsPostalCode = ('postalCode' in @attr.data.logisticsConfiguration?.acceptSearchKeys)
       storeAcceptsGeoCoords = ('geoCoords' in @attr.data.logisticsConfiguration?.acceptSearchKeys)
 
+      apiCallError = @attr.orderForm.apiCallError
+      @attr.orderForm.apiCallError = null
       address = orderForm.shippingData?.address
       country = address?.country ? @attr.data.country ? deliveryCountries[0]
       rules = @attr.data.countryRules[country]
@@ -271,7 +273,7 @@ define ['state-machine/state-machine',
           return
 
       addressObj = new Address(address) if address
-      if address and addressObj?.validate(rules) is true or addressObj?.postalCode? or addressObj?.geoCoordinates?.length is 2
+      if !apiCallError and (address and addressObj?.validate(rules) is true or addressObj?.postalCode? or addressObj?.geoCoordinates?.length is 2)
         if hasDeliveries
           @attr.stateMachine.next = =>
             @attr.stateMachine.editAddressSLA(orderForm)

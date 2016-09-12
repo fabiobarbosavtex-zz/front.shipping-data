@@ -6,6 +6,9 @@ define(function () {
     "shipping": {
       "title": 'Delivery Address',
       "goToPayment": 'Go to Payment',
+      "errors": {
+        "shippingOptions": "An error occured when calculating shipping details. Please, try again."
+      },
       "addressList": {
         "header": 'Choose a delivery address',
         "selected": 'Selected',

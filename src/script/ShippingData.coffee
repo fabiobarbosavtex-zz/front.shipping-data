@@ -309,8 +309,16 @@ define ['flight/lib/component',
             .fail( (reason) =>
               return if reason.statusText is 'abort'
               console.log reason
-              @attr.stateMachine.error(@attr.orderForm)
+              @attr.orderForm.apiCallError = reason
+              @attr.stateMachine.showForm(@attr.orderForm)
               @attr.stateMachine.next()
+              $(window).trigger('addMessage.vtex', {
+                type: 'fatal'
+                content:
+                  detail: i18n.t('shipping.errors.shippingOptions')
+                  html: false
+                close: i18n.t('global.close')
+              })
             )
 
       # User cleared address search key and must search again

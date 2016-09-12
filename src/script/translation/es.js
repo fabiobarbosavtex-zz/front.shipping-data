@@ -6,6 +6,9 @@ define(function () {
     "shipping": {
       "title": 'Dirección de envío',
       "goToPayment": 'Ir para el Pago',
+      "errors": {
+        "shippingOptions": "Se produjo un error en el cálculo de los detalles del envío. Por favor, inténtelo de nuevo."
+      },
       "addressList": {
         "header": 'Elija la dirección de entrega',
         "selected": 'Selecionado',

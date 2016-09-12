@@ -6,6 +6,9 @@ define(function () {
     "shipping": {
       "title": 'Entrega',
       "goToPayment": 'Ir para o Pagamento',
+      "errors": {
+        "shippingOptions": "Ocorreu um erro ao tentar calcular o frete. Por favor, tente novamente."
+      },
       "addressList": {
         "header": 'Escolha o endereço de entrega',
         "selected": 'Selecionado',
