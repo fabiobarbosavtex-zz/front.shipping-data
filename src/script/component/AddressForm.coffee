@@ -50,6 +50,7 @@ define ['flight/lib/component',
         universalPostalCodeSelector: '.postal-code-UNI'
         usePostalCodeSelector: '.ship-use-postal-code'
         dontUsePostalCodeSelector: '.ship-dont-use-postal-code'
+        searchAnotherAddressSelector: '.search-another-address-btn'
 
       # Render this component according to the data object
       @render = ->
@@ -79,7 +80,7 @@ define ['flight/lib/component',
 
           rules = @getCountryRule()
 
-          if rules.postalCodeByInput and data.labelShippingFields
+          if data.address?.postalCode and rules.postalCodeByInput and data.labelShippingFields
               @select('postalCodeSelector').addClass('success')
 
           window.ParsleyValidator.addValidator('postalcode',
@@ -171,6 +172,7 @@ define ['flight/lib/component',
 
       @findAnotherPostalCode = ->
         addressKeyMap =
+          country: @attr.data.address?.country
           addressId: @attr.data.address?.addressId
           useGeolocationSearch: true # force to not use of postal code on future search
           postalCode:
@@ -186,8 +188,6 @@ define ['flight/lib/component',
       @forceShippingFields = ->
         @attr.data.labelShippingFields = false
         @attr.data.labelFields = null
-        @attr.data.hasGeolocationData = false
-        @attr.data.addressQuery = false
         @clearGeolocationContractedFields()
         @render()
 
@@ -549,6 +549,7 @@ define ['flight/lib/component',
           'findAPostalCodeForAnotherAddressSelector': @findAnotherPostalCode
           'usePostalCodeSelector': @universalUsePostalCode,
           'dontUsePostalCodeSelector': @universalDontUsePostalCode
+          'searchAnotherAddressSelector': @findAnotherPostalCode
         @on 'change',
           'stateSelector': @changedStateHandler
           'citySelector': @changedCityHandler

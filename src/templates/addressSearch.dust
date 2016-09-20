@@ -12,35 +12,7 @@
   <fieldset class="address-data">
 
     {?showGeolocationSearch}
-      {! Geocoding aberto !}
-      <p class="ship-search input text mask">
-        <label for="ship-address-search"><span data-i18n="shipping.addressSearch.address"></span></label>
-        <input type="text" autocomplete="off" autocorrect="off" id="ship-address-search" class="ship-address-search input-block-level" value="{addressQuery}" name="addressSearch" placeholder="{geolocationSearchPlaceholder}" data-parsley-errors-container=".ship-address-search-errors">
-      </p>
-
-      <!-- ADDRESS SUGGESTION FROM GEOCODE SENSOR -->
-      <p class="text-address-suggestion text-address-suggestion-border-bottom hide">
-        <a href="javascript:void(0);" id="address-suggestion-link">
-          <i class="icon-map-marker"></i> <span data-i18n="shipping.addressSearch.shipsTo"></span> <span class="formatted-address-sugestion"></span>
-        </a>
-      </p>
-
-      {?postalCodeByInput}
-        <small class="text-know-postal-code"><a href="javascript:void(0);" class="know-postal-code" data-i18n="shipping.addressSearch.knowPostalCode"></a></small>
-      {/postalCodeByInput}
-
-      <div class="address-not-detailed hide">
-        <p class="didnt-find-address-title" data-i18n="shipping.addressSearch.addressNotDetailed"></p>
-        <p class="didnt-find-address-description" data-i18n="shipping.addressSearch.whatAboutMoreInfo"></p>
-      </div>
-
-      <div class="incomplete-address-data hide">
-        <p class="incomplete-address-data-title">
-          <span data-i18n="shipping.addressSearch.incompleteAddressData"></span> <span data-i18n="shipping.addressForm.postalCode{country}"></span>. <a href="{dontKnowPostalCodeURL}" target="_blank" class="incomplete-address-data-link" data-i18n="shipping.addressSearch.searchPostalCode"></a>
-        </p>
-      </div>
-
-      <span class="ship-address-search-errors"></span>
+      {>"googleMaps/search"/}
     {:else}
       {?postalCodeByInput}
       {! Caso possa usar geocoding e código postal !}

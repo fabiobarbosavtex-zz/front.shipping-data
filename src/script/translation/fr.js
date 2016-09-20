@@ -52,7 +52,7 @@ define(function () {
         "type": "Type d’addresse",
         "receiver": "Récepteur",
         "deliveryCountry": "Pays de livraison",
-        "cancelEditAddress": "Annuler et retourner à la liste d’adresses ",
+        "cancelEditAddress": "Retourner à la liste d’adresses ",
         "searchForAnotherAddress": "Chercher une autre adresse"
       },
       "addressSearch": {

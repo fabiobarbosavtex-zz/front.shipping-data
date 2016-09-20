@@ -14,9 +14,7 @@
     <input type="hidden" name="addressId" value="{address.addressId}"/>
     <input type="hidden" name="country" value="{country}"/>
 
-    {?hasGeolocationData}
-      <div id="map-canvas" class="map-canvas"></div>
-    {/hasGeolocationData}
+    {>"googleMaps/map"/}
 
     <p class="ship-postal-code required input text mask {?contractedShippingFieldsForGeolocation.postalCode}hide{/contractedShippingFieldsForGeolocation.postalCode}">
       <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
