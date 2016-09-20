@@ -11,10 +11,6 @@
   </a>
 </p>
 
-{?postalCodeByInput}
-  <small class="text-know-postal-code"><a href="javascript:void(0);" class="know-postal-code" data-i18n="shipping.addressSearch.knowPostalCode"></a></small>
-{/postalCodeByInput}
-
 <div class="address-not-detailed hide">
   <p class="didnt-find-address-title" data-i18n="shipping.addressSearch.addressNotDetailed"></p>
   <p class="didnt-find-address-description" data-i18n="shipping.addressSearch.whatAboutMoreInfo"></p>

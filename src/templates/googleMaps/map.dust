@@ -1,3 +1,6 @@
 {?hasGeolocationData}
   <div id="map-canvas" class="map-canvas"></div>
+  <p class="search-another-address">
+    <a href="javascript:void(0);" class="search-another-address-btn" data-i18n="shipping.addressForm.searchForAnotherAddress"></a>
+  </p>
 {/hasGeolocationData}

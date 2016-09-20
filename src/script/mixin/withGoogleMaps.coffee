@@ -173,7 +173,7 @@ define ['shipping/script/module/countryISOMap',
         @setAutocompleteBounds()
 
     @sendGeoCoords = (address) ->
-      if @attr.requestSendGeoCoords
+      if @attr.requestSendGeoCoords?.abort?
         @attr.requestSendGeoCoords.abort()
 
       # If postal code is not valid we don't send it

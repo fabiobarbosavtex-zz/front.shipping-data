@@ -4,9 +4,10 @@ define ['flight/lib/component',
         'shipping/script/mixin/withi18n',
         'shipping/script/mixin/withValidation',
         'shipping/script/mixin/withGoogleMaps',
+        'shipping/templates/googleMaps/search',
         'shipping/templates/addressSearch'
         ],
-  (defineComponent, extensions, Address, withi18n, withValidation, withGoogleMaps, template) ->
+  (defineComponent, extensions, Address, withi18n, withValidation, withGoogleMaps, googleSearchTemplate, template) ->
     AddressSearch = ->
       @defaultAttrs
         getAddressInformation: null
