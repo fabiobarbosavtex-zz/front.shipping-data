@@ -47,6 +47,9 @@ define ->
           },
           "Oropeza": {
             "Yotala": "20300"
+          },
+          "Sucre": {
+            "Sucre": "20400"
           }
         },
         "Cochabamba": {
