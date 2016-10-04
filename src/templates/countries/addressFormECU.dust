@@ -29,9 +29,7 @@
       {/addressQuery}
     {/hasGeolocationData}
 
-    {?hasGeolocationData}
-      <div id="map-canvas" class="map-canvas"></div>
-    {/hasGeolocationData}
+    {>"googleMaps/map"/}
 
     <div class="box-delivery">
 
