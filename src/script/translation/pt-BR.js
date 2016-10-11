@@ -6,9 +6,6 @@ define(function () {
     "shipping": {
       "title": 'Entrega',
       "goToPayment": 'Ir para o Pagamento',
-      "errors": {
-        "shippingOptions": "Ocorreu um erro ao tentar calcular o frete. Por favor, tente novamente."
-      },
       "addressList": {
         "header": 'Escolha o endereço de entrega',
         "selected": 'Selecionado',
@@ -52,26 +49,20 @@ define(function () {
         "type": 'Tipo do endereço',
         "receiver": 'Destinatário',
         "deliveryCountry": 'País de entrega',
-        "cancelEditAddress": 'Voltar para a lista de endereços',
+        "cancelEditAddress": 'Cancelar alterações e voltar para a lista de endereços',
         "searchForAnotherAddress": "Buscar por outro endereço"
       },
       "addressSearch": {
         "address": 'Endereço',
         "dontKnowPostalCode": 'Não sei meu CEP',
         "knowPostalCode": 'Buscar pelo meu CEP',
-        "addressExampleARG": 'Ex: Av. del Libertador 1473, Buenos Aires',
-        "addressExampleBOL": 'Ex: Av Arce, 2556, La Paz',
-        "addressExampleBRA": 'Ex: Av Paulista, 1578, São Paulo',
-        "addressExampleCAN": 'Ex: 450 Wilbrod St, Ottawa',
-        "addressExampleCHL": 'Ex: Los Militares, 6191, Santiago',
+        "addressExampleARG": 'Ex: Cerrito, 1350, Buenos Aires',
+        "addressExampleBRA": 'Ex: Av Dr Cardoso de Melo, 1750, São Paulo',
+        "addressExampleCHL": 'Ex: Apoquindo, 3039, Santiago',
         "addressExampleCOL": 'Ex: Calle 93 # 14-20, Bogotá',
-        "addressExampleECU": 'Ex: Av Rio Amazonas, N 37-61, Quito',
-        "addressExampleGTM": 'Ex: 6A Calle 6, Guatemala',
-        "addressExampleMEX": 'Ex: Calle de Tacuba 8, Ciudad de México',
+        "addressExampleECU": 'Ex: Av Amazonas River, N 37-61, Quito',
         "addressExamplePER": 'Ex: Av. José Pardo, 850, Miraflores, Lima',
-        "addressExamplePRT": 'Ex: Av. da França 20, Porto',
         "addressExamplePRY": 'Ex: Avenida Eusebio Ayala, 100, Assunção',
-        "addressExampleUNI": 'Ex: 225 East 41st Street, New York',
         "addressExampleURY": 'Ex: Bulevar Artigas, 1394, Montevidéu',
         "addressExampleUSA": 'Ex: 225 East 41st Street, New York',
         "addressNotDetailed": 'O endereço não possui dados suficientes.',

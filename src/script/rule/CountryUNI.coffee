@@ -9,6 +9,7 @@ define ->
       @postalCodeByCity = false
 
       @queryByPostalCode = false
+      @queryByGeocoding = false
 
       @deliveryOptionsByPostalCode = true
       @deliveryOptionsByGeocordinates = false
@@ -31,28 +32,19 @@ define ->
           types: ["postal_code"],
           required: true
         ,
-          value: "complement"
-          length: "long_name",
-          types: ["street_number", "colloquial_area", "floor", "room", "premise", "subpremise"],
+          value: "number"
+          length: "long_name"
+          types: ["street_number"],
           required: false
         ,
           value: "street"
           length: "long_name"
-          types: ["route", "street_address"],
+          types: ["route"],
           required: false
         ,
           value: "neighborhood"
           length: "long_name"
-          types: ["neighborhood",
-                  "administrative_area_level_3",
-                  "administrative_area_level_4",
-                  "administrative_area_level_5",
-                  "sublocality",
-                  "sublocality_level_1",
-                  "sublocality_level_2",
-                  "sublocality_level_3",
-                  "sublocality_level_4",
-                  "sublocality_level_5"],
+          types: ["neighborhood"],
           required: false
         ,
           value: "state"
@@ -62,7 +54,7 @@ define ->
         ,
           value: "city"
           length: "long_name"
-          types: ["locality", "administrative_area_level_2"],
+          types: ["administrative_area_level_2", "locality"],
           required: false
       ]
 

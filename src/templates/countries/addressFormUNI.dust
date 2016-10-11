@@ -14,20 +14,6 @@
     <input type="hidden" name="addressId" value="{address.addressId}"/>
     <input type="hidden" name="country" value="{country}"/>
 
-    {>"googleMaps/map"/}
-
-    <p class="ship-postal-code required input text mask {?contractedShippingFieldsForGeolocation.postalCode}hide{/contractedShippingFieldsForGeolocation.postalCode}">
-      <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>
-      <input type="text" autocomplete="off" id="ship-postal-code"
-               class="ship-postal-code postal-code postal-code-{country} input-small clear-address-search" value="{postalCode}" name="postalCode"
-               data-parsley-required="true" data-parsley-trigger="change blur" data-parsley-postalcode="true" data-parsley-errors-container=".postal-code-errors" />
-
-      {?comeFromGeoSearch}
-        <small><a href="javascript:void(0);" class="find-a-postal-code-for-another-address" data-i18n="shipping.addressSearch.dontKnowPostalCode"></a></small>
-      {/comeFromGeoSearch}
-      <span class="postal-code-errors"></span>
-    </p>
-
     <div class="box-delivery">
 
       <p class="ship-postal-code ship-postal-code-uni-container input text">

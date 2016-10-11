@@ -44,7 +44,6 @@ define ['state-machine/state-machine',
       { name: 'requestSLA',         from: 'addressFormNoSLA',  to: 'addressFormLoadSLA' }
       { name: 'loadSLA',            from: 'addressFormLoadSLA',to: 'addressFormSLA' }
       { name: 'loadNoSLA',          from: 'addressFormLoadSLA',to: 'addressFormNoSLA' }
-      { name: 'showSearch',         from: 'addressForm',       to: 'search' }
       { name: 'showSearch',         from: 'addressFormSLA',    to: 'search' }
       { name: 'showSearch',         from: 'addressFormNoSLA',  to: 'search' }
       { name: 'showSearch',         from: 'addressFormLoadSLA',to: 'search' }
@@ -251,12 +250,7 @@ define ['state-machine/state-machine',
       deliveryCountries = @attr.data.deliveryCountries
       hasAvailableAddresses = @attr.data.hasAvailableAddresses
       hasDeliveries = @attr.data.hasDeliveries
-      logisticsConfiguration = @attr.data.logisticsConfiguration
-      storeAcceptsPostalCode = ('postalCode' in @attr.data.logisticsConfiguration?.acceptSearchKeys)
-      storeAcceptsGeoCoords = ('geoCoords' in @attr.data.logisticsConfiguration?.acceptSearchKeys)
 
-      apiCallError = @attr.orderForm.apiCallError
-      @attr.orderForm.apiCallError = null
       address = orderForm.shippingData?.address
       country = address?.country ? @attr.data.country ? deliveryCountries[0]
       rules = @attr.data.countryRules[country]
@@ -266,14 +260,14 @@ define ['state-machine/state-machine',
         requestingSLA = true
 
       if address and
-        (rules.queryByPostalCode and rules.regexes?.postalCode and not rules.regexes.postalCode.test(address.postalCode)) and
-        (storeAcceptsGeoCoords and address.geoCoordinates?.length isnt 2)
+        (rules.queryByPostalCode and rules.regexes?.postalCode && not rules.regexes.postalCode.test(address.postalCode)) or
+        (rules.queryByGeocoding and address.geoCoordinates.length isnt 2)
           @attr.stateMachine.next = =>
-            @attr.stateMachine.showSearch(rules, address, hasAvailableAddresses, deliveryCountries, logisticsConfiguration)
+            @attr.stateMachine.showSearch(rules, address, hasAvailableAddresses, deliveryCountries)
           return
 
       addressObj = new Address(address) if address
-      if !apiCallError and (address and addressObj?.validate(rules) is true or addressObj?.postalCode? or addressObj?.geoCoordinates?.length is 2)
+      if address and addressObj?.validate(rules) is true or addressObj?.postalCode?
         if hasDeliveries
           @attr.stateMachine.next = =>
             @attr.stateMachine.editAddressSLA(orderForm)
@@ -287,20 +281,20 @@ define ['state-machine/state-machine',
       else
         orderForm.shippingData.address = address = {country: country}
         address = @addressDefaults(address)
-        if rules.queryByPostalCode or storeAcceptsGeoCoords
+        if rules.queryByPostalCode or rules.queryByGeocoding
           @attr.stateMachine.next = =>
-            @attr.stateMachine.showSearch(rules, address, hasAvailableAddresses, deliveryCountries, logisticsConfiguration)
+            @attr.stateMachine.showSearch(rules, address, hasAvailableAddresses, deliveryCountries)
         else
           @attr.stateMachine.next = =>
             @attr.stateMachine.newAddress(orderForm)
 
-    @onSearch = (event, from, to, rules, address, hasAvailableAddresses, deliveryCountries, logisticsConfiguration) ->
+    @onSearch = (event, from, to, rules, address, hasAvailableAddresses, deliveryCountries) ->
       # Disable other components
       @select('addressFormSelector').trigger('disable.vtex')
       @select('shippingOptionsSelector').trigger('disable.vtex')
 
       @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address, hasAvailableAddresses])
-      @select('addressSearchSelector').trigger('enable.vtex', [rules, address, logisticsConfiguration])
+      @select('addressSearchSelector').trigger('enable.vtex', [rules, address])
 
     @onLeaveSearch = (event, from, to) ->
       @select('addressSearchSelector').trigger('disable.vtex', null)
@@ -309,11 +303,10 @@ define ['state-machine/state-machine',
       address = orderForm.shippingData?.address
       hasAvailableAddresses = @attr.data.hasAvailableAddresses
       deliveryCountries = @attr.data.deliveryCountries
-      logisticsConfiguration = @attr.data.logisticsConfiguration
 
       @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address, hasAvailableAddresses])
       @select('addressSearchSelector').trigger('disable.vtex')
-      @select('addressFormSelector').trigger('enable.vtex', [address, logisticsConfiguration])
+      @select('addressFormSelector').trigger('enable.vtex', [address])
       @select('shippingOptionsSelector').trigger('disable.vtex')
 
     @onAddressFormLoad = (event, from, to) ->
@@ -326,12 +319,11 @@ define ['state-machine/state-machine',
       address = orderForm.shippingData?.address
       hasAvailableAddresses = @attr.data.hasAvailableAddresses
       deliveryCountries = @attr.data.deliveryCountries
-      logisticsConfiguration = @attr.data.logisticsConfiguration
 
       @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address, hasAvailableAddresses])
       @select('addressSearchSelector').trigger('disable.vtex')
       if event isnt 'loadSLA'
-        @select('addressFormSelector').trigger('enable.vtex', [address, logisticsConfiguration])
+        @select('addressFormSelector').trigger('enable.vtex', [address])
       @select('shippingOptionsSelector').trigger('enable.vtex', [orderForm.shippingData?.logisticsInfo, orderForm.items, orderForm.sellers])
       @select('goToPaymentButtonWrapperSelector').fadeIn("fast")
 
@@ -342,13 +334,12 @@ define ['state-machine/state-machine',
       address = orderForm.shippingData?.address
       hasAvailableAddresses = @attr.data.hasAvailableAddresses
       deliveryCountries = @attr.data.deliveryCountries
-      logisticsConfiguration = @attr.data.logisticsConfiguration
 
       $(window).trigger('showMessage.vtex', ['unavailable'])
 
       @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address, hasAvailableAddresses])
       if event isnt 'loadNoSLA'
-        @select('addressFormSelector').trigger('enable.vtex', [address, logisticsConfiguration])
+        @select('addressFormSelector').trigger('enable.vtex', [address])
       @select('shippingOptionsSelector').trigger('disable.vtex')
 
     @onAddressFormLoadSLA = (event, from, to) ->

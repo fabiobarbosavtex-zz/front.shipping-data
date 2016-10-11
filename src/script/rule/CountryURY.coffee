@@ -32,6 +32,7 @@ define ->
       @postalCodeByCity = false
 
       @queryByPostalCode = false
+      @queryByGeocoding = false
 
       @deliveryOptionsByPostalCode = true
       @deliveryOptionsByGeocordinates = false

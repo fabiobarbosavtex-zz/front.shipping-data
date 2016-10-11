@@ -28,7 +28,9 @@
       {/addressQuery}
     {/hasGeolocationData}
 
-    {>"googleMaps/map"/}
+    {?hasGeolocationData}
+      <div id="map-canvas" class="map-canvas"></div>
+    {/hasGeolocationData}
 
     <p class="ship-postal-code required input text mask">
         <label for="ship-postal-code"><span data-i18n="shipping.addressForm.postalCode{country}"></span> <span class="item-required">*</span></label>

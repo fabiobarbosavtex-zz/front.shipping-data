@@ -29,7 +29,6 @@ define ['flight/lib/component',
           deliveryCountries: false
           countryRules: {}
           country: false
-          logisticsConfiguration: null
 
         stateMachine: false
 
@@ -203,6 +202,8 @@ define ['flight/lib/component',
       # An address search has new results.
       # Should call API to get delivery options
       @addressSearchResult = (ev, address) ->
+        console.log "address result", address
+
         @attr.orderForm.shippingData.address = @addressDefaults(address)
         @attr.orderForm.shippingData.address.country = address?.country ? @attr.data.country
 
@@ -242,10 +243,6 @@ define ['flight/lib/component',
         @validate()
 
       @addressKeysUpdated = (ev, address) ->
-        # If postal code is not valid we don't send it
-        if not address.postalCodeIsValid
-          address = _.extend({}, address, {postalCode: null})
-
         # In case it's an address that we already know its logistics info, return
         knownAddress = _.find @attr.orderForm.shippingData?.availableAddresses, (a) ->
             a.addressId is address.addressId and
@@ -253,14 +250,6 @@ define ['flight/lib/component',
             a.postalCode?.replace('-', '') is address.postalCode?.replace('-', '') and
             a.geoCoordinates?[0] is address.geoCoordinates?[0] and
             a.geoCoordinates?[1] is address.geoCoordinates?[1]
-
-        if not address.postalCodeIsValid and address.geoCoordinatesIsValid and
-            knownAddress and
-            address.geoCoordinates[0] is knownAddress.geoCoordinates[0] and
-            address.geoCoordinates[1] is knownAddress.geoCoordinates[1]
-          # Since geocoords are the same here, the user must be typing a postal code
-          # wait until the postal code is valid to request a new SLA
-          return
 
         # If we already know the SLAs for this address, just carry on with the states
         if knownAddress
@@ -274,28 +263,25 @@ define ['flight/lib/component',
               @attr.stateMachine.loadNoSLA(@attr.orderForm)
           return
 
-        if address.postalCodeIsValid or address.geoCoordinatesIsValid
+        if address.postalCodeIsValid
           # When we start editing, we always start looking for shipping options
+          console.log "Getting shipping options for address key", address.postalCode
           @attr.stateMachine.requestSLA()
 
           country = address.country ? @attr.data.country
 
-          clearAddress = false
-
+          clearAddress = @attr.data.countryRules[country].postalCodeByInput ? true
           # If we are submitting a geoCoordinate address, then don't let the API
           # overwrite the other address fields with the data provided by the postal code
           # service
-          if @attr.data.countryRules[country].postalCodeByInput and !address.geoCoordinatesIsValid
-            clearAddress = true
+          if address.geoCoordinatesValid
+            clearAddress = false
 
           # Abort previous call
-          if @attr.requestAddressKeys
-            @attr.requestAddressKeys.abort()
-
-          @attr.requestAddressKeys = ShippingDataStore.sendAttachment({
-            address: address,
-            clearAddressIfPostalCodeNotFound: clearAddress
-          })
+          if @attr.requestAddressKeys then @attr.requestAddressKeys.abort()
+          @attr.requestAddressKeys = ShippingDataStore.sendAttachment
+                address: address
+                clearAddressIfPostalCodeNotFound: clearAddress
 
           @attr.requestAddressKeys?.done( (orderForm) =>
               hasDeliveries = @attr.data.hasDeliveries
@@ -309,26 +295,20 @@ define ['flight/lib/component',
             .fail( (reason) =>
               return if reason.statusText is 'abort'
               console.log reason
-              @attr.orderForm.apiCallError = reason
-              @attr.stateMachine.showForm(@attr.orderForm)
+              @attr.stateMachine.error(@attr.orderForm)
               @attr.stateMachine.next()
-              $(window).trigger('addMessage.vtex', {
-                type: 'fatal'
-                content:
-                  detail: i18n.t('shipping.errors.shippingOptions')
-                  html: false
-                close: i18n.t('global.close')
-              })
             )
+        else if address.geoCoordinates
+          # TODO implementar com geoCoordinates
+          console.log address, "Geo coordinates not implemented!"
 
       # User cleared address search key and must search again
       @addressKeysInvalidated = (ev, address) ->
         rules = @attr.data.countryRules[address.country]
         hasAvailableAddresses = @attr.data.hasAvailableAddresses
         deliveryCountries = @attr.data.deliveryCountries
-        logisticsConfiguration = @attr.data.logisticsConfiguration
 
-        @attr.stateMachine.showSearch(rules, address, hasAvailableAddresses, deliveryCountries, logisticsConfiguration)
+        @attr.stateMachine.showSearch(rules, address, hasAvailableAddresses, deliveryCountries)
 
       # User wants to edit or create an address
       @editAddress = (ev, address) ->
@@ -389,9 +369,7 @@ define ['flight/lib/component',
           @attr.data.states = countryRules[country].states
           @attr.data.regexes = countryRules[country].regexes
           @attr.data.geocodingAvailable = countryRules[country].geocodingAvailable
-          acceptsGeoCoords = ('geoCoords' in @attr.data.logisticsConfiguration?.acceptSearchKeys)
-          if acceptsGeoCoords and countryRules[country].geocodingAvailable
-            @loadGoogleMapsAPI()
+          @loadGoogleMapsAPI(countryRules[country])
           @resolveState(changedContry)
 
       @loadUniversal = (country, changedContry) ->
@@ -408,9 +386,7 @@ define ['flight/lib/component',
           @attr.data.states = countryRules[country].states
           @attr.data.regexes = countryRules[country].regexes
           @attr.data.geocodingAvailable = countryRules[country].geocodingAvailable
-          acceptsGeoCoords = ('geoCoords' in @attr.data.logisticsConfiguration?.acceptSearchKeys)
-          if acceptsGeoCoords and countryRules[country].geocodingAvailable
-            @loadGoogleMapsAPI()
+          @loadGoogleMapsAPI(countryRules[country])
           @resolveState(changedContry)
 
       @countrySelected = (ev, country, changedContry) ->
@@ -423,14 +399,14 @@ define ['flight/lib/component',
         else
           @loadUniversal(country, changedContry)
 
-      @loadGoogleMapsAPI = () ->
-        if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading
-          window.vtex.maps.isGoogleMapsAPILoading = true
-          googleAPIKey = window.vtex.googleMapsApiKey
-          script = document.createElement("script")
-          script.type = "text/javascript"
-          script.src = "//maps.googleapis.com/maps/api/js?libraries=places&key=#{googleAPIKey}&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsAPILoaded"
-          document.body.appendChild(script)
+      @loadGoogleMapsAPI = (countryRule) ->
+        if (countryRule.geocodingAvailable)
+          if not window.vtex.maps.isGoogleMapsAPILoaded and not window.vtex.maps.isGoogleMapsAPILoading
+            window.vtex.maps.isGoogleMapsAPILoading = true
+            script = document.createElement("script")
+            script.type = "text/javascript"
+            script.src = "//maps.googleapis.com/maps/api/js?libraries=places&language=#{@attr.locale}&callback=window.vtex.maps.googleMapsAPILoaded"
+            document.body.appendChild(script)
         return
 
       #
@@ -489,12 +465,6 @@ define ['flight/lib/component',
       #
 
       @after 'initialize', ->
-        @attr.data.logisticsConfiguration =
-          acceptSearchKeys: ["postalCode"]
-
-        if window.vtex.googleMapsApiKey
-          @attr.data.logisticsConfiguration.acceptSearchKeys.push("geoCoords")
-
         @attr.stateMachine = @createStateMachine() #from withShippingStateMachine
         @setLocalePath 'shipping/script/translation/'
         # If there is an orderform present, use it for initialization

@@ -593,6 +593,7 @@ define ->
       @postalCodeByCity = true
 
       @queryByPostalCode = false
+      @queryByGeocoding = false
 
       @deliveryOptionsByPostalCode = true
       @deliveryOptionsByGeocordinates = false

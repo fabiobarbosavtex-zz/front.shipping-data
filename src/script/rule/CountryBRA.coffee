@@ -20,6 +20,7 @@ define ->
       @postalCodeByCity = false
 
       @queryByPostalCode = true
+      @queryByGeocoding = false
 
       @deliveryOptionsByPostalCode = true
       @deliveryOptionsByGeocordinates = false
@@ -27,7 +28,7 @@ define ->
       @basedOnStateChange = false
       @basedOnCityChange = false
 
-      @geocodingAvailable = true
+      @geocodingAvailable = false
       @isStateUpperCase = true
 
       @dontKnowPostalCodeURL = "http://www.buscacep.correios.com.br/servicos/dnec/index.do"
@@ -46,7 +47,7 @@ define ->
           value: "postalCode"
           length: "long_name"
           types: ["postal_code"],
-          required: false
+          required: true
         ,
           value: "number"
           length: "long_name"
@@ -60,7 +61,7 @@ define ->
         ,
           value: "neighborhood"
           length: "long_name"
-          types: ["neighborhood", "sublocality_level_1", "sublocality_level_2", "sublocality_level_3", "sublocality_level_4", "sublocality_level_5"],
+          types: ["neighborhood"],
           required: false
         ,
           value: "state"

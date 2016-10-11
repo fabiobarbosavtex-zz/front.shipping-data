@@ -1,13 +1,10 @@
 define ['flight/lib/component',
         'shipping/script/setup/extensions',
         'shipping/script/models/Address',
-        'shipping/templates/googleMaps/map',
         'shipping/script/mixin/withi18n',
-        'shipping/script/mixin/withCreateMap',
-        'shipping/script/mixin/withGoogleMaps',
         'shipping/script/mixin/withValidation',
         'shipping/script/mixin/withImplementedCountries'],
-  (defineComponent, extensions, Address, mapTemplate, withi18n, withCreateMap, withGoogleMaps, withValidation, withImplementedCountries) ->
+  (defineComponent, extensions, Address, withi18n, withValidation, withImplementedCountries) ->
     AddressForm = ->
       @defaultAttrs
         map: false
@@ -33,6 +30,7 @@ define ['flight/lib/component',
           form:
             baseName: 'countries/addressForm'
 
+
         addressFormSelector: '.address-form-new'
         postalCodeSelector: '.postal-code'
         forceShippingFieldsSelector: '#force-shipping-fields'
@@ -50,7 +48,6 @@ define ['flight/lib/component',
         universalPostalCodeSelector: '.postal-code-UNI'
         usePostalCodeSelector: '.ship-use-postal-code'
         dontUsePostalCodeSelector: '.ship-dont-use-postal-code'
-        searchAnotherAddressSelector: '.search-another-address-btn'
 
       # Render this component according to the data object
       @render = ->
@@ -63,8 +60,6 @@ define ['flight/lib/component',
             @select('universalPostalCodePlaceholderSelector').html(output)
 
         dust.render @attr.templates.form.name, data, (err, output) =>
-          if err
-            return console.log(err)
           output = $(output).i18n()
           @$node.html(output)
 
@@ -80,7 +75,7 @@ define ['flight/lib/component',
 
           rules = @getCountryRule()
 
-          if data.address?.postalCode and rules.postalCodeByInput and data.labelShippingFields
+          if rules.postalCodeByInput and data.labelShippingFields
               @select('postalCodeSelector').addClass('success')
 
           window.ParsleyValidator.addValidator('postalcode',
@@ -138,41 +133,28 @@ define ['flight/lib/component',
 
       @addressKeysUpdated = (ev) ->
         ev?.preventDefault()
-        storeAcceptsPostalCode = @attr.data.storeAcceptsPostalCode
-        storeAcceptsGeoCoords = @attr.data.storeAcceptsGeoCoords
-        hasGeolocationData = @attr.data.hasGeolocationData
-        countryRules = @getCountryRule()
-        countryUsePostalCodeByInput = countryRules.postalCodeByInput
-        countryQueryByPostalCode = countryRules.queryByPostalCode
-
         addressKeyMap = @getCurrentAddress()
 
-        if countryUsePostalCodeByInput
+        if @getCountryRule().postalCodeByInput
           addressKeyMap.postalCodeIsValid = @select('postalCodeSelector').parsley().isValid()
         else
           addressKeyMap.postalCodeIsValid = addressKeyMap.postalCode isnt null
 
         addressKeyMap.geoCoordinatesIsValid = addressKeyMap.geoCoordinates.length is 2
+        addressKeyMap.useGeolocationSearch = false # force use of postal code on future search
 
-        if storeAcceptsGeoCoords and addressKeyMap.geoCoordinatesIsValid
-          addressKeyMap.useGeolocationSearch = true
-        else
-          addressKeyMap.useGeolocationSearch = false
-
-        # Postal code went from valid to invalid
+        # TODO implementar geocode
+        # from valid to invalid
         if @attr.addressKeyMap.postalCodeIsValid and not addressKeyMap.postalCodeIsValid
-          if countryQueryByPostalCode and storeAcceptsGeoCoords and not addressKeyMap.geoCoordinatesIsValid
+          if @getCountryRule().queryByPostalCode || @getCountryRule().queryByGeocoding
             @trigger('addressKeysInvalidated.vtex', [addressKeyMap])
-        else
-          # New postal code or geocoordinates is valid
-          if addressKeyMap.postalCodeIsValid or addressKeyMap.geoCoordinatesIsValid
-            @trigger('addressKeysUpdated.vtex', [addressKeyMap])
+        else if addressKeyMap.postalCodeIsValid # new postal code is valid
+          @trigger('addressKeysUpdated.vtex', [addressKeyMap])
 
         @attr.addressKeyMap = addressKeyMap
 
       @findAnotherPostalCode = ->
         addressKeyMap =
-          country: @attr.data.address?.country
           addressId: @attr.data.address?.addressId
           useGeolocationSearch: true # force to not use of postal code on future search
           postalCode:
@@ -188,6 +170,8 @@ define ['flight/lib/component',
       @forceShippingFields = ->
         @attr.data.labelShippingFields = false
         @attr.data.labelFields = null
+        @attr.data.hasGeolocationData = false
+        @attr.data.addressQuery = false
         @clearGeolocationContractedFields()
         @render()
 
@@ -222,9 +206,9 @@ define ['flight/lib/component',
 
         addressObj.geoCoordinates = @attr.data.address.geoCoordinates or []
 
-        # If store does not accept geocoordinates
-        if !@attr.data.storeAcceptsGeoCoords
-           addressObj.geoCoordinates = []
+        # If country use postal code, don't send geoCoordinates
+        if @getCountryRule().deliveryOptionsByPostalCode
+          addressObj.geoCoordinates = []
 
         if !addressObj.number and (addressObj.country is 'USA' or addressObj.country is 'CAN')
           addressObj.number = 'N/A'
@@ -269,6 +253,30 @@ define ['flight/lib/component',
           @attr.data.states = @attr.data.countryRules[country].states
           @attr.data.regexes = @attr.data.countryRules[country].regexes
           @attr.data.dontKnowPostalCodeURL = @attr.data.countryRules[country].dontKnowPostalCodeURL
+
+      @createMap = () ->
+        if @attr.data.address?.geoCoordinates?.length is 2
+          location = new google.maps.LatLng(@attr.data.address.geoCoordinates[1], @attr.data.address.geoCoordinates[0])
+          @select('mapCanvasSelector').css('display', 'block')
+          mapOptions =
+            zoom: 15
+            center: location
+            streetViewControl: false
+            mapTypeControl: false
+            zoomControl: true
+            zoomControlOptions:
+              position: google.maps.ControlPosition.TOP_RIGHT
+              style: google.maps.ZoomControlStyle.SMALL
+
+          if @attr.map
+            @attr.map = null
+          @attr.map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions)
+
+          if @attr.marker
+            @attr.marker.setMap(null)
+            @attr.marker = null
+          @attr.marker = new google.maps.Marker(position: location)
+          @attr.marker.setMap(@attr.map)
 
       # Fill the cities array for the selected state
       @fillCitySelect = () ->
@@ -425,37 +433,41 @@ define ['flight/lib/component',
         # Changed when the user makes changes to the profile, before sending the profile to the API and getting a response.
         @attr.profileFromEvent = profile
 
-      fixFieldWithMultipleOptions = (address, field, fieldWithOptions) ->
-        newFieldWithOptions = null
-
-        if address[fieldWithOptions] or (address[field] and address[field].indexOf(';') isnt -1)
-          address[field] = '' # Side effect!
-          newFieldWithOptions = []
-          options = if address[fieldWithOptions] then address[fieldWithOptions] else address[field]
-          for option in options.split(';')
-            if option.lenght > 0
-              newFieldWithOptions.push({
-                value: option
-                label: option
-              })
-
-        return newFieldWithOptions
-
       # Handle the initial view of this component
-      @enable = (ev, address, logisticsConfiguration) ->
+      @enable = (ev, address) ->
         ev?.stopPropagation()
         firstName = window.vtexjs.checkout.orderForm?.clientProfileData?.firstName or @attr.profileFromEvent?.firstName
         lastName = window.vtexjs.checkout.orderForm?.clientProfileData?.lastName or @attr.profileFromEvent?.lastName
         if firstName and (address.receiverName is '' or not address.receiverName)
           address.receiverName = firstName + ' ' + lastName
 
-        @attr.data.neighborhoods = fixFieldWithMultipleOptions(address, 'neighborhood', 'neighborhoods')
-        @attr.data.cities = fixFieldWithMultipleOptions(address, 'city', 'cities')
+        if address.neighborhoods or (address.neighborhood and address.neighborhood.indexOf(';') isnt -1)
+          neighborhoods = if address.neighborhoods then address.neighborhoods else address.neighborhood
+          address.neighborhood = ''
+          @attr.data.neighborhoods = []
+          for neighborhood in neighborhoods.split(';')
+            if neighborhood.length > 0
+              @attr.data.neighborhoods.push({
+                value: neighborhood
+                label: neighborhood
+              })
+        else
+          @attr.data.neighborhoods = null
 
+        if address.cities or (address.city and address.city.indexOf(';') isnt -1)
+          cities = if address.cities then address.cities else address.city
+          address.city = ''
+          @attr.data.cities = []
+          for city in cities.split(';')
+            if city.length > 0
+              @attr.data.cities.push({
+                value: city
+                label: city
+              })
+              console.log(@attr.data.cities)
+        else
+          @attr.data.cities = null
         @attr.data.address = new Address(address)
-        @attr.data.logisticsConfiguration = logisticsConfiguration
-        @attr.data.storeAcceptsPostalCode = ('postalCode' in @attr.data.logisticsConfiguration?.acceptSearchKeys)
-        @attr.data.storeAcceptsGeoCoords = ('geoCoords' in @attr.data.logisticsConfiguration?.acceptSearchKeys)
         # when the address has an address query, the address was searched with geolocation
         @attr.data.addressQuery = if address.addressQuery? then address.addressQuery else false
         @attr.data.hasGeolocationData = @attr.data.address.geoCoordinates.length > 0
@@ -477,7 +489,7 @@ define ['flight/lib/component',
             # For the countries that use postal code, we must trigger
             # an addressKeysUpdated, so it can search for the SLAs
             if countryRule.queryByPostalCode ||
-               @attr.data.storeAcceptsGeoCoords ||
+               countryRule.queryByGeocoding ||
                countryRule.country is 'UNI'
               @addressKeysUpdated()
 
@@ -496,8 +508,7 @@ define ['flight/lib/component',
         @trigger('addressFormSubmit.vtex')
 
       @updateEnables = ->
-        rules = @getCountryRule()
-        if rules.geocodingAvailable and @attr.data.address.geoCoordinates.length is 2
+        if @getCountryRule().geocodingAvailable and @attr.data.address.geoCoordinates.length is 2
           @attr.data.contractedShippingFieldsForGeolocation =
             neighborhood: @attr.data.address.neighborhood isnt '' and @attr.data.address.neighborhood?
             street: @attr.data.address.street isnt '' and @attr.data.address.street?
@@ -505,7 +516,7 @@ define ['flight/lib/component',
             state: @attr.data.address.state isnt '' and @attr.data.address.state?
             postalCode: @attr.data.address.postalCode isnt '' and @attr.data.address.postalCode? and @attr.data.addressQuery
 
-        if rules.queryByPostalCode
+        if @getCountryRule().queryByPostalCode
           @attr.data.labelShippingFields = @attr.data.address.neighborhood isnt '' and @attr.data.address.neighborhood? and
             @attr.data.address.street isnt '' and @attr.data.address.street? and
             @attr.data.address.state isnt '' and @attr.data.address.state? and
@@ -549,7 +560,6 @@ define ['flight/lib/component',
           'findAPostalCodeForAnotherAddressSelector': @findAnotherPostalCode
           'usePostalCodeSelector': @universalUsePostalCode,
           'dontUsePostalCodeSelector': @universalDontUsePostalCode
-          'searchAnotherAddressSelector': @findAnotherPostalCode
         @on 'change',
           'stateSelector': @changedStateHandler
           'citySelector': @changedCityHandler
@@ -568,4 +578,4 @@ define ['flight/lib/component',
 
         @setLocalePath 'shipping/script/translation/'
 
-    return defineComponent(AddressForm, withi18n, withCreateMap, withGoogleMaps, withValidation, withImplementedCountries)
+    return defineComponent(AddressForm, withi18n, withValidation, withImplementedCountries)
