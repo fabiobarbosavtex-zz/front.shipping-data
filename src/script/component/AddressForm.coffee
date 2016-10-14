@@ -161,7 +161,8 @@ define ['flight/lib/component',
 
         # Postal code went from valid to invalid
         if @attr.addressKeyMap.postalCodeIsValid and not currentAddressKeyMap.postalCodeIsValid
-          if countryQueryByPostalCode and storeAcceptsGeoCoords and not currentAddressKeyMap.geoCoordinatesIsValid
+          if (!storeAcceptsGeoCoords and countryQueryByPostalCode) or
+             (storeAcceptsGeoCoords and not currentAddressKeyMap.geoCoordinatesIsValid)
             @trigger('addressKeysInvalidated.vtex', [currentAddressKeyMap])
         else
           postalCodeChangedByInput = ev?
