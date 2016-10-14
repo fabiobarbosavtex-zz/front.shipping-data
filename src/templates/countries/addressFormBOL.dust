@@ -20,9 +20,7 @@
       <span data-i18n="shipping.addressForm.deliveryCountry"></span> {country}
     </p>
 
-    {?hasGeolocationData}
-      <div id="map-canvas" class="map-canvas"></div>
-    {/hasGeolocationData}
+    {>"googleMaps/map"/}
 
     <div class="box-delivery">
 
