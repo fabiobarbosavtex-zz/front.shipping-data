@@ -145,30 +145,31 @@ define ['flight/lib/component',
         countryUsePostalCodeByInput = countryRules.postalCodeByInput
         countryQueryByPostalCode = countryRules.queryByPostalCode
 
-        addressKeyMap = @getCurrentAddress()
+        currentAddressKeyMap = @getCurrentAddress()
 
         if countryUsePostalCodeByInput
-          addressKeyMap.postalCodeIsValid = @select('postalCodeSelector').parsley().isValid()
+          currentAddressKeyMap.postalCodeIsValid = @select('postalCodeSelector').parsley().isValid()
         else
-          addressKeyMap.postalCodeIsValid = addressKeyMap.postalCode isnt null
+          currentAddressKeyMap.postalCodeIsValid = currentAddressKeyMap.postalCode isnt null
 
-        addressKeyMap.geoCoordinatesIsValid = addressKeyMap.geoCoordinates.length is 2
+        currentAddressKeyMap.geoCoordinatesIsValid = currentAddressKeyMap.geoCoordinates.length is 2
 
-        if storeAcceptsGeoCoords and addressKeyMap.geoCoordinatesIsValid
-          addressKeyMap.useGeolocationSearch = true
+        if storeAcceptsGeoCoords and currentAddressKeyMap.geoCoordinatesIsValid
+          currentAddressKeyMap.useGeolocationSearch = true
         else
-          addressKeyMap.useGeolocationSearch = false
+          currentAddressKeyMap.useGeolocationSearch = false
 
         # Postal code went from valid to invalid
-        if @attr.addressKeyMap.postalCodeIsValid and not addressKeyMap.postalCodeIsValid
-          if countryQueryByPostalCode and storeAcceptsGeoCoords and not addressKeyMap.geoCoordinatesIsValid
-            @trigger('addressKeysInvalidated.vtex', [addressKeyMap])
+        if @attr.addressKeyMap.postalCodeIsValid and not currentAddressKeyMap.postalCodeIsValid
+          if countryQueryByPostalCode and storeAcceptsGeoCoords and not currentAddressKeyMap.geoCoordinatesIsValid
+            @trigger('addressKeysInvalidated.vtex', [currentAddressKeyMap])
         else
-          # New postal code or geocoordinates is valid
-          if addressKeyMap.postalCodeIsValid or addressKeyMap.geoCoordinatesIsValid
-            @trigger('addressKeysUpdated.vtex', [addressKeyMap])
+          postalCodeChangedByInput = ev?
+          # Only trigger event if postal code is valid or if this function was not called by changing the postal code input
+          if currentAddressKeyMap.postalCodeIsValid or (!postalCodeChangedByInput and currentAddressKeyMap.geoCoordinatesIsValid)
+            @trigger('addressKeysUpdated.vtex', [currentAddressKeyMap])
 
-        @attr.addressKeyMap = addressKeyMap
+        @attr.addressKeyMap = currentAddressKeyMap
 
       @findAnotherPostalCode = ->
         addressKeyMap =
