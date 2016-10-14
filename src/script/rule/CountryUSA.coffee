@@ -24,7 +24,6 @@ define ->
       @basedOnStateChange = false
       @basedOnCityChange = false
 
-      @geocodingAvailable = false
       @isStateUpperCase = true
 
       @dontKnowPostalCodeURL = "https://tools.usps.com/go/ZipLookupAction!input.action"

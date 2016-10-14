@@ -38,7 +38,6 @@ define ->
       @basedOnStateChange = false
       @basedOnCityChange = false
 
-      @geocodingAvailable = false
       @isStateUpperCase = true
 
       @dontKnowPostalCodeURL = "https://www.canadapost.ca/cpo/mc/personal/postalcode/fpc.jsf"

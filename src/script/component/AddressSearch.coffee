@@ -135,7 +135,6 @@ define ['flight/lib/component',
         @attr.isEnabled = true
         @attr.countryRules = countryRule
         @attr.data.dontKnowPostalCodeURL = countryRule.dontKnowPostalCodeURL
-        @attr.data.geocodingAvailable = countryRule.geocodingAvailable
         @attr.data.country = countryRule.country
         @attr.data.postalCodeByInput = countryRule.postalCodeByInput
         @attr.data.showGeolocationSearch = address?.useGeolocationSearch

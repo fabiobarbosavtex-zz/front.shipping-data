@@ -411,7 +411,6 @@ define ->
       @basedOnStateChange = true
       @basedOnCityChange = true
 
-      @geocodingAvailable = false
       @isStateUpperCase = false
 
       @regexes =

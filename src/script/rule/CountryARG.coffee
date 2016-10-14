@@ -20557,7 +20557,6 @@ define ->
       @basedOnStateChange = true
       @basedOnCityChange = false
 
-      @geocodingAvailable = false
       @isStateUpperCase = false
 
       @dontKnowPostalCodeURL = "http://www.correoargentino.com.ar/formularios/cpa"

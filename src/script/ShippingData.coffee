@@ -383,14 +383,13 @@ define ['flight/lib/component',
           'shipping/templates/shippingOptions',
           'shipping/templates/deliveryWindows'
         ]
-        vtex.curl deps, (countryRule) =>
+        vtex.curl deps, (CountryRule) =>
           countryRules = @attr.data.countryRules
-          countryRules[country] = new countryRule()
+          countryRules[country] = new CountryRule()
           @attr.data.states = countryRules[country].states
           @attr.data.regexes = countryRules[country].regexes
-          @attr.data.geocodingAvailable = countryRules[country].geocodingAvailable
           acceptsGeoCoords = ('geoCoords' in @attr.data.logisticsConfiguration?.acceptSearchKeys)
-          if acceptsGeoCoords and countryRules[country].geocodingAvailable
+          if acceptsGeoCoords
             @loadGoogleMapsAPI()
           @resolveState(changedContry)
 
@@ -402,14 +401,13 @@ define ['flight/lib/component',
           'shipping/templates/shippingOptions',
           'shipping/templates/deliveryWindows'
         ]
-        vtex.curl deps, (countryRule) =>
+        vtex.curl deps, (CountryRule) =>
           countryRules = @attr.data.countryRules
-          countryRules[country] = new countryRule()
+          countryRules[country] = new CountryRule()
           @attr.data.states = countryRules[country].states
           @attr.data.regexes = countryRules[country].regexes
-          @attr.data.geocodingAvailable = countryRules[country].geocodingAvailable
           acceptsGeoCoords = ('geoCoords' in @attr.data.logisticsConfiguration?.acceptSearchKeys)
-          if acceptsGeoCoords and countryRules[country].geocodingAvailable
+          if acceptsGeoCoords
             @loadGoogleMapsAPI()
           @resolveState(changedContry)
 

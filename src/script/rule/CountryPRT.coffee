@@ -16,7 +16,6 @@ define ->
       @basedOnStateChange = false
       @basedOnCityChange = false
 
-      @geocodingAvailable = false
       @isStateUpperCase = false
 
       @dontKnowPostalCodeURL = "https://www.ctt.pt/feapl_2/app/open/postalCodeSearch/postalCodeSearch.jspx"
