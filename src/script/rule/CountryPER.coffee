@@ -2300,7 +2300,6 @@ define ->
       @postalCodeByNeighborhood = true
 
       @queryByPostalCode = false
-      @queryByGeocoding = false
 
       @deliveryOptionsByPostalCode = true
       @deliveryOptionsByGeocordinates = false
@@ -2308,7 +2307,6 @@ define ->
       @basedOnStateChange = true
       @basedOnCityChange = true
 
-      @geocodingAvailable = false
       @isStateUpperCase = false
 
       @regexes =

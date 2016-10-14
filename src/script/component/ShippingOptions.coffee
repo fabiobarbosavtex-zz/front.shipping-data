@@ -44,11 +44,13 @@ define ['flight/lib/component',
             data = @attr.data.shippingOptions[options.index].selectedSla
 
             dust.render deliveryWindowsTemplate, data, (err, output) =>
+              return unless @attr.data.active
               output = $(output).i18n()
               @getDeliveryWindowsSelector(options.index).html(output)
               @attr.renderOptions = null
           else
             dust.render shippingOptionsTemplate, data, (err, output) =>
+              return unless @attr.data.active
               output = $(output).i18n()
               @$node.html(output)
 
@@ -182,6 +184,7 @@ define ['flight/lib/component',
 
       @enable = (ev, logisticsInfo, items, sellers) ->
         ev?.stopPropagation()
+        @attr.data.active = true
         @attr.data.loadingShippingOptions = false
 
         @attr.data.items = _.map items, (item, i) ->
@@ -196,6 +199,7 @@ define ['flight/lib/component',
 
       @disable = (ev) ->
         ev?.stopPropagation()
+        @attr.data.active = false
         @$node.html('')
 
       @startLoadingShippingOptions = (ev) ->

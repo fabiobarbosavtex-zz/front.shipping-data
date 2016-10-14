@@ -1199,7 +1199,6 @@ define ->
       @postalCodeByCity = true
 
       @queryByPostalCode = false
-      @queryByGeocoding = false
 
       @deliveryOptionsByPostalCode = true
       @deliveryOptionsByGeocordinates = false
@@ -1207,7 +1206,6 @@ define ->
       @basedOnStateChange = true
       @basedOnCityChange = false
 
-      @geocodingAvailable = false
       @isStateUpperCase = false
 
       @regexes =
