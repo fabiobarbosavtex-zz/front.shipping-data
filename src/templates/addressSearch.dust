@@ -32,7 +32,10 @@
           </i>
           {/loading}
 
-        <small><a href="javascript:void(0);" id="dont-know-postal-code" class="dont-know-postal-code-geocoding" data-i18n="shipping.addressSearch.dontKnowPostalCode"></a></small>
+        {! Caso não possa usar geocoding, sugerimos um site para consulta de código postal !}
+        {?dontKnowPostalCodeURL}
+          <small><a href="{dontKnowPostalCodeURL}" id="dont-know-postal-code" target="_blank" data-i18n="shipping.addressSearch.dontKnowPostalCode"></a></small>
+        {/dontKnowPostalCodeURL}
 
         <span class="postal-code-errors"></span>
       </p>
