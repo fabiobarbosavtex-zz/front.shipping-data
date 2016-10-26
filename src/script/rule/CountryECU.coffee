@@ -61,3 +61,35 @@ define ->
           label: state
         @states.push(prop)
         @cities[state.toUpperCase()] = _.keys(@map[state])
+
+      @googleDataMap = [
+          value: "postalCode"
+          length: "long_name"
+          types: ["postal_code"],
+          required: false
+        ,
+          value: "number"
+          length: "long_name"
+          types: ["street_number"],
+          required: false
+        ,
+          value: "street"
+          length: "long_name"
+          types: ["route"],
+          required: false
+        ,
+          value: "neighborhood"
+          length: "long_name"
+          types: ["neighborhood", "sublocality_level_1", "sublocality_level_2", "sublocality_level_3", "sublocality_level_4", "sublocality_level_5"],
+          required: false
+        ,
+          value: "state"
+          length: "short_name"
+          types: ["administrative_area_level_1"],
+          required: false
+        ,
+          value: "city"
+          length: "long_name"
+          types: ["administrative_area_level_2", "locality"],
+          required: false
+      ]
