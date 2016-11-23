@@ -76,7 +76,7 @@ define ['flight/lib/component',
         else
           @attr.data.userWantsToCreateNewAddress = false
 
-        country = shippingData.address?.country ? @attr.data.deliveryCountries[0]
+        country = shippingData.address?.country ? @attr.orderForm.storePreferencesData?.countryCode ? @attr.data.deliveryCountries[0]
 
         @countrySelected(null, country)
 
