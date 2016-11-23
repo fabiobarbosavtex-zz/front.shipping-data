@@ -299,7 +299,8 @@ define ['state-machine/state-machine',
       @select('addressFormSelector').trigger('disable.vtex')
       @select('shippingOptionsSelector').trigger('disable.vtex')
 
-      @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address, hasAvailableAddresses])
+      preferencedCountry = @attr.data.country
+      @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address, hasAvailableAddresses, preferencedCountry])
       @select('addressSearchSelector').trigger('enable.vtex', [rules, address, logisticsConfiguration])
 
     @onLeaveSearch = (event, from, to) ->
@@ -310,8 +311,9 @@ define ['state-machine/state-machine',
       hasAvailableAddresses = @attr.data.hasAvailableAddresses
       deliveryCountries = @attr.data.deliveryCountries
       logisticsConfiguration = @attr.data.logisticsConfiguration
+      preferencedCountry = @attr.data.country
 
-      @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address, hasAvailableAddresses])
+      @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address, hasAvailableAddresses, preferencedCountry])
       @select('addressSearchSelector').trigger('disable.vtex')
       @select('addressFormSelector').trigger('enable.vtex', [address, logisticsConfiguration])
       @select('shippingOptionsSelector').trigger('disable.vtex')
@@ -327,8 +329,9 @@ define ['state-machine/state-machine',
       hasAvailableAddresses = @attr.data.hasAvailableAddresses
       deliveryCountries = @attr.data.deliveryCountries
       logisticsConfiguration = @attr.data.logisticsConfiguration
+      preferencedCountry = @attr.data.country
 
-      @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address, hasAvailableAddresses])
+      @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address, hasAvailableAddresses, preferencedCountry])
       @select('addressSearchSelector').trigger('disable.vtex')
       if event isnt 'loadSLA'
         @select('addressFormSelector').trigger('enable.vtex', [address, logisticsConfiguration])
@@ -343,10 +346,11 @@ define ['state-machine/state-machine',
       hasAvailableAddresses = @attr.data.hasAvailableAddresses
       deliveryCountries = @attr.data.deliveryCountries
       logisticsConfiguration = @attr.data.logisticsConfiguration
+      preferencedCountry = @attr.data.country
 
       $(window).trigger('showMessage.vtex', ['unavailable'])
 
-      @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address, hasAvailableAddresses])
+      @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address, hasAvailableAddresses, preferencedCountry])
       if event isnt 'loadNoSLA'
         @select('addressFormSelector').trigger('enable.vtex', [address, logisticsConfiguration])
       @select('shippingOptionsSelector').trigger('disable.vtex')
