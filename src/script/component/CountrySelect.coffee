@@ -36,7 +36,7 @@ define ['flight/lib/component',
       return newCountries.sort((a, b) => a.name.localeCompare(b.name))
 
     # Handle the initial view of this component
-    @enable = (ev, deliveryCountries, address, hasAvailableAddresses, preferencedCountry) ->
+    @enable = (ev, deliveryCountries, address, hasAvailableAddresses, defaultCountry) ->
       ev?.stopPropagation()
       @attr.data.deliveryCountries = @transformCountries(deliveryCountries)
       @attr.data.hasAvailableAddresses = hasAvailableAddresses
@@ -44,7 +44,7 @@ define ['flight/lib/component',
       if @attr.data.deliveryCountries.length > 1
         @attr.data.showCountrySelect = true
 
-      @attr.data.country = address?.country ? preferencedCountry ? @attr.data.deliveryCountries?[0] ? null
+      @attr.data.country = address?.country ? defaultCountry ? @attr.data.deliveryCountries?[0] ? null
 
       @render()
 
