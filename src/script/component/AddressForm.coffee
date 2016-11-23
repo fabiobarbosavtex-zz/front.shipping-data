@@ -435,7 +435,7 @@ define ['flight/lib/component',
           newFieldWithOptions = []
           options = if address[fieldWithOptions] then address[fieldWithOptions] else address[field]
           for option in options.split(';')
-            if option.lenght > 0
+            if option.length > 0
               newFieldWithOptions.push({
                 value: option
                 label: option
