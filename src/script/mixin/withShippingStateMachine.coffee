@@ -295,11 +295,12 @@ define ['state-machine/state-machine',
             @attr.stateMachine.newAddress(orderForm)
 
     @onSearch = (event, from, to, rules, address, hasAvailableAddresses, deliveryCountries, logisticsConfiguration) ->
+      defaultCountry = @attr?.data?.country
+
       # Disable other components
       @select('addressFormSelector').trigger('disable.vtex')
       @select('shippingOptionsSelector').trigger('disable.vtex')
 
-      defaultCountry = @attr.data.country
       @select('countrySelectSelector').trigger('enable.vtex', [deliveryCountries, address, hasAvailableAddresses, defaultCountry])
       @select('addressSearchSelector').trigger('enable.vtex', [rules, address, logisticsConfiguration])
 
