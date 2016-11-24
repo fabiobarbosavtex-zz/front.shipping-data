@@ -76,7 +76,7 @@ define ['flight/lib/component',
         else
           @attr.data.userWantsToCreateNewAddress = false
 
-        country = shippingData.address?.country ? @attr.data.deliveryCountries[0]
+        country = shippingData.address?.country ? @attr.orderForm.storePreferencesData?.countryCode ? @attr.data.deliveryCountries[0]
 
         @countrySelected(null, country)
 
@@ -434,9 +434,23 @@ define ['flight/lib/component',
       #
       # Helpers
       #
+      @transformCountries = (countries) ->
+        newCountries = []
+        for country in countries
+          newCountries.push({
+            code: country,
+            name: i18n.t('countries.'+ country)
+          })
+
+        newCountries = newCountries.sort((a, b) => a.name.localeCompare(b.name))
+        return _.map(newCountries, (country) -> return country.code)
+
       @getDeliveryCountries = (orderForm) ->
         deliveryCountries = _.uniq(_.reduceRight(orderForm.shippingData.logisticsInfo, ((memo, l) ->
           return memo.concat(l.shipsTo)), []))
+
+        deliveryCountries = @transformCountries(deliveryCountries)
+
         if deliveryCountries.length is 0
           deliveryCountries = [orderForm.storePreferencesData?.countryCode]
 
