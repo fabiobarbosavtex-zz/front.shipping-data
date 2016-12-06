@@ -1231,14 +1231,10 @@ define ->
           types: ["postal_code"],
           required: false
         ,
-          value: "complement"
-          length: "long_name"
-          types: ["street_number"],
-          required: false
-        ,
           value: "street"
           length: "long_name"
           types: ["route"],
+          useName: true,
           required: false
         ,
           value: "neighborhood"

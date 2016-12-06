@@ -46,6 +46,11 @@ define ['shipping/script/module/countryISOMap',
         if _.isFunction(location.lat) then location.lat() else location.lat
       ]
 
+      # Special case for countries like Colombia which the street field comes right in the name property
+      ruleUseName = _.find(googleDataMap, (rule) -> rule.useName)
+      if ruleUseName
+        address[ruleUseName.value] = googleAddress.name
+
       # Get country
       country = getCountry(googleAddress)
       address.country = if country then country else fallbackCountry
