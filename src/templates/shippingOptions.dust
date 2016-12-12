@@ -118,7 +118,9 @@
                             {#isFree}
                             <span class="shipping-option-item-value">{isFree}</span>
                             {:else}
-                            <span class="shipping-option-item-up-to" data-i18n="shipping.shippingOptions.priceFrom"></span>&nbsp;
+                                {#hasPriceVariation}
+                                <span class="shipping-option-item-up-to" data-i18n="shipping.shippingOptions.priceFrom"></span>&nbsp;
+                                {/hasPriceVariation}
                             <span class="shipping-option-item-value">{cheapestValueLabel}</span>
                             {/isFree}
                         </span>
