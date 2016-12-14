@@ -36,7 +36,12 @@ define [], () ->
 
       if sla.availableDeliveryWindows and sla.availableDeliveryWindows.length > 0
         sla.isScheduled = true
-        sla.hasPriceVariation = _.every sla.availableDeliveryWindows, (window) -> window.price > 0 and window.tax > 0
+        defaultWindow = sla.availableDeliveryWindows[0]
+        sla.hasPriceVariation = _.every(sla.availableDeliveryWindows, (window) ->
+          isPriceAndTaxZero = window.price is 0 and window.tax is 0
+          isPriceAndTaxEqual = window.price is defaultWindow.price and window.tax is defaultWindow.tax
+          return not (isPriceAndTaxZero || isPriceAndTaxEqual)
+        )
 
       sla.businessDays = (sla.shippingEstimate+'').indexOf('bd') isnt -1
       sla.shippingEstimateDays = parseInt((sla.shippingEstimate+'').replace(/bd|d/,''), 10)
