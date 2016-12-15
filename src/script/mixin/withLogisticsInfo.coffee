@@ -37,9 +37,9 @@ define [], () ->
       if sla.availableDeliveryWindows and sla.availableDeliveryWindows.length > 0
         sla.isScheduled = true
         defaultWindow = sla.availableDeliveryWindows[0]
-        sla.hasPriceVariation = _.every(sla.availableDeliveryWindows, (window) ->
-          isPriceAndTaxZero = window.price is 0 and window.tax is 0
-          isPriceAndTaxEqual = window.price is defaultWindow.price and window.tax is defaultWindow.tax
+        sla.hasPriceVariation = _.some(sla.availableDeliveryWindows, (win) ->
+          isPriceAndTaxZero = win.price is 0 and win.tax is 0
+          isPriceAndTaxEqual = win.price is defaultWindow.price and win.tax is defaultWindow.tax
           return not (isPriceAndTaxZero || isPriceAndTaxEqual)
         )
 
