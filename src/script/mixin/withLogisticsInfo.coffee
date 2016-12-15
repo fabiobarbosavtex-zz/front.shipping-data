@@ -244,7 +244,10 @@ define [], () ->
       if sla.isFree
         valueLabel = sla.isFree
       else
-        valueLabel = i18n.t('shipping.shippingOptions.priceFrom') + ' ' + sla.cheapestValueLabel
+        if sla.hasPriceVariation
+          valueLabel = i18n.t('shipping.shippingOptions.priceFrom') + ' ' + sla.cheapestValueLabel
+        else
+          valueLabel = sla.cheapestValueLabel
 
       sla.fullEstimateLabel = sla.name + ' - ' + valueLabel
 
