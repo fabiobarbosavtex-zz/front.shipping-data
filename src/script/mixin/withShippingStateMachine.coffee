@@ -269,16 +269,7 @@ define ['state-machine/state-machine',
       geoCoordinatesIsValid = address and address.geoCoordinates?.length is 2
       if (!storeAcceptsGeoCoords and rules.queryByPostalCode and !postalCodeIsValid) or (storeAcceptsGeoCoords and !geoCoordinatesIsValid)
         window.checkoutLogger?({
-          JSError_error: 'Event showSearch was called in state machine',
-          JSError_arguments: {
-            event: event,
-            from: from,
-            to: to,
-            storeAcceptsGeoCoords: storeAcceptsGeoCoords
-          }
-          JSError_url: '',
-          JSError_line: 0,
-          JSError_col: 0
+          JSError_error: "showSearch called. event=#{event} from=#{from} to=#{to} storeAcceptsGeoCoords=#{storeAcceptsGeoCoords} queryByPostalCode=#{rules.queryByPostalCode}"
         })
         @attr.stateMachine.next = =>
           @attr.stateMachine.showSearch(rules, address, hasAvailableAddresses, deliveryCountries, logisticsConfiguration)
