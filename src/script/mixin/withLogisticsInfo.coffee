@@ -36,6 +36,12 @@ define [], () ->
 
       if sla.availableDeliveryWindows and sla.availableDeliveryWindows.length > 0
         sla.isScheduled = true
+        defaultWindow = sla.availableDeliveryWindows[0]
+        sla.hasPriceVariation = _.some(sla.availableDeliveryWindows, (win) ->
+          isPriceAndTaxZero = win.price is 0 and win.tax is 0
+          isPriceAndTaxEqual = win.price is defaultWindow.price and win.tax is defaultWindow.tax
+          return not (isPriceAndTaxZero || isPriceAndTaxEqual)
+        )
 
       sla.businessDays = (sla.shippingEstimate+'').indexOf('bd') isnt -1
       sla.shippingEstimateDays = parseInt((sla.shippingEstimate+'').replace(/bd|d/,''), 10)
@@ -238,7 +244,10 @@ define [], () ->
       if sla.isFree
         valueLabel = sla.isFree
       else
-        valueLabel = i18n.t('shipping.shippingOptions.priceFrom') + ' ' + sla.cheapestValueLabel
+        if sla.hasPriceVariation
+          valueLabel = i18n.t('shipping.shippingOptions.priceFrom') + ' ' + sla.cheapestValueLabel
+        else
+          valueLabel = sla.cheapestValueLabel
 
       sla.fullEstimateLabel = sla.name + ' - ' + valueLabel
 
