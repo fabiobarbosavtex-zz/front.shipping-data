@@ -16,7 +16,9 @@ define ->
           "Puerto Alegría": "91530",
           "Puerto Arica": "91536",
           "Puerto Nariño": "91540",
-          "Tarapacá": "91798"
+          "Tarapacá": "91798",
+          "Puerto Santander":"91669",
+          "La Victoria":"91430"
         },
         "Antioquia": {
           "Abejorral": "05002",
@@ -684,6 +686,7 @@ define ->
           "Mapiripana": "94663",
           "Morichal": "94888",
           "Pana Pana": "94887",
+          "Puerto Colombia":"94884",
           "San Felipe": "94883"
         },
         "Guaviare": {
